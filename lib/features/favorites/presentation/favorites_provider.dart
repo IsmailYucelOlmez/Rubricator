@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/presentation/auth_provider.dart';
-import '../../books/domain/book.dart';
-import '../../books/presentation/books_controller.dart';
+import '../../books/domain/entities/book.dart';
+import '../../books/presentation/providers/books_providers.dart';
 import '../data/favorites_repository.dart';
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>(

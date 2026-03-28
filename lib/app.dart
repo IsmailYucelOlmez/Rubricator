@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/books/presentation/book_discovery_page.dart';
+import 'features/books/presentation/pages/book_discovery_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
 import 'features/auth/presentation/profile_page.dart';
 

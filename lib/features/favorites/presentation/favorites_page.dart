@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/presentation/auth_provider.dart';
-import '../../books/presentation/book_detail_page.dart';
+import '../../books/presentation/pages/book_detail_page.dart';
 import 'favorites_provider.dart';
 
 class FavoritesPage extends ConsumerWidget {

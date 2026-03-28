@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constants/app_constants.dart';
-import '../features/books/domain/book.dart';
+import '../features/books/domain/entities/book.dart';
 
 class AiService {
   Future<String> summarize(Book book) async {

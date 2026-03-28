@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../core/constants/app_constants.dart';
 
@@ -7,14 +8,17 @@ class ApiService {
       : _dio = Dio(
           BaseOptions(
             baseUrl: AppConstants.openLibraryBaseUrl,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 15),
+            sendTimeout: const Duration(seconds: 15),
+            validateStatus: (code) => code != null && code < 500,
           ),
         ) {
     _dio.interceptors.add(
       LogInterceptor(
         requestBody: false,
         responseBody: false,
+        logPrint: (o) => debugPrint(o.toString()),
       ),
     );
   }
@@ -30,9 +34,21 @@ class ApiService {
         path,
         queryParameters: queryParameters,
       );
-      return response.data ?? <String, dynamic>{};
+      final data = response.data;
+      if (response.statusCode != null &&
+          response.statusCode! >= 400) {
+        throw Exception(
+          'Open Library returned ${response.statusCode} for $path',
+        );
+      }
+      return data ?? <String, dynamic>{};
     } on DioException catch (e) {
-      throw Exception('API request failed: ${e.message}');
+      final type = e.type.name;
+      throw Exception(
+        e.message != null && e.message!.isNotEmpty
+            ? 'Network error ($type): ${e.message}'
+            : 'Network error ($type)',
+      );
     }
   }
 }

@@ -1,3 +1,4 @@
+/// Domain entity for a work (Open Library "work" id without `/works/` prefix).
 class Book {
   const Book({
     required this.id,
@@ -5,6 +6,8 @@ class Book {
     required this.author,
     required this.coverId,
     required this.description,
+    this.authorIds = const [],
+    this.subjectKeys = const [],
   });
 
   final String id;
@@ -13,19 +16,11 @@ class Book {
   final int? coverId;
   final String description;
 
-  factory Book.fromSearchJson(Map<String, dynamic> json) {
-    final key = json['key'] as String? ?? '';
-    final authors = json['author_name'] as List<dynamic>?;
-    return Book(
-      id: key.replaceFirst('/works/', ''),
-      title: json['title'] as String? ?? 'Unknown title',
-      author: (authors?.isNotEmpty ?? false)
-          ? authors!.first.toString()
-          : 'Unknown author',
-      coverId: json['cover_i'] as int?,
-      description: '',
-    );
-  }
+  /// Open Library author keys without `/authors/` prefix (when known).
+  final List<String> authorIds;
+
+  /// Subject strings from the work (used for related-book search).
+  final List<String> subjectKeys;
 
   Book copyWith({
     String? id,
@@ -33,6 +28,8 @@ class Book {
     String? author,
     int? coverId,
     String? description,
+    List<String>? authorIds,
+    List<String>? subjectKeys,
   }) {
     return Book(
       id: id ?? this.id,
@@ -40,6 +37,8 @@ class Book {
       author: author ?? this.author,
       coverId: coverId ?? this.coverId,
       description: description ?? this.description,
+      authorIds: authorIds ?? this.authorIds,
+      subjectKeys: subjectKeys ?? this.subjectKeys,
     );
   }
 
@@ -50,6 +49,8 @@ class Book {
       'author': author,
       'coverId': coverId,
       'description': description,
+      'authorIds': authorIds,
+      'subjectKeys': subjectKeys,
     };
   }
 
@@ -60,6 +61,10 @@ class Book {
       author: json['author'] as String? ?? 'Unknown author',
       coverId: json['coverId'] as int?,
       description: json['description'] as String? ?? '',
+      authorIds: (json['authorIds'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+          const [],
+      subjectKeys: (json['subjectKeys'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+          const [],
     );
   }
 }

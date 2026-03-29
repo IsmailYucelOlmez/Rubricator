@@ -22,12 +22,12 @@ class ProfilePage extends ConsumerWidget {
                 const Text('Sign in to sync favorites across devices.'),
                 const SizedBox(height: 12),
                 FilledButton(
-                  onPressed: () => _showSignInDialog(context, ref),
+                  onPressed: () => _showSignInDialog(context),
                   child: const Text('Sign in'),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
-                  onPressed: () => _showSignUpDialog(context, ref),
+                  onPressed: () => _showSignUpDialog(context),
                   child: const Text('Create account'),
                 ),
               ] else ...[
@@ -54,134 +54,21 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Future<void> _showSignInDialog(BuildContext context, WidgetRef ref) async {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    await showDialog<void>(
+  Future<void> _showSignInDialog(BuildContext context) {
+    return showDialog<void>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Sign in'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-                final password = passwordController.text;
-                if (email.isEmpty || password.isEmpty) return;
-                try {
-                  await ref.read(authServiceProvider).signIn(
-                        email: email,
-                        password: password,
-                      );
-                  if (dialogContext.mounted) Navigator.pop(dialogContext);
-                } catch (e) {
-                  if (dialogContext.mounted) {
-                    ScaffoldMessenger.of(dialogContext).showSnackBar(
-                      SnackBar(content: Text(_authMessage(e))),
-                    );
-                  }
-                }
-              },
-              child: const Text('Sign in'),
-            ),
-          ],
-        );
-      },
+      builder: (_) => const _ProfileSignInDialog(),
     );
-    emailController.dispose();
-    passwordController.dispose();
   }
 
-  Future<void> _showSignUpDialog(BuildContext context, WidgetRef ref) async {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    await showDialog<void>(
+  Future<void> _showSignUpDialog(BuildContext context) {
+    return showDialog<void>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Create account'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password (min 6 characters)',
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-                final password = passwordController.text;
-                if (email.isEmpty || password.length < 6) return;
-                try {
-                  await ref.read(authServiceProvider).signUp(
-                        email: email,
-                        password: password,
-                      );
-                  if (dialogContext.mounted) Navigator.pop(dialogContext);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Check your email to confirm your account if required.',
-                        ),
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (dialogContext.mounted) {
-                    ScaffoldMessenger.of(dialogContext).showSnackBar(
-                      SnackBar(content: Text(_authMessage(e))),
-                    );
-                  }
-                }
-              },
-              child: const Text('Sign up'),
-            ),
-          ],
-        );
-      },
+      builder: (_) => _ProfileSignUpDialog(parentContext: context),
     );
-    emailController.dispose();
-    passwordController.dispose();
   }
 
-  String _authMessage(Object e) {
+  static String authMessage(Object e) {
     final s = e.toString();
     if (s.contains('Invalid login credentials')) {
       return 'Invalid email or password.';
@@ -190,5 +77,181 @@ class ProfilePage extends ConsumerWidget {
       return 'An account with this email already exists.';
     }
     return s;
+  }
+}
+
+class _ProfileSignInDialog extends StatefulWidget {
+  const _ProfileSignInDialog();
+
+  @override
+  State<_ProfileSignInDialog> createState() => _ProfileSignInDialogState();
+}
+
+class _ProfileSignInDialogState extends State<_ProfileSignInDialog> {
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    super.initState();
+    _email = TextEditingController();
+    _password = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Sign in'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(labelText: 'Email'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            decoration: const InputDecoration(labelText: 'Password'),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            final email = _email.text.trim();
+            final password = _password.text;
+            if (email.isEmpty || password.isEmpty) return;
+            try {
+              final container = ProviderScope.containerOf(context);
+              await container.read(authServiceProvider).signIn(
+                    email: email,
+                    password: password,
+                  );
+              if (!mounted) return;
+              // Defer pop so auth stream rebuilds don't overlap dialog dispose
+              // (avoids framework _dependents.isEmpty assertion with Riverpod).
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) Navigator.of(context).pop();
+              });
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(ProfilePage.authMessage(e))),
+                );
+              }
+            }
+          },
+          child: const Text('Sign in'),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileSignUpDialog extends StatefulWidget {
+  const _ProfileSignUpDialog({required this.parentContext});
+
+  final BuildContext parentContext;
+
+  @override
+  State<_ProfileSignUpDialog> createState() => _ProfileSignUpDialogState();
+}
+
+class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
+  late final TextEditingController _email;
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    super.initState();
+    _email = TextEditingController();
+    _password = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create account'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(labelText: 'Email'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'Password (min 6 characters)',
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            final email = _email.text.trim();
+            final password = _password.text;
+            if (email.isEmpty || password.length < 6) return;
+            try {
+              final container = ProviderScope.containerOf(context);
+              await container.read(authServiceProvider).signUp(
+                    email: email,
+                    password: password,
+                  );
+              if (!mounted) return;
+              final messengerCtx = widget.parentContext;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) Navigator.of(context).pop();
+                if (messengerCtx.mounted) {
+                  ScaffoldMessenger.of(messengerCtx).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Check your email to confirm your account if required.',
+                      ),
+                    ),
+                  );
+                }
+              });
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(ProfilePage.authMessage(e))),
+                );
+              }
+            }
+          },
+          child: const Text('Sign up'),
+        ),
+      ],
+    );
   }
 }

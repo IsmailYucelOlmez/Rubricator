@@ -21,7 +21,11 @@ class BookRepository {
   }) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) {
-      return const BookSearchPageResult(books: [], hasMore: false, totalFound: 0);
+      return const BookSearchPageResult(
+        books: [],
+        hasMore: false,
+        totalFound: 0,
+      );
     }
     final raw = await _ds.searchBooks(query: trimmed, page: page);
     final books = raw.docs.map((m) => m.toEntity()).toList();
@@ -36,7 +40,8 @@ class BookRepository {
 
   Future<Book> getBookByWorkId(String workId) async {
     var model = await _ds.fetchWork(workId.trim());
-    if (model.primaryAuthorName == 'Unknown author' && model.authorKeys.isNotEmpty) {
+    if (model.primaryAuthorName == 'Unknown author' &&
+        model.authorKeys.isNotEmpty) {
       try {
         final a = await _ds.fetchAuthor(model.authorKeys.first);
         model = model.copyWith(primaryAuthorName: a.name);
@@ -57,12 +62,20 @@ class BookRepository {
   }
 
   Future<List<Book>> getRelatedBooks(Book book) async {
+    List<BookModel> models = const <BookModel>[];
     final subject = book.subjectKeys.isNotEmpty ? book.subjectKeys.first : '';
-    if (subject.isEmpty) return <Book>[];
-    final models = await _ds.fetchRelatedBySubject(
-      subject: subject,
-      excludeWorkId: book.id,
-    );
+    if (subject.isNotEmpty) {
+      models = await _ds.fetchRelatedBySubject(
+        subject: subject,
+        excludeWorkId: book.id,
+      );
+    }
+    if (models.isEmpty && book.author.trim().isNotEmpty) {
+      models = await _ds.fetchRelatedByAuthor(
+        author: book.author,
+        excludeWorkId: book.id,
+      );
+    }
     return models.map((m) => m.toEntity()).toList();
   }
 }

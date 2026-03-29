@@ -104,4 +104,27 @@ class OpenLibraryRemoteDataSource {
     }
     return out;
   }
+
+  Future<List<BookModel>> fetchRelatedByAuthor({
+    required String author,
+    required String excludeWorkId,
+    int limit = 12,
+  }) async {
+    final a = author.trim();
+    if (a.isEmpty) return <BookModel>[];
+    final json = await _api.getJson(
+      '/search.json',
+      queryParameters: <String, dynamic>{'author': a, 'limit': limit + 5},
+    );
+    final docsRaw = json['docs'] as List<dynamic>? ?? <dynamic>[];
+    final exclude = excludeWorkId.trim();
+    final out = <BookModel>[];
+    for (final row in docsRaw.whereType<Map<String, dynamic>>()) {
+      final m = BookModel.fromSearchDoc(row);
+      if (m.workId == exclude) continue;
+      out.add(m);
+      if (out.length >= limit) break;
+    }
+    return out;
+  }
 }

@@ -61,9 +61,15 @@ class Book {
       author: json['author'] as String? ?? 'Unknown author',
       coverId: json['coverId'] as int?,
       description: json['description'] as String? ?? '',
-      authorIds: (json['authorIds'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+      authorIds:
+          (json['authorIds'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           const [],
-      subjectKeys: (json['subjectKeys'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+      subjectKeys:
+          (json['subjectKeys'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           const [],
     );
   }

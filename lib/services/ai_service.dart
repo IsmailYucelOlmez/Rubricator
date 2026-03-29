@@ -9,10 +9,11 @@ class AiService {
   Future<String> summarize(Book book) async {
     final prefs = await SharedPreferences.getInstance();
     final cachedRaw = prefs.getString(AppConstants.summariesKey);
-    final cache = (cachedRaw == null
-            ? <String, dynamic>{}
-            : jsonDecode(cachedRaw) as Map<String, dynamic>)
-        .map((key, value) => MapEntry(key, value.toString()));
+    final cache =
+        (cachedRaw == null
+                ? <String, dynamic>{}
+                : jsonDecode(cachedRaw) as Map<String, dynamic>)
+            .map((key, value) => MapEntry(key, value.toString()));
 
     final existing = cache[book.id];
     if (existing != null) return existing;

@@ -190,12 +190,20 @@ class BookModel {
 
     return BookModel(
       workId: workId.isNotEmpty ? workId : (mergeFrom?.workId ?? 'unknown'),
-      title: title != null && title.isNotEmpty ? title : (mergeFrom?.title ?? 'Unknown title'),
+      title: title != null && title.isNotEmpty
+          ? title
+          : (mergeFrom?.title ?? 'Unknown title'),
       primaryAuthorName: primary,
-      authorKeys: authorKeys.isNotEmpty ? authorKeys : (mergeFrom?.authorKeys ?? const []),
+      authorKeys: authorKeys.isNotEmpty
+          ? authorKeys
+          : (mergeFrom?.authorKeys ?? const []),
       coverId: coverFromWork ?? mergeFrom?.coverId,
-      description: description.isNotEmpty ? description : (mergeFrom?.description ?? ''),
-      subjects: subjects.isNotEmpty ? subjects : (mergeFrom?.subjects ?? const []),
+      description: description.isNotEmpty
+          ? description
+          : (mergeFrom?.description ?? ''),
+      subjects: subjects.isNotEmpty
+          ? subjects
+          : (mergeFrom?.subjects ?? const []),
     );
   }
 }

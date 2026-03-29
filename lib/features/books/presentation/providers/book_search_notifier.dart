@@ -118,5 +118,5 @@ class BookSearchNotifier extends StateNotifier<BookSearchState> {
 
 final bookSearchNotifierProvider =
     StateNotifierProvider<BookSearchNotifier, BookSearchState>((ref) {
-  return BookSearchNotifier(ref.watch(bookRepositoryProvider));
-});
+      return BookSearchNotifier(ref.watch(bookRepositoryProvider));
+    });

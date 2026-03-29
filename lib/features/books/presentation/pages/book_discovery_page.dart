@@ -52,7 +52,10 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Discover Books', style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'Discover Books',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: _controller,
@@ -82,19 +85,23 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
                         onNearEnd: null,
                         loadingMore: false,
                       ),
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (error, stackTrace) => Center(
                         child: Text(
                           'Could not load suggestions. Check your connection.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
                     )
                   : _SearchResultsView(
                       state: searchState,
-                      onLoadMore: () =>
-                          ref.read(bookSearchNotifierProvider.notifier).loadMore(),
+                      onLoadMore: () => ref
+                          .read(bookSearchNotifierProvider.notifier)
+                          .loadMore(),
                     ),
             ),
           ],
@@ -105,10 +112,7 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
 }
 
 class _SearchResultsView extends ConsumerWidget {
-  const _SearchResultsView({
-    required this.state,
-    required this.onLoadMore,
-  });
+  const _SearchResultsView({required this.state, required this.onLoadMore});
 
   final BookSearchState state;
   final VoidCallback onLoadMore;
@@ -164,10 +168,13 @@ class _BookListState extends State<_BookList> {
   }
 
   void _onScroll() {
-    if (widget.onNearEnd == null || !widget.hasMore || widget.loadingMore) return;
+    if (widget.onNearEnd == null || !widget.hasMore || widget.loadingMore) {
+      return;
+    }
     if (!_scroll.hasClients) return;
     final threshold = 280.0;
-    if (_scroll.position.maxScrollExtent - _scroll.position.pixels < threshold) {
+    if (_scroll.position.maxScrollExtent - _scroll.position.pixels <
+        threshold) {
       widget.onNearEnd!();
     }
   }
@@ -189,7 +196,11 @@ class _BookListState extends State<_BookList> {
         return ListTile(
           leading: BookCoverLeading(coverId: book.coverId),
           title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(
+            book.author,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book)),

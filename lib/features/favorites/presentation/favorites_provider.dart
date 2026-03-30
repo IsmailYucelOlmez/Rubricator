@@ -3,56 +3,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../books/domain/entities/book.dart';
 import '../../books/presentation/providers/books_providers.dart';
-import '../data/favorites_repository.dart';
+import '../../user_books/domain/entities/user_book_entity.dart';
+import '../../user_books/presentation/providers/user_books_provider.dart';
 
-final favoritesRepositoryProvider = Provider<FavoritesRepository>(
-  (ref) => FavoritesRepository(),
-);
+final favoriteEntriesProvider =
+    FutureProvider<List<({Book book, UserBookEntity userBook})>>((ref) {
+      ref.watch(authStateProvider);
+      return _hydrateEntries(
+        ref: ref,
+        rows: ref.watch(favoriteUserBooksProvider.future),
+      );
+    });
 
-final favoritesProvider =
-    AsyncNotifierProvider<FavoritesNotifier, List<Book>>(FavoritesNotifier.new);
+final listEntriesByStatusProvider =
+    FutureProvider.family<
+      List<({Book book, UserBookEntity userBook})>,
+      ReadingStatus
+    >((ref, status) {
+      ref.watch(authStateProvider);
+      return _hydrateEntries(
+        ref: ref,
+        rows: ref.watch(userBooksByStatusProvider(status).future),
+      );
+    });
 
-class FavoritesNotifier extends AsyncNotifier<List<Book>> {
-  @override
-  Future<List<Book>> build() async {
-    final auth = ref.watch(authStateProvider);
-    if (auth.isLoading || auth.hasError) return const <Book>[];
-    final user = auth.valueOrNull;
-    if (user == null) return const <Book>[];
-
-    final ids = await ref.read(favoritesRepositoryProvider).listFavoriteBookIds();
-    final bookRepo = ref.read(bookRepositoryProvider);
-    final books = <Book>[];
-    for (final id in ids) {
-      try {
-        books.add(await bookRepo.getBookByWorkId(id));
-      } catch (_) {
-        // Skip missing or network failures for a single id.
-      }
+Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
+  required Ref ref,
+  required Future<List<UserBookEntity>> rows,
+}) async {
+  final userBooks = await rows;
+  final bookRepo = ref.read(bookRepositoryProvider);
+  final entries = <({Book book, UserBookEntity userBook})>[];
+  for (final userBook in userBooks) {
+    try {
+      final book = await bookRepo.getBookByWorkId(userBook.bookId);
+      entries.add((book: book, userBook: userBook));
+    } catch (_) {
+      // Skip missing or network failures for a single id.
     }
-    return books;
   }
-
-  bool isFavorite(String bookId) {
-    return state.maybeWhen(
-      data: (books) => books.any((b) => b.id == bookId),
-      orElse: () => false,
-    );
-  }
-
-  Future<void> toggle(Book book) async {
-    final user = ref.read(authStateProvider).valueOrNull;
-    if (user == null) {
-      throw StateError('Sign in to manage favorites.');
-    }
-    final repo = ref.read(favoritesRepositoryProvider);
-    final ids = await repo.listFavoriteBookIds();
-    final exists = ids.contains(book.id);
-    if (exists) {
-      await repo.removeFavorite(book.id);
-    } else {
-      await repo.addFavorite(book.id);
-    }
-    ref.invalidateSelf();
-  }
+  return entries;
 }

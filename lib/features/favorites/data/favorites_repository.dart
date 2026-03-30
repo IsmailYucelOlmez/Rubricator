@@ -21,10 +21,12 @@ class FavoritesRepository {
     if (userId == null) {
       throw FavoritesException('Sign in to add favorites.');
     }
-    await _client.from('favorites').upsert(
+    await _client.from('user_books').upsert(
       <String, dynamic>{
         'user_id': userId,
         'book_id': bookId,
+        'status': 'to_read',
+        'is_favorite': true,
       },
       onConflict: 'user_id,book_id',
     );
@@ -36,8 +38,8 @@ class FavoritesRepository {
       throw FavoritesException('Sign in to manage favorites.');
     }
     await _client
-        .from('favorites')
-        .delete()
+        .from('user_books')
+        .update(<String, dynamic>{'is_favorite': false})
         .eq('user_id', userId)
         .eq('book_id', bookId);
   }
@@ -46,10 +48,11 @@ class FavoritesRepository {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return <String>[];
     final rows = await _client
-        .from('favorites')
+        .from('user_books')
         .select('book_id')
         .eq('user_id', userId)
-        .order('created_at', ascending: false);
+        .eq('is_favorite', true)
+        .order('updated_at', ascending: false);
     final list = rows as List<dynamic>;
     return list
         .map((e) => (e as Map<String, dynamic>)['book_id'] as String)

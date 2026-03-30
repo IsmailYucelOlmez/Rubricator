@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../favorites/presentation/favorites_provider.dart';
+import '../../../user_books/domain/entities/user_book_entity.dart';
+import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/book_detail_entities.dart';
 import '../providers/books_providers.dart';
@@ -43,11 +44,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
   @override
   Widget build(BuildContext context) {
     final detailedBookAsync = ref.watch(bookDetailProvider(widget.book.id));
-    final favoritesAsync = ref.watch(favoritesProvider);
-    final isFavorite = favoritesAsync.maybeWhen(
-      data: (books) => books.any((b) => b.id == widget.book.id),
-      orElse: () => false,
-    );
+    final userBookAsync = ref.watch(userBookProvider(widget.book.id));
+    final userBook = userBookAsync.valueOrNull;
+    final isFavorite = userBook?.isFavorite ?? false;
+    final status = userBook?.status;
 
     return Scaffold(
       appBar: AppBar(
@@ -55,8 +55,35 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
         actions: [
           IconButton(
             onPressed: () async {
+              final notifier = ref.read(userBookProvider(widget.book.id).notifier);
               try {
-                await ref.read(favoritesProvider.notifier).toggle(widget.book);
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (context) => _StatusBottomSheet(
+                    current: status,
+                    onSelect: (selected) async {
+                      await notifier.upsert(
+                        status: selected,
+                        isFavorite: isFavorite,
+                      );
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                _showMessage(e.toString());
+              }
+            },
+            icon: const Icon(Icons.menu_book_outlined),
+          ),
+          IconButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(userBookProvider(widget.book.id).notifier)
+                    .toggleFavorite();
               } catch (e) {
                 if (!mounted) return;
                 _showMessage(e.toString());
@@ -112,6 +139,48 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               Text(
                 detailedBook.author,
                 style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              _ReadingStatusCard(
+                userBook: userBook,
+                onTapSelectStatus: () async {
+                  try {
+                    await showModalBottomSheet<void>(
+                      context: context,
+                      builder: (context) => _StatusBottomSheet(
+                        current: status,
+                        onSelect: (selected) async {
+                          await ref
+                              .read(userBookProvider(widget.book.id).notifier)
+                              .upsert(
+                                status: selected,
+                                isFavorite: isFavorite,
+                              );
+                          if (!context.mounted) return;
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    );
+                  } catch (e) {
+                    if (!mounted) return;
+                    _showMessage(e.toString());
+                  }
+                },
+                onProgressChanged: (value) async {
+                  final current = userBook?.status ?? ReadingStatus.toRead;
+                  try {
+                    await ref
+                        .read(userBookProvider(widget.book.id).notifier)
+                        .upsert(
+                          status: current,
+                          isFavorite: isFavorite,
+                          progress: value,
+                        );
+                  } catch (e) {
+                    if (!mounted) return;
+                    _showMessage(e.toString());
+                  }
+                },
               ),
               if (detailedBook.authorIds.isNotEmpty) ...[
                 const SizedBox(height: 8),
@@ -395,6 +464,110 @@ class _CoverPlaceholder extends StatelessWidget {
         color: Theme.of(context).colorScheme.outline,
       ),
     );
+  }
+}
+
+class _ReadingStatusCard extends StatelessWidget {
+  const _ReadingStatusCard({
+    required this.userBook,
+    required this.onTapSelectStatus,
+    required this.onProgressChanged,
+  });
+
+  final UserBookEntity? userBook;
+  final VoidCallback onTapSelectStatus;
+  final Future<void> Function(int value) onProgressChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = userBook?.status;
+    final progress = userBook?.progress ?? 0;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  status == null ? 'Add to List' : _statusLabel(status),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: onTapSelectStatus,
+                  child: const Text('Change'),
+                ),
+              ],
+            ),
+            if (status == ReadingStatus.reading) ...[
+              const SizedBox(height: 8),
+              Text('Progress: $progress%'),
+              Slider(
+                value: progress.toDouble(),
+                min: 0,
+                max: 100,
+                divisions: 20,
+                label: '$progress%',
+                onChanged: (value) => onProgressChanged(value.round()),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBottomSheet extends StatelessWidget {
+  const _StatusBottomSheet({required this.current, required this.onSelect});
+
+  final ReadingStatus? current;
+  final Future<void> Function(ReadingStatus status) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final options = <ReadingStatus>[
+      ReadingStatus.toRead,
+      ReadingStatus.reading,
+      ReadingStatus.completed,
+      ReadingStatus.dropped,
+      ReadingStatus.reReading,
+    ];
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: options
+            .map(
+              (status) => ListTile(
+                leading: Icon(
+                  current == status
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                ),
+                title: Text(_statusLabel(status)),
+                onTap: () => onSelect(status),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+}
+
+String _statusLabel(ReadingStatus status) {
+  switch (status) {
+    case ReadingStatus.toRead:
+      return 'To Read';
+    case ReadingStatus.reading:
+      return 'Reading';
+    case ReadingStatus.completed:
+      return 'Completed';
+    case ReadingStatus.dropped:
+      return 'Dropped';
+    case ReadingStatus.reReading:
+      return 'Re-reading';
   }
 }
 

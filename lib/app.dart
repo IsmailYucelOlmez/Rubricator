@@ -17,7 +17,7 @@ class _BookAppState extends State<BookApp> {
 
   static const _pages = [
     BookDiscoveryPage(),
-    FavoritesPage(),
+    ListsPage(),
     ProfilePage(),
   ];
 
@@ -39,9 +39,9 @@ class _BookAppState extends State<BookApp> {
               label: 'Books',
             ),
             NavigationDestination(
-              icon: Icon(Icons.favorite_outline),
-              selectedIcon: Icon(Icons.favorite),
-              label: 'Favorites',
+              icon: Icon(Icons.library_books_outlined),
+              selectedIcon: Icon(Icons.library_books),
+              label: 'Lists',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline),

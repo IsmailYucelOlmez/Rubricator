@@ -3,20 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entities/book.dart';
-import '../providers/book_search_notifier.dart';
-import '../providers/books_providers.dart';
-import '../widgets/book_cover_leading.dart';
-import 'book_detail_page.dart';
+import '../../../books/domain/entities/book.dart';
+import '../../../books/presentation/pages/book_detail_page.dart';
+import '../../../books/presentation/widgets/book_cover_leading.dart';
+import '../providers/search_notifier.dart';
 
-class BookDiscoveryPage extends ConsumerStatefulWidget {
-  const BookDiscoveryPage({super.key});
+class SearchPage extends ConsumerStatefulWidget {
+  const SearchPage({super.key});
 
   @override
-  ConsumerState<BookDiscoveryPage> createState() => _BookDiscoveryPageState();
+  ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
+class _SearchPageState extends ConsumerState<SearchPage> {
   final _controller = TextEditingController();
   Timer? _debounce;
 
@@ -32,19 +31,18 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
     _debounce = Timer(const Duration(milliseconds: 400), () {
       final q = raw.trim();
       if (q.length < 2) {
-        ref.read(bookSearchNotifierProvider.notifier).clear();
+        ref.read(searchNotifierProvider.notifier).clear();
       } else {
-        ref.read(bookSearchNotifierProvider.notifier).search(q);
+        ref.read(searchNotifierProvider.notifier).search(q);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final trending = ref.watch(trendingBooksProvider);
-    final searchState = ref.watch(bookSearchNotifierProvider);
+    final searchState = ref.watch(searchNotifierProvider);
     final raw = _controller.text.trim();
-    final showTrending = raw.isEmpty || raw.length < 2;
+    final showHint = raw.isEmpty || raw.length < 2;
 
     return SafeArea(
       child: Padding(
@@ -52,10 +50,7 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Discover Books',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text('Search Books', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             TextField(
               controller: _controller,
@@ -69,7 +64,7 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
                 _onSearchChanged(value);
               },
             ),
-            if (!showTrending && searchState.errorMessage != null) ...[
+            if (!showHint && searchState.errorMessage != null) ...[
               const SizedBox(height: 8),
               Text(
                 searchState.errorMessage!,
@@ -78,29 +73,12 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
             ],
             const SizedBox(height: 16),
             Expanded(
-              child: showTrending
-                  ? trending.when(
-                      data: (books) => _BookList(
-                        books: books,
-                        onNearEnd: null,
-                        loadingMore: false,
-                      ),
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
-                      error: (error, stackTrace) => Center(
-                        child: Text(
-                          'Could not load suggestions. Check your connection.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                      ),
-                    )
+              child: showHint
+                  ? const Center(child: Text('Start typing to search books'))
                   : _SearchResultsView(
                       state: searchState,
                       onLoadMore: () => ref
-                          .read(bookSearchNotifierProvider.notifier)
+                          .read(searchNotifierProvider.notifier)
                           .loadMore(),
                     ),
             ),
@@ -111,14 +89,14 @@ class _BookDiscoveryPageState extends ConsumerState<BookDiscoveryPage> {
   }
 }
 
-class _SearchResultsView extends ConsumerWidget {
+class _SearchResultsView extends StatelessWidget {
   const _SearchResultsView({required this.state, required this.onLoadMore});
 
-  final BookSearchState state;
+  final SearchState state;
   final VoidCallback onLoadMore;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     if (state.loadingFirstPage && state.items.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -172,9 +150,8 @@ class _BookListState extends State<_BookList> {
       return;
     }
     if (!_scroll.hasClients) return;
-    final threshold = 280.0;
-    if (_scroll.position.maxScrollExtent - _scroll.position.pixels <
-        threshold) {
+    const threshold = 280.0;
+    if (_scroll.position.maxScrollExtent - _scroll.position.pixels < threshold) {
       widget.onNearEnd!();
     }
   }

@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/repositories/book_repository.dart';
-import '../../domain/entities/book.dart';
-import 'books_providers.dart';
+import '../../../books/data/repositories/book_repository.dart';
+import '../../../books/domain/entities/book.dart';
+import '../../../books/presentation/providers/books_providers.dart';
 
-class BookSearchState {
-  const BookSearchState({
+class SearchState {
+  const SearchState({
     this.items = const [],
     this.loadingFirstPage = false,
     this.loadingMore = false,
@@ -19,11 +19,9 @@ class BookSearchState {
   final bool loadingMore;
   final bool hasMore;
   final String? errorMessage;
-
-  /// Last query that was sent to the API (trimmed, min length enforced by notifier).
   final String activeQuery;
 
-  BookSearchState copyWith({
+  SearchState copyWith({
     List<Book>? items,
     bool? loadingFirstPage,
     bool? loadingMore,
@@ -32,7 +30,7 @@ class BookSearchState {
     String? activeQuery,
     bool clearError = false,
   }) {
-    return BookSearchState(
+    return SearchState(
       items: items ?? this.items,
       loadingFirstPage: loadingFirstPage ?? this.loadingFirstPage,
       loadingMore: loadingMore ?? this.loadingMore,
@@ -43,16 +41,15 @@ class BookSearchState {
   }
 }
 
-class BookSearchNotifier extends StateNotifier<BookSearchState> {
-  BookSearchNotifier(this._repository) : super(const BookSearchState());
+class SearchNotifier extends StateNotifier<SearchState> {
+  SearchNotifier(this._repository) : super(const SearchState());
 
   final BookRepository _repository;
   int _page = 1;
 
-  /// Clears results (trending shows when query is short).
   void clear() {
     _page = 1;
-    state = const BookSearchState();
+    state = const SearchState();
   }
 
   Future<void> search(String query) async {
@@ -116,7 +113,6 @@ class BookSearchNotifier extends StateNotifier<BookSearchState> {
   }
 }
 
-final bookSearchNotifierProvider =
-    StateNotifierProvider<BookSearchNotifier, BookSearchState>((ref) {
-      return BookSearchNotifier(ref.watch(bookRepositoryProvider));
-    });
+final searchNotifierProvider = StateNotifierProvider<SearchNotifier, SearchState>(
+  (ref) => SearchNotifier(ref.watch(bookRepositoryProvider)),
+);

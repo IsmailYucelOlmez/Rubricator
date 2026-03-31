@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/books/presentation/pages/book_discovery_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
+import 'features/home/presentation/pages/home_page.dart';
+import 'features/search/presentation/pages/search_page.dart';
 import 'features/auth/presentation/profile_page.dart';
 
 class BookApp extends StatefulWidget {
@@ -16,7 +17,8 @@ class _BookAppState extends State<BookApp> {
   int _currentIndex = 0;
 
   static const _pages = [
-    BookDiscoveryPage(),
+    HomePage(),
+    SearchPage(),
     ListsPage(),
     ProfilePage(),
   ];
@@ -36,7 +38,12 @@ class _BookAppState extends State<BookApp> {
             NavigationDestination(
               icon: Icon(Icons.menu_book_outlined),
               selectedIcon: Icon(Icons.menu_book),
-              label: 'Books',
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search_outlined),
+              selectedIcon: Icon(Icons.search),
+              label: 'Search',
             ),
             NavigationDestination(
               icon: Icon(Icons.library_books_outlined),

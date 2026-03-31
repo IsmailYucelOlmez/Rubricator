@@ -55,7 +55,9 @@ class UserBooksRepository {
         'user_id': userId,
         'book_id': bookId,
         'status': readingStatusToDb(status),
-        if (isFavorite != null) 'is_favorite': isFavorite,
+        ...?(isFavorite != null
+            ? <String, dynamic>{'is_favorite': isFavorite}
+            : null),
         'progress': status == ReadingStatus.reading ? progress : null,
       },
       onConflict: 'user_id,book_id',

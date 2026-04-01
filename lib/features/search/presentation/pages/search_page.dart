@@ -30,19 +30,23 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
       final q = raw.trim();
-      if (q.length < 2) {
-        ref.read(searchNotifierProvider.notifier).clear();
-      } else {
-        ref.read(searchNotifierProvider.notifier).search(q);
-      }
+      ref.read(searchQueryProvider.notifier).state = q;
     });
+  }
+
+  Future<void> _submitSearch() async {
+    final q = _controller.text.trim();
+    ref.read(searchQueryProvider.notifier).state = q;
+    await ref.read(searchInteractionProvider).logSubmit(q);
   }
 
   @override
   Widget build(BuildContext context) {
-    final searchState = ref.watch(searchNotifierProvider);
     final raw = _controller.text.trim();
     final showHint = raw.isEmpty || raw.length < 2;
+    final searchResult = ref.watch(searchProvider);
+    final popularQueries = ref.watch(popularSearchProvider);
+    final popularBooks = ref.watch(popularBooksProvider);
 
     return SafeArea(
       child: Padding(
@@ -50,7 +54,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Search Books', style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              'Search Books',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: _controller,
@@ -59,27 +66,46 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
+              textInputAction: TextInputAction.search,
               onChanged: (value) {
                 setState(() {});
                 _onSearchChanged(value);
               },
+              onSubmitted: (_) => _submitSearch(),
             ),
-            if (!showHint && searchState.errorMessage != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                searchState.errorMessage!,
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ],
             const SizedBox(height: 16),
             Expanded(
               child: showHint
-                  ? const Center(child: Text('Start typing to search books'))
+                  ? _DiscoveryView(
+                      popularQueries: popularQueries,
+                      popularBooks: popularBooks,
+                      onOpenBook: (book) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BookDetailPage(book: book),
+                          ),
+                        );
+                      },
+                      onPickQuery: (query) {
+                        _controller.text = query;
+                        setState(() {});
+                        ref.read(searchQueryProvider.notifier).state = query;
+                      },
+                    )
                   : _SearchResultsView(
-                      state: searchState,
-                      onLoadMore: () => ref
-                          .read(searchNotifierProvider.notifier)
-                          .loadMore(),
+                      state: searchResult,
+                      activeQuery: raw,
+                      onOpenBook: (book) async {
+                        await ref
+                            .read(searchInteractionProvider)
+                            .logBookClick(query: raw, bookId: book.id);
+                        if (!context.mounted) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BookDetailPage(book: book),
+                          ),
+                        );
+                      },
                     ),
             ),
           ],
@@ -90,86 +116,153 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 }
 
 class _SearchResultsView extends StatelessWidget {
-  const _SearchResultsView({required this.state, required this.onLoadMore});
+  const _SearchResultsView({
+    required this.state,
+    required this.activeQuery,
+    required this.onOpenBook,
+  });
 
-  final SearchState state;
-  final VoidCallback onLoadMore;
+  final AsyncValue<List<Book>> state;
+  final String activeQuery;
+  final ValueChanged<Book> onOpenBook;
 
   @override
   Widget build(BuildContext context) {
-    if (state.loadingFirstPage && state.items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (!state.loadingFirstPage && state.items.isEmpty) {
-      return const Center(child: Text('No books found for this search.'));
-    }
-    return _BookList(
-      books: state.items,
-      onNearEnd: onLoadMore,
-      loadingMore: state.loadingMore,
-      hasMore: state.hasMore,
+    return state.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
+        child: Text(
+          'Search failed: ${error.toString().replaceFirst('Exception: ', '')}',
+        ),
+      ),
+      data: (books) {
+        if (books.isEmpty) {
+          return Center(child: Text('No books found for "$activeQuery".'));
+        }
+        return _BookList(books: books, onOpenBook: onOpenBook);
+      },
     );
   }
 }
 
-class _BookList extends StatefulWidget {
-  const _BookList({
-    required this.books,
-    required this.onNearEnd,
-    required this.loadingMore,
-    this.hasMore = false,
+class _DiscoveryView extends StatelessWidget {
+  const _DiscoveryView({
+    required this.popularQueries,
+    required this.popularBooks,
+    required this.onOpenBook,
+    required this.onPickQuery,
   });
 
-  final List<Book> books;
-  final VoidCallback? onNearEnd;
-  final bool loadingMore;
-  final bool hasMore;
+  final AsyncValue<List<String>> popularQueries;
+  final AsyncValue<List<Book>> popularBooks;
+  final ValueChanged<Book> onOpenBook;
+  final ValueChanged<String> onPickQuery;
 
   @override
-  State<_BookList> createState() => _BookListState();
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Text(
+          'Popular Searches',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        popularQueries.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (error, stackTrace) =>
+              const Text('Could not load popular searches.'),
+          data: (queries) {
+            if (queries.isEmpty) {
+              return const Text('No popular searches yet.');
+            }
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: queries
+                  .map(
+                    (q) => ActionChip(
+                      label: Text(q),
+                      onPressed: () => onPickQuery(q),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 20),
+        Text('Popular Books', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        popularBooks.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (error, stackTrace) =>
+              const Text('Could not load popular books.'),
+          data: (books) {
+            if (books.isEmpty) {
+              return const Text('No popular books yet.');
+            }
+            return SizedBox(
+              height: 250,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: books.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final book = books[index];
+                  return SizedBox(
+                    width: 160,
+                    child: InkWell(
+                      onTap: () => onOpenBook(book),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 0.7,
+                                child: BookCoverLeading(coverId: book.coverId),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                book.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                book.author,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
 
-class _BookListState extends State<_BookList> {
-  final _scroll = ScrollController();
+class _BookList extends StatelessWidget {
+  const _BookList({required this.books, required this.onOpenBook});
 
-  @override
-  void initState() {
-    super.initState();
-    _scroll.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scroll.removeListener(_onScroll);
-    _scroll.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (widget.onNearEnd == null || !widget.hasMore || widget.loadingMore) {
-      return;
-    }
-    if (!_scroll.hasClients) return;
-    const threshold = 280.0;
-    if (_scroll.position.maxScrollExtent - _scroll.position.pixels < threshold) {
-      widget.onNearEnd!();
-    }
-  }
+  final List<Book> books;
+  final ValueChanged<Book> onOpenBook;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      controller: _scroll,
-      itemCount: widget.books.length + (widget.loadingMore ? 1 : 0),
+      itemCount: books.length,
       separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        if (index >= widget.books.length) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final book = widget.books[index];
+        final book = books[index];
         return ListTile(
           leading: BookCoverLeading(coverId: book.coverId),
           title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -179,9 +272,7 @@ class _BookListState extends State<_BookList> {
             overflow: TextOverflow.ellipsis,
           ),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book)),
-          ),
+          onTap: () => onOpenBook(book),
         );
       },
     );

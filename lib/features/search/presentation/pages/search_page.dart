@@ -163,17 +163,17 @@ class _DiscoveryView extends StatelessWidget {
     return ListView(
       children: [
         Text(
-          'Popular Searches',
+          'Recent Searches',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         popularQueries.when(
           loading: () => const LinearProgressIndicator(),
           error: (error, stackTrace) =>
-              const Text('Could not load popular searches.'),
+              const Text('Could not load recent searches.'),
           data: (queries) {
             if (queries.isEmpty) {
-              return const Text('No popular searches yet.');
+              return const Text('No recent searches yet.');
             }
             return Wrap(
               spacing: 8,
@@ -190,15 +190,15 @@ class _DiscoveryView extends StatelessWidget {
           },
         ),
         const SizedBox(height: 20),
-        Text('Popular Books', style: Theme.of(context).textTheme.titleMedium),
+        Text('Recent Searched Books', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         popularBooks.when(
           loading: () => const LinearProgressIndicator(),
           error: (error, stackTrace) =>
-              const Text('Could not load popular books.'),
+              const Text('Could not load recent searched books.'),
           data: (books) {
             if (books.isEmpty) {
-              return const Text('No popular books yet.');
+              return const Text('No recent searched books yet.');
             }
             return SizedBox(
               height: 250,

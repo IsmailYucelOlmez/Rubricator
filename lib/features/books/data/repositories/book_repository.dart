@@ -9,9 +9,57 @@ class BookRepository {
 
   final OpenLibraryRemoteDataSource _ds;
 
+  static final RegExp _latinRegex = RegExp(
+    r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
+  );
+
+  int _getLanguageScore(BookModel book) {
+    final langs = book.languages;
+    if (langs != null && (langs.contains('eng') || langs.contains('tur'))) {
+      return 3;
+    }
+
+    final title = book.title.trim();
+    if (title.isNotEmpty && _latinRegex.hasMatch(title)) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  /// Sort + (optional) filter based on [xdocs/bookapiopt.md].
+  ///
+  /// - Score >= 2 items are preferred when present.
+  /// - If nothing matches >= 2, we fall back to the full sorted list.
+  List<BookModel> _prioritizeModels(List<BookModel> models) {
+    if (models.isEmpty) return const <BookModel>[];
+    if (models.length == 1) return models;
+
+    final scored = List<_ScoredBookModel>.generate(models.length, (i) {
+      final m = models[i];
+      return _ScoredBookModel(
+        model: m,
+        score: _getLanguageScore(m),
+        index: i,
+      );
+    });
+
+    scored.sort((a, b) {
+      final byScore = b.score.compareTo(a.score);
+      if (byScore != 0) return byScore;
+      // Keep original order for ties.
+      return a.index.compareTo(b.index);
+    });
+
+    final highQuality = scored.where((s) => s.score >= 2).toList();
+    final chosen = highQuality.isNotEmpty ? highQuality : scored;
+    return chosen.map((s) => s.model).toList();
+  }
+
   Future<List<Book>> trendingBooks() async {
     final models = await _ds.fetchTrendingWorks();
-    return models.map((m) => m.toEntity()).toList();
+    final prioritized = _prioritizeModels(models);
+    return prioritized.map((m) => m.toEntity()).toList();
   }
 
   /// Paginated search (`page` is 1-based). Empty [query] returns no results.
@@ -28,7 +76,8 @@ class BookRepository {
       );
     }
     final raw = await _ds.searchBooks(query: trimmed, page: page);
-    final books = raw.docs.map((m) => m.toEntity()).toList();
+    final prioritized = _prioritizeModels(raw.docs);
+    final books = prioritized.map((m) => m.toEntity()).toList();
     final end = raw.start + raw.docs.length;
     final hasMore = end < raw.numFound && raw.docs.isNotEmpty;
     return BookSearchPageResult(
@@ -76,8 +125,21 @@ class BookRepository {
         excludeWorkId: book.id,
       );
     }
-    return models.map((m) => m.toEntity()).toList();
+    final prioritized = _prioritizeModels(models);
+    return prioritized.map((m) => m.toEntity()).toList();
   }
+}
+
+class _ScoredBookModel {
+  const _ScoredBookModel({
+    required this.model,
+    required this.score,
+    required this.index,
+  });
+
+  final BookModel model;
+  final int score;
+  final int index;
 }
 
 class BookSearchPageResult {

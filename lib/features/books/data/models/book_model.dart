@@ -7,6 +7,7 @@ class BookModel {
     required this.title,
     required this.primaryAuthorName,
     required this.authorKeys,
+    this.languages,
     required this.coverId,
     required this.description,
     required this.subjects,
@@ -16,6 +17,7 @@ class BookModel {
   final String title;
   final String primaryAuthorName;
   final List<String> authorKeys;
+  final List<String>? languages;
   final int? coverId;
   final String description;
   final List<String> subjects;
@@ -37,6 +39,7 @@ class BookModel {
     String? title,
     String? primaryAuthorName,
     List<String>? authorKeys,
+    List<String>? languages,
     int? coverId,
     String? description,
     List<String>? subjects,
@@ -46,6 +49,7 @@ class BookModel {
       title: title ?? this.title,
       primaryAuthorName: primaryAuthorName ?? this.primaryAuthorName,
       authorKeys: authorKeys ?? this.authorKeys,
+      languages: languages ?? this.languages,
       coverId: coverId ?? this.coverId,
       description: description ?? this.description,
       subjects: subjects ?? this.subjects,
@@ -105,6 +109,37 @@ class BookModel {
         .toList();
   }
 
+  static List<String>? _parseLanguages(dynamic raw) {
+    if (raw == null) return null;
+    final out = <String>[];
+
+    void addCode(dynamic v) {
+      String? code;
+      if (v is String) {
+        code = v;
+      } else if (v is Map<String, dynamic>) {
+        final k = v['key'];
+        if (k is String) code = k;
+      }
+      if (code == null) return;
+
+      final normalized =
+          code.replaceFirst(RegExp(r'^/languages/'), '').trim().toLowerCase();
+      if (normalized.isNotEmpty) out.add(normalized);
+    }
+
+    if (raw is List) {
+      for (final e in raw) {
+        addCode(e);
+      }
+    } else {
+      addCode(raw);
+    }
+
+    final unique = out.toSet().toList();
+    return unique.isEmpty ? null : unique;
+  }
+
   static int? _firstCoverId(Map<String, dynamic> json) {
     final covers = json['covers'];
     if (covers is List && covers.isNotEmpty) {
@@ -120,6 +155,7 @@ class BookModel {
       title: book.title,
       primaryAuthorName: book.author,
       authorKeys: book.authorIds,
+      languages: null,
       coverId: book.coverId,
       description: book.description,
       subjects: book.subjectKeys,
@@ -136,6 +172,7 @@ class BookModel {
     } else if (names is String && names.isNotEmpty) {
       author = names;
     }
+    final languages = _parseLanguages(json['language'] ?? json['languages']);
     final cover = json['cover_i'];
     return BookModel(
       workId: workId.isEmpty ? 'unknown' : workId,
@@ -144,6 +181,7 @@ class BookModel {
           : 'Unknown title',
       primaryAuthorName: author,
       authorKeys: _authorKeysFromSearch(json),
+      languages: languages,
       coverId: cover is int ? cover : null,
       description: '',
       subjects: const [],
@@ -161,6 +199,7 @@ class BookModel {
         author = first['name'] as String? ?? author;
       }
     }
+    final languages = _parseLanguages(work['language'] ?? work['languages']);
     final cover = work['cover_id'];
     return BookModel(
       workId: workId.isEmpty ? 'unknown' : workId,
@@ -169,6 +208,7 @@ class BookModel {
           : 'Unknown title',
       primaryAuthorName: author,
       authorKeys: const [],
+      languages: languages,
       coverId: cover is int ? cover : null,
       description: '',
       subjects: const [],
@@ -187,6 +227,7 @@ class BookModel {
     final primary = mergeFrom?.primaryAuthorName ?? 'Unknown author';
     final coverFromWork = _firstCoverId(json);
     final subjects = _subjectsFromWork(json);
+    final languages = _parseLanguages(json['languages'] ?? json['language']);
 
     return BookModel(
       workId: workId.isNotEmpty ? workId : (mergeFrom?.workId ?? 'unknown'),
@@ -204,6 +245,7 @@ class BookModel {
       subjects: subjects.isNotEmpty
           ? subjects
           : (mergeFrom?.subjects ?? const []),
+      languages: languages ?? mergeFrom?.languages,
     );
   }
 }

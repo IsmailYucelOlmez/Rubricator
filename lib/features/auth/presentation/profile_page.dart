@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
+import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import 'auth_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -44,6 +45,7 @@ class ProfilePage extends ConsumerWidget {
                   child: const Text('Sign out'),
                 ),
                 const HabitProfileSummary(),
+                const StatsPreviewCard(),
               ],
             ],
           ),

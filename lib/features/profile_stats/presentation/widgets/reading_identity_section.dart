@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ReadingIdentitySection extends ConsumerWidget {
@@ -18,19 +19,19 @@ class ReadingIdentitySection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Reading identity',
+              AppLocalizations.of(context)!.readingIdentity,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              'Genres and authors from completed books',
+              AppLocalizations.of(context)!.genresAndAuthorsFromCompleted,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Top genres',
+              AppLocalizations.of(context)!.topGenres,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
@@ -38,7 +39,7 @@ class ReadingIdentitySection extends ConsumerWidget {
               data: (genres) {
                 if (genres.isEmpty) {
                   return Text(
-                    'No data yet',
+                    AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -90,11 +91,13 @@ class ReadingIdentitySection extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               ),
-              error: (e, _) => Text('Could not load genres: $e'),
+              error: (e, _) => Text(
+                AppLocalizations.of(context)!.couldNotLoadGenres(e.toString()),
+              ),
             ),
             const SizedBox(height: 20),
             Text(
-              'Top authors',
+              AppLocalizations.of(context)!.topAuthors,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
@@ -102,7 +105,7 @@ class ReadingIdentitySection extends ConsumerWidget {
               data: (authors) {
                 if (authors.isEmpty) {
                   return Text(
-                    'No data yet',
+                    AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -126,7 +129,9 @@ class ReadingIdentitySection extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               ),
-              error: (e, _) => Text('Could not load authors: $e'),
+              error: (e, _) => Text(
+                AppLocalizations.of(context)!.couldNotLoadAuthors(e.toString()),
+              ),
             ),
           ],
         ),
@@ -134,3 +139,4 @@ class ReadingIdentitySection extends ConsumerWidget {
     );
   }
 }
+

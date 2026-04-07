@@ -1,0 +1,259 @@
+{
+  "appTitle": "Book App",
+  "navHome": "Home",
+  "navSearch": "Search",
+  "navLists": "Lists",
+  "profile": "Profile",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "turkish": "Turkish",
+  "signInPrompt": "Sign in to sync favorites across devices.",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "signedInFallback": "Signed in",
+  "signOut": "Sign out",
+  "loadSessionError": "Could not load session: {error}",
+  "@loadSessionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invalidEmailOrPassword": "Invalid email or password.",
+  "accountAlreadyExists": "An account with this email already exists.",
+  "email": "Email",
+  "password": "Password",
+  "passwordMin6": "Password (min 6 characters)",
+  "cancel": "Cancel",
+  "signUp": "Sign up",
+  "confirmAccountEmailNotice": "Check your email to confirm your account if required.",
+  "readingHabit": "Reading habit",
+  "readingLoggedToday": "You logged reading today. Nice work.",
+  "didYouReadToday": "Did you read today?",
+  "todayStatusError": "Today status: {error}",
+  "@todayStatusError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "quickLog": "Quick log",
+  "details": "Details",
+  "readingStats": "Reading stats",
+  "booksCount": "{count} books",
+  "@booksCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "averageShort": "{avg} avg",
+  "@averageShort": {
+    "placeholders": {
+      "avg": {}
+    }
+  },
+  "noRatingsYet": "No ratings yet",
+  "topGenre": "Top: {genre}",
+  "@topGenre": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
+  "viewAllStats": "View all stats",
+  "loadStatsError": "Could not load stats: {error}",
+  "@loadStatsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "searchBooksTitle": "Search Books",
+  "searchByTitleOrAuthorHint": "Search by title or author (min. 2 characters)",
+  "searchFailed": "Search failed: {error}",
+  "@searchFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "noBooksFoundFor": "No books found for \"{query}\".",
+  "@noBooksFoundFor": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "recentSearches": "Recent Searches",
+  "loadRecentSearchesError": "Could not load recent searches.",
+  "noRecentSearchesYet": "No recent searches yet.",
+  "recentSearchedBooks": "Recent Searched Books",
+  "loadRecentSearchedBooksError": "Could not load recent searched books.",
+  "noRecentSearchedBooksYet": "No recent searched books yet.",
+  "searchBooksMin2Hint": "Search books (min. 2 characters)",
+  "discover": "Discover",
+  "noBooksFound": "No books found",
+  "searchCouldNotComplete": "Could not complete the search. Please try again.",
+  "popular": "Popular",
+  "loadPopularBooksError": "Could not load popular books.",
+  "loadGenreBooksError": "Could not load {genre} books.",
+  "@loadGenreBooksError": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
+  "genreFantasy": "FANTASY",
+  "genreScienceFiction": "SCIENCE FICTION",
+  "genreRomance": "ROMANCE",
+  "genreMystery": "MYSTERY",
+  "toRead": "To Read",
+  "reading": "Reading",
+  "reReading": "Re-reading",
+  "completed": "Completed",
+  "dropped": "Dropped",
+  "favorites": "Favorites",
+  "signInToSeeLists": "Sign in from Profile to see your lists.",
+  "noBooksInStatus": "No books in {status}.",
+  "@noBooksInStatus": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "noFavoritesYet": "No favorites yet.",
+  "couldNotLoadList": "Could not load list: {error}",
+  "@couldNotLoadList": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bookDetails": "Book Details",
+  "authorProfile": "Author profile",
+  "ratingSubmitted": "Rating submitted.",
+  "noDescriptionAvailable": "No description available.",
+  "reviewAdded": "Review added.",
+  "reviewUpdated": "Review updated.",
+  "reviewDeleted": "Review deleted.",
+  "externalReviewAdded": "External review added.",
+  "invalidUrl": "Invalid URL",
+  "couldNotOpenBrowser": "Could not open browser.",
+  "quoteAdded": "Quote added.",
+  "relatedBooks": "Related books",
+  "noRelatedTitlesFound": "No related titles found (subjects missing or empty results).",
+  "couldNotLoadRelatedBooks": "Could not load related books.",
+  "aiSummary": "AI Summary",
+  "aiSummaryFailed": "AI summary failed",
+  "couldNotLoadThisBook": "Could not load this book. {error}",
+  "@couldNotLoadThisBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "addToList": "Add to List",
+  "change": "Change",
+  "progressPercent": "Progress: {progress}%",
+  "@progressPercent": {
+    "placeholders": {
+      "progress": {}
+    }
+  },
+  "rating": "Rating",
+  "averageOutOfFive": "Average: {avg} / 5",
+  "@averageOutOfFive": {
+    "placeholders": {
+      "avg": {}
+    }
+  },
+  "couldNotLoadRating": "Could not load rating.",
+  "submitRating": "Submit rating",
+  "reviews": "Reviews",
+  "userReviews": "User Reviews",
+  "externalReviews": "External Reviews",
+  "writeReviewHint": "Write your review (min 10 chars)",
+  "addReview": "Add review",
+  "noUserReviewsYet": "No user reviews yet.",
+  "couldNotLoadReviews": "Could not load reviews.",
+  "reviewTitle": "Review title",
+  "reviewUrlHint": "https://example.com/review",
+  "addExternalReview": "Add external review",
+  "noExternalReviewsYet": "No external reviews yet.",
+  "couldNotLoadExternalReviews": "Could not load external reviews.",
+  "quotes": "Quotes",
+  "addMemorableQuote": "Add a memorable quote",
+  "addQuote": "Add quote",
+  "noQuotesYet": "No quotes yet.",
+  "couldNotLoadQuotes": "Could not load quotes.",
+  "editReview": "Edit review",
+  "save": "Save"
+  ,"log":"Log"
+  ,"signInForHabit":"Sign in to log reading, see streaks, and view your activity calendar."
+  ,"readingLogged":"Reading logged"
+  ,"couldNotSave":"Could not save: {error}"
+  ,"@couldNotSave":{"placeholders":{"error":{}}}
+  ,"addMinutesOrPagesPrompt":"Add at least minutes or pages from today."
+  ,"minutes":"Minutes"
+  ,"plusTenMin":"+10 min"
+  ,"pages":"Pages"
+  ,"plusFivePages":"+5 pages"
+  ,"optionalAddBooksPrompt":"Optional: add books to your reading list to pick one here."
+  ,"bookOptional":"Book (optional)"
+  ,"book":"Book"
+  ,"none":"None"
+  ,"booksError":"Books: {error}"
+  ,"@booksError":{"placeholders":{"error":{}}}
+  ,"saveLog":"Save log"
+  ,"calendarError":"Calendar error: {error}"
+  ,"@calendarError":{"placeholders":{"error":{}}}
+  ,"activity":"Activity"
+  ,"lastWeeksMoreReading":"Last {weeks} weeks (darker = more reading)"
+  ,"@lastWeeksMoreReading":{"placeholders":{"weeks":{"type":"int"}}}
+  ,"noLogsYetTapQuickLog":"No logs yet - tap Quick log to start."
+  ,"recentLogs":"Recent logs"
+  ,"minutesShort":"{count} min"
+  ,"@minutesShort":{"placeholders":{"count":{"type":"int"}}}
+  ,"pagesShort":"{count} pages"
+  ,"@pagesShort":{"placeholders":{"count":{"type":"int"}}}
+  ,"bookIdLabel":"Book: {bookId}"
+  ,"@bookIdLabel":{"placeholders":{"bookId":{}}}
+  ,"logsError":"Logs error: {error}"
+  ,"@logsError":{"placeholders":{"error":{}}}
+  ,"chartError":"Chart error: {error}"
+  ,"@chartError":{"placeholders":{"error":{}}}
+  ,"dailyMinutes14Days":"Daily minutes (14 days)"
+  ,"weeklyMinutes":"Weekly minutes"
+  ,"thisWeekShort":"This wk"
+  ,"weeksAgoShort":"-{weeks}w"
+  ,"@weeksAgoShort":{"placeholders":{"weeks":{"type":"int"}}}
+  ,"totals":"Totals"
+  ,"statsError":"Stats error: {error}"
+  ,"@statsError":{"placeholders":{"error":{}}}
+  ,"dayStreak":"{days} day streak"
+  ,"@dayStreak":{"placeholders":{"days":{"type":"int"}}}
+  ,"currentStreak":"Current streak"
+  ,"daysCount":"{days} days"
+  ,"@daysCount":{"placeholders":{"days":{"type":"int"}}}
+  ,"longestDays":"Longest: {days} days"
+  ,"@longestDays":{"placeholders":{"days":{"type":"int"}}}
+  ,"couldNotLoadStreak":"Could not load streak: {error}"
+  ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
+  ,"signInToSeeStats":"Sign in to see your library analytics and reading identity."
+  ,"contentYouAdded":"Content you added"
+  ,"reviewsAndQuotes":"Reviews and quotes"
+  ,"noDataYet":"No data yet"
+  ,"couldNotLoadContentStats":"Could not load content stats: {error}"
+  ,"@couldNotLoadContentStats":{"placeholders":{"error":{}}}
+  ,"yourRatings":"Your ratings"
+  ,"starsGivenToBooks":"Stars you gave to books"
+  ,"couldNotLoadRatings":"Could not load ratings: {error}"
+  ,"@couldNotLoadRatings":{"placeholders":{"error":{}}}
+  ,"library":"Library"
+  ,"countsFromShelves":"Counts from your shelves"
+  ,"couldNotLoadLibraryStats":"Could not load library stats: {error}"
+  ,"@couldNotLoadLibraryStats":{"placeholders":{"error":{}}}
+  ,"readingIdentity":"Reading identity"
+  ,"genresAndAuthorsFromCompleted":"Genres and authors from completed books"
+  ,"topGenres":"Top genres"
+  ,"couldNotLoadGenres":"Could not load genres: {error}"
+  ,"@couldNotLoadGenres":{"placeholders":{"error":{}}}
+  ,"topAuthors":"Top authors"
+  ,"couldNotLoadAuthors":"Could not load authors: {error}"
+  ,"@couldNotLoadAuthors":{"placeholders":{"error":{}}}
+  ,"author":"Author"
+  ,"noBiographyAvailable":"No biography available."
+  ,"couldNotLoadAuthor":"Could not load author. {error}"
+  ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../providers/profile_stats_providers.dart';
@@ -13,15 +14,16 @@ class ProfileStatsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Reading stats')),
-        body: const Center(
+        appBar: AppBar(title: Text(l10n.readingStats)),
+        body: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
             child: Text(
-              'Sign in to see your library analytics and reading identity.',
+              l10n.signInToSeeStats,
               textAlign: TextAlign.center,
             ),
           ),
@@ -30,7 +32,7 @@ class ProfileStatsPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reading stats')),
+      appBar: AppBar(title: Text(l10n.readingStats)),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.read(profileStatsGenerationProvider.notifier).state++;

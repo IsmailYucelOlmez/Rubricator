@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../pages/profile_stats_page.dart';
 import '../providers/profile_stats_providers.dart';
 
@@ -10,6 +11,7 @@ class StatsPreviewCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final async = ref.watch(profileStatsSummaryProvider);
 
     return Card(
@@ -30,7 +32,7 @@ class StatsPreviewCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Reading stats',
+                  l10n.readingStats,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -39,7 +41,7 @@ class StatsPreviewCard extends ConsumerWidget {
                     const Icon(Icons.menu_book_outlined, size: 22),
                     const SizedBox(width: 8),
                     Text(
-                      '${s.completedBooks} books',
+                      l10n.booksCount(s.completedBooks),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -51,8 +53,8 @@ class StatsPreviewCard extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Text(
                       s.averageRating > 0
-                          ? '${s.averageRating.toStringAsFixed(1)} avg'
-                          : 'No ratings yet',
+                          ? l10n.averageShort(s.averageRating.toStringAsFixed(1))
+                          : l10n.noRatingsYet,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ],
@@ -64,7 +66,7 @@ class StatsPreviewCard extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Top: ${s.topGenre}',
+                        l10n.topGenre(s.topGenre),
                         style: Theme.of(context).textTheme.bodyLarge,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -77,7 +79,7 @@ class StatsPreviewCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'View all stats',
+                      l10n.viewAllStats,
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -96,7 +98,7 @@ class StatsPreviewCard extends ConsumerWidget {
             ),
             error: (e, _) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('Could not load stats: $e'),
+              child: Text(l10n.loadStatsError(e.toString())),
             ),
           ),
         ),

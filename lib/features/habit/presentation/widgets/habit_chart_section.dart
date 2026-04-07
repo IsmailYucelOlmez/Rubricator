@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -14,7 +15,7 @@ class HabitChartSection extends ConsumerWidget {
     return logsAsync.when(
       data: (logs) => _ChartCard(logs: logs),
       loading: () => const SizedBox.shrink(),
-      error: (e, _) => Text('Chart error: $e'),
+      error: (e, _) => Text(AppLocalizations.of(context)!.chartError(e.toString())),
     );
   }
 }
@@ -50,7 +51,7 @@ class _ChartCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Daily minutes (14 days)',
+              AppLocalizations.of(context)!.dailyMinutes14Days,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
@@ -69,7 +70,7 @@ class _ChartCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Tooltip(
-                            message: '$m min',
+                            message: AppLocalizations.of(context)!.minutesShort(m),
                             child: Container(
                               height: h.clamp(4, 110),
                               decoration: BoxDecoration(
@@ -96,7 +97,7 @@ class _ChartCard extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Weekly minutes',
+              AppLocalizations.of(context)!.weeklyMinutes,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -138,7 +139,9 @@ class _WeeklyBars extends StatelessWidget {
         children: List.generate(6, (i) {
           final m = weekTotals[i] ?? 0;
           final h = 10.0 + (m / denom) * 80;
-          final label = i == 0 ? 'This wk' : '-${i}w';
+          final label = i == 0
+              ? AppLocalizations.of(context)!.thisWeekShort
+              : AppLocalizations.of(context)!.weeksAgoShort(i);
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -146,7 +149,7 @@ class _WeeklyBars extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Tooltip(
-                    message: '$m min',
+                    message: AppLocalizations.of(context)!.minutesShort(m),
                     child: Container(
                       height: h.clamp(6, 92),
                       decoration: BoxDecoration(

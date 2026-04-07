@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../providers/profile_stats_providers.dart';
 
 class LibraryStatsSection extends ConsumerWidget {
@@ -16,23 +17,23 @@ class LibraryStatsSection extends ConsumerWidget {
         child: async.when(
           data: (lib) {
             final tiles = <({String label, int value, IconData icon})>[
-              (label: 'To read', value: lib.toRead, icon: Icons.bookmark_outline),
-              (label: 'Reading', value: lib.reading, icon: Icons.auto_stories_outlined),
-              (label: 'Completed', value: lib.completed, icon: Icons.check_circle_outline),
-              (label: 'Dropped', value: lib.dropped, icon: Icons.remove_circle_outline),
-              (label: 'Favorites', value: lib.favorites, icon: Icons.favorite_outline),
+              (label: AppLocalizations.of(context)!.toRead, value: lib.toRead, icon: Icons.bookmark_outline),
+              (label: AppLocalizations.of(context)!.reading, value: lib.reading, icon: Icons.auto_stories_outlined),
+              (label: AppLocalizations.of(context)!.completed, value: lib.completed, icon: Icons.check_circle_outline),
+              (label: AppLocalizations.of(context)!.dropped, value: lib.dropped, icon: Icons.remove_circle_outline),
+              (label: AppLocalizations.of(context)!.favorites, value: lib.favorites, icon: Icons.favorite_outline),
             ];
             final hasData = tiles.any((t) => t.value > 0);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Library',
+                  AppLocalizations.of(context)!.library,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Counts from your shelves',
+                  AppLocalizations.of(context)!.countsFromShelves,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -40,7 +41,7 @@ class LibraryStatsSection extends ConsumerWidget {
                 const SizedBox(height: 16),
                 if (!hasData)
                   Text(
-                    'No data yet',
+                    AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -76,7 +77,9 @@ class LibraryStatsSection extends ConsumerWidget {
             height: 120,
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
-          error: (e, _) => Text('Could not load library stats: $e'),
+          error: (e, _) => Text(
+            AppLocalizations.of(context)!.couldNotLoadLibraryStats(e.toString()),
+          ),
         ),
       ),
     );
@@ -130,3 +133,5 @@ class _StatTile extends StatelessWidget {
     );
   }
 }
+
+

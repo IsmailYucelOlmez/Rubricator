@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
+import '../../profile/presentation/widgets/language_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import 'auth_provider.dart';
 
@@ -11,6 +13,7 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authAsync = ref.watch(authStateProvider);
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -18,23 +21,25 @@ class ProfilePage extends ConsumerWidget {
           data: (user) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Profile', style: Theme.of(context).textTheme.headlineSmall),
+              Text(l10n.profile, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 16),
+              const LanguageSelector(),
+              const SizedBox(height: 12),
               if (user == null) ...[
-                const Text('Sign in to sync favorites across devices.'),
+                Text(l10n.signInPrompt),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => _showSignInDialog(context),
-                  child: const Text('Sign in'),
+                  child: Text(l10n.signIn),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
                   onPressed: () => _showSignUpDialog(context),
-                  child: const Text('Create account'),
+                  child: Text(l10n.createAccount),
                 ),
               ] else ...[
                 Text(
-                  user.email ?? 'Signed in',
+                  user.email ?? l10n.signedInFallback,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -42,7 +47,7 @@ class ProfilePage extends ConsumerWidget {
                   onPressed: () async {
                     await ref.read(authServiceProvider).signOut();
                   },
-                  child: const Text('Sign out'),
+                  child: Text(l10n.signOut),
                 ),
                 const HabitProfileSummary(),
                 const StatsPreviewCard(),
@@ -51,7 +56,7 @@ class ProfilePage extends ConsumerWidget {
           ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(
-            child: Text('Could not load session: $error'),
+            child: Text(l10n.loadSessionError(error.toString())),
           ),
         ),
       ),
@@ -72,13 +77,13 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  static String authMessage(Object e) {
+  static String authMessage(Object e, AppLocalizations l10n) {
     final s = e.toString();
     if (s.contains('Invalid login credentials')) {
-      return 'Invalid email or password.';
+      return l10n.invalidEmailOrPassword;
     }
     if (s.contains('User already registered')) {
-      return 'An account with this email already exists.';
+      return l10n.accountAlreadyExists;
     }
     return s;
   }
@@ -111,28 +116,29 @@ class _ProfileSignInDialogState extends State<_ProfileSignInDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Sign in'),
+      title: Text(l10n.signIn),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(labelText: l10n.email),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _password,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password'),
+            decoration: InputDecoration(labelText: l10n.password),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: () async {
@@ -154,12 +160,12 @@ class _ProfileSignInDialogState extends State<_ProfileSignInDialog> {
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(ProfilePage.authMessage(e))),
+                  SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
                 );
               }
             }
           },
-          child: const Text('Sign in'),
+          child: Text(l10n.signIn),
         ),
       ],
     );
@@ -195,22 +201,23 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Create account'),
+      title: Text(l10n.createAccount),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(labelText: l10n.email),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _password,
             obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Password (min 6 characters)',
+            decoration: InputDecoration(
+              labelText: l10n.passwordMin6,
             ),
           ),
         ],
@@ -218,7 +225,7 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: () async {
@@ -237,10 +244,8 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
                 if (mounted) Navigator.of(context).pop();
                 if (messengerCtx.mounted) {
                   ScaffoldMessenger.of(messengerCtx).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Check your email to confirm your account if required.',
-                      ),
+                    SnackBar(
+                      content: Text(l10n.confirmAccountEmailNotice),
                     ),
                   );
                 }
@@ -248,12 +253,12 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(ProfilePage.authMessage(e))),
+                  SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
                 );
               }
             }
           },
-          child: const Text('Sign up'),
+          child: Text(l10n.signUp),
         ),
       ],
     );

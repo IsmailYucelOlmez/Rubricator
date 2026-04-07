@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -20,7 +21,7 @@ class HabitLogsList extends ConsumerWidget {
               padding: const EdgeInsets.all(24),
               child: Center(
                 child: Text(
-                  'No logs yet — tap Quick log to start.',
+                  AppLocalizations.of(context)!.noLogsYetTapQuickLog,
                   style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -45,7 +46,7 @@ class HabitLogsList extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 8),
                   child: Text(
-                    'Recent logs',
+                    AppLocalizations.of(context)!.recentLogs,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -67,12 +68,12 @@ class HabitLogsList extends ConsumerWidget {
                           leading: const Icon(Icons.edit_note_outlined),
                           title: Text(
                             [
-                              if (e.minutesRead > 0) '${e.minutesRead} min',
-                              if (e.pagesRead > 0) '${e.pagesRead} pages',
+                              if (e.minutesRead > 0) AppLocalizations.of(context)!.minutesShort(e.minutesRead),
+                              if (e.pagesRead > 0) AppLocalizations.of(context)!.pagesShort(e.pagesRead),
                             ].join(' · '),
                           ),
                           subtitle: e.bookId != null && e.bookId!.isNotEmpty
-                              ? Text('Book: ${e.bookId}')
+                              ? Text(AppLocalizations.of(context)!.bookIdLabel(e.bookId!))
                               : null,
                         ),
                       ),
@@ -86,7 +87,7 @@ class HabitLogsList extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text('Logs error: $e'),
+      error: (e, _) => Text(AppLocalizations.of(context)!.logsError(e.toString())),
     );
   }
 

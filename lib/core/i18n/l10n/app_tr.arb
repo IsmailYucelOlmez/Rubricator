@@ -1,0 +1,259 @@
+{
+  "appTitle": "Kitap Uygulamasi",
+  "navHome": "Ana Sayfa",
+  "navSearch": "Ara",
+  "navLists": "Listeler",
+  "profile": "Profil",
+  "language": "Dil",
+  "selectLanguage": "Dil Sec",
+  "english": "Ingilizce",
+  "turkish": "Turkce",
+  "signInPrompt": "Favorileri cihazlar arasinda esitlemek icin giris yapin.",
+  "signIn": "Giris yap",
+  "createAccount": "Hesap olustur",
+  "signedInFallback": "Giris yapildi",
+  "signOut": "Cikis yap",
+  "loadSessionError": "Oturum yuklenemedi: {error}",
+  "@loadSessionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "invalidEmailOrPassword": "E-posta veya sifre hatali.",
+  "accountAlreadyExists": "Bu e-posta ile bir hesap zaten var.",
+  "email": "E-posta",
+  "password": "Sifre",
+  "passwordMin6": "Sifre (en az 6 karakter)",
+  "cancel": "Iptal",
+  "signUp": "Kayit ol",
+  "confirmAccountEmailNotice": "Gerekliyse hesabinizi onaylamak icin e-postanizi kontrol edin.",
+  "readingHabit": "Okuma aliskanligi",
+  "readingLoggedToday": "Bugun okuma kaydi girdiniz. Harika.",
+  "didYouReadToday": "Bugun okudunuz mu?",
+  "todayStatusError": "Bugun durumu: {error}",
+  "@todayStatusError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "quickLog": "Hizli kayit",
+  "details": "Detaylar",
+  "readingStats": "Okuma istatistikleri",
+  "booksCount": "{count} kitap",
+  "@booksCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "averageShort": "{avg} ort",
+  "@averageShort": {
+    "placeholders": {
+      "avg": {}
+    }
+  },
+  "noRatingsYet": "Henuz puan yok",
+  "topGenre": "En iyi: {genre}",
+  "@topGenre": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
+  "viewAllStats": "Tum istatistikleri gor",
+  "loadStatsError": "Istatistikler yuklenemedi: {error}",
+  "@loadStatsError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "searchBooksTitle": "Kitap Ara",
+  "searchByTitleOrAuthorHint": "Baslik veya yazara gore ara (en az 2 karakter)",
+  "searchFailed": "Arama basarisiz: {error}",
+  "@searchFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "noBooksFoundFor": "\"{query}\" icin kitap bulunamadi.",
+  "@noBooksFoundFor": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "recentSearches": "Son Aramalar",
+  "loadRecentSearchesError": "Son aramalar yuklenemedi.",
+  "noRecentSearchesYet": "Henuz son arama yok.",
+  "recentSearchedBooks": "Son Aranan Kitaplar",
+  "loadRecentSearchedBooksError": "Son aranan kitaplar yuklenemedi.",
+  "noRecentSearchedBooksYet": "Henuz son aranan kitap yok.",
+  "searchBooksMin2Hint": "Kitap ara (en az 2 karakter)",
+  "discover": "Kesfet",
+  "noBooksFound": "Kitap bulunamadi",
+  "searchCouldNotComplete": "Arama tamamlanamadi. Lutfen tekrar deneyin.",
+  "popular": "Populer",
+  "loadPopularBooksError": "Populer kitaplar yuklenemedi.",
+  "loadGenreBooksError": "{genre} kitaplari yuklenemedi.",
+  "@loadGenreBooksError": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
+  "genreFantasy": "FANTASTIK",
+  "genreScienceFiction": "BILIM KURGU",
+  "genreRomance": "ROMANTIK",
+  "genreMystery": "GIZEM",
+  "toRead": "Okunacak",
+  "reading": "Okunuyor",
+  "reReading": "Tekrar Okunuyor",
+  "completed": "Tamamlandi",
+  "dropped": "Birakildi",
+  "favorites": "Favoriler",
+  "signInToSeeLists": "Listeleri gormek icin Profilden giris yapin.",
+  "noBooksInStatus": "{status} durumunda kitap yok.",
+  "@noBooksInStatus": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "noFavoritesYet": "Henuz favori yok.",
+  "couldNotLoadList": "Liste yuklenemedi: {error}",
+  "@couldNotLoadList": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bookDetails": "Kitap Detayi",
+  "authorProfile": "Yazar profili",
+  "ratingSubmitted": "Puan gonderildi.",
+  "noDescriptionAvailable": "Aciklama bulunamadi.",
+  "reviewAdded": "Yorum eklendi.",
+  "reviewUpdated": "Yorum guncellendi.",
+  "reviewDeleted": "Yorum silindi.",
+  "externalReviewAdded": "Harici yorum eklendi.",
+  "invalidUrl": "Gecersiz URL",
+  "couldNotOpenBrowser": "Tarayici acilamadi.",
+  "quoteAdded": "Alinti eklendi.",
+  "relatedBooks": "Benzer kitaplar",
+  "noRelatedTitlesFound": "Benzer baslik bulunamadi (konular eksik veya sonuc yok).",
+  "couldNotLoadRelatedBooks": "Benzer kitaplar yuklenemedi.",
+  "aiSummary": "YZ Ozeti",
+  "aiSummaryFailed": "YZ ozeti basarisiz",
+  "couldNotLoadThisBook": "Bu kitap yuklenemedi. {error}",
+  "@couldNotLoadThisBook": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "addToList": "Listeye Ekle",
+  "change": "Degistir",
+  "progressPercent": "Ilerleme: %{progress}",
+  "@progressPercent": {
+    "placeholders": {
+      "progress": {}
+    }
+  },
+  "rating": "Puan",
+  "averageOutOfFive": "Ortalama: {avg} / 5",
+  "@averageOutOfFive": {
+    "placeholders": {
+      "avg": {}
+    }
+  },
+  "couldNotLoadRating": "Puan yuklenemedi.",
+  "submitRating": "Puani gonder",
+  "reviews": "Yorumlar",
+  "userReviews": "Kullanici Yorumlari",
+  "externalReviews": "Harici Yorumlar",
+  "writeReviewHint": "Yorumunuzu yazin (en az 10 karakter)",
+  "addReview": "Yorum ekle",
+  "noUserReviewsYet": "Henuz kullanici yorumu yok.",
+  "couldNotLoadReviews": "Yorumlar yuklenemedi.",
+  "reviewTitle": "Yorum basligi",
+  "reviewUrlHint": "https://example.com/review",
+  "addExternalReview": "Harici yorum ekle",
+  "noExternalReviewsYet": "Henuz harici yorum yok.",
+  "couldNotLoadExternalReviews": "Harici yorumlar yuklenemedi.",
+  "quotes": "Alintilar",
+  "addMemorableQuote": "Akliniza kalan bir alinti ekleyin",
+  "addQuote": "Alinti ekle",
+  "noQuotesYet": "Henuz alinti yok.",
+  "couldNotLoadQuotes": "Alintilar yuklenemedi.",
+  "editReview": "Yorumu duzenle",
+  "save": "Kaydet"
+  ,"log":"Kayit"
+  ,"signInForHabit":"Okumayi kaydetmek, serileri gormek ve aktivite takvimi icin giris yapin."
+  ,"readingLogged":"Okuma kaydedildi"
+  ,"couldNotSave":"Kaydedilemedi: {error}"
+  ,"@couldNotSave":{"placeholders":{"error":{}}}
+  ,"addMinutesOrPagesPrompt":"Bugunden en az dakika veya sayfa ekleyin."
+  ,"minutes":"Dakika"
+  ,"plusTenMin":"+10 dk"
+  ,"pages":"Sayfa"
+  ,"plusFivePages":"+5 sayfa"
+  ,"optionalAddBooksPrompt":"Istege bagli: Buradan secmek icin okuma listenize kitap ekleyin."
+  ,"bookOptional":"Kitap (istege bagli)"
+  ,"book":"Kitap"
+  ,"none":"Yok"
+  ,"booksError":"Kitaplar: {error}"
+  ,"@booksError":{"placeholders":{"error":{}}}
+  ,"saveLog":"Kaydi kaydet"
+  ,"calendarError":"Takvim hatasi: {error}"
+  ,"@calendarError":{"placeholders":{"error":{}}}
+  ,"activity":"Aktivite"
+  ,"lastWeeksMoreReading":"Son {weeks} hafta (daha koyu = daha fazla okuma)"
+  ,"@lastWeeksMoreReading":{"placeholders":{"weeks":{"type":"int"}}}
+  ,"noLogsYetTapQuickLog":"Henuz kayit yok - baslamak icin Hizli kayit'a dokunun."
+  ,"recentLogs":"Son kayitlar"
+  ,"minutesShort":"{count} dk"
+  ,"@minutesShort":{"placeholders":{"count":{"type":"int"}}}
+  ,"pagesShort":"{count} sayfa"
+  ,"@pagesShort":{"placeholders":{"count":{"type":"int"}}}
+  ,"bookIdLabel":"Kitap: {bookId}"
+  ,"@bookIdLabel":{"placeholders":{"bookId":{}}}
+  ,"logsError":"Kayit hatasi: {error}"
+  ,"@logsError":{"placeholders":{"error":{}}}
+  ,"chartError":"Grafik hatasi: {error}"
+  ,"@chartError":{"placeholders":{"error":{}}}
+  ,"dailyMinutes14Days":"Gunluk dakika (14 gun)"
+  ,"weeklyMinutes":"Haftalik dakika"
+  ,"thisWeekShort":"Bu hf"
+  ,"weeksAgoShort":"-{weeks}h"
+  ,"@weeksAgoShort":{"placeholders":{"weeks":{"type":"int"}}}
+  ,"totals":"Toplamlar"
+  ,"statsError":"Istatistik hatasi: {error}"
+  ,"@statsError":{"placeholders":{"error":{}}}
+  ,"dayStreak":"{days} gun seri"
+  ,"@dayStreak":{"placeholders":{"days":{"type":"int"}}}
+  ,"currentStreak":"Mevcut seri"
+  ,"daysCount":"{days} gun"
+  ,"@daysCount":{"placeholders":{"days":{"type":"int"}}}
+  ,"longestDays":"En uzun: {days} gun"
+  ,"@longestDays":{"placeholders":{"days":{"type":"int"}}}
+  ,"couldNotLoadStreak":"Seri yuklenemedi: {error}"
+  ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
+  ,"signInToSeeStats":"Kutuphane analizlerini ve okuma kimliginizi gormek icin giris yapin."
+  ,"contentYouAdded":"Eklediginiz icerik"
+  ,"reviewsAndQuotes":"Yorumlar ve alintilar"
+  ,"noDataYet":"Henuz veri yok"
+  ,"couldNotLoadContentStats":"Icerik istatistikleri yuklenemedi: {error}"
+  ,"@couldNotLoadContentStats":{"placeholders":{"error":{}}}
+  ,"yourRatings":"Puanlariniz"
+  ,"starsGivenToBooks":"Kitaplara verdiginiz yildizlar"
+  ,"couldNotLoadRatings":"Puanlar yuklenemedi: {error}"
+  ,"@couldNotLoadRatings":{"placeholders":{"error":{}}}
+  ,"library":"Kutuphane"
+  ,"countsFromShelves":"Raf sayilari"
+  ,"couldNotLoadLibraryStats":"Kutuphane istatistikleri yuklenemedi: {error}"
+  ,"@couldNotLoadLibraryStats":{"placeholders":{"error":{}}}
+  ,"readingIdentity":"Okuma kimligi"
+  ,"genresAndAuthorsFromCompleted":"Tamamlanan kitaplardan turler ve yazarlar"
+  ,"topGenres":"En iyi turler"
+  ,"couldNotLoadGenres":"Turler yuklenemedi: {error}"
+  ,"@couldNotLoadGenres":{"placeholders":{"error":{}}}
+  ,"topAuthors":"En iyi yazarlar"
+  ,"couldNotLoadAuthors":"Yazarlar yuklenemedi: {error}"
+  ,"@couldNotLoadAuthors":{"placeholders":{"error":{}}}
+  ,"author":"Yazar"
+  ,"noBiographyAvailable":"Biyografi yok."
+  ,"couldNotLoadAuthor":"Yazar yuklenemedi. {error}"
+  ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
+}

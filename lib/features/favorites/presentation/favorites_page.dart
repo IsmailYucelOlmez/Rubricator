@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../auth/presentation/auth_provider.dart';
 import '../../books/domain/entities/book.dart';
@@ -12,6 +13,7 @@ class ListsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final signedIn = ref.watch(authStateProvider).valueOrNull != null;
     return SafeArea(
       child: Padding(
@@ -21,36 +23,36 @@ class ListsPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Lists', style: Theme.of(context).textTheme.headlineSmall),
+              Text(l10n.navLists, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 12),
-              const TabBar(
+              TabBar(
                 isScrollable: true,
                 tabs: [
-                  Tab(text: 'To Read'),
-                  Tab(text: 'Reading'),
-                  Tab(text: 'Re-reading'),
-                  Tab(text: 'Completed'),
-                  Tab(text: 'Dropped'),
-                  Tab(text: 'Favorites'),
+                  Tab(text: l10n.toRead),
+                  Tab(text: l10n.reading),
+                  Tab(text: l10n.reReading),
+                  Tab(text: l10n.completed),
+                  Tab(text: l10n.dropped),
+                  Tab(text: l10n.favorites),
                 ],
               ),
               const SizedBox(height: 12),
               if (!signedIn)
-                const Expanded(
+                Expanded(
                   child: Center(
-                    child: Text('Sign in from Profile to see your lists.'),
+                    child: Text(l10n.signInToSeeLists),
                   ),
                 )
               else
                 Expanded(
                   child: TabBarView(
                     children: [
-                      _ListTabBody(status: ReadingStatus.toRead),
-                      _ListTabBody(status: ReadingStatus.reading),
-                      _ListTabBody(status: ReadingStatus.reReading),
-                      _ListTabBody(status: ReadingStatus.completed),
-                      _ListTabBody(status: ReadingStatus.dropped),
-                      const _FavoritesTabBody(),
+                      _ListTabBody(status: ReadingStatus.toRead, l10n: l10n),
+                      _ListTabBody(status: ReadingStatus.reading, l10n: l10n),
+                      _ListTabBody(status: ReadingStatus.reReading, l10n: l10n),
+                      _ListTabBody(status: ReadingStatus.completed, l10n: l10n),
+                      _ListTabBody(status: ReadingStatus.dropped, l10n: l10n),
+                      _FavoritesTabBody(l10n: l10n),
                     ],
                   ),
                 ),
@@ -63,29 +65,31 @@ class ListsPage extends ConsumerWidget {
 }
 
 class _ListTabBody extends ConsumerWidget {
-  const _ListTabBody({required this.status});
+  const _ListTabBody({required this.status, required this.l10n});
 
   final ReadingStatus status;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(listEntriesByStatusProvider(status));
     return _EntriesList(
       entriesAsync: entriesAsync,
-      emptyText: 'No books in ${_statusLabel(status)}.',
+      emptyText: l10n.noBooksInStatus(_statusLabel(status, l10n)),
     );
   }
 }
 
 class _FavoritesTabBody extends ConsumerWidget {
-  const _FavoritesTabBody();
+  const _FavoritesTabBody({required this.l10n});
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(favoriteEntriesProvider);
     return _EntriesList(
       entriesAsync: entriesAsync,
-      emptyText: 'No favorites yet.',
+      emptyText: l10n.noFavoritesYet,
     );
   }
 }
@@ -98,6 +102,7 @@ class _EntriesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return entriesAsync.when(
       data: (entries) {
         if (entries.isEmpty) return Center(child: Text(emptyText));
@@ -111,7 +116,7 @@ class _EntriesList extends StatelessWidget {
             return ListTile(
               title: Text(book.title),
               subtitle: Text(
-                '${book.author} • ${_statusLabel(userBook.status)}${userBook.progress != null ? ' • ${userBook.progress}%' : ''}',
+                '${book.author} • ${_statusLabel(userBook.status, l10n)}${userBook.progress != null ? ' • ${userBook.progress}%' : ''}',
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.of(context).push(
@@ -125,23 +130,23 @@ class _EntriesList extends StatelessWidget {
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
-        child: Text('Could not load list: $error'),
+        child: Text(l10n.couldNotLoadList(error.toString())),
       ),
     );
   }
 }
 
-String _statusLabel(ReadingStatus status) {
+String _statusLabel(ReadingStatus status, AppLocalizations l10n) {
   switch (status) {
     case ReadingStatus.toRead:
-      return 'To Read';
+      return l10n.toRead;
     case ReadingStatus.reading:
-      return 'Reading';
+      return l10n.reading;
     case ReadingStatus.completed:
-      return 'Completed';
+      return l10n.completed;
     case ReadingStatus.dropped:
-      return 'Dropped';
+      return l10n.dropped;
     case ReadingStatus.reReading:
-      return 'Re-reading';
+      return l10n.reReading;
   }
 }

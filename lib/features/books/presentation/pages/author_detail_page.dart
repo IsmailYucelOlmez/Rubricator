@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../providers/books_providers.dart';
 
 class AuthorDetailPage extends ConsumerWidget {
@@ -11,10 +12,11 @@ class AuthorDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final asyncAuthor = ref.watch(authorDetailProvider(authorId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Author')),
+      appBar: AppBar(title: Text(l10n.author)),
       body: asyncAuthor.when(
         data: (author) {
           final photoUrl = AppConstants.authorPhotoUrl(author.photoId);
@@ -56,7 +58,7 @@ class AuthorDetailPage extends ConsumerWidget {
               ],
               const SizedBox(height: 20),
               Text(
-                author.bio.isEmpty ? 'No biography available.' : author.bio,
+                author.bio.isEmpty ? l10n.noBiographyAvailable : author.bio,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
@@ -67,7 +69,9 @@ class AuthorDetailPage extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Could not load author. ${e.toString().replaceFirst('Exception: ', '')}',
+              l10n.couldNotLoadAuthor(
+                e.toString().replaceFirst('Exception: ', ''),
+              ),
               textAlign: TextAlign.center,
             ),
           ),

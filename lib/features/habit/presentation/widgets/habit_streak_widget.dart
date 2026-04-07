@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -19,7 +20,7 @@ class HabitStreakWidget extends ConsumerWidget {
               Icon(Icons.local_fire_department, color: Colors.orange.shade700, size: 22),
               const SizedBox(width: 8),
               Text(
-                '${s.currentStreak} day streak',
+                AppLocalizations.of(context)!.dayStreak(s.currentStreak),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
@@ -38,16 +39,16 @@ class HabitStreakWidget extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Current streak',
+                        AppLocalizations.of(context)!.currentStreak,
                         style: Theme.of(context).textTheme.labelLarge,
                       ),
                       Text(
-                        '${s.currentStreak} days',
+                        AppLocalizations.of(context)!.daysCount(s.currentStreak),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Longest: ${s.longestStreak} days',
+                        AppLocalizations.of(context)!.longestDays(s.longestStreak),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
@@ -59,7 +60,7 @@ class HabitStreakWidget extends ConsumerWidget {
         );
       },
       loading: () => const LinearProgressIndicator(minHeight: 2),
-      error: (e, _) => Text('Could not load streak: $e'),
+      error: (e, _) => Text(AppLocalizations.of(context)!.couldNotLoadStreak(e.toString())),
     );
   }
 }

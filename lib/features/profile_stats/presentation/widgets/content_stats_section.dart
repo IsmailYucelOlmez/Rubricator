@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ContentStatsSection extends ConsumerWidget {
@@ -20,12 +21,12 @@ class ContentStatsSection extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Content you added',
+                  AppLocalizations.of(context)!.contentYouAdded,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Reviews and quotes',
+                  AppLocalizations.of(context)!.reviewsAndQuotes,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -33,7 +34,7 @@ class ContentStatsSection extends ConsumerWidget {
                 const SizedBox(height: 16),
                 if (!hasData)
                   Text(
-                    'No data yet',
+                    AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -44,7 +45,7 @@ class ContentStatsSection extends ConsumerWidget {
                       Expanded(
                         child: _ContentTile(
                           icon: Icons.rate_review_outlined,
-                          label: 'Reviews',
+                          label: AppLocalizations.of(context)!.reviews,
                           value: c.reviewCount,
                         ),
                       ),
@@ -52,7 +53,7 @@ class ContentStatsSection extends ConsumerWidget {
                       Expanded(
                         child: _ContentTile(
                           icon: Icons.format_quote_outlined,
-                          label: 'Quotes',
+                          label: AppLocalizations.of(context)!.quotes,
                           value: c.quoteCount,
                         ),
                       ),
@@ -65,7 +66,9 @@ class ContentStatsSection extends ConsumerWidget {
             height: 88,
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
-          error: (e, _) => Text('Could not load content stats: $e'),
+          error: (e, _) => Text(
+            AppLocalizations.of(context)!.couldNotLoadContentStats(e.toString()),
+          ),
         ),
       ),
     );
@@ -122,3 +125,5 @@ class _ContentTile extends StatelessWidget {
     );
   }
 }
+
+

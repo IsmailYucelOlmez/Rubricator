@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../domain/entities/home_book_entity.dart';
@@ -43,6 +44,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final searching = _query.isNotEmpty;
     final searchResults = searching ? ref.watch(searchProvider(_query)) : null;
 
@@ -50,9 +52,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       appBar: AppBar(
         title: TextField(
           controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'Search books (min. 2 characters)',
-            prefixIcon: Icon(Icons.search),
+          decoration: InputDecoration(
+            hintText: l10n.searchBooksMin2Hint,
+            prefixIcon: const Icon(Icons.search),
             border: InputBorder.none,
           ),
           onChanged: _onSearchChanged,
@@ -66,14 +68,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                     child: Text(
-                      'Discover',
+                      l10n.discover,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(child: _PopularSection()),
+                SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
                 for (final genre in _genres)
-                  SliverToBoxAdapter(child: _GenreSection(genre: genre)),
+                  SliverToBoxAdapter(child: _GenreSection(genre: genre, l10n: l10n)),
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
             ),
@@ -88,9 +90,10 @@ class _SearchResultList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return result.when(
       data: (books) {
-        if (books.isEmpty) return const Center(child: Text('No books found'));
+        if (books.isEmpty) return Center(child: Text(l10n.noBooksFound));
         return ListView.separated(
           padding: const EdgeInsets.symmetric(vertical: 8),
           itemCount: books.length,
@@ -103,7 +106,7 @@ class _SearchResultList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Could not complete the search. Please try again.',
+            l10n.searchCouldNotComplete,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
             textAlign: TextAlign.center,
           ),
@@ -114,40 +117,55 @@ class _SearchResultList extends StatelessWidget {
 }
 
 class _PopularSection extends ConsumerWidget {
-  const _PopularSection();
+  const _PopularSection({required this.l10n});
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(popularBooksProvider);
     return _Section(
-      title: 'Popular',
+      title: l10n.popular,
       child: state.when(
         data: (books) => _HorizontalBookList(books: books),
         loading: () => const _HorizontalSkeleton(),
-        error: (error, stackTrace) =>
-            const _InlineError(message: 'Could not load popular books.'),
+        error: (error, stackTrace) => _InlineError(message: l10n.loadPopularBooksError),
       ),
     );
   }
 }
 
 class _GenreSection extends ConsumerWidget {
-  const _GenreSection({required this.genre});
+  const _GenreSection({required this.genre, required this.l10n});
 
   final String genre;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(genreBooksProvider(genre));
     return _Section(
-      title: genre.replaceAll('_', ' ').toUpperCase(),
+      title: _genreLabel(genre, l10n),
       child: state.when(
         data: (books) => _HorizontalBookList(books: books),
         loading: () => const _HorizontalSkeleton(),
-        error: (error, stackTrace) =>
-            _InlineError(message: 'Could not load $genre books.'),
+        error: (error, stackTrace) => _InlineError(message: l10n.loadGenreBooksError(_genreLabel(genre, l10n))),
       ),
     );
+  }
+}
+
+String _genreLabel(String genre, AppLocalizations l10n) {
+  switch (genre) {
+    case 'fantasy':
+      return l10n.genreFantasy;
+    case 'science_fiction':
+      return l10n.genreScienceFiction;
+    case 'romance':
+      return l10n.genreRomance;
+    case 'mystery':
+      return l10n.genreMystery;
+    default:
+      return genre.replaceAll('_', ' ').toUpperCase();
   }
 }
 

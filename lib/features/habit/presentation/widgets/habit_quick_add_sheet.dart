@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
@@ -55,9 +56,10 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
             pagesRead: pages,
           );
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reading logged')),
+          SnackBar(content: Text(l10n.readingLogged)),
         );
       }
     } on HabitValidationException catch (e) {
@@ -66,8 +68,9 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
+          SnackBar(content: Text(l10n.couldNotSave(e.toString()))),
         );
       }
     } finally {
@@ -77,6 +80,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final booksAsync = ref.watch(habitBookChoicesProvider);
 
     return SafeArea(
@@ -86,18 +90,18 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Quick log', style: Theme.of(context).textTheme.titleLarge),
+            Text(l10n.quickLog, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 4),
             Text(
-              'Add at least minutes or pages from today.',
+              l10n.addMinutesOrPagesPrompt,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
             TextField(
               controller: _minutes,
-              decoration: const InputDecoration(
-                labelText: 'Minutes',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.minutes,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -111,16 +115,16 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                     final n = _parseInt(_minutes);
                     _minutes.text = '${n + 10}';
                   },
-                  child: const Text('+10 min'),
+                  child: Text(l10n.plusTenMin),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _pages,
-              decoration: const InputDecoration(
-                labelText: 'Pages',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.pages,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -134,7 +138,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                     final n = _parseInt(_pages);
                     _pages.text = '${n + 5}';
                   },
-                  child: const Text('+5 pages'),
+                  child: Text(l10n.plusFivePages),
                 ),
               ],
             ),
@@ -143,7 +147,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
               data: (choices) {
                 if (choices.isEmpty) {
                   return Text(
-                    'Optional: add books to your reading list to pick one here.',
+                    l10n.optionalAddBooksPrompt,
                     style: Theme.of(context).textTheme.bodySmall,
                   );
                 }
@@ -151,7 +155,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Book (optional)',
+                      l10n.bookOptional,
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     const SizedBox(height: 8),
@@ -159,7 +163,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                       key: ValueKey<String?>(_bookId),
                       initialSelection: _bookId,
                       expandedInsets: EdgeInsets.zero,
-                      label: const Text('Book'),
+                      label: Text(l10n.book),
                       dropdownMenuEntries: [
                         const DropdownMenuEntry<String?>(
                           value: null,
@@ -178,7 +182,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                 );
               },
               loading: () => const LinearProgressIndicator(minHeight: 2),
-              error: (e, _) => Text('Books: $e'),
+              error: (e, _) => Text(l10n.booksError(e.toString())),
             ),
             const SizedBox(height: 24),
             FilledButton(
@@ -189,7 +193,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                       width: 22,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save log'),
+                  : Text(l10n.saveLog),
             ),
           ],
         ),

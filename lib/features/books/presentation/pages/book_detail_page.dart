@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
@@ -43,6 +44,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final detailedBookAsync = ref.watch(bookDetailProvider(widget.book.id));
     final userBookAsync = ref.watch(userBookProvider(widget.book.id));
     final userBook = userBookAsync.valueOrNull;
@@ -51,7 +53,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book Details'),
+        title: Text(l10n.bookDetails),
         actions: [
           IconButton(
             onPressed: () async {
@@ -197,7 +199,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                       );
                     },
                     icon: const Icon(Icons.person_outlined),
-                    label: const Text('Author profile'),
+                    label: Text(l10n.authorProfile),
                   ),
                 ),
               ],
@@ -211,7 +213,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     await ref
                         .read(ratingProvider(detailedBook.id).notifier)
                         .submit(_selectedRating);
-                    _showMessage('Rating submitted.');
+                    _showMessage(l10n.ratingSubmitted);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -221,7 +223,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               const SizedBox(height: 16),
               Text(
                 detailedBook.description.isEmpty
-                    ? 'No description available.'
+                    ? l10n.noDescriptionAvailable
                     : detailedBook.description,
               ),
               const SizedBox(height: 24),
@@ -238,7 +240,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         .read(reviewListProvider(detailedBook.id).notifier)
                         .add(_reviewController.text);
                     _reviewController.clear();
-                    _showMessage('Review added.');
+                    _showMessage(l10n.reviewAdded);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -256,7 +258,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     await ref
                         .read(reviewListProvider(detailedBook.id).notifier)
                         .editReview(review, edited);
-                    _showMessage('Review updated.');
+                    _showMessage(l10n.reviewUpdated);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -267,7 +269,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     await ref
                         .read(reviewListProvider(detailedBook.id).notifier)
                         .remove(review);
-                    _showMessage('Review deleted.');
+                    _showMessage(l10n.reviewDeleted);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -283,7 +285,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         );
                     _externalTitleController.clear();
                     _externalUrlController.clear();
-                    _showMessage('External review added.');
+                    _showMessage(l10n.externalReviewAdded);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -292,7 +294,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 onOpenExternalReview: (url) async {
                   final uri = Uri.tryParse(url);
                   if (uri == null) {
-                    _showMessage('Invalid URL');
+                    _showMessage(l10n.invalidUrl);
                     return;
                   }
                   final ok = await launchUrl(
@@ -300,7 +302,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     mode: LaunchMode.externalApplication,
                   );
                   if (!ok && mounted) {
-                    _showMessage('Could not open browser.');
+                    _showMessage(l10n.couldNotOpenBrowser);
                   }
                 },
               ),
@@ -314,7 +316,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         .read(quoteProvider(detailedBook.id).notifier)
                         .add(_quoteController.text);
                     _quoteController.clear();
-                    _showMessage('Quote added.');
+                    _showMessage(l10n.quoteAdded);
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
@@ -332,16 +334,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 },
               ),
               const SizedBox(height: 24),
-              Text(
-                'Related books',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              Text(l10n.relatedBooks, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
               related.when(
                 data: (list) {
                   if (list.isEmpty) {
                     return Text(
-                      'No related titles found (subjects missing or empty results).',
+                      l10n.noRelatedTitlesFound,
                       style: Theme.of(context).textTheme.bodyMedium,
                     );
                   }
@@ -415,16 +414,15 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   );
                 },
                 loading: () => const LinearProgressIndicator(),
-                error: (error, stackTrace) =>
-                    const Text('Could not load related books.'),
+                error: (error, stackTrace) => Text(l10n.couldNotLoadRelatedBooks),
               ),
               const SizedBox(height: 24),
-              Text('AI Summary', style: Theme.of(context).textTheme.titleLarge),
+              Text(l10n.aiSummary, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
               summary.when(
                 data: Text.new,
                 loading: () => const CircularProgressIndicator(),
-                error: (error, stackTrace) => const Text('AI summary failed'),
+                error: (error, stackTrace) => Text(l10n.aiSummaryFailed),
               ),
             ],
           );
@@ -434,7 +432,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Could not load this book. ${error.toString().replaceFirst('Exception: ', '')}',
+              l10n.couldNotLoadThisBook(
+                error.toString().replaceFirst('Exception: ', ''),
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -480,6 +480,7 @@ class _ReadingStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final status = userBook?.status;
     final progress = userBook?.progress ?? 0;
     return Card(
@@ -491,19 +492,19 @@ class _ReadingStatusCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  status == null ? 'Add to List' : _statusLabel(status),
+                  status == null ? l10n.addToList : _statusLabel(status, l10n),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const Spacer(),
                 TextButton(
                   onPressed: onTapSelectStatus,
-                  child: const Text('Change'),
+                  child: Text(l10n.change),
                 ),
               ],
             ),
             if (status == ReadingStatus.reading) ...[
               const SizedBox(height: 8),
-              Text('Progress: $progress%'),
+              Text(l10n.progressPercent(progress)),
               Slider(
                 value: progress.toDouble(),
                 min: 0,
@@ -546,7 +547,7 @@ class _StatusBottomSheet extends StatelessWidget {
                       ? Icons.radio_button_checked
                       : Icons.radio_button_unchecked,
                 ),
-                title: Text(_statusLabel(status)),
+                title: Text(_statusLabel(status, AppLocalizations.of(context)!)),
                 onTap: () => onSelect(status),
               ),
             )
@@ -556,18 +557,18 @@ class _StatusBottomSheet extends StatelessWidget {
   }
 }
 
-String _statusLabel(ReadingStatus status) {
+String _statusLabel(ReadingStatus status, AppLocalizations l10n) {
   switch (status) {
     case ReadingStatus.toRead:
-      return 'To Read';
+      return l10n.toRead;
     case ReadingStatus.reading:
-      return 'Reading';
+      return l10n.reading;
     case ReadingStatus.completed:
-      return 'Completed';
+      return l10n.completed;
     case ReadingStatus.dropped:
-      return 'Dropped';
+      return l10n.dropped;
     case ReadingStatus.reReading:
-      return 'Re-reading';
+      return l10n.reReading;
   }
 }
 
@@ -592,14 +593,20 @@ class _RatingSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rating', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              AppLocalizations.of(context)!.rating,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             state.when(
-              data: (data) =>
-                  Text('Average: ${data.average.toStringAsFixed(1)} / 5'),
+              data: (data) => Text(
+                AppLocalizations.of(context)!.averageOutOfFive(
+                  data.average.toStringAsFixed(1),
+                ),
+              ),
               loading: () => const LinearProgressIndicator(),
               error: (error, stackTrace) =>
-                  const Text('Could not load rating.'),
+                  Text(AppLocalizations.of(context)!.couldNotLoadRating),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -617,7 +624,7 @@ class _RatingSection extends StatelessWidget {
             ),
             FilledButton(
               onPressed: selectedRating == 0 ? null : onSubmit,
-              child: const Text('Submit rating'),
+              child: Text(AppLocalizations.of(context)!.submitRating),
             ),
           ],
         ),
@@ -660,12 +667,15 @@ class _ReviewTabsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Reviews', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            AppLocalizations.of(context)!.reviews,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
-          const TabBar(
+          TabBar(
             tabs: [
-              Tab(text: 'User Reviews'),
-              Tab(text: 'External Reviews'),
+              Tab(text: AppLocalizations.of(context)!.userReviews),
+              Tab(text: AppLocalizations.of(context)!.externalReviews),
             ],
           ),
           SizedBox(
@@ -678,8 +688,8 @@ class _ReviewTabsSection extends StatelessWidget {
                       controller: reviewController,
                       minLines: 2,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        hintText: 'Write your review (min 10 chars)',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.writeReviewHint,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -687,13 +697,17 @@ class _ReviewTabsSection extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: FilledButton(
                         onPressed: onAddReview,
-                        child: const Text('Add review'),
+                        child: Text(AppLocalizations.of(context)!.addReview),
                       ),
                     ),
                     Expanded(
                       child: reviews.when(
                         data: (list) => list.isEmpty
-                            ? const Center(child: Text('No user reviews yet.'))
+                            ? Center(
+                                child: Text(
+                                  AppLocalizations.of(context)!.noUserReviewsYet,
+                                ),
+                              )
                             : ListView.builder(
                                 itemCount: list.length,
                                 itemBuilder: (context, index) {
@@ -730,8 +744,10 @@ class _ReviewTabsSection extends StatelessWidget {
                               ),
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (error, stackTrace) => const Center(
-                          child: Text('Could not load reviews.'),
+                        error: (error, stackTrace) => Center(
+                          child: Text(
+                            AppLocalizations.of(context)!.couldNotLoadReviews,
+                          ),
                         ),
                       ),
                     ),
@@ -741,15 +757,15 @@ class _ReviewTabsSection extends StatelessWidget {
                   children: [
                     TextField(
                       controller: externalTitleController,
-                      decoration: const InputDecoration(
-                        hintText: 'Review title',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.reviewTitle,
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: externalUrlController,
-                      decoration: const InputDecoration(
-                        hintText: 'https://example.com/review',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.reviewUrlHint,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -757,14 +773,19 @@ class _ReviewTabsSection extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: FilledButton(
                         onPressed: onAddExternalReview,
-                        child: const Text('Add external review'),
+                        child: Text(
+                          AppLocalizations.of(context)!.addExternalReview,
+                        ),
                       ),
                     ),
                     Expanded(
                       child: externalReviews.when(
                         data: (list) => list.isEmpty
-                            ? const Center(
-                                child: Text('No external reviews yet.'),
+                            ? Center(
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .noExternalReviewsYet,
+                                ),
                               )
                             : ListView.builder(
                                 itemCount: list.length,
@@ -783,8 +804,11 @@ class _ReviewTabsSection extends StatelessWidget {
                               ),
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (error, stackTrace) => const Center(
-                          child: Text('Could not load external reviews.'),
+                        error: (error, stackTrace) => Center(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .couldNotLoadExternalReviews,
+                          ),
                         ),
                       ),
                     ),
@@ -817,20 +841,25 @@ class _QuoteSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Quotes', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          AppLocalizations.of(context)!.quotes,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(hintText: 'Add a memorable quote'),
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context)!.addMemorableQuote,
+          ),
         ),
         const SizedBox(height: 8),
         Align(
           alignment: Alignment.centerRight,
           child: FilledButton(
             onPressed: onAddQuote,
-            child: const Text('Add quote'),
+            child: Text(AppLocalizations.of(context)!.addQuote),
           ),
         ),
         const SizedBox(height: 8),
@@ -838,7 +867,7 @@ class _QuoteSection extends StatelessWidget {
           height: 220,
           child: quotes.when(
             data: (list) => list.isEmpty
-                ? const Center(child: Text('No quotes yet.'))
+                ? Center(child: Text(AppLocalizations.of(context)!.noQuotesYet))
                 : ListView.builder(
                     itemCount: list.length,
                     itemBuilder: (context, index) {
@@ -854,8 +883,9 @@ class _QuoteSection extends StatelessWidget {
                     },
                   ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) =>
-                const Center(child: Text('Could not load quotes.')),
+            error: (error, stackTrace) => Center(
+              child: Text(AppLocalizations.of(context)!.couldNotLoadQuotes),
+            ),
           ),
         ),
       ],
@@ -890,16 +920,16 @@ class _EditReviewDialogState extends State<_EditReviewDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit review'),
+      title: Text(AppLocalizations.of(context)!.editReview),
       content: TextField(controller: _controller, minLines: 2, maxLines: 5),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

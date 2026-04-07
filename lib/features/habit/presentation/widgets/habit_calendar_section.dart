@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -17,7 +18,7 @@ class HabitCalendarSection extends ConsumerWidget {
     return logsAsync.when(
       data: (logs) => _CalendarBody(logs: logs, weeks: weeks),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Text('Calendar error: $e'),
+      error: (e, _) => Text(AppLocalizations.of(context)!.calendarError(e.toString())),
     );
   }
 }
@@ -67,10 +68,10 @@ class _CalendarBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Activity', style: Theme.of(context).textTheme.titleMedium),
+            Text(AppLocalizations.of(context)!.activity, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
-              'Last $weeks weeks (darker = more reading)',
+              AppLocalizations.of(context)!.lastWeeksMoreReading(weeks),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),

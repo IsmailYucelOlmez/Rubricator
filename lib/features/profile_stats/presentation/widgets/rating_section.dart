@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../providers/profile_stats_providers.dart';
 
 class RatingSection extends ConsumerWidget {
@@ -21,12 +22,12 @@ class RatingSection extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Your ratings',
+                  AppLocalizations.of(context)!.yourRatings,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Stars you gave to books',
+                  AppLocalizations.of(context)!.starsGivenToBooks,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -34,7 +35,7 @@ class RatingSection extends ConsumerWidget {
                 const SizedBox(height: 16),
                 if (!hasData)
                   Text(
-                    'No data yet',
+                    AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -81,7 +82,9 @@ class RatingSection extends ConsumerWidget {
             height: 100,
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
-          error: (e, _) => Text('Could not load ratings: $e'),
+          error: (e, _) => Text(
+            AppLocalizations.of(context)!.couldNotLoadRatings(e.toString()),
+          ),
         ),
       ),
     );
@@ -138,3 +141,5 @@ class _StarRow extends StatelessWidget {
     );
   }
 }
+
+

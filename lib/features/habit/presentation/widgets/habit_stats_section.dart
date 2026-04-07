@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -18,21 +19,21 @@ class HabitStatsSection extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Totals', style: Theme.of(context).textTheme.titleMedium),
+                Text(AppLocalizations.of(context)!.totals, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: _StatTile(
                         icon: Icons.timer_outlined,
-                        label: 'Minutes',
+                        label: AppLocalizations.of(context)!.minutes,
                         value: '${s.totalMinutes}',
                       ),
                     ),
                     Expanded(
                       child: _StatTile(
                         icon: Icons.auto_stories_outlined,
-                        label: 'Pages',
+                        label: AppLocalizations.of(context)!.pages,
                         value: '${s.totalPages}',
                       ),
                     ),
@@ -47,7 +48,7 @@ class HabitStatsSection extends ConsumerWidget {
             padding: EdgeInsets.all(24),
             child: CircularProgressIndicator(),
           )),
-      error: (e, _) => Text('Stats error: $e'),
+      error: (e, _) => Text(AppLocalizations.of(context)!.statsError(e.toString())),
     );
   }
 }

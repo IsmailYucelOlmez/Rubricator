@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../widgets/habit_calendar_section.dart';
@@ -14,15 +15,16 @@ class HabitPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Reading habit')),
-        body: const Center(
+        appBar: AppBar(title: Text(l10n.readingHabit)),
+        body: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
             child: Text(
-              'Sign in to log reading, see streaks, and view your activity calendar.',
+              l10n.signInForHabit,
               textAlign: TextAlign.center,
             ),
           ),
@@ -32,10 +34,10 @@ class HabitPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reading habit'),
+        title: Text(l10n.readingHabit),
         actions: [
           IconButton(
-            tooltip: 'Quick log',
+            tooltip: l10n.quickLog,
             icon: const Icon(Icons.add_circle_outline),
             onPressed: () => showHabitQuickAddBottomSheet(context),
           ),
@@ -44,7 +46,7 @@ class HabitPage extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showHabitQuickAddBottomSheet(context),
         icon: const Icon(Icons.timer_outlined),
-        label: const Text('Log'),
+        label: Text(l10n.log),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

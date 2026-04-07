@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
 
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
@@ -42,6 +43,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final raw = _controller.text.trim();
     final showHint = raw.isEmpty || raw.length < 2;
     final searchResult = ref.watch(searchProvider);
@@ -55,16 +57,16 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Search Books',
+              l10n.searchBooksTitle,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'Search by title or author (min. 2 characters)',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.searchByTitleOrAuthorHint,
+                prefixIcon: const Icon(Icons.search),
+                border: const OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.search,
               onChanged: (value) {
@@ -77,6 +79,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             Expanded(
               child: showHint
                   ? _DiscoveryView(
+                      l10n: l10n,
                       popularQueries: popularQueries,
                       popularBooks: popularBooks,
                       onOpenBook: (book) {
@@ -93,6 +96,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       },
                     )
                   : _SearchResultsView(
+                      l10n: l10n,
                       state: searchResult,
                       activeQuery: raw,
                       onOpenBook: (book) async {
@@ -117,11 +121,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
 class _SearchResultsView extends StatelessWidget {
   const _SearchResultsView({
+    required this.l10n,
     required this.state,
     required this.activeQuery,
     required this.onOpenBook,
   });
 
+  final AppLocalizations l10n;
   final AsyncValue<List<Book>> state;
   final String activeQuery;
   final ValueChanged<Book> onOpenBook;
@@ -132,12 +138,12 @@ class _SearchResultsView extends StatelessWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
         child: Text(
-          'Search failed: ${error.toString().replaceFirst('Exception: ', '')}',
+          l10n.searchFailed(error.toString().replaceFirst('Exception: ', '')),
         ),
       ),
       data: (books) {
         if (books.isEmpty) {
-          return Center(child: Text('No books found for "$activeQuery".'));
+          return Center(child: Text(l10n.noBooksFoundFor(activeQuery)));
         }
         return _BookList(books: books, onOpenBook: onOpenBook);
       },
@@ -147,6 +153,7 @@ class _SearchResultsView extends StatelessWidget {
 
 class _DiscoveryView extends StatelessWidget {
   const _DiscoveryView({
+    required this.l10n,
     required this.popularQueries,
     required this.popularBooks,
     required this.onOpenBook,
@@ -154,6 +161,7 @@ class _DiscoveryView extends StatelessWidget {
   });
 
   final AsyncValue<List<String>> popularQueries;
+  final AppLocalizations l10n;
   final AsyncValue<List<Book>> popularBooks;
   final ValueChanged<Book> onOpenBook;
   final ValueChanged<String> onPickQuery;
@@ -163,17 +171,16 @@ class _DiscoveryView extends StatelessWidget {
     return ListView(
       children: [
         Text(
-          'Recent Searches',
+          l10n.recentSearches,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         popularQueries.when(
           loading: () => const LinearProgressIndicator(),
-          error: (error, stackTrace) =>
-              const Text('Could not load recent searches.'),
+          error: (error, stackTrace) => Text(l10n.loadRecentSearchesError),
           data: (queries) {
             if (queries.isEmpty) {
-              return const Text('No recent searches yet.');
+              return Text(l10n.noRecentSearchesYet);
             }
             return Wrap(
               spacing: 8,
@@ -190,15 +197,14 @@ class _DiscoveryView extends StatelessWidget {
           },
         ),
         const SizedBox(height: 20),
-        Text('Recent Searched Books', style: Theme.of(context).textTheme.titleMedium),
+        Text(l10n.recentSearchedBooks, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         popularBooks.when(
           loading: () => const LinearProgressIndicator(),
-          error: (error, stackTrace) =>
-              const Text('Could not load recent searched books.'),
+          error: (error, stackTrace) => Text(l10n.loadRecentSearchedBooksError),
           data: (books) {
             if (books.isEmpty) {
-              return const Text('No recent searched books yet.');
+              return Text(l10n.noRecentSearchedBooksYet);
             }
             return SizedBox(
               height: 250,

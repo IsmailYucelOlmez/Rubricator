@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../pages/habit_page.dart';
 import '../providers/habit_providers.dart';
@@ -13,6 +14,7 @@ class HabitProfileSummary extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     if (user == null) {
       return const SizedBox.shrink();
@@ -28,7 +30,7 @@ class HabitProfileSummary extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Reading habit',
+              l10n.readingHabit,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -36,7 +38,7 @@ class HabitProfileSummary extends ConsumerWidget {
             const SizedBox(height: 12),
             todayAsync.when(
               data: (read) => Text(
-                read ? 'You logged reading today. Nice work.' : 'Did you read today?',
+                read ? l10n.readingLoggedToday : l10n.didYouReadToday,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               loading: () => const SizedBox(
@@ -50,7 +52,7 @@ class HabitProfileSummary extends ConsumerWidget {
                   ),
                 ),
               ),
-              error: (e, _) => Text('Today status: $e'),
+              error: (e, _) => Text(l10n.todayStatusError(e.toString())),
             ),
             const SizedBox(height: 16),
             Row(
@@ -59,7 +61,7 @@ class HabitProfileSummary extends ConsumerWidget {
                   child: FilledButton.icon(
                     onPressed: () => showHabitQuickAddBottomSheet(context),
                     icon: const Icon(Icons.add, size: 20),
-                    label: const Text('Quick log'),
+                    label: Text(l10n.quickLog),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -72,7 +74,7 @@ class HabitProfileSummary extends ConsumerWidget {
                         ),
                       );
                     },
-                    child: const Text('Details'),
+                    child: Text(l10n.details),
                   ),
                 ),
               ],

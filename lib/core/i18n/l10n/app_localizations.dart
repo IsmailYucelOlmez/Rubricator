@@ -1093,6 +1093,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load author. {error}'**
   String couldNotLoadAuthor(Object error);
+
+  /// No description provided for @listsForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For You'**
+  String get listsForYou;
+
+  /// No description provided for @listsFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get listsFollowing;
+
+  /// No description provided for @myLists.
+  ///
+  /// In en, this message translates to:
+  /// **'My Lists'**
+  String get myLists;
+
+  /// No description provided for @savedLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Lists'**
+  String get savedLists;
+
+  /// No description provided for @createList.
+  ///
+  /// In en, this message translates to:
+  /// **'Create list'**
+  String get createList;
+
+  /// No description provided for @editList.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit list'**
+  String get editList;
+
+  /// No description provided for @title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get title;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @public.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get public;
+
+  /// No description provided for @bookSelector.
+  ///
+  /// In en, this message translates to:
+  /// **'Book selector'**
+  String get bookSelector;
+
+  /// No description provided for @searchViaOpenLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Search via Open Library'**
+  String get searchViaOpenLibrary;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @selectedBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected books'**
+  String get selectedBooks;
+
+  /// No description provided for @noBooksSelectedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No books selected yet.'**
+  String get noBooksSelectedYet;
+
+  /// No description provided for @noListsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No lists yet.'**
+  String get noListsYet;
+
+  /// No description provided for @couldNotLoadLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load lists: {error}'**
+  String couldNotLoadLists(Object error);
+
+  /// No description provided for @byUser.
+  ///
+  /// In en, this message translates to:
+  /// **'by @{userName}'**
+  String byUser(Object userName);
+
+  /// No description provided for @books.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get books;
+
+  /// No description provided for @comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get comments;
+
+  /// No description provided for @couldNotLoadListItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load list items: {error}'**
+  String couldNotLoadListItems(Object error);
+
+  /// No description provided for @couldNotLoadComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load comments: {error}'**
+  String couldNotLoadComments(Object error);
+
+  /// No description provided for @addCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment...'**
+  String get addCommentHint;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @deleteListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete list?'**
+  String get deleteListTitle;
+
+  /// No description provided for @deleteListConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get deleteListConfirm;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @couldNotSaveList.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save list: {error}'**
+  String couldNotSaveList(Object error);
+
+  /// No description provided for @commentsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} comments'**
+  String commentsCount(int count);
+
+  /// No description provided for @stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get stats;
+
+  /// No description provided for @myListsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'My lists'**
+  String get myListsTooltip;
+
+  /// No description provided for @editListTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit list'**
+  String get editListTooltip;
+
+  /// No description provided for @deleteListTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete list'**
+  String get deleteListTooltip;
 }
 
 class _AppLocalizationsDelegate

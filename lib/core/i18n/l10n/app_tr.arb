@@ -256,4 +256,42 @@
   ,"noBiographyAvailable":"Biyografi yok."
   ,"couldNotLoadAuthor":"Yazar yuklenemedi. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
+  ,"listsForYou":"Sana Ozel"
+  ,"listsFollowing":"Takip Edilenler"
+  ,"myLists":"Listelerim"
+  ,"savedLists":"Kaydedilen Listeler"
+  ,"createList":"Liste olustur"
+  ,"editList":"Listeyi duzenle"
+  ,"title":"Baslik"
+  ,"description":"Aciklama"
+  ,"public":"Herkese acik"
+  ,"bookSelector":"Kitap secici"
+  ,"searchViaOpenLibrary":"Open Library ile ara"
+  ,"search":"Ara"
+  ,"selectedBooks":"Secilen kitaplar"
+  ,"noBooksSelectedYet":"Henuz kitap secilmedi."
+  ,"noListsYet":"Henuz liste yok."
+  ,"couldNotLoadLists":"Listeler yuklenemedi: {error}"
+  ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
+  ,"byUser":"@{userName} tarafindan"
+  ,"@byUser":{"placeholders":{"userName":{}}}
+  ,"books":"Kitaplar"
+  ,"comments":"Yorumlar"
+  ,"couldNotLoadListItems":"Liste ogeleri yuklenemedi: {error}"
+  ,"@couldNotLoadListItems":{"placeholders":{"error":{}}}
+  ,"couldNotLoadComments":"Yorumlar yuklenemedi: {error}"
+  ,"@couldNotLoadComments":{"placeholders":{"error":{}}}
+  ,"addCommentHint":"Yorum ekle..."
+  ,"send":"Gonder"
+  ,"deleteListTitle":"Liste silinsin mi?"
+  ,"deleteListConfirm":"Bu islem geri alinamaz."
+  ,"delete":"Sil"
+  ,"couldNotSaveList":"Liste kaydedilemedi: {error}"
+  ,"@couldNotSaveList":{"placeholders":{"error":{}}}
+  ,"commentsCount":"{count} yorum"
+  ,"@commentsCount":{"placeholders":{"count":{"type":"int"}}}
+  ,"stats":"Istatistikler"
+  ,"myListsTooltip":"Listelerim"
+  ,"editListTooltip":"Listeyi duzenle"
+  ,"deleteListTooltip":"Listeyi sil"
 }

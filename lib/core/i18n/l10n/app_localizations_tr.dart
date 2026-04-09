@@ -586,4 +586,112 @@ class AppLocalizationsTr extends AppLocalizations {
   String couldNotLoadAuthor(Object error) {
     return 'Yazar yuklenemedi. $error';
   }
+
+  @override
+  String get listsForYou => 'Sana Ozel';
+
+  @override
+  String get listsFollowing => 'Takip Edilenler';
+
+  @override
+  String get myLists => 'Listelerim';
+
+  @override
+  String get savedLists => 'Kaydedilen Listeler';
+
+  @override
+  String get createList => 'Liste olustur';
+
+  @override
+  String get editList => 'Listeyi duzenle';
+
+  @override
+  String get title => 'Baslik';
+
+  @override
+  String get description => 'Aciklama';
+
+  @override
+  String get public => 'Herkese acik';
+
+  @override
+  String get bookSelector => 'Kitap secici';
+
+  @override
+  String get searchViaOpenLibrary => 'Open Library ile ara';
+
+  @override
+  String get search => 'Ara';
+
+  @override
+  String get selectedBooks => 'Secilen kitaplar';
+
+  @override
+  String get noBooksSelectedYet => 'Henuz kitap secilmedi.';
+
+  @override
+  String get noListsYet => 'Henuz liste yok.';
+
+  @override
+  String couldNotLoadLists(Object error) {
+    return 'Listeler yuklenemedi: $error';
+  }
+
+  @override
+  String byUser(Object userName) {
+    return '@$userName tarafindan';
+  }
+
+  @override
+  String get books => 'Kitaplar';
+
+  @override
+  String get comments => 'Yorumlar';
+
+  @override
+  String couldNotLoadListItems(Object error) {
+    return 'Liste ogeleri yuklenemedi: $error';
+  }
+
+  @override
+  String couldNotLoadComments(Object error) {
+    return 'Yorumlar yuklenemedi: $error';
+  }
+
+  @override
+  String get addCommentHint => 'Yorum ekle...';
+
+  @override
+  String get send => 'Gonder';
+
+  @override
+  String get deleteListTitle => 'Liste silinsin mi?';
+
+  @override
+  String get deleteListConfirm => 'Bu islem geri alinamaz.';
+
+  @override
+  String get delete => 'Sil';
+
+  @override
+  String couldNotSaveList(Object error) {
+    return 'Liste kaydedilemedi: $error';
+  }
+
+  @override
+  String commentsCount(int count) {
+    return '$count yorum';
+  }
+
+  @override
+  String get stats => 'Istatistikler';
+
+  @override
+  String get myListsTooltip => 'Listelerim';
+
+  @override
+  String get editListTooltip => 'Listeyi duzenle';
+
+  @override
+  String get deleteListTooltip => 'Listeyi sil';
 }

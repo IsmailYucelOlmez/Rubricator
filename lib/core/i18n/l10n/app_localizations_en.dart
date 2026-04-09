@@ -586,4 +586,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String couldNotLoadAuthor(Object error) {
     return 'Could not load author. $error';
   }
+
+  @override
+  String get listsForYou => 'For You';
+
+  @override
+  String get listsFollowing => 'Following';
+
+  @override
+  String get myLists => 'My Lists';
+
+  @override
+  String get savedLists => 'Saved Lists';
+
+  @override
+  String get createList => 'Create list';
+
+  @override
+  String get editList => 'Edit list';
+
+  @override
+  String get title => 'Title';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get public => 'Public';
+
+  @override
+  String get bookSelector => 'Book selector';
+
+  @override
+  String get searchViaOpenLibrary => 'Search via Open Library';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get selectedBooks => 'Selected books';
+
+  @override
+  String get noBooksSelectedYet => 'No books selected yet.';
+
+  @override
+  String get noListsYet => 'No lists yet.';
+
+  @override
+  String couldNotLoadLists(Object error) {
+    return 'Could not load lists: $error';
+  }
+
+  @override
+  String byUser(Object userName) {
+    return 'by @$userName';
+  }
+
+  @override
+  String get books => 'Books';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String couldNotLoadListItems(Object error) {
+    return 'Could not load list items: $error';
+  }
+
+  @override
+  String couldNotLoadComments(Object error) {
+    return 'Could not load comments: $error';
+  }
+
+  @override
+  String get addCommentHint => 'Add a comment...';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get deleteListTitle => 'Delete list?';
+
+  @override
+  String get deleteListConfirm => 'This action cannot be undone.';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String couldNotSaveList(Object error) {
+    return 'Could not save list: $error';
+  }
+
+  @override
+  String commentsCount(int count) {
+    return '$count comments';
+  }
+
+  @override
+  String get stats => 'Stats';
+
+  @override
+  String get myListsTooltip => 'My lists';
+
+  @override
+  String get editListTooltip => 'Edit list';
+
+  @override
+  String get deleteListTooltip => 'Delete list';
 }

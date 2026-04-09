@@ -256,4 +256,42 @@
   ,"noBiographyAvailable":"No biography available."
   ,"couldNotLoadAuthor":"Could not load author. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
+  ,"listsForYou":"For You"
+  ,"listsFollowing":"Following"
+  ,"myLists":"My Lists"
+  ,"savedLists":"Saved Lists"
+  ,"createList":"Create list"
+  ,"editList":"Edit list"
+  ,"title":"Title"
+  ,"description":"Description"
+  ,"public":"Public"
+  ,"bookSelector":"Book selector"
+  ,"searchViaOpenLibrary":"Search via Open Library"
+  ,"search":"Search"
+  ,"selectedBooks":"Selected books"
+  ,"noBooksSelectedYet":"No books selected yet."
+  ,"noListsYet":"No lists yet."
+  ,"couldNotLoadLists":"Could not load lists: {error}"
+  ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
+  ,"byUser":"by @{userName}"
+  ,"@byUser":{"placeholders":{"userName":{}}}
+  ,"books":"Books"
+  ,"comments":"Comments"
+  ,"couldNotLoadListItems":"Could not load list items: {error}"
+  ,"@couldNotLoadListItems":{"placeholders":{"error":{}}}
+  ,"couldNotLoadComments":"Could not load comments: {error}"
+  ,"@couldNotLoadComments":{"placeholders":{"error":{}}}
+  ,"addCommentHint":"Add a comment..."
+  ,"send":"Send"
+  ,"deleteListTitle":"Delete list?"
+  ,"deleteListConfirm":"This action cannot be undone."
+  ,"delete":"Delete"
+  ,"couldNotSaveList":"Could not save list: {error}"
+  ,"@couldNotSaveList":{"placeholders":{"error":{}}}
+  ,"commentsCount":"{count} comments"
+  ,"@commentsCount":{"placeholders":{"count":{"type":"int"}}}
+  ,"stats":"Stats"
+  ,"myListsTooltip":"My lists"
+  ,"editListTooltip":"Edit list"
+  ,"deleteListTooltip":"Delete list"
 }

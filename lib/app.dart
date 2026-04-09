@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/i18n/locale_provider.dart';
 import 'core/i18n/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
+import 'features/lists/presentation/pages/lists_feed_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/search/presentation/pages/search_page.dart';
 import 'features/auth/presentation/profile_page.dart';
@@ -22,6 +23,7 @@ class _BookAppState extends ConsumerState<BookApp> {
   static const _pages = [
     HomePage(),
     SearchPage(),
+    ListsPage(),
     ProfilePage(),
   ];
 
@@ -58,6 +60,11 @@ class _BookAppState extends ConsumerState<BookApp> {
                   icon: const Icon(Icons.search_outlined),
                   selectedIcon: const Icon(Icons.search),
                   label: l10n.navSearch,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.view_list_outlined),
+                  selectedIcon: const Icon(Icons.view_list),
+                  label: l10n.navLists,
                 ),
                 NavigationDestination(
                   icon: const Icon(Icons.person_outline),

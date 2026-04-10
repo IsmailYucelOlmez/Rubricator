@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
@@ -85,30 +86,34 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md + AppSpacing.xs,
+          AppSpacing.sm,
+          AppSpacing.md + AppSpacing.xs,
+          AppSpacing.lg,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(l10n.quickLog, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               l10n.addMinutesOrPagesPrompt,
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.md + AppSpacing.xs),
             TextField(
               controller: _minutes,
               decoration: InputDecoration(
                 labelText: l10n.minutes,
-                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Wrap(
-              spacing: 8,
+              spacing: AppSpacing.sm,
               children: [
                 TextButton(
                   onPressed: () {
@@ -119,19 +124,18 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             TextField(
               controller: _pages,
               decoration: InputDecoration(
                 labelText: l10n.pages,
-                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Wrap(
-              spacing: 8,
+              spacing: AppSpacing.sm,
               children: [
                 TextButton(
                   onPressed: () {
@@ -142,7 +146,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             booksAsync.when(
               data: (choices) {
                 if (choices.isEmpty) {
@@ -158,7 +162,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                       l10n.bookOptional,
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     DropdownMenu<String?>(
                       key: ValueKey<String?>(_bookId),
                       initialSelection: _bookId,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/providers/books_providers.dart';
@@ -70,26 +71,26 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     return Scaffold(
       appBar: AppBar(title: Text(isEdit ? l10n.editList : l10n.createList)),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: ListView(
           children: [
             TextField(controller: _titleCtrl, decoration: InputDecoration(labelText: l10n.title)),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             TextField(
               controller: _descCtrl,
               decoration: InputDecoration(labelText: l10n.description),
               minLines: 3,
               maxLines: 5,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             SwitchListTile(
               value: _isPublic,
               onChanged: (value) => setState(() => _isPublic = value),
               title: Text(l10n.public),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(l10n.bookSelector, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 Expanded(
@@ -97,16 +98,15 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     controller: _searchCtrl,
                     decoration: InputDecoration(
                       hintText: l10n.searchViaOpenLibrary,
-                      border: OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _searchBooks(),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 FilledButton(onPressed: _searchBooks, child: Text(l10n.search)),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             if (_searchResults.isNotEmpty)
               SizedBox(
                 height: 220,
@@ -127,9 +127,9 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                   },
                 ),
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             Text(l10n.selectedBooks, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             if (_loadingItems)
               const Center(child: CircularProgressIndicator())
             else if (_picked.isEmpty)
@@ -154,7 +154,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                   );
                 },
               ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             FilledButton(
               onPressed: _saving ? null : _save,
               child: _saving

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../providers/profile_stats_providers.dart';
 
 class LibraryStatsSection extends ConsumerWidget {
@@ -13,7 +16,7 @@ class LibraryStatsSection extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: async.when(
           data: (lib) {
             final tiles = <({String label, int value, IconData icon})>[
@@ -31,14 +34,14 @@ class LibraryStatsSection extends ConsumerWidget {
                   AppLocalizations.of(context)!.library,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   AppLocalizations.of(context)!.countsFromShelves,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 if (!hasData)
                   Text(
                     AppLocalizations.of(context)!.noDataYet,
@@ -103,15 +106,15 @@ class _StatTile extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: scheme.primary),
+            Icon(icon, size: 22, color: AppColors.gold),
             const Spacer(),
             Text(
               '$value',

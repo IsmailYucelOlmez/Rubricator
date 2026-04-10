@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_input.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
@@ -16,23 +18,23 @@ class ProfilePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: authAsync.when(
           data: (user) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.profile, style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               if (user == null) ...[
                 Text(l10n.signInPrompt),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
                   onPressed: () => _showSignInDialog(context),
                   child: Text(l10n.signIn),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 OutlinedButton(
                   onPressed: () => _showSignUpDialog(context),
                   child: Text(l10n.createAccount),
@@ -42,7 +44,7 @@ class ProfilePage extends ConsumerWidget {
                   user.email ?? l10n.signedInFallback,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
                   onPressed: () async {
                     await ref.read(authServiceProvider).signOut();
@@ -122,16 +124,16 @@ class _ProfileSignInDialogState extends State<_ProfileSignInDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          AppInput(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(labelText: l10n.email),
+            labelText: l10n.email,
           ),
-          const SizedBox(height: 12),
-          TextField(
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
             controller: _password,
             obscureText: true,
-            decoration: InputDecoration(labelText: l10n.password),
+            labelText: l10n.password,
           ),
         ],
       ),
@@ -207,18 +209,16 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          AppInput(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(labelText: l10n.email),
+            labelText: l10n.email,
           ),
-          const SizedBox(height: 12),
-          TextField(
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
             controller: _password,
             obscureText: true,
-            decoration: InputDecoration(
-              labelText: l10n.passwordMin6,
-            ),
+            labelText: l10n.passwordMin6,
           ),
         ],
       ),

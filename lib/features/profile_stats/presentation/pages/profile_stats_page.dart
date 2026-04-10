@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../lists/presentation/pages/lists_feed_page.dart';
@@ -22,7 +23,7 @@ class ProfileStatsPage extends ConsumerWidget {
         appBar: AppBar(title: Text(l10n.readingStats)),
         body: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
               l10n.signInToSeeStats,
               textAlign: TextAlign.center,
@@ -59,17 +60,17 @@ class ProfileStatsPage extends ConsumerWidget {
                 ]);
               },
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: const [
                   ReadingIdentitySection(),
-                  SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.md + AppSpacing.xs),
                   LibraryStatsSection(),
-                  SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.md + AppSpacing.xs),
                   RatingSection(),
-                  SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.md + AppSpacing.xs),
                   ContentStatsSection(),
-                  SizedBox(height: 32),
+                  SizedBox(height: AppSpacing.xl),
                 ],
               ),
             ),

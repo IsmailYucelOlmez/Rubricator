@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../domain/entities/home_book_entity.dart';
@@ -66,7 +69,12 @@ class _HomePageState extends ConsumerState<HomePage> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.sm + AppSpacing.xs,
+                    ),
                     child: Text(
                       l10n.discover,
                       style: Theme.of(context).textTheme.headlineSmall,
@@ -76,7 +84,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
                 for (final genre in _genres)
                   SliverToBoxAdapter(child: _GenreSection(genre: genre, l10n: l10n)),
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
               ],
             ),
     );
@@ -95,7 +103,7 @@ class _SearchResultList extends StatelessWidget {
       data: (books) {
         if (books.isEmpty) return Center(child: Text(l10n.noBooksFound));
         return ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           itemCount: books.length,
           separatorBuilder: (_, index) => const Divider(height: 1),
           itemBuilder: (context, index) => _BookListTile(book: books[index]),
@@ -104,7 +112,7 @@ class _SearchResultList extends StatelessWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Text(
             l10n.searchCouldNotComplete,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -178,7 +186,7 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 10, AppSpacing.md, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -199,11 +207,11 @@ class _HorizontalBookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: 288,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: books.length,
-        separatorBuilder: (_, index) => const SizedBox(width: 12),
+        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         itemBuilder: (context, index) => _BookCard(book: books[index]),
       ),
     );
@@ -228,11 +236,11 @@ class _BookCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 child: _CoverImage(coverId: book.coverId),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               book.title,
               maxLines: 2,
@@ -264,7 +272,7 @@ class _BookListTile extends StatelessWidget {
       leading: SizedBox(
         width: 42,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           child: _CoverImage(coverId: book.coverId),
         ),
       ),
@@ -291,7 +299,7 @@ class _CoverImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (coverId == null) {
       return const ColoredBox(
-        color: Color(0xFFECECEC),
+        color: AppColors.card,
         child: Center(child: Icon(Icons.menu_book_outlined)),
       );
     }
@@ -299,13 +307,13 @@ class _CoverImage extends StatelessWidget {
       'https://covers.openlibrary.org/b/id/$coverId-M.jpg',
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => const ColoredBox(
-        color: Color(0xFFECECEC),
+        color: AppColors.card,
         child: Center(child: Icon(Icons.broken_image_outlined)),
       ),
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
         return const ColoredBox(
-          color: Color(0xFFF2F2F2),
+          color: AppColors.surface,
           child: Center(
             child: SizedBox(
               width: 20,
@@ -325,16 +333,16 @@ class _HorizontalSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: 288,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 4,
-        separatorBuilder: (_, index) => const SizedBox(width: 12),
+        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         itemBuilder: (_, index) => Container(
           width: 145,
           decoration: BoxDecoration(
-            color: const Color(0xFFECECEC),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/theme/app_spacing.dart';
 
 import '../../auth/presentation/auth_provider.dart';
 import '../../books/domain/entities/book.dart';
@@ -17,14 +18,14 @@ class ListsPage extends ConsumerWidget {
     final signedIn = ref.watch(authStateProvider).valueOrNull != null;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: DefaultTabController(
           length: 6,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.navLists, style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               TabBar(
                 isScrollable: true,
                 tabs: [
@@ -36,7 +37,7 @@ class ListsPage extends ConsumerWidget {
                   Tab(text: l10n.favorites),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               if (!signedIn)
                 Expanded(
                   child: Center(

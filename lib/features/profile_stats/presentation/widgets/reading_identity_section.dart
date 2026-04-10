@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ReadingIdentitySection extends ConsumerWidget {
@@ -14,7 +15,7 @@ class ReadingIdentitySection extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,14 +23,14 @@ class ReadingIdentitySection extends ConsumerWidget {
               AppLocalizations.of(context)!.readingIdentity,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               AppLocalizations.of(context)!.genresAndAuthorsFromCompleted,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               AppLocalizations.of(context)!.topGenres,
               style: Theme.of(context).textTheme.titleSmall,
@@ -70,7 +71,7 @@ class ReadingIdentitySection extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(

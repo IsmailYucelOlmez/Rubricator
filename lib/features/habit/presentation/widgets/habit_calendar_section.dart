@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -52,11 +54,9 @@ class _CalendarBody extends StatelessWidget {
     }
 
     Color colorFor(int lv) {
-      final base = Theme.of(context).colorScheme.primary;
+      final base = AppColors.primary;
       if (lv == 0) {
-        return Theme.of(context).colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.55,
-        );
+        return AppColors.card;
       }
       return base.withValues(alpha: (0.2 + lv * 0.18).clamp(0.0, 1.0));
     }
@@ -64,24 +64,24 @@ class _CalendarBody extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(AppLocalizations.of(context)!.activity, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               AppLocalizations.of(context)!.lastWeeksMoreReading(weeks),
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(weeks, (w) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 3),
+                    padding: const EdgeInsets.only(right: AppSpacing.xs),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(7, (weekday) {
@@ -95,10 +95,10 @@ class _CalendarBody extends StatelessWidget {
                         return Container(
                           width: 11,
                           height: 11,
-                          margin: const EdgeInsets.only(bottom: 3),
+                          margin: const EdgeInsets.only(bottom: AppSpacing.xs),
                           decoration: BoxDecoration(
                             color: colorFor(lv),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(AppSpacing.xs / 2),
                             border: isToday
                                 ? Border.all(
                                     color: Theme.of(context).colorScheme.outline,

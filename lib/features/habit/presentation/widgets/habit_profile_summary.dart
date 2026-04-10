@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../pages/habit_page.dart';
 import '../providers/habit_providers.dart';
@@ -23,9 +24,9 @@ class HabitProfileSummary extends ConsumerWidget {
     final todayAsync = ref.watch(todayReadingProvider);
 
     return Card(
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: AppSpacing.md),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,9 +34,9 @@ class HabitProfileSummary extends ConsumerWidget {
               l10n.readingHabit,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             const HabitStreakWidget(compact: true),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             todayAsync.when(
               data: (read) => Text(
                 read ? l10n.readingLoggedToday : l10n.didYouReadToday,
@@ -54,7 +55,7 @@ class HabitProfileSummary extends ConsumerWidget {
               ),
               error: (e, _) => Text(l10n.todayStatusError(e.toString())),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 Expanded(
@@ -64,7 +65,7 @@ class HabitProfileSummary extends ConsumerWidget {
                     label: Text(l10n.quickLog),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {

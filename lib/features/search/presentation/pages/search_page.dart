@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
@@ -52,7 +53,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,13 +61,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               l10n.searchBooksTitle,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             TextField(
               controller: _controller,
               decoration: InputDecoration(
                 hintText: l10n.searchByTitleOrAuthorHint,
                 prefixIcon: const Icon(Icons.search),
-                border: const OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.search,
               onChanged: (value) {
@@ -75,7 +75,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
               onSubmitted: (_) => _submitSearch(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Expanded(
               child: showHint
                   ? _DiscoveryView(
@@ -174,7 +174,7 @@ class _DiscoveryView extends StatelessWidget {
           l10n.recentSearches,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         popularQueries.when(
           loading: () => const LinearProgressIndicator(),
           error: (error, stackTrace) => Text(l10n.loadRecentSearchesError),
@@ -183,8 +183,8 @@ class _DiscoveryView extends StatelessWidget {
               return Text(l10n.noRecentSearchesYet);
             }
             return Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: queries
                   .map(
                     (q) => ActionChip(
@@ -196,9 +196,9 @@ class _DiscoveryView extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSpacing.md + AppSpacing.xs),
         Text(l10n.recentSearchedBooks, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         popularBooks.when(
           loading: () => const LinearProgressIndicator(),
           error: (error, stackTrace) => Text(l10n.loadRecentSearchedBooksError),
@@ -207,11 +207,12 @@ class _DiscoveryView extends StatelessWidget {
               return Text(l10n.noRecentSearchedBooksYet);
             }
             return SizedBox(
-              height: 250,
+              height: AppSpacing.xl * 8,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: books.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 10),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                 itemBuilder: (context, index) {
                   final book = books[index];
                   return SizedBox(
@@ -220,7 +221,7 @@ class _DiscoveryView extends StatelessWidget {
                       onTap: () => onOpenBook(book),
                       child: Card(
                         child: Padding(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(AppSpacing.sm),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -228,7 +229,7 @@ class _DiscoveryView extends StatelessWidget {
                                 aspectRatio: 0.7,
                                 child: BookCoverLeading(coverId: book.coverId),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.sm),
                               Text(
                                 book.title,
                                 maxLines: 2,

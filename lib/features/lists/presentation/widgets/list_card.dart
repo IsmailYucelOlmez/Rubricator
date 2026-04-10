@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/list_entities.dart';
 
 class ListCard extends StatelessWidget {
@@ -23,17 +25,17 @@ class ListCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(list.title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text('@${list.userName}', style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               SizedBox(
                 height: 74,
                 child: Row(
@@ -42,9 +44,9 @@ class ListCard extends StatelessWidget {
                     final imageUrl = AppConstants.workCoverUrl(coverId, size: 'M');
                     return Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                           child: imageUrl == null
                               ? Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)
                               : Image.network(
@@ -60,7 +62,7 @@ class ListCard extends StatelessWidget {
                   }),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
                   IconButton(
@@ -68,7 +70,7 @@ class ListCard extends StatelessWidget {
                     icon: Icon(list.isLikedByMe ? Icons.favorite : Icons.favorite_border),
                   ),
                   Text('${list.likeCount}'),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   IconButton(
                     onPressed: onSaveTap,
                     icon: Icon(list.isSavedByMe ? Icons.bookmark : Icons.bookmark_outline),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ContentStatsSection extends ConsumerWidget {
@@ -13,7 +15,7 @@ class ContentStatsSection extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: async.when(
           data: (c) {
             final hasData = c.reviewCount > 0 || c.quoteCount > 0;
@@ -24,14 +26,14 @@ class ContentStatsSection extends ConsumerWidget {
                   AppLocalizations.of(context)!.contentYouAdded,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   AppLocalizations.of(context)!.reviewsAndQuotes,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 if (!hasData)
                   Text(
                     AppLocalizations.of(context)!.noDataYet,
@@ -49,7 +51,7 @@ class ContentStatsSection extends ConsumerWidget {
                           value: c.reviewCount,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                       Expanded(
                         child: _ContentTile(
                           icon: Icons.format_quote_outlined,
@@ -62,9 +64,9 @@ class ContentStatsSection extends ConsumerWidget {
               ],
             );
           },
-          loading: () => const SizedBox(
-            height: 88,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          loading: () => SizedBox(
+            height: AppSpacing.xl * 2 + AppSpacing.md + AppSpacing.sm,
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
           error: (e, _) => Text(
             AppLocalizations.of(context)!.couldNotLoadContentStats(e.toString()),
@@ -92,14 +94,14 @@ class _ContentTile extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
           children: [
             Icon(icon, color: scheme.primary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

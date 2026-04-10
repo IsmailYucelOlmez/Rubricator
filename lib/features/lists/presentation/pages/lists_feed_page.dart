@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
@@ -32,7 +33,7 @@ class ListsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm + AppSpacing.xs),
             child: Row(
               children: [
                 if (!embedded) Text(l10n.navLists, style: Theme.of(context).textTheme.headlineSmall),
@@ -97,7 +98,7 @@ class _FeedTab extends ConsumerWidget {
         if (lists.isEmpty) return Center(child: Text(l10n.noListsYet));
         final userId = ref.watch(authStateProvider).valueOrNull?.id;
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           itemCount: lists.length,
           itemBuilder: (context, index) {
             final list = lists[index];

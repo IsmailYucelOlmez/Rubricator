@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 import '../widgets/list_card.dart';
@@ -43,7 +44,7 @@ class _ListsTab extends StatelessWidget {
       data: (lists) {
         if (lists.isEmpty) return Center(child: Text(l10n.noListsYet));
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           itemCount: lists.length,
           itemBuilder: (context, index) {
             final list = lists[index];

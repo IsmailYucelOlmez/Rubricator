@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../widgets/habit_calendar_section.dart';
@@ -22,7 +23,7 @@ class HabitPage extends ConsumerWidget {
         appBar: AppBar(title: Text(l10n.readingHabit)),
         body: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
               l10n.signInForHabit,
               textAlign: TextAlign.center,
@@ -49,18 +50,18 @@ class HabitPage extends ConsumerWidget {
         label: Text(l10n.log),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: const [
           HabitStreakWidget(),
-          SizedBox(height: 16),
+          SizedBox(height: AppSpacing.md),
           HabitStatsSection(),
-          SizedBox(height: 16),
+          SizedBox(height: AppSpacing.md),
           HabitCalendarSection(),
-          SizedBox(height: 16),
+          SizedBox(height: AppSpacing.md),
           HabitChartSection(),
-          SizedBox(height: 16),
+          SizedBox(height: AppSpacing.md),
           HabitLogsList(),
-          SizedBox(height: 80),
+          SizedBox(height: AppSpacing.xl * 2 + AppSpacing.md),
         ],
       ),
     );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -46,7 +49,7 @@ class _ChartCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,9 +57,9 @@ class _ChartCard extends StatelessWidget {
               AppLocalizations.of(context)!.dailyMinutes14Days,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             SizedBox(
-              height: 120,
+              height: AppSpacing.lg * 5,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: ordered.map((day) {
@@ -65,7 +68,7 @@ class _ChartCard extends StatelessWidget {
                   final isToday = day == today;
                   return Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -75,13 +78,13 @@ class _ChartCard extends StatelessWidget {
                               height: h.clamp(4, 110),
                               decoration: BoxDecoration(
                                 color: isToday
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(4),
+                                    ? AppColors.primary
+                                    : AppColors.primary.withValues(alpha: 0.35),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
                             '${day.day}',
                             style: Theme.of(context).textTheme.labelSmall,
@@ -95,12 +98,12 @@ class _ChartCard extends StatelessWidget {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.md + AppSpacing.xs),
             Text(
               AppLocalizations.of(context)!.weeklyMinutes,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             _WeeklyBars(logs: logs, today: today),
           ],
         ),
@@ -133,7 +136,7 @@ class _WeeklyBars extends StatelessWidget {
     final denom = maxW > 0 ? maxW : 1;
 
     return SizedBox(
-      height: 100,
+      height: AppSpacing.xl * 3 + AppSpacing.sm,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(6, (i) {
@@ -144,7 +147,7 @@ class _WeeklyBars extends StatelessWidget {
               : AppLocalizations.of(context)!.weeksAgoShort(i);
           return Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -153,12 +156,12 @@ class _WeeklyBars extends StatelessWidget {
                     child: Container(
                       height: h.clamp(6, 92),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(4),
+                        color: AppColors.gold.withValues(alpha: 0.28),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     label,
                     style: Theme.of(context).textTheme.labelSmall,

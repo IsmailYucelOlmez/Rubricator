@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../providers/books_providers.dart';
 
 class AuthorDetailPage extends ConsumerWidget {
@@ -21,12 +23,12 @@ class AuthorDetailPage extends ConsumerWidget {
         data: (author) {
           final photoUrl = AppConstants.authorPhotoUrl(author.photoId);
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             children: [
               if (photoUrl != null)
                 Center(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Image.network(
                       photoUrl,
                       height: 160,
@@ -39,14 +41,14 @@ class AuthorDetailPage extends ConsumerWidget {
                 )
               else
                 const Center(child: Icon(Icons.person, size: 96)),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 author.name,
                 style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
               if (author.birthDate != null || author.deathDate != null) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   [
                     if (author.birthDate != null) author.birthDate,
@@ -56,7 +58,7 @@ class AuthorDetailPage extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.md + AppSpacing.xs),
               Text(
                 author.bio.isEmpty ? l10n.noBiographyAvailable : author.bio,
                 style: Theme.of(context).textTheme.bodyLarge,

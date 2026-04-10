@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -15,12 +17,12 @@ class HabitStatsSection extends ConsumerWidget {
         return Card(
           margin: EdgeInsets.zero,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppLocalizations.of(context)!.totals, style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 Row(
                   children: [
                     Expanded(
@@ -44,10 +46,12 @@ class HabitStatsSection extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: Padding(
-            padding: EdgeInsets.all(24),
-            child: CircularProgressIndicator(),
-          )),
+      loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.lg),
+              child: CircularProgressIndicator(),
+            ),
+          ),
       error: (e, _) => Text(AppLocalizations.of(context)!.statsError(e.toString())),
     );
   }
@@ -68,8 +72,8 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 28, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 10),
+        Icon(icon, size: 28, color: AppColors.gold),
+        const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

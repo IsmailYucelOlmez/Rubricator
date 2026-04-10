@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
@@ -66,14 +67,14 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           Text(list.description),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(l10n.byUser(list.userName), style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(l10n.books, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           itemsAsync.when(
             data: (items) => Column(
               children: [
@@ -92,9 +93,9 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Text(l10n.couldNotLoadListItems(e.toString())),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(l10n.comments, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           commentsAsync.when(
             data: (comments) => Column(
               children: [
@@ -109,7 +110,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             loading: () => const SizedBox.shrink(),
             error: (e, _) => Text(l10n.couldNotLoadComments(e.toString())),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           if (user != null)
             Row(
               children: [
@@ -118,14 +119,13 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                     controller: _commentCtrl,
                     decoration: InputDecoration(
                       hintText: l10n.addCommentHint,
-                      border: OutlineInputBorder(),
                       isDense: true,
                     ),
                     minLines: 1,
                     maxLines: 3,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 FilledButton(
                   onPressed: _commenting
                       ? null

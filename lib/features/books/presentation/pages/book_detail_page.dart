@@ -4,6 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
@@ -116,23 +119,23 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
           );
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             children: [
               if (coverUrl != null)
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   child: Image.network(
                     coverUrl,
-                    height: 240,
+                    height: 320,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                        _CoverPlaceholder(height: 240),
+                        const _CoverPlaceholder(height: 320),
                   ),
                 )
               else
-                const _CoverPlaceholder(height: 240),
-              const SizedBox(height: 16),
+                const _CoverPlaceholder(height: 320),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 detailedBook.title,
                 style: Theme.of(context).textTheme.headlineSmall,
@@ -203,7 +206,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               _RatingSection(
                 state: rating,
                 selectedRating: _selectedRating,
@@ -220,13 +223,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   }
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 detailedBook.description.isEmpty
                     ? l10n.noDescriptionAvailable
                     : detailedBook.description,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               _ReviewTabsSection(
                 reviewController: _reviewController,
                 externalTitleController: _externalTitleController,
@@ -306,7 +309,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   }
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               _QuoteSection(
                 controller: _quoteController,
                 quotes: quotes,
@@ -333,9 +336,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   }
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               Text(l10n.relatedBooks, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               related.when(
                 data: (list) {
                   if (list.isEmpty) {
@@ -350,7 +353,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: list.length,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                       itemBuilder: (context, i) {
                         final b = list[i];
                         final u = AppConstants.workCoverUrl(
@@ -372,7 +375,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                               children: [
                                 Expanded(
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(AppRadius.sm),
                                     child: u != null
                                         ? Image.network(
                                             u,
@@ -384,21 +387,21 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                                   error,
                                                   stackTrace,
                                                 ) => const ColoredBox(
-                                                  color: Colors.black12,
+                                                  color: AppColors.card,
                                                   child: Icon(
                                                     Icons.menu_book_outlined,
                                                   ),
                                                 ),
                                           )
                                         : const ColoredBox(
-                                            color: Colors.black12,
+                                            color: AppColors.card,
                                             child: Icon(
                                               Icons.menu_book_outlined,
                                             ),
                                           ),
                                   ),
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: AppSpacing.sm),
                                 Text(
                                   b.title,
                                   maxLines: 2,
@@ -416,9 +419,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 loading: () => const LinearProgressIndicator(),
                 error: (error, stackTrace) => Text(l10n.couldNotLoadRelatedBooks),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               Text(l10n.aiSummary, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               summary.when(
                 data: Text.new,
                 loading: () => const CircularProgressIndicator(),
@@ -430,7 +433,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
               l10n.couldNotLoadThisBook(
                 error.toString().replaceFirst('Exception: ', ''),
@@ -455,8 +458,8 @@ class _CoverPlaceholder extends StatelessWidget {
       height: height,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Icon(
         Icons.menu_book_outlined,
@@ -485,7 +488,7 @@ class _ReadingStatusCard extends StatelessWidget {
     final progress = userBook?.progress ?? 0;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -589,7 +592,7 @@ class _RatingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -617,7 +620,7 @@ class _RatingSection extends StatelessWidget {
                   onPressed: () => onChanged(index + 1),
                   icon: Icon(
                     selectedRating > index ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
+                    color: AppColors.gold,
                   ),
                 ),
               ),

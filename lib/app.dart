@@ -41,7 +41,8 @@ class _BookAppState extends ConsumerState<BookApp> {
       ],
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
+      themeMode: ThemeMode.dark,
       home: Builder(
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../providers/profile_stats_providers.dart';
 
 class RatingSection extends ConsumerWidget {
@@ -13,7 +16,7 @@ class RatingSection extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: async.when(
           data: (r) {
             final total = r.distribution.values.fold<int>(0, (a, b) => a + b);
@@ -25,14 +28,14 @@ class RatingSection extends ConsumerWidget {
                   AppLocalizations.of(context)!.yourRatings,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   AppLocalizations.of(context)!.starsGivenToBooks,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 if (!hasData)
                   Text(
                     AppLocalizations.of(context)!.noDataYet,
@@ -51,23 +54,23 @@ class RatingSection extends ConsumerWidget {
                               height: 1,
                             ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                         child: Row(
                           children: List.generate(5, (i) {
                             final filled = i < r.averageRating.round().clamp(0, 5);
                             return Icon(
                               filled ? Icons.star : Icons.star_border,
                               size: 22,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: AppColors.gold,
                             );
                           }),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   for (var stars = 5; stars >= 1; stars--)
                     _StarRow(
                       stars: stars,
@@ -78,9 +81,9 @@ class RatingSection extends ConsumerWidget {
               ],
             );
           },
-          loading: () => const SizedBox(
-            height: 100,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          loading: () => SizedBox(
+            height: AppSpacing.xl * 3 + AppSpacing.sm,
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
           error: (e, _) => Text(
             AppLocalizations.of(context)!.couldNotLoadRatings(e.toString()),
@@ -106,7 +109,7 @@ class _StarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = max > 0 ? count / max : 0.0;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Row(
         children: [
           SizedBox(
@@ -118,7 +121,7 @@ class _StarRow extends StatelessWidget {
           ),
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               child: LinearProgressIndicator(
                 value: t,
                 minHeight: 10,
@@ -127,7 +130,7 @@ class _StarRow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           SizedBox(
             width: 28,
             child: Text(

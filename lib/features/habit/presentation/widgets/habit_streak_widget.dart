@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -17,8 +19,8 @@ class HabitStreakWidget extends ConsumerWidget {
         if (compact) {
           return Row(
             children: [
-              Icon(Icons.local_fire_department, color: Colors.orange.shade700, size: 22),
-              const SizedBox(width: 8),
+              Icon(Icons.local_fire_department, color: AppColors.gold, size: 22),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 AppLocalizations.of(context)!.dayStreak(s.currentStreak),
                 style: Theme.of(context).textTheme.titleMedium,
@@ -29,11 +31,11 @@ class HabitStreakWidget extends ConsumerWidget {
         return Card(
           margin: EdgeInsets.zero,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(Icons.local_fire_department, color: Colors.orange.shade700, size: 36),
-                const SizedBox(width: 16),
+                Icon(Icons.local_fire_department, color: AppColors.gold, size: 36),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +48,7 @@ class HabitStreakWidget extends ConsumerWidget {
                         AppLocalizations.of(context)!.daysCount(s.currentStreak),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         AppLocalizations.of(context)!.longestDays(s.longestStreak),
                         style: Theme.of(context).textTheme.bodyMedium,

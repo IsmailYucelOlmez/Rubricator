@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
@@ -53,10 +52,12 @@ class _CalendarBody extends StatelessWidget {
       return 4;
     }
 
+    final cs = Theme.of(context).colorScheme;
+
     Color colorFor(int lv) {
-      final base = AppColors.primary;
+      final base = cs.primary;
       if (lv == 0) {
-        return AppColors.card;
+        return cs.surfaceContainerHighest;
       }
       return base.withValues(alpha: (0.2 + lv * 0.18).clamp(0.0, 1.0));
     }

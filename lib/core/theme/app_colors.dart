@@ -12,4 +12,11 @@ abstract final class AppColors {
   static const Color textSecondary = Color(0xFFB0B0B0);
 
   static const Color gold = Color(0xFFC2A878);
+
+  /// Light theme surfaces (warm paper-like, matches Rubricator maroon accent).
+  static const Color lightBackground = Color(0xFFF7F4EF);
+  static const Color lightSurface = Color(0xFFFFFFFF);
+  static const Color lightSurfaceVariant = Color(0xFFEDE8E1);
+  static const Color lightOnSurface = Color(0xFF1C1B1F);
+  static const Color lightOnSurfaceVariant = Color(0xFF5C5E64);
 }

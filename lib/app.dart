@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/i18n/locale_provider.dart';
 import 'core/i18n/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_mode_provider.dart';
 import 'features/lists/presentation/pages/lists_feed_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/search/presentation/pages/search_page.dart';
@@ -30,6 +31,7 @@ class _BookAppState extends ConsumerState<BookApp> {
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
+    final themeMode = ref.watch(themeModeProvider);
     return MaterialApp(
       locale: locale,
       supportedLocales: supportedLocales,
@@ -41,8 +43,9 @@ class _BookAppState extends ConsumerState<BookApp> {
       ],
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
       home: Builder(
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;

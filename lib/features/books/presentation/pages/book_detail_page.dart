@@ -386,17 +386,20 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                                   context,
                                                   error,
                                                   stackTrace,
-                                                ) => const ColoredBox(
-                                                  color: AppColors.card,
+                                                ) =>
+                                                    ColoredBox(
+                                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                                   child: Icon(
                                                     Icons.menu_book_outlined,
+                                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                   ),
                                                 ),
                                           )
-                                        : const ColoredBox(
-                                            color: AppColors.card,
+                                        : ColoredBox(
+                                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                             child: Icon(
                                               Icons.menu_book_outlined,
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                                             ),
                                           ),
                                   ),
@@ -458,7 +461,7 @@ class _CoverPlaceholder extends StatelessWidget {
       height: height,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Icon(

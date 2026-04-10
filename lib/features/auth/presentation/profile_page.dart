@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/theme_mode_provider.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
@@ -16,6 +17,7 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authAsync = ref.watch(authStateProvider);
     final l10n = AppLocalizations.of(context)!;
+    final themeMode = ref.watch(themeModeProvider);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -27,6 +29,27 @@ class ProfilePage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+              Text(l10n.themeAppearance, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: AppSpacing.xs),
+              SegmentedButton<ThemeMode>(
+                segments: [
+                  ButtonSegment<ThemeMode>(
+                    value: ThemeMode.light,
+                    label: Text(l10n.themeLight),
+                    icon: const Icon(Icons.light_mode_outlined, size: 18),
+                  ),
+                  ButtonSegment<ThemeMode>(
+                    value: ThemeMode.dark,
+                    label: Text(l10n.themeDark),
+                    icon: const Icon(Icons.dark_mode_outlined, size: 18),
+                  ),
+                ],
+                selected: {themeMode},
+                onSelectionChanged: (selected) {
+                  ref.read(themeModeProvider.notifier).setTheme(selected.first);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
               if (user == null) ...[
                 Text(l10n.signInPrompt),
                 const SizedBox(height: AppSpacing.sm + AppSpacing.xs),

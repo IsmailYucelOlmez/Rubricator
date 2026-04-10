@@ -6,9 +6,12 @@ import 'app_colors.dart';
 /// Headlines: Playfair Display (editorial, Efco Brookshire–style).
 /// Body: Newsreader (readable serif; Donau is not bundled in `google_fonts`).
 abstract final class AppTypography {
-  static TextTheme textTheme() {
-    final base = ThemeData(brightness: Brightness.dark, useMaterial3: true).textTheme;
+  static TextTheme textTheme({Brightness brightness = Brightness.dark}) {
+    final base = ThemeData(brightness: brightness, useMaterial3: true).textTheme;
     final bodyBase = GoogleFonts.newsreaderTextTheme(base);
+    final onSurface = brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightOnSurface;
+    final onSurfaceVariant =
+        brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightOnSurfaceVariant;
 
     TextStyle playfair({
       double fontSize = 24,
@@ -19,7 +22,7 @@ abstract final class AppTypography {
       return GoogleFonts.playfairDisplay(
         fontSize: fontSize,
         fontWeight: fontWeight,
-        color: color ?? AppColors.textPrimary,
+        color: color ?? onSurface,
         height: height,
       );
     }
@@ -33,7 +36,7 @@ abstract final class AppTypography {
       return GoogleFonts.newsreader(
         fontSize: fontSize,
         fontWeight: fontWeight,
-        color: color ?? AppColors.textPrimary,
+        color: color ?? onSurface,
         height: height,
       );
     }
@@ -50,13 +53,13 @@ abstract final class AppTypography {
       titleSmall: news(fontSize: 16, fontWeight: FontWeight.w600),
       bodyLarge: news(fontSize: 16),
       bodyMedium: news(fontSize: 14),
-      bodySmall: news(fontSize: 12, color: AppColors.textSecondary),
+      bodySmall: news(fontSize: 12, color: onSurfaceVariant),
       labelLarge: news(fontSize: 14, fontWeight: FontWeight.w600),
       labelMedium: news(fontSize: 12, fontWeight: FontWeight.w500),
       labelSmall: news(
         fontSize: 11,
         fontWeight: FontWeight.w300,
-        color: AppColors.textSecondary,
+        color: onSurfaceVariant,
       ),
     );
   }

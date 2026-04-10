@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 
@@ -297,24 +296,25 @@ class _CoverImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     if (coverId == null) {
-      return const ColoredBox(
-        color: AppColors.card,
-        child: Center(child: Icon(Icons.menu_book_outlined)),
+      return ColoredBox(
+        color: cs.surfaceContainerHighest,
+        child: Center(child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant)),
       );
     }
     return Image.network(
       'https://covers.openlibrary.org/b/id/$coverId-M.jpg',
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(
-        color: AppColors.card,
-        child: Center(child: Icon(Icons.broken_image_outlined)),
+      errorBuilder: (context, error, stackTrace) => ColoredBox(
+        color: cs.surfaceContainerHighest,
+        child: Center(child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant)),
       ),
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
-        return const ColoredBox(
-          color: AppColors.surface,
-          child: Center(
+        return ColoredBox(
+          color: cs.surfaceContainer,
+          child: const Center(
             child: SizedBox(
               width: 20,
               height: 20,
@@ -332,6 +332,7 @@ class _HorizontalSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final placeholder = Theme.of(context).colorScheme.surfaceContainerHighest;
     return SizedBox(
       height: 288,
       child: ListView.separated(
@@ -341,7 +342,7 @@ class _HorizontalSkeleton extends StatelessWidget {
         itemBuilder: (_, index) => Container(
           width: 145,
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: placeholder,
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
         ),

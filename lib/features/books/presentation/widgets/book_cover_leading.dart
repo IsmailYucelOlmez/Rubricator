@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 
 /// List tile leading: cover or placeholder (no API calls).
@@ -13,14 +12,16 @@ class BookCoverLeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final mutedIcon = cs.onSurfaceVariant.withValues(alpha: 0.65);
     final url = AppConstants.workCoverUrl(coverId, size: 'M');
     if (url == null) {
       return SizedBox(
         width: size,
         height: size * 1.4,
         child: ColoredBox(
-          color: AppColors.card,
-          child: Icon(Icons.menu_book_outlined, color: AppColors.textSecondary.withValues(alpha: 0.6)),
+          color: cs.surfaceContainerHighest,
+          child: Icon(Icons.menu_book_outlined, color: mutedIcon),
         ),
       );
     }
@@ -35,8 +36,8 @@ class BookCoverLeading extends StatelessWidget {
           width: size,
           height: size * 1.4,
           child: ColoredBox(
-            color: AppColors.card,
-            child: Icon(Icons.broken_image_outlined, color: AppColors.textSecondary.withValues(alpha: 0.6)),
+            color: cs.surfaceContainerHighest,
+            child: Icon(Icons.broken_image_outlined, color: mutedIcon),
           ),
         ),
         loadingBuilder: (context, child, progress) {

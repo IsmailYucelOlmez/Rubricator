@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Book App';
+  String get appTitle => 'Rubricator';
 
   @override
   String get navHome => 'Home';
@@ -200,16 +200,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get genreFantasy => 'FANTASY';
+  String get genreFantasy => 'Fantasy';
 
   @override
-  String get genreScienceFiction => 'SCIENCE FICTION';
+  String get genreScienceFiction => 'Science Fiction';
 
   @override
-  String get genreRomance => 'ROMANCE';
+  String get genreRomance => 'Romance';
 
   @override
-  String get genreMystery => 'MYSTERY';
+  String get genreMystery => 'Mystery';
 
   @override
   String get toRead => 'To Read';

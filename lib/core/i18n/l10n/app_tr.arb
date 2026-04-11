@@ -1,5 +1,5 @@
 {
-  "appTitle": "Kitap Uygulamasi",
+  "appTitle": "Rubricator",
   "navHome": "Ana Sayfa",
   "navSearch": "Ara",
   "navLists": "Listeler",
@@ -100,10 +100,10 @@
       "genre": {}
     }
   },
-  "genreFantasy": "FANTASTIK",
-  "genreScienceFiction": "BILIM KURGU",
-  "genreRomance": "ROMANTIK",
-  "genreMystery": "GIZEM",
+  "genreFantasy": "Fantastik",
+  "genreScienceFiction": "Bilim Kurgu",
+  "genreRomance": "Romantik",
+  "genreMystery": "Gizem",
   "toRead": "Okunacak",
   "reading": "Okunuyor",
   "reReading": "Tekrar Okunuyor",

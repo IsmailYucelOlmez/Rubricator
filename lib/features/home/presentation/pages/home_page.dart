@@ -1,7 +1,8 @@
-import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -25,99 +26,56 @@ class _HomePageState extends ConsumerState<HomePage> {
     'mystery',
   ];
 
-  final _controller = TextEditingController();
-  Timer? _debounce;
-  String _query = '';
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String raw) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      final q = raw.trim();
-      setState(() => _query = q.length >= 2 ? q : '');
-    });
-  }
+  static const _logoHeight = 40.0 * 1.10;
+  static const _appBarPad = AppSpacing.sm;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final searching = _query.isNotEmpty;
-    final searchResults = searching ? ref.watch(searchProvider(_query)) : null;
 
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            hintText: l10n.searchBooksMin2Hint,
-            prefixIcon: const Icon(Icons.search),
-            border: InputBorder.none,
-          ),
-          onChanged: _onSearchChanged,
+        toolbarHeight: math.max(
+          _logoHeight + _appBarPad * 2,
+          kMinInteractiveDimension + _appBarPad * 2,
         ),
+        centerTitle: false,
+        titleSpacing: _appBarPad,
+        automaticallyImplyLeading: false,
+        actionsPadding: const EdgeInsets.only(
+          top: _appBarPad,
+          right: _appBarPad,
+          bottom: _appBarPad,
+        ),
+        title: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            _appBarPad,
+            _appBarPad,
+            0,
+            _appBarPad,
+          ),
+          child: SvgPicture.asset(
+            'assets/RubricatorLogov2.svg',
+            height: _logoHeight,
+            fit: BoxFit.contain,
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: searching
-          ? _SearchResultList(result: searchResults!)
-          : CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md,
-                      AppSpacing.md,
-                      AppSpacing.md,
-                      AppSpacing.sm + AppSpacing.xs,
-                    ),
-                    child: Text(
-                      l10n.discover,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
-                for (final genre in _genres)
-                  SliverToBoxAdapter(child: _GenreSection(genre: genre, l10n: l10n)),
-                const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
-              ],
-            ),
-    );
-  }
-}
-
-class _SearchResultList extends StatelessWidget {
-  const _SearchResultList({required this.result});
-
-  final AsyncValue<List<HomeBookEntity>> result;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return result.when(
-      data: (books) {
-        if (books.isEmpty) return Center(child: Text(l10n.noBooksFound));
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          itemCount: books.length,
-          separatorBuilder: (_, index) => const Divider(height: 1),
-          itemBuilder: (context, index) => _BookListTile(book: books[index]),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Text(
-            l10n.searchCouldNotComplete,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-            textAlign: TextAlign.center,
-          ),
-        ),
+      body: CustomScrollView(
+        slivers: [
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+          SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
+          for (final genre in _genres)
+            SliverToBoxAdapter(child: _GenreSection(genre: genre, l10n: l10n)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
+        ],
       ),
     );
   }
@@ -172,20 +130,33 @@ String _genreLabel(String genre, AppLocalizations l10n) {
     case 'mystery':
       return l10n.genreMystery;
     default:
-      return genre.replaceAll('_', ' ').toUpperCase();
+      return _titleCaseWords(genre.replaceAll('_', ' '));
   }
 }
 
+String _titleCaseWords(String raw) {
+  return raw.split(RegExp(r'\s+')).map((word) {
+    if (word.isEmpty) return word;
+    final lower = word.toLowerCase();
+    return lower[0].toUpperCase() + lower.substring(1);
+  }).join(' ');
+}
+
 class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child});
+  const _Section({
+    required this.title,
+    required this.child,
+    this.topPadding = 10,
+  });
 
   final String title;
   final Widget child;
+  final double topPadding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 10, AppSpacing.md, 14),
+      padding: EdgeInsets.fromLTRB(AppSpacing.md, topPadding, AppSpacing.md, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -255,35 +226,6 @@ class _BookCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _BookListTile extends StatelessWidget {
-  const _BookListTile({required this.book});
-
-  final HomeBookEntity book;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: SizedBox(
-        width: 42,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-          child: _CoverImage(coverId: book.coverId),
-        ),
-      ),
-      title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        book.authorNames,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book.toBook())),
       ),
     );
   }

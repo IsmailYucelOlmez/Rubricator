@@ -1,5 +1,5 @@
 {
-  "appTitle": "Book App",
+  "appTitle": "Rubricator",
   "navHome": "Home",
   "navSearch": "Search",
   "navLists": "Lists",
@@ -100,10 +100,10 @@
       "genre": {}
     }
   },
-  "genreFantasy": "FANTASY",
-  "genreScienceFiction": "SCIENCE FICTION",
-  "genreRomance": "ROMANCE",
-  "genreMystery": "MYSTERY",
+  "genreFantasy": "Fantasy",
+  "genreScienceFiction": "Science Fiction",
+  "genreRomance": "Romance",
+  "genreMystery": "Mystery",
   "toRead": "To Read",
   "reading": "Reading",
   "reReading": "Re-reading",

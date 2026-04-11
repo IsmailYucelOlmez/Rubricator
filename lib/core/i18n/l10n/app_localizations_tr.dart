@@ -9,7 +9,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appTitle => 'Kitap Uygulamasi';
+  String get appTitle => 'Rubricator';
 
   @override
   String get navHome => 'Ana Sayfa';
@@ -199,16 +199,16 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get genreFantasy => 'FANTASTIK';
+  String get genreFantasy => 'Fantastik';
 
   @override
-  String get genreScienceFiction => 'BILIM KURGU';
+  String get genreScienceFiction => 'Bilim Kurgu';
 
   @override
-  String get genreRomance => 'ROMANTIK';
+  String get genreRomance => 'Romantik';
 
   @override
-  String get genreMystery => 'GIZEM';
+  String get genreMystery => 'Gizem';
 
   @override
   String get toRead => 'Okunacak';

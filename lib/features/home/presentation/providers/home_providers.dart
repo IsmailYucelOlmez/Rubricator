@@ -26,10 +26,3 @@ final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
 ) {
   return ref.watch(homeRepositoryProvider).getBooksByGenre(genre);
 });
-
-final searchProvider = FutureProvider.family<List<HomeBookEntity>, String>((
-  ref,
-  query,
-) {
-  return ref.watch(homeRepositoryProvider).searchBooks(query);
-});

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Book App'**
+  /// **'Rubricator'**
   String get appTitle;
 
   /// No description provided for @navHome.
@@ -437,25 +437,25 @@ abstract class AppLocalizations {
   /// No description provided for @genreFantasy.
   ///
   /// In en, this message translates to:
-  /// **'FANTASY'**
+  /// **'Fantasy'**
   String get genreFantasy;
 
   /// No description provided for @genreScienceFiction.
   ///
   /// In en, this message translates to:
-  /// **'SCIENCE FICTION'**
+  /// **'Science Fiction'**
   String get genreScienceFiction;
 
   /// No description provided for @genreRomance.
   ///
   /// In en, this message translates to:
-  /// **'ROMANCE'**
+  /// **'Romance'**
   String get genreRomance;
 
   /// No description provided for @genreMystery.
   ///
   /// In en, this message translates to:
-  /// **'MYSTERY'**
+  /// **'Mystery'**
   String get genreMystery;
 
   /// No description provided for @toRead.

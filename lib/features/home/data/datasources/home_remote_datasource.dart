@@ -6,35 +6,56 @@ class HomeRemoteDataSource {
 
   final ApiService _api;
 
-  Future<List<HomeBookModel>> fetchBooksByGenre(String genre) async {
-    final safeGenre = genre.trim();
-    if (safeGenre.isEmpty) return const <HomeBookModel>[];
-    final json = await _api.getJson(
-      '/subjects/$safeGenre.json',
-      queryParameters: <String, dynamic>{'limit': 20},
-    );
-    final works = json['works'] as List<dynamic>? ?? <dynamic>[];
-    return works
+  static String subjectQueryTerm(String genreKey) {
+    return genreKey.trim().replaceAll('"', ' ').replaceAll('_', ' ');
+  }
+
+  List<HomeBookModel> _parseVolumeItems(Map<String, dynamic> json) {
+    final items = json['items'] as List<dynamic>? ?? <dynamic>[];
+    return items
         .whereType<Map<String, dynamic>>()
-        .map(HomeBookModel.fromSubjectWork)
+        .map(HomeBookModel.fromGoogleVolume)
         .toList();
   }
 
-  Future<List<HomeBookModel>> fetchPopularBooks() {
-    return fetchBooksByGenre('fiction');
+  Future<List<HomeBookModel>> fetchBooksByGenre(String genre) async {
+    final safeGenre = subjectQueryTerm(genre);
+    if (safeGenre.isEmpty) return const <HomeBookModel>[];
+    final q = safeGenre.contains(' ')
+        ? 'subject:"$safeGenre"'
+        : 'subject:$safeGenre';
+    final json = await _api.getJson(
+      '/volumes',
+      queryParameters: <String, dynamic>{
+        'q': q,
+        'maxResults': 10,
+      },
+    );
+    return _parseVolumeItems(json);
+  }
+
+  Future<List<HomeBookModel>> fetchPopularBooks() async {
+    final json = await _api.getJson(
+      '/volumes',
+      queryParameters: <String, dynamic>{
+        'q': 'subject:fiction',
+        'maxResults': 10,
+      },
+    );
+    return _parseVolumeItems(json);
   }
 
   Future<List<HomeBookModel>> searchBooks(String query) async {
     final q = query.trim();
     if (q.isEmpty) return const <HomeBookModel>[];
     final json = await _api.getJson(
-      '/search.json',
-      queryParameters: <String, dynamic>{'q': q, 'limit': 30},
+      '/volumes',
+      queryParameters: <String, dynamic>{'q': q, 'maxResults': 30},
     );
-    final docs = json['docs'] as List<dynamic>? ?? <dynamic>[];
-    return docs
+    final items = json['items'] as List<dynamic>? ?? <dynamic>[];
+    return items
         .whereType<Map<String, dynamic>>()
-        .map(HomeBookModel.fromSearchDoc)
+        .map(HomeBookModel.fromGoogleVolume)
         .toList();
   }
 }

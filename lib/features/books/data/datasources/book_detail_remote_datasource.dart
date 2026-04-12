@@ -4,18 +4,18 @@ import '../../../../services/api_service.dart';
 import '../../../../services/supabase_service.dart';
 import '../models/book_detail_models.dart';
 import '../models/book_model.dart';
-import 'open_library_remote_datasource.dart';
+import 'google_books_remote_datasource.dart';
 
 class BookDetailRemoteDataSource {
   BookDetailRemoteDataSource(ApiService api)
-    : _openLibrary = OpenLibraryRemoteDataSource(api);
+    : _googleBooks = GoogleBooksRemoteDataSource(api);
 
-  final OpenLibraryRemoteDataSource _openLibrary;
+  final GoogleBooksRemoteDataSource _googleBooks;
 
   SupabaseClient get _client => SupabaseService.client;
 
   Future<BookModel> fetchBookDetail(String workId) =>
-      _openLibrary.fetchWork(workId);
+      _googleBooks.fetchVolume(workId);
 
   Future<List<BookModel>> fetchSimilarBooks({
     required String workId,
@@ -23,15 +23,15 @@ class BookDetailRemoteDataSource {
     required String author,
   }) async {
     if (subjects.isNotEmpty) {
-      final subjectRelated = await _openLibrary.fetchRelatedBySubject(
+      final subjectRelated = await _googleBooks.fetchRelatedBySubject(
         subject: subjects.first,
-        excludeWorkId: workId,
+        excludeVolumeId: workId,
       );
       if (subjectRelated.isNotEmpty) return subjectRelated;
     }
-    return _openLibrary.fetchRelatedByAuthor(
+    return _googleBooks.fetchRelatedByAuthor(
       author: author,
-      excludeWorkId: workId,
+      excludeVolumeId: workId,
     );
   }
 

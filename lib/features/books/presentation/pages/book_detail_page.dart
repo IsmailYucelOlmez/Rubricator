@@ -12,6 +12,7 @@ import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/book_detail_entities.dart';
 import '../providers/books_providers.dart';
+import '../widgets/book_cover_with_favorite_button.dart';
 import 'author_detail_page.dart';
 
 class BookDetailPage extends ConsumerStatefulWidget {
@@ -107,14 +108,14 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
           );
           final quotes = ref.watch(quoteProvider(detailedBook.id));
           final rating = ref.watch(ratingProvider(detailedBook.id));
-          final coverUrl = AppConstants.workCoverUrl(
-            detailedBook.coverId,
-            size: 'L',
+          final coverUrl = AppConstants.bookDetailCoverUrl(
+            detailedBook.coverImageUrl,
           );
           final related = ref.watch(
             relatedBooksProvider((
               workId: detailedBook.id,
               subjects: detailedBook.subjectKeys,
+              author: detailedBook.author,
             )),
           );
 
@@ -356,9 +357,8 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                           const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                       itemBuilder: (context, i) {
                         final b = list[i];
-                        final u = AppConstants.workCoverUrl(
-                          b.coverId,
-                          size: 'M',
+                        final u = AppConstants.bookThumbnailUrl(
+                          b.coverImageUrl,
                         );
                         return SizedBox(
                           width: 110,
@@ -374,34 +374,38 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                                    child: u != null
-                                        ? Image.network(
-                                            u,
-                                            width: 110,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (
-                                                  context,
-                                                  error,
-                                                  stackTrace,
-                                                ) =>
-                                                    ColoredBox(
-                                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                                  child: Icon(
-                                                    Icons.menu_book_outlined,
-                                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  child: BookCoverWithFavoriteButton(
+                                    bookId: b.id,
+                                    compact: true,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                                      child: u != null
+                                          ? Image.network(
+                                              u,
+                                              width: 110,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) =>
+                                                      ColoredBox(
+                                                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                                    child: Icon(
+                                                      Icons.menu_book_outlined,
+                                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                    ),
                                                   ),
-                                                ),
-                                          )
-                                        : ColoredBox(
-                                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                            child: Icon(
-                                              Icons.menu_book_outlined,
-                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            )
+                                          : ColoredBox(
+                                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                              child: Icon(
+                                                Icons.menu_book_outlined,
+                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                              ),
                                             ),
-                                          ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: AppSpacing.sm),

@@ -51,7 +51,7 @@ final getContentStatsUseCaseProvider = Provider<GetContentStatsUseCase>(
   (ref) => GetContentStatsUseCase(ref.watch(profileStatsRepositoryProvider)),
 );
 
-/// Profile strip only: Supabase counts + a small Open Library sample for top genre.
+/// Profile strip only: Supabase counts + Google Books metadata for top genre.
 final profileStatsSummaryProvider =
     FutureProvider<ProfileStatsSummary>((ref) async {
   ref.watch(authStateProvider);

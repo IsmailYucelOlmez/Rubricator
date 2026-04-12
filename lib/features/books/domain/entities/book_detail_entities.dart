@@ -3,7 +3,7 @@ class BookEntity {
     required this.id,
     required this.title,
     required this.author,
-    required this.coverId,
+    this.coverImageUrl,
     required this.description,
     this.authorIds = const [],
     this.subjectKeys = const [],
@@ -12,7 +12,7 @@ class BookEntity {
   final String id;
   final String title;
   final String author;
-  final int? coverId;
+  final String? coverImageUrl;
   final String description;
   final List<String> authorIds;
   final List<String> subjectKeys;

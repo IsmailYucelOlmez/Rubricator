@@ -11,7 +11,7 @@ abstract class ListsRepository {
     required String bookId,
     required String title,
     required String author,
-    int? coverId,
+    String? coverImageUrl,
   });
   Future<void> reorderListItems({
     required String listId,

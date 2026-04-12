@@ -1,17 +1,31 @@
-class AppConstants {
-  static const String openLibraryBaseUrl = 'https://openlibrary.org';
-  static const String openLibraryCoverBaseUrl = 'https://covers.openlibrary.org';
-  static const String summariesKey = 'cached_ai_summaries';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-  /// Open Library cover by edition/work cover id. Returns null if [coverId] is null.
-  static String? workCoverUrl(int? coverId, {String size = 'L'}) {
-    if (coverId == null) return null;
-    return '$openLibraryCoverBaseUrl/b/id/$coverId-$size.jpg';
+class AppConstants {
+  static const String googleBooksBaseUrl =
+      'https://www.googleapis.com/books/v1';
+
+  /// `GOOGLE_BOOKS_API_KEY` from [assets/.env] (loaded in [SupabaseService.initialize]),
+  /// or `--dart-define=GOOGLE_BOOKS_API_KEY=...` when the file value is empty.
+  static String get googleBooksApiKey {
+    final fromFile = dotenv.env['GOOGLE_BOOKS_API_KEY']?.trim() ?? '';
+    if (fromFile.isNotEmpty) return fromFile;
+    return const String.fromEnvironment(
+      'GOOGLE_BOOKS_API_KEY',
+      defaultValue: '',
+    ).trim();
   }
 
-  /// Author photo from Open Library photos list.
-  static String? authorPhotoUrl(int? photoId, {String size = 'M'}) {
-    if (photoId == null) return null;
-    return '$openLibraryCoverBaseUrl/a/id/$photoId-$size.jpg';
+  static const String summariesKey = 'cached_ai_summaries';
+
+  /// Google Books thumbnail URL, or null for placeholder.
+  static String? bookThumbnailUrl(String? coverImageUrl) {
+    if (coverImageUrl == null || coverImageUrl.isEmpty) return null;
+    return coverImageUrl;
+  }
+
+  /// Detail cover: bumps Google Books zoom when present.
+  static String? bookDetailCoverUrl(String? coverImageUrl) {
+    if (coverImageUrl == null || coverImageUrl.isEmpty) return null;
+    return coverImageUrl.replaceAll('zoom=1', 'zoom=3');
   }
 }

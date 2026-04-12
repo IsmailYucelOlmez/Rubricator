@@ -298,7 +298,7 @@ Comments Section
 
 ## Book Selector:
 
-* search via Open Library
+* search via Google Books
 * add/remove books
 
 ---

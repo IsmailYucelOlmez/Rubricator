@@ -5,6 +5,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
+import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 import 'create_edit_list_page.dart';
@@ -81,7 +82,15 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                 for (final item in items)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: _Cover(coverId: item.coverId),
+                    leading: SizedBox(
+                      width: 40,
+                      height: 56,
+                      child: BookCoverWithFavoriteButton(
+                        bookId: item.bookId,
+                        compact: true,
+                        child: _Cover(coverImageUrl: item.coverImageUrl),
+                      ),
+                    ),
                     title: Text(item.bookTitle),
                     subtitle: Text(
                       item.note?.isNotEmpty == true ? '${item.bookAuthor}\n${item.note}' : item.bookAuthor,
@@ -202,12 +211,12 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 }
 
 class _Cover extends StatelessWidget {
-  const _Cover({required this.coverId});
-  final int? coverId;
+  const _Cover({this.coverImageUrl});
+  final String? coverImageUrl;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = AppConstants.workCoverUrl(coverId, size: 'M');
+    final imageUrl = AppConstants.bookThumbnailUrl(coverImageUrl);
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
       child: SizedBox(

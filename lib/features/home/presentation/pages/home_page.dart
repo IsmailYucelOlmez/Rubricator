@@ -3,11 +3,13 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
+import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../providers/home_providers.dart';
 
@@ -19,19 +21,13 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  static const _genres = <String>[
-    'fantasy',
-    'science_fiction',
-    'romance',
-    'mystery',
-  ];
-
   static const _logoHeight = 40.0 * 1.10;
   static const _appBarPad = AppSpacing.sm;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final genreSections = ref.watch(homeGenreSectionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -72,8 +68,40 @@ class _HomePageState extends ConsumerState<HomePage> {
         slivers: [
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
           SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
-          for (final genre in _genres)
-            SliverToBoxAdapter(child: _GenreSection(genre: genre, l10n: l10n)),
+          ...genreSections.when(
+            data: (map) => [
+              for (final genre in kHomePageGenreKeys)
+                SliverToBoxAdapter(
+                  child: _GenreSection(
+                    genre: genre,
+                    books: map[genre] ?? const <HomeBookEntity>[],
+                    l10n: l10n,
+                  ),
+                ),
+            ],
+            loading: () => [
+              for (final genre in kHomePageGenreKeys)
+                SliverToBoxAdapter(
+                  child: _Section(
+                    title: _genreLabel(genre, l10n),
+                    child: const _HorizontalSkeleton(),
+                  ),
+                ),
+            ],
+            error: (error, stackTrace) => [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
+                    0,
+                  ),
+                  child: _InlineError(message: l10n.loadHomeGenresError),
+                ),
+              ),
+            ],
+          ),
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
         ],
       ),
@@ -99,22 +127,24 @@ class _PopularSection extends ConsumerWidget {
   }
 }
 
-class _GenreSection extends ConsumerWidget {
-  const _GenreSection({required this.genre, required this.l10n});
+class _GenreSection extends StatelessWidget {
+  const _GenreSection({
+    required this.genre,
+    required this.books,
+    required this.l10n,
+  });
 
   final String genre;
+  final List<HomeBookEntity> books;
   final AppLocalizations l10n;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(genreBooksProvider(genre));
+  Widget build(BuildContext context) {
     return _Section(
       title: _genreLabel(genre, l10n),
-      child: state.when(
-        data: (books) => _HorizontalBookList(books: books),
-        loading: () => const _HorizontalSkeleton(),
-        error: (error, stackTrace) => _InlineError(message: l10n.loadGenreBooksError(_genreLabel(genre, l10n))),
-      ),
+      child: books.isEmpty
+          ? _InlineError(message: l10n.loadGenreBooksError(_genreLabel(genre, l10n)))
+          : _HorizontalBookList(books: books),
     );
   }
 }
@@ -129,6 +159,10 @@ String _genreLabel(String genre, AppLocalizations l10n) {
       return l10n.genreRomance;
     case 'mystery':
       return l10n.genreMystery;
+    case 'thriller':
+      return l10n.genreThriller;
+    case 'horror':
+      return l10n.genreHorror;
     default:
       return _titleCaseWords(genre.replaceAll('_', ' '));
   }
@@ -146,21 +180,24 @@ class _Section extends StatelessWidget {
   const _Section({
     required this.title,
     required this.child,
-    this.topPadding = 10,
   });
 
   final String title;
   final Widget child;
-  final double topPadding;
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleLarge;
+    final titleFontSize = titleStyle?.fontSize ?? 22;
     return Padding(
-      padding: EdgeInsets.fromLTRB(AppSpacing.md, topPadding, AppSpacing.md, 14),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 10, AppSpacing.md, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            title,
+            style: titleStyle?.copyWith(fontSize: titleFontSize * 1.50),
+          ),
           const SizedBox(height: 10),
           child,
         ],
@@ -195,6 +232,8 @@ class _BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleSmall;
+    final titleFontSize = (titleStyle?.fontSize ?? 14) * 1.25;
     return SizedBox(
       width: 145,
       child: InkWell(
@@ -205,9 +244,12 @@ class _BookCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                child: _CoverImage(coverId: book.coverId),
+              child: BookCoverWithFavoriteButton(
+                bookId: book.id,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  child: _CoverImage(coverImageUrl: book.coverImageUrl),
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -215,7 +257,7 @@ class _BookCard extends StatelessWidget {
               book.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: titleStyle?.copyWith(fontSize: titleFontSize),
             ),
             const SizedBox(height: 2),
             Text(
@@ -232,21 +274,22 @@ class _BookCard extends StatelessWidget {
 }
 
 class _CoverImage extends StatelessWidget {
-  const _CoverImage({required this.coverId});
+  const _CoverImage({this.coverImageUrl});
 
-  final int? coverId;
+  final String? coverImageUrl;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    if (coverId == null) {
+    final url = AppConstants.bookThumbnailUrl(coverImageUrl);
+    if (url == null) {
       return ColoredBox(
         color: cs.surfaceContainerHighest,
         child: Center(child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant)),
       );
     }
     return Image.network(
-      'https://covers.openlibrary.org/b/id/$coverId-M.jpg',
+      url,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => ColoredBox(
         color: cs.surfaceContainerHighest,

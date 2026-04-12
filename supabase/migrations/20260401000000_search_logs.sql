@@ -1,4 +1,4 @@
--- Search analytics: Open Library queries + optional book clicks.
+-- Search analytics: search queries + optional book clicks.
 -- Run via Supabase CLI or SQL Editor.
 
 create table if not exists public.search_logs (

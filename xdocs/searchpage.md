@@ -4,7 +4,7 @@
 
 Build a complete search system that includes:
 
-* Book search (Open Library API)
+* Book search (Google Books API)
 * Search history tracking (per user)
 * Global popular searches (most searched books)
 * Efficient logging system (Supabase)
@@ -47,7 +47,7 @@ features/search/
 
 Use:
 
-* Open Library API → for book search
+* Google Books API → for book search
 * Supabase → for search logs & analytics
 
 ---

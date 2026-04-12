@@ -23,14 +23,14 @@ class _PickedBook {
     required this.bookId,
     required this.title,
     required this.author,
-    this.coverId,
+    this.coverImageUrl,
     this.itemId,
   });
 
   final String bookId;
   final String title;
   final String author;
-  final int? coverId;
+  final String? coverImageUrl;
   final String? itemId;
 }
 
@@ -97,7 +97,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                   child: TextField(
                     controller: _searchCtrl,
                     decoration: InputDecoration(
-                      hintText: l10n.searchViaOpenLibrary,
+                      hintText: l10n.searchViaGoogleBooks,
                     ),
                     onSubmitted: (_) => _searchBooks(),
                   ),
@@ -183,7 +183,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                 bookId: i.bookId,
                 title: i.bookTitle,
                 author: i.bookAuthor,
-                coverId: i.coverId,
+                coverImageUrl: i.coverImageUrl,
                 itemId: i.id,
               ),
             )
@@ -209,7 +209,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
           bookId: book.id,
           title: book.title,
           author: book.author,
-          coverId: book.coverId,
+          coverImageUrl: book.coverImageUrl,
         ),
       );
     });
@@ -269,7 +269,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
             bookId: pick.bookId,
             title: pick.title,
             author: pick.author,
-            coverId: pick.coverId,
+            coverImageUrl: pick.coverImageUrl,
           );
         }
       }

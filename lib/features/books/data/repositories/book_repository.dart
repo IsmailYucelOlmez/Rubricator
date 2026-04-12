@@ -1,13 +1,13 @@
 import '../../../../services/api_service.dart';
 import '../../domain/entities/author.dart';
 import '../../domain/entities/book.dart';
-import '../datasources/open_library_remote_datasource.dart';
+import '../datasources/google_books_remote_datasource.dart';
 import '../models/book_model.dart';
 
 class BookRepository {
-  BookRepository(ApiService api) : _ds = OpenLibraryRemoteDataSource(api);
+  BookRepository(ApiService api) : _ds = GoogleBooksRemoteDataSource(api);
 
-  final OpenLibraryRemoteDataSource _ds;
+  final GoogleBooksRemoteDataSource _ds;
 
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
@@ -15,7 +15,11 @@ class BookRepository {
 
   int _getLanguageScore(BookModel book) {
     final langs = book.languages;
-    if (langs != null && (langs.contains('eng') || langs.contains('tur'))) {
+    if (langs != null &&
+        (langs.contains('eng') ||
+            langs.contains('en') ||
+            langs.contains('tur') ||
+            langs.contains('tr'))) {
       return 3;
     }
 
@@ -88,20 +92,13 @@ class BookRepository {
   }
 
   Future<Book> getBookByWorkId(String workId) async {
-    var model = await _ds.fetchWork(workId.trim());
-    if (model.primaryAuthorName == 'Unknown author' &&
-        model.authorKeys.isNotEmpty) {
-      try {
-        final a = await _ds.fetchAuthor(model.authorKeys.first);
-        model = model.copyWith(primaryAuthorName: a.name);
-      } catch (_) {}
-    }
+    final model = await _ds.fetchVolume(workId.trim());
     return model.toEntity();
   }
 
   Future<Book> getBookDetail(Book book) async {
     final seed = BookModel.fromEntity(book);
-    final model = await _ds.fetchWorkMerged(book.id, seed);
+    final model = await _ds.fetchVolumeMerged(book.id, seed);
     return model.toEntity();
   }
 
@@ -116,13 +113,13 @@ class BookRepository {
     if (subject.isNotEmpty) {
       models = await _ds.fetchRelatedBySubject(
         subject: subject,
-        excludeWorkId: book.id,
+        excludeVolumeId: book.id,
       );
     }
     if (models.isEmpty && book.author.trim().isNotEmpty) {
       models = await _ds.fetchRelatedByAuthor(
         author: book.author,
-        excludeWorkId: book.id,
+        excludeVolumeId: book.id,
       );
     }
     final prioritized = _prioritizeModels(models);

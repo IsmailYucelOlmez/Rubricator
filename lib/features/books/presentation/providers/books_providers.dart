@@ -48,7 +48,7 @@ final aiSummaryProvider = FutureProvider.family<String, BookEntity>((
     id: book.id,
     title: book.title,
     author: book.author,
-    coverId: book.coverId,
+    coverImageUrl: book.coverImageUrl,
     description: book.description,
     authorIds: book.authorIds,
     subjectKeys: book.subjectKeys,
@@ -65,20 +65,19 @@ final authorDetailProvider = FutureProvider.family<Author, String>((
 
 /// Subjects come from the work payload; use the enriched [Book] from [bookDetailProvider].
 final relatedBooksProvider =
-    FutureProvider.family<List<Book>, ({String workId, List<String> subjects})>(
-      (ref, arg) async {
-        if (arg.subjects.isEmpty) return <Book>[];
-        final book = Book(
-          id: arg.workId,
-          title: '',
-          author: '',
-          coverId: null,
-          description: '',
-          subjectKeys: arg.subjects,
-        );
-        return ref.watch(bookRepositoryProvider).getRelatedBooks(book);
-      },
-    );
+    FutureProvider.family<
+      List<Book>,
+      ({String workId, List<String> subjects, String author})
+    >((ref, arg) async {
+      final book = Book(
+        id: arg.workId,
+        title: '',
+        author: arg.author,
+        description: '',
+        subjectKeys: arg.subjects,
+      );
+      return ref.watch(bookRepositoryProvider).getRelatedBooks(book);
+    });
 
 class ReviewListNotifier
     extends FamilyAsyncNotifier<List<ReviewEntity>, String> {

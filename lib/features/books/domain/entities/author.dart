@@ -1,4 +1,4 @@
-/// Domain entity for an Open Library author (`/authors/{id}`).
+/// Domain entity for an author (display name + bio; no external photo API).
 class Author {
   const Author({
     required this.id,
@@ -6,7 +6,6 @@ class Author {
     required this.bio,
     this.birthDate,
     this.deathDate,
-    this.photoId,
   });
 
   final String id;
@@ -14,5 +13,4 @@ class Author {
   final String bio;
   final String? birthDate;
   final String? deathDate;
-  final int? photoId;
 }

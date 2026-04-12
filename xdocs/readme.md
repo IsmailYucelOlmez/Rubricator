@@ -2,7 +2,7 @@
 
 ## 🎯 Project Goal
 
-Build a modern, scalable Flutter mobile application that allows users to discover books, save favorites, and get AI-powered summaries using Open Library data.
+Build a modern, scalable Flutter mobile application that allows users to discover books, save favorites, and get AI-powered summaries using Google Books data.
 
 The app should feel like a **next-generation version of a book platform similar to 1000Kitap**, but with:
 
@@ -22,7 +22,7 @@ The app should feel like a **next-generation version of a book platform similar 
 
 ### Backend (No custom backend)
 
-* Open Library API (book data)
+* Google Books API (book data)
 * Firebase / Appwrite (Auth + Database)
 
 ### AI
@@ -140,10 +140,10 @@ Focus on **quality over quantity**
 
 ## 📦 API Guidelines
 
-### Open Library
+### Google Books
 
-* Use search endpoint
-* Use works endpoint for details
+* Use `/volumes` search
+* Use `/volumes/{id}` for details
 * Handle missing/null fields
 
 ### AI (OpenAI)

@@ -1,25 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Headlines: Playfair Display (editorial, Efco Brookshire–style).
-/// Body: Newsreader (readable serif; Donau is not bundled in `google_fonts`).
+/// Display (largest headings): EFCO Brookshire.
+/// Headlines & titles: Have Heart One.
+/// Body / labels: Handelson Three.
+/// Donau Uppercase: only for all-caps UI (e.g. bottom nav — use [bottomNavLabel]).
 abstract final class AppTypography {
+  static const String _handelson = 'HandelsonThree';
+  static const String _brookshire = 'EFCOBrookshire';
+  static const String _haveHeartOne = 'HaveHeartOne';
+  static const String _donauUpper = 'DonauNeueUppercase';
+
+  /// Material [NavigationBar] labels; pair with `label: l10n.foo.toUpperCase()`.
+  static TextStyle bottomNavLabel({required Color color}) {
+    return TextStyle(
+      fontFamily: _donauUpper,
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.4,
+      color: color,
+    );
+  }
+
   static TextTheme textTheme({Brightness brightness = Brightness.dark}) {
     final base = ThemeData(brightness: brightness, useMaterial3: true).textTheme;
-    final bodyBase = GoogleFonts.newsreaderTextTheme(base);
     final onSurface = brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightOnSurface;
     final onSurfaceVariant =
         brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightOnSurfaceVariant;
 
-    TextStyle playfair({
+    TextStyle brookshire({
       double fontSize = 24,
       FontWeight fontWeight = FontWeight.w700,
       Color? color,
       double? height,
     }) {
-      return GoogleFonts.playfairDisplay(
+      return TextStyle(
+        fontFamily: _brookshire,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -27,13 +44,14 @@ abstract final class AppTypography {
       );
     }
 
-    TextStyle news({
+    TextStyle handelson({
       double fontSize = 14,
       FontWeight fontWeight = FontWeight.w400,
       Color? color,
       double? height,
     }) {
-      return GoogleFonts.newsreader(
+      return TextStyle(
+        fontFamily: _handelson,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -41,22 +59,37 @@ abstract final class AppTypography {
       );
     }
 
-    return bodyBase.copyWith(
-      displayLarge: playfair(fontSize: 36, fontWeight: FontWeight.w700),
-      displayMedium: playfair(fontSize: 32),
-      displaySmall: playfair(fontSize: 28),
-      headlineLarge: playfair(fontSize: 28),
-      headlineMedium: playfair(fontSize: 24),
-      headlineSmall: playfair(fontSize: 22, fontWeight: FontWeight.w600),
-      titleLarge: news(fontSize: 22, fontWeight: FontWeight.w600),
-      titleMedium: news(fontSize: 18, fontWeight: FontWeight.w600),
-      titleSmall: news(fontSize: 16, fontWeight: FontWeight.w600),
-      bodyLarge: news(fontSize: 16),
-      bodyMedium: news(fontSize: 14),
-      bodySmall: news(fontSize: 12, color: onSurfaceVariant),
-      labelLarge: news(fontSize: 14, fontWeight: FontWeight.w600),
-      labelMedium: news(fontSize: 12, fontWeight: FontWeight.w500),
-      labelSmall: news(
+    TextStyle haveHeartOne({
+      double fontSize = 24,
+      FontWeight fontWeight = FontWeight.w700,
+      Color? color,
+      double? height,
+    }) {
+      return TextStyle(
+        fontFamily: _haveHeartOne,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color ?? onSurface,
+        height: height,
+      );
+    }
+
+    return base.copyWith(
+      displayLarge: brookshire(fontSize: 36, fontWeight: FontWeight.w700),
+      displayMedium: brookshire(fontSize: 32),
+      displaySmall: brookshire(fontSize: 28),
+      headlineLarge: haveHeartOne(fontSize: 28),
+      headlineMedium: haveHeartOne(fontSize: 24),
+      headlineSmall: haveHeartOne(fontSize: 22, fontWeight: FontWeight.w600),
+      titleLarge: haveHeartOne(fontSize: 22, fontWeight: FontWeight.w600),
+      titleMedium: haveHeartOne(fontSize: 18, fontWeight: FontWeight.w600),
+      titleSmall: haveHeartOne(fontSize: 16, fontWeight: FontWeight.w600),
+      bodyLarge: handelson(fontSize: 16),
+      bodyMedium: handelson(fontSize: 14),
+      bodySmall: handelson(fontSize: 12, color: onSurfaceVariant),
+      labelLarge: handelson(fontSize: 14, fontWeight: FontWeight.w600),
+      labelMedium: handelson(fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: handelson(
         fontSize: 11,
         fontWeight: FontWeight.w300,
         color: onSurfaceVariant,

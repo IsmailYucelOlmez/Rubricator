@@ -58,9 +58,12 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.primary.withValues(alpha: 0.35),
-        labelTextStyle: WidgetStateProperty.all(
-          textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
-        ),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return AppTypography.bottomNavLabel(
+            color: selected ? AppColors.gold : AppColors.textSecondary,
+          );
+        }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
@@ -223,9 +226,12 @@ abstract final class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightSurface,
         indicatorColor: AppColors.primary.withValues(alpha: 0.22),
-        labelTextStyle: WidgetStateProperty.all(
-          textTheme.labelMedium?.copyWith(color: AppColors.lightOnSurfaceVariant),
-        ),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return AppTypography.bottomNavLabel(
+            color: selected ? AppColors.primary : AppColors.lightOnSurfaceVariant,
+          );
+        }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(

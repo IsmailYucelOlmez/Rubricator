@@ -1,6 +1,6 @@
 import '../../domain/entities/book.dart';
 
-/// Normalized Open Library work / search hit (data layer only).
+/// Normalized Google Books volume (data layer only).
 class BookModel {
   const BookModel({
     required this.workId,
@@ -8,7 +8,7 @@ class BookModel {
     required this.primaryAuthorName,
     required this.authorKeys,
     this.languages,
-    required this.coverId,
+    this.coverImageUrl,
     required this.description,
     required this.subjects,
   });
@@ -18,7 +18,10 @@ class BookModel {
   final String primaryAuthorName;
   final List<String> authorKeys;
   final List<String>? languages;
-  final int? coverId;
+
+  /// HTTPS thumbnail URL from Google Books `imageLinks`.
+  final String? coverImageUrl;
+
   final String description;
   final List<String> subjects;
 
@@ -27,7 +30,7 @@ class BookModel {
       id: workId,
       title: title,
       author: primaryAuthorName,
-      coverId: coverId,
+      coverImageUrl: coverImageUrl,
       description: description,
       authorIds: authorKeys,
       subjectKeys: subjects,
@@ -40,7 +43,7 @@ class BookModel {
     String? primaryAuthorName,
     List<String>? authorKeys,
     List<String>? languages,
-    int? coverId,
+    String? coverImageUrl,
     String? description,
     List<String>? subjects,
   }) {
@@ -50,57 +53,45 @@ class BookModel {
       primaryAuthorName: primaryAuthorName ?? this.primaryAuthorName,
       authorKeys: authorKeys ?? this.authorKeys,
       languages: languages ?? this.languages,
-      coverId: coverId ?? this.coverId,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       description: description ?? this.description,
       subjects: subjects ?? this.subjects,
     );
   }
 
-  static String _normalizeDescription(dynamic raw) {
-    if (raw == null) return '';
-    if (raw is String) return raw;
-    if (raw is Map) {
-      final v = raw['value'];
-      if (v is String) return v;
+  static String? _httpsThumbnail(Map<String, dynamic>? imageLinks) {
+    if (imageLinks == null) return null;
+    final u =
+        imageLinks['thumbnail'] as String? ??
+        imageLinks['smallThumbnail'] as String?;
+    if (u == null || u.isEmpty) return null;
+    return u.replaceFirst(RegExp(r'^http:'), 'https:');
+  }
+
+  static List<String> _authorKeysFromVolume(Map<String, dynamic> volumeInfo) {
+    final names = volumeInfo['authors'];
+    if (names is! List || names.isEmpty) return const <String>[];
+    final out = <String>[];
+    for (final e in names) {
+      if (e is! String) continue;
+      final t = e.trim();
+      if (t.isEmpty) continue;
+      out.add('g:${Uri.encodeComponent(t)}');
     }
-    return '';
+    return out;
   }
 
-  static List<String> _authorKeysFromSearch(Map<String, dynamic> json) {
-    final keys = <String>[];
-    final raw = json['author_key'];
-    if (raw is List) {
-      for (final e in raw) {
-        if (e is String) keys.add(_stripAuthorPrefix(e));
-      }
-    } else if (raw is String) {
-      keys.add(_stripAuthorPrefix(raw));
-    }
-    return keys;
+  static List<String>? _languagesFromVolume(Map<String, dynamic> volumeInfo) {
+    final lang = volumeInfo['language'];
+    if (lang is! String) return null;
+    final code = lang.trim().toLowerCase();
+    if (code.isEmpty) return null;
+    return <String>[code];
   }
 
-  static String _stripAuthorPrefix(String key) {
-    return key.replaceFirst(RegExp(r'^/authors/'), '');
-  }
-
-  static List<String> _authorKeysFromWork(Map<String, dynamic> json) {
-    final keys = <String>[];
-    final authors = json['authors'];
-    if (authors is! List) return keys;
-    for (final entry in authors) {
-      if (entry is! Map<String, dynamic>) continue;
-      final author = entry['author'];
-      if (author is Map<String, dynamic>) {
-        final k = author['key'] as String?;
-        if (k != null) keys.add(_stripAuthorPrefix(k));
-      }
-    }
-    return keys;
-  }
-
-  static List<String> _subjectsFromWork(Map<String, dynamic> json) {
-    final raw = json['subjects'];
-    if (raw is! List) return const [];
+  static List<String> _subjectsFromVolume(Map<String, dynamic> volumeInfo) {
+    final raw = volumeInfo['categories'];
+    if (raw is! List) return const <String>[];
     return raw
         .whereType<String>()
         .map((s) => s.trim())
@@ -109,44 +100,13 @@ class BookModel {
         .toList();
   }
 
-  static List<String>? _parseLanguages(dynamic raw) {
-    if (raw == null) return null;
-    final out = <String>[];
-
-    void addCode(dynamic v) {
-      String? code;
-      if (v is String) {
-        code = v;
-      } else if (v is Map<String, dynamic>) {
-        final k = v['key'];
-        if (k is String) code = k;
-      }
-      if (code == null) return;
-
-      final normalized =
-          code.replaceFirst(RegExp(r'^/languages/'), '').trim().toLowerCase();
-      if (normalized.isNotEmpty) out.add(normalized);
+  static String _primaryAuthor(Map<String, dynamic> volumeInfo) {
+    final names = volumeInfo['authors'];
+    if (names is List && names.isNotEmpty) {
+      final first = names.first;
+      if (first is String && first.trim().isNotEmpty) return first.trim();
     }
-
-    if (raw is List) {
-      for (final e in raw) {
-        addCode(e);
-      }
-    } else {
-      addCode(raw);
-    }
-
-    final unique = out.toSet().toList();
-    return unique.isEmpty ? null : unique;
-  }
-
-  static int? _firstCoverId(Map<String, dynamic> json) {
-    final covers = json['covers'];
-    if (covers is List && covers.isNotEmpty) {
-      final first = covers.first;
-      if (first is int) return first;
-    }
-    return null;
+    return 'Unknown author';
   }
 
   factory BookModel.fromEntity(Book book) {
@@ -156,96 +116,52 @@ class BookModel {
       primaryAuthorName: book.author,
       authorKeys: book.authorIds,
       languages: null,
-      coverId: book.coverId,
+      coverImageUrl: book.coverImageUrl,
       description: book.description,
       subjects: book.subjectKeys,
     );
   }
 
-  factory BookModel.fromSearchDoc(Map<String, dynamic> json) {
-    final key = json['key'] as String? ?? '';
-    final workId = key.replaceFirst(RegExp(r'^/works/'), '');
-    final names = json['author_name'];
-    String author = 'Unknown author';
-    if (names is List && names.isNotEmpty) {
-      author = names.first.toString();
-    } else if (names is String && names.isNotEmpty) {
-      author = names;
-    }
-    final languages = _parseLanguages(json['language'] ?? json['languages']);
-    final cover = json['cover_i'];
-    return BookModel(
-      workId: workId.isEmpty ? 'unknown' : workId,
-      title: (json['title'] as String?)?.trim().isNotEmpty == true
-          ? json['title'] as String
-          : 'Unknown title',
-      primaryAuthorName: author,
-      authorKeys: _authorKeysFromSearch(json),
-      languages: languages,
-      coverId: cover is int ? cover : null,
-      description: '',
-      subjects: const [],
-    );
-  }
-
-  factory BookModel.fromTrendingWork(Map<String, dynamic> work) {
-    final key = work['key'] as String? ?? '';
-    final workId = key.replaceFirst(RegExp(r'^/works/'), '');
-    String author = 'Unknown author';
-    final authors = work['authors'] as List<dynamic>?;
-    if (authors != null && authors.isNotEmpty) {
-      final first = authors.first;
-      if (first is Map<String, dynamic>) {
-        author = first['name'] as String? ?? author;
-      }
-    }
-    final languages = _parseLanguages(work['language'] ?? work['languages']);
-    final cover = work['cover_id'];
-    return BookModel(
-      workId: workId.isEmpty ? 'unknown' : workId,
-      title: (work['title'] as String?)?.trim().isNotEmpty == true
-          ? work['title'] as String
-          : 'Unknown title',
-      primaryAuthorName: author,
-      authorKeys: const [],
-      languages: languages,
-      coverId: cover is int ? cover : null,
-      description: '',
-      subjects: const [],
-    );
-  }
-
-  factory BookModel.fromWorkJson(
+  factory BookModel.fromGoogleBooksVolume(
     Map<String, dynamic> json, {
     BookModel? mergeFrom,
   }) {
-    final key = json['key'] as String? ?? '';
-    final workId = key.replaceFirst(RegExp(r'^/works/'), '');
-    final title = (json['title'] as String?)?.trim();
-    final description = _normalizeDescription(json['description']);
-    final authorKeys = _authorKeysFromWork(json);
-    final primary = mergeFrom?.primaryAuthorName ?? 'Unknown author';
-    final coverFromWork = _firstCoverId(json);
-    final subjects = _subjectsFromWork(json);
-    final languages = _parseLanguages(json['languages'] ?? json['language']);
+    final id = (json['id'] as String?)?.trim() ?? '';
+    final volumeInfo =
+        json['volumeInfo'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final titleRaw = (volumeInfo['title'] as String?)?.trim();
+    final title = titleRaw != null && titleRaw.isNotEmpty
+        ? titleRaw
+        : (mergeFrom?.title ?? 'Unknown title');
+    final description = (volumeInfo['description'] as String?)?.trim() ?? '';
+    final authorKeys = _authorKeysFromVolume(volumeInfo);
+    final primary = authorKeys.isNotEmpty
+        ? Uri.decodeComponent(authorKeys.first.substring(2))
+        : _primaryAuthor(volumeInfo);
+    final subjects = _subjectsFromVolume(volumeInfo);
+    final languages = _languagesFromVolume(volumeInfo);
+    final thumb = _httpsThumbnail(
+      volumeInfo['imageLinks'] as Map<String, dynamic>?,
+    );
 
     return BookModel(
-      workId: workId.isNotEmpty ? workId : (mergeFrom?.workId ?? 'unknown'),
-      title: title != null && title.isNotEmpty
-          ? title
-          : (mergeFrom?.title ?? 'Unknown title'),
-      primaryAuthorName: primary,
+      workId: id.isNotEmpty ? id : (mergeFrom?.workId ?? 'unknown'),
+      title: title,
+      primaryAuthorName:
+          primary != 'Unknown author'
+              ? primary
+              : (mergeFrom?.primaryAuthorName ?? 'Unknown author'),
       authorKeys: authorKeys.isNotEmpty
           ? authorKeys
           : (mergeFrom?.authorKeys ?? const []),
-      coverId: coverFromWork ?? mergeFrom?.coverId,
+      languages: languages ?? mergeFrom?.languages,
+      coverImageUrl: thumb ?? mergeFrom?.coverImageUrl,
       description: description.isNotEmpty
           ? description
           : (mergeFrom?.description ?? ''),
       subjects: subjects.isNotEmpty
           ? subjects
           : (mergeFrom?.subjects ?? const []),
-      languages: languages ?? mergeFrom?.languages,
     );
   }
 }

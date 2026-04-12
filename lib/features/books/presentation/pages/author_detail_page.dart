@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../providers/books_providers.dart';
 
@@ -21,26 +19,10 @@ class AuthorDetailPage extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.author)),
       body: asyncAuthor.when(
         data: (author) {
-          final photoUrl = AppConstants.authorPhotoUrl(author.photoId);
           return ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              if (photoUrl != null)
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    child: Image.network(
-                      photoUrl,
-                      height: 160,
-                      width: 160,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.person, size: 96),
-                    ),
-                  ),
-                )
-              else
-                const Center(child: Icon(Icons.person, size: 96)),
+              const Center(child: Icon(Icons.person, size: 96)),
               const SizedBox(height: AppSpacing.md),
               Text(
                 author.name,

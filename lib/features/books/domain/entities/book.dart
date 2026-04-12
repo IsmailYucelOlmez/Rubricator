@@ -1,10 +1,10 @@
-/// Domain entity for a work (Open Library "work" id without `/works/` prefix).
+/// Domain entity for a Google Books volume.
 class Book {
   const Book({
     required this.id,
     required this.title,
     required this.author,
-    required this.coverId,
+    this.coverImageUrl,
     required this.description,
     this.authorIds = const [],
     this.subjectKeys = const [],
@@ -13,20 +13,23 @@ class Book {
   final String id;
   final String title;
   final String author;
-  final int? coverId;
+
+  /// HTTPS thumbnail from Google Books `imageLinks`.
+  final String? coverImageUrl;
+
   final String description;
 
-  /// Open Library author keys without `/authors/` prefix (when known).
+  /// Author identifiers: `g:` + URI-encoded display name.
   final List<String> authorIds;
 
-  /// Subject strings from the work (used for related-book search).
+  /// Categories / subjects for related-book search.
   final List<String> subjectKeys;
 
   Book copyWith({
     String? id,
     String? title,
     String? author,
-    int? coverId,
+    String? coverImageUrl,
     String? description,
     List<String>? authorIds,
     List<String>? subjectKeys,
@@ -35,7 +38,7 @@ class Book {
       id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
-      coverId: coverId ?? this.coverId,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       description: description ?? this.description,
       authorIds: authorIds ?? this.authorIds,
       subjectKeys: subjectKeys ?? this.subjectKeys,
@@ -47,7 +50,7 @@ class Book {
       'id': id,
       'title': title,
       'author': author,
-      'coverId': coverId,
+      'coverImageUrl': coverImageUrl,
       'description': description,
       'authorIds': authorIds,
       'subjectKeys': subjectKeys,
@@ -59,7 +62,7 @@ class Book {
       id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? 'Unknown title',
       author: json['author'] as String? ?? 'Unknown author',
-      coverId: json['coverId'] as int?,
+      coverImageUrl: json['coverImageUrl'] as String?,
       description: json['description'] as String? ?? '',
       authorIds:
           (json['authorIds'] as List<dynamic>?)

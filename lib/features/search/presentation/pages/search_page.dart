@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
+import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../providers/search_notifier.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -137,8 +138,12 @@ class _SearchResultsView extends StatelessWidget {
     return state.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(
-        child: Text(
-          l10n.searchFailed(error.toString().replaceFirst('Exception: ', '')),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            l10n.searchCouldNotComplete,
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
       data: (books) {
@@ -227,7 +232,12 @@ class _DiscoveryView extends StatelessWidget {
                             children: [
                               AspectRatio(
                                 aspectRatio: 0.7,
-                                child: BookCoverLeading(coverId: book.coverId),
+                                child: BookCoverWithFavoriteButton(
+                                  bookId: book.id,
+                                  child: BookCoverLeading(
+                                    coverImageUrl: book.coverImageUrl,
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               Text(
@@ -271,7 +281,15 @@ class _BookList extends StatelessWidget {
       itemBuilder: (context, index) {
         final book = books[index];
         return ListTile(
-          leading: BookCoverLeading(coverId: book.coverId),
+          leading: SizedBox(
+            width: 44,
+            height: 62,
+            child: BookCoverWithFavoriteButton(
+              bookId: book.id,
+              compact: true,
+              child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
+            ),
+          ),
           title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
           subtitle: Text(
             book.author,

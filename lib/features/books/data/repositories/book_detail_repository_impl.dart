@@ -18,7 +18,7 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
       id: entity.id,
       title: entity.title,
       author: entity.author,
-      coverId: entity.coverId,
+      coverImageUrl: entity.coverImageUrl,
       description: entity.description,
       authorIds: entity.authorIds,
       subjectKeys: entity.subjectKeys,

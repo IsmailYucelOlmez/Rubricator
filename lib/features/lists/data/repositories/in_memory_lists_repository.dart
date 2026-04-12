@@ -13,7 +13,7 @@ class InMemoryListsRepository implements ListsRepository {
       likeCount: 42,
       commentCount: 8,
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      previewCoverIds: const [10523355, 10958373, 11153208, 9259177],
+      previewCoverImageUrls: const <String?>[],
     ),
     ListEntity(
       id: 'l2',
@@ -25,7 +25,7 @@ class InMemoryListsRepository implements ListsRepository {
       likeCount: 67,
       commentCount: 14,
       createdAt: DateTime.now().subtract(const Duration(days: 5)),
-      previewCoverIds: const [9880218, 8312596, 12512177, 10349221],
+      previewCoverImageUrls: const <String?>[],
     ),
   ];
 
@@ -34,20 +34,18 @@ class InMemoryListsRepository implements ListsRepository {
       const ListItemEntity(
         id: 'li1',
         listId: 'l1',
-        bookId: 'OL1W',
+        bookId: 'gb1',
         bookTitle: 'Pride and Prejudice',
         bookAuthor: 'Jane Austen',
-        coverId: 10523355,
         orderIndex: 0,
         note: 'Perfect pacing and mood.',
       ),
       const ListItemEntity(
         id: 'li2',
         listId: 'l1',
-        bookId: 'OL2W',
+        bookId: 'gb2',
         bookTitle: 'Anne of Green Gables',
         bookAuthor: 'L. M. Montgomery',
-        coverId: 10958373,
         orderIndex: 1,
       ),
     ],
@@ -55,10 +53,9 @@ class InMemoryListsRepository implements ListsRepository {
       const ListItemEntity(
         id: 'li3',
         listId: 'l2',
-        bookId: 'OL3W',
+        bookId: 'gb3',
         bookTitle: 'Animal Farm',
         bookAuthor: 'George Orwell',
-        coverId: 9880218,
         orderIndex: 0,
       ),
     ],
@@ -98,7 +95,7 @@ class InMemoryListsRepository implements ListsRepository {
       likeCount: 0,
       commentCount: 0,
       createdAt: DateTime.now(),
-      previewCoverIds: const <int?>[],
+      previewCoverImageUrls: const <String?>[],
     );
     _lists.insert(0, list);
     _itemsByList[list.id] = <ListItemEntity>[];
@@ -243,7 +240,7 @@ class InMemoryListsRepository implements ListsRepository {
     required String bookId,
     required String title,
     required String author,
-    int? coverId,
+    String? coverImageUrl,
   }) async {
     final items = _itemsByList.putIfAbsent(listId, () => <ListItemEntity>[]);
     final entity = ListItemEntity(
@@ -252,14 +249,14 @@ class InMemoryListsRepository implements ListsRepository {
       bookId: bookId,
       bookTitle: title,
       bookAuthor: author,
-      coverId: coverId,
+      coverImageUrl: coverImageUrl,
       orderIndex: items.length,
     );
     items.add(entity);
     _updateList(
       listId,
       (l) => l.copyWith(
-        previewCoverIds: items.take(4).map((e) => e.coverId).toList(),
+        previewCoverImageUrls: items.take(4).map((e) => e.coverImageUrl).toList(),
       ),
     );
     return entity;
@@ -279,7 +276,7 @@ class InMemoryListsRepository implements ListsRepository {
             bookId: old.bookId,
             bookTitle: old.bookTitle,
             bookAuthor: old.bookAuthor,
-            coverId: old.coverId,
+            coverImageUrl: old.coverImageUrl,
             orderIndex: i,
             note: old.note,
           );
@@ -308,7 +305,7 @@ class InMemoryListsRepository implements ListsRepository {
           bookId: old.bookId,
           bookTitle: old.bookTitle,
           bookAuthor: old.bookAuthor,
-          coverId: old.coverId,
+          coverImageUrl: old.coverImageUrl,
           orderIndex: i,
           note: old.note,
         ),

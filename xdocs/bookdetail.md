@@ -5,7 +5,7 @@
 Build a complete Book Detail feature that includes:
 
 * UI rendering
-* API integration (Open Library)
+* API integration (Google Books)
 * User interactions (rating, reviews, quotes)
 * Database operations (Supabase)
 * State management (Riverpod)
@@ -58,9 +58,9 @@ Return data back the same way.
 
 ---
 
-# 📚 BOOK DATA (Open Library)
+# 📚 BOOK DATA (Google Books)
 
-Use Open Library API
+Use Google Books API
 
 ## Required operations:
 
@@ -275,7 +275,7 @@ UI form → provider → repository → Supabase
 
 ### Logic:
 
-* fetch from Open Library
+* fetch from Google Books
 * fallback to same author books
 
 ---

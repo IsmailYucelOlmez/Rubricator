@@ -344,12 +344,6 @@ abstract class AppLocalizations {
   /// **'Search by title or author (min. 2 characters)'**
   String get searchByTitleOrAuthorHint;
 
-  /// No description provided for @searchFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Search failed: {error}'**
-  String searchFailed(Object error);
-
   /// No description provided for @noBooksFoundFor.
   ///
   /// In en, this message translates to:
@@ -458,6 +452,24 @@ abstract class AppLocalizations {
   /// **'Mystery'**
   String get genreMystery;
 
+  /// No description provided for @genreThriller.
+  ///
+  /// In en, this message translates to:
+  /// **'Thriller'**
+  String get genreThriller;
+
+  /// No description provided for @genreHorror.
+  ///
+  /// In en, this message translates to:
+  /// **'Horror'**
+  String get genreHorror;
+
+  /// No description provided for @loadHomeGenresError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load genre sections. Please try again.'**
+  String get loadHomeGenresError;
+
   /// No description provided for @toRead.
   ///
   /// In en, this message translates to:
@@ -487,6 +499,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dropped'**
   String get dropped;
+
+  /// No description provided for @addToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get addToFavorites;
+
+  /// No description provided for @removeFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get removeFromFavorites;
 
   /// No description provided for @favorites.
   ///
@@ -1172,11 +1196,11 @@ abstract class AppLocalizations {
   /// **'Book selector'**
   String get bookSelector;
 
-  /// No description provided for @searchViaOpenLibrary.
+  /// No description provided for @searchViaGoogleBooks.
   ///
   /// In en, this message translates to:
-  /// **'Search via Open Library'**
-  String get searchViaOpenLibrary;
+  /// **'Search via Google Books'**
+  String get searchViaGoogleBooks;
 
   /// No description provided for @search.
   ///

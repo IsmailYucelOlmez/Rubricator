@@ -70,12 +70,6 @@
   },
   "searchBooksTitle": "Kitap Ara",
   "searchByTitleOrAuthorHint": "Baslik veya yazara gore ara (en az 2 karakter)",
-  "searchFailed": "Arama basarisiz: {error}",
-  "@searchFailed": {
-    "placeholders": {
-      "error": {}
-    }
-  },
   "noBooksFoundFor": "\"{query}\" icin kitap bulunamadi.",
   "@noBooksFoundFor": {
     "placeholders": {
@@ -104,11 +98,16 @@
   "genreScienceFiction": "Bilim Kurgu",
   "genreRomance": "Romantik",
   "genreMystery": "Gizem",
+  "genreThriller": "Gerilim",
+  "genreHorror": "Korku",
+  "loadHomeGenresError": "Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.",
   "toRead": "Okunacak",
   "reading": "Okunuyor",
   "reReading": "Tekrar Okunuyor",
   "completed": "Tamamlandi",
   "dropped": "Birakildi",
+  "addToFavorites": "Favorilere ekle",
+  "removeFromFavorites": "Favorilerden cikar",
   "favorites": "Favoriler",
   "signInToSeeLists": "Listeleri gormek icin Profilden giris yapin.",
   "noBooksInStatus": "{status} durumunda kitap yok.",
@@ -269,7 +268,7 @@
   ,"description":"Aciklama"
   ,"public":"Herkese acik"
   ,"bookSelector":"Kitap secici"
-  ,"searchViaOpenLibrary":"Open Library ile ara"
+  ,"searchViaGoogleBooks":"Google Books ile ara"
   ,"search":"Ara"
   ,"selectedBooks":"Secilen kitaplar"
   ,"noBooksSelectedYet":"Henuz kitap secilmedi."

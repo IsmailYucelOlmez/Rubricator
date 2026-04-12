@@ -147,11 +147,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Baslik veya yazara gore ara (en az 2 karakter)';
 
   @override
-  String searchFailed(Object error) {
-    return 'Arama basarisiz: $error';
-  }
-
-  @override
   String noBooksFoundFor(Object query) {
     return '\"$query\" icin kitap bulunamadi.';
   }
@@ -211,6 +206,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get genreMystery => 'Gizem';
 
   @override
+  String get genreThriller => 'Gerilim';
+
+  @override
+  String get genreHorror => 'Korku';
+
+  @override
+  String get loadHomeGenresError =>
+      'Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.';
+
+  @override
   String get toRead => 'Okunacak';
 
   @override
@@ -224,6 +229,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dropped => 'Birakildi';
+
+  @override
+  String get addToFavorites => 'Favorilere ekle';
+
+  @override
+  String get removeFromFavorites => 'Favorilerden cikar';
 
   @override
   String get favorites => 'Favoriler';
@@ -627,7 +638,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bookSelector => 'Kitap secici';
 
   @override
-  String get searchViaOpenLibrary => 'Open Library ile ara';
+  String get searchViaGoogleBooks => 'Google Books ile ara';
 
   @override
   String get search => 'Ara';

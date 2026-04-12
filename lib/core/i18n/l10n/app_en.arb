@@ -70,12 +70,6 @@
   },
   "searchBooksTitle": "Search Books",
   "searchByTitleOrAuthorHint": "Search by title or author (min. 2 characters)",
-  "searchFailed": "Search failed: {error}",
-  "@searchFailed": {
-    "placeholders": {
-      "error": {}
-    }
-  },
   "noBooksFoundFor": "No books found for \"{query}\".",
   "@noBooksFoundFor": {
     "placeholders": {
@@ -104,11 +98,16 @@
   "genreScienceFiction": "Science Fiction",
   "genreRomance": "Romance",
   "genreMystery": "Mystery",
+  "genreThriller": "Thriller",
+  "genreHorror": "Horror",
+  "loadHomeGenresError": "Could not load genre sections. Please try again.",
   "toRead": "To Read",
   "reading": "Reading",
   "reReading": "Re-reading",
   "completed": "Completed",
   "dropped": "Dropped",
+  "addToFavorites": "Add to favorites",
+  "removeFromFavorites": "Remove from favorites",
   "favorites": "Favorites",
   "signInToSeeLists": "Sign in from Profile to see your lists.",
   "noBooksInStatus": "No books in {status}.",
@@ -269,7 +268,7 @@
   ,"description":"Description"
   ,"public":"Public"
   ,"bookSelector":"Book selector"
-  ,"searchViaOpenLibrary":"Search via Open Library"
+  ,"searchViaGoogleBooks":"Search via Google Books"
   ,"search":"Search"
   ,"selectedBooks":"Selected books"
   ,"noBooksSelectedYet":"No books selected yet."

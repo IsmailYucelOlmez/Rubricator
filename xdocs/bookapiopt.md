@@ -1,8 +1,8 @@
-# 🌍 Language Normalization System (Open Library Data)
+# 🌍 Language Normalization System (Google Books Data)
 
 ## 🎯 Goal
 
-Implement a language prioritization and normalization system for book data fetched from Open Library API.
+Implement a language prioritization and normalization system for book data fetched from Google Books API.
 
 The system must:
 
@@ -204,7 +204,7 @@ User should mostly see readable content.
 
 # 🔥 FINAL RULE
 
-Open Library data is inconsistent.
+Remote book data can be inconsistent across sources.
 
 Your job is to:
 

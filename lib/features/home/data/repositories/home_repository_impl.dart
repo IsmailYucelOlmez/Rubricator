@@ -8,13 +8,19 @@ class HomeRepositoryImpl implements HomeRepository {
 
   final HomeRemoteDataSource _remoteDataSource;
 
+  static const int _maxBooksPerHomeSection = 10;
+
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
   );
 
   int _getLanguageScore(HomeBookModel book) {
     final langs = book.languages;
-    if (langs != null && (langs.contains('eng') || langs.contains('tur'))) {
+    if (langs != null &&
+        (langs.contains('eng') ||
+            langs.contains('en') ||
+            langs.contains('tur') ||
+            langs.contains('tr'))) {
       return 3;
     }
 
@@ -54,14 +60,45 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<List<HomeBookEntity>> getPopularBooks() async {
     final models = await _remoteDataSource.fetchPopularBooks();
     final prioritized = _prioritizeModels(models);
-    return prioritized.map((item) => item.toEntity()).toList();
+    return prioritized
+        .take(_maxBooksPerHomeSection)
+        .map((item) => item.toEntity())
+        .toList();
   }
 
   @override
   Future<List<HomeBookEntity>> getBooksByGenre(String genre) async {
     final models = await _remoteDataSource.fetchBooksByGenre(genre);
     final prioritized = _prioritizeModels(models);
-    return prioritized.map((item) => item.toEntity()).toList();
+    return prioritized
+        .take(_maxBooksPerHomeSection)
+        .map((item) => item.toEntity())
+        .toList();
+  }
+
+  @override
+  Future<Map<String, List<HomeBookEntity>>> getHomeGenreSectionBooks(
+    List<String> genreKeys,
+  ) async {
+    if (genreKeys.isEmpty) return <String, List<HomeBookEntity>>{};
+
+    // One `subject:` query per row — Google often omits `volumeInfo.categories`,
+    // so splitting a single combined result by category leaves rows empty.
+    final entries = await Future.wait(
+      genreKeys.map((g) async {
+        final models = await _remoteDataSource.fetchBooksByGenre(g);
+        final prioritized = _prioritizeModels(models);
+        return MapEntry(
+          g,
+          prioritized
+              .take(_maxBooksPerHomeSection)
+              .map((m) => m.toEntity())
+              .toList(),
+        );
+      }),
+    );
+
+    return Map<String, List<HomeBookEntity>>.fromEntries(entries);
   }
 
   @override

@@ -4,13 +4,13 @@ class HomeBookEntity {
   const HomeBookEntity({
     required this.id,
     required this.title,
-    required this.coverId,
+    this.coverImageUrl,
     required this.authorNames,
   });
 
   final String id;
   final String title;
-  final int? coverId;
+  final String? coverImageUrl;
   final String authorNames;
 
   Book toBook() {
@@ -18,7 +18,7 @@ class HomeBookEntity {
       id: id,
       title: title,
       author: authorNames,
-      coverId: coverId,
+      coverImageUrl: coverImageUrl,
       description: '',
     );
   }

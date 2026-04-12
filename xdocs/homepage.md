@@ -48,7 +48,7 @@ features/home/
 
 # 🌐 DATA SOURCE
 
-Use Open Library API
+Use Google Books API
 
 ---
 
@@ -93,7 +93,7 @@ Future<List<BookEntity>> getPopularBooks();
 
 ## ⚠️ Popular Books Logic
 
-Open Library does NOT provide real popular data.
+Trending/home feeds use curated Google Books queries (no official “popular” endpoint).
 
 You MUST simulate:
 
@@ -284,7 +284,7 @@ User can:
 * search books
 * navigate to book detail page
 
-All data must come from Open Library API.
+All book metadata must come from Google Books API.
 
 ---
 

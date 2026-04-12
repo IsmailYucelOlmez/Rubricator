@@ -9,7 +9,7 @@ class ListEntity {
     required this.likeCount,
     required this.commentCount,
     required this.createdAt,
-    required this.previewCoverIds,
+    required this.previewCoverImageUrls,
     this.isLikedByMe = false,
     this.isSavedByMe = false,
   });
@@ -23,7 +23,7 @@ class ListEntity {
   final int likeCount;
   final int commentCount;
   final DateTime createdAt;
-  final List<int?> previewCoverIds;
+  final List<String?> previewCoverImageUrls;
   final bool isLikedByMe;
   final bool isSavedByMe;
 
@@ -37,7 +37,7 @@ class ListEntity {
     int? likeCount,
     int? commentCount,
     DateTime? createdAt,
-    List<int?>? previewCoverIds,
+    List<String?>? previewCoverImageUrls,
     bool? isLikedByMe,
     bool? isSavedByMe,
   }) {
@@ -51,7 +51,8 @@ class ListEntity {
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
       createdAt: createdAt ?? this.createdAt,
-      previewCoverIds: previewCoverIds ?? this.previewCoverIds,
+      previewCoverImageUrls:
+          previewCoverImageUrls ?? this.previewCoverImageUrls,
       isLikedByMe: isLikedByMe ?? this.isLikedByMe,
       isSavedByMe: isSavedByMe ?? this.isSavedByMe,
     );
@@ -65,7 +66,7 @@ class ListItemEntity {
     required this.bookId,
     required this.bookTitle,
     required this.bookAuthor,
-    required this.coverId,
+    this.coverImageUrl,
     required this.orderIndex,
     this.note,
   });
@@ -75,7 +76,7 @@ class ListItemEntity {
   final String bookId;
   final String bookTitle;
   final String bookAuthor;
-  final int? coverId;
+  final String? coverImageUrl;
   final int orderIndex;
   final String? note;
 }

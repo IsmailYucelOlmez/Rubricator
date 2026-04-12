@@ -7,7 +7,7 @@ class ApiService {
   ApiService()
     : _dio = Dio(
         BaseOptions(
-          baseUrl: AppConstants.openLibraryBaseUrl,
+          baseUrl: AppConstants.googleBooksBaseUrl,
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 15),
           sendTimeout: const Duration(seconds: 15),
@@ -29,15 +29,20 @@ class ApiService {
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
+    final params = <String, dynamic>{...(queryParameters ?? {})};
+    final key = AppConstants.googleBooksApiKey.trim();
+    if (key.isNotEmpty) {
+      params.putIfAbsent('key', () => key);
+    }
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         path,
-        queryParameters: queryParameters,
+        queryParameters: params,
       );
       final data = response.data;
       if (response.statusCode != null && response.statusCode! >= 400) {
         throw Exception(
-          'Open Library returned ${response.statusCode} for $path',
+          'Google Books returned ${response.statusCode} for $path',
         );
       }
       return data ?? <String, dynamic>{};

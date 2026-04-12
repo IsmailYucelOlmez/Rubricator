@@ -1,8 +1,8 @@
-# 📚 Open Library API Integration Rules (Flutter Project)
+# 📚 Google Books API Integration Rules (Flutter Project)
 
 ## 🎯 Goal
 
-Integrate Open Library API to fetch and display book data in a scalable and clean way.
+Integrate Google Books API to fetch and display book data in a scalable and clean way.
 
 The system must support:
 
@@ -16,10 +16,9 @@ The system must support:
 ## 🌐 Base API
 
 Base URL:
-https://openlibrary.org/
+https://www.googleapis.com/books/v1
 
-Cover Images:
-https://covers.openlibrary.org/
+Covers: use `volumeInfo.imageLinks` (thumbnail / smallThumbnail), HTTPS.
 
 ---
 
@@ -27,19 +26,19 @@ https://covers.openlibrary.org/
 
 ### 1. Search Books
 
-GET /search.json?q={query}
+GET /volumes?q={query}&startIndex=&maxResults=
 
-### 2. Book Details (Work)
+### 2. Volume details
 
-GET /works/{work_id}.json
+GET /volumes/{volume_id}
 
-### 3. Author Details
+### 3. Author details
 
-GET /authors/{author_id}.json
+No first-class author resource; use `inauthor:` queries or display name from volume.
 
-### 4. Cover Image
+### 4. Cover image
 
-https://covers.openlibrary.org/b/id/{cover_id}-L.jpg
+From `imageLinks` on the volume resource (not a separate cover-id service).
 
 ---
 
@@ -59,7 +58,7 @@ https://covers.openlibrary.org/b/id/{cover_id}-L.jpg
 
 ## 📂 Folder Structure
 
-```id="openlib_structure"
+```text
 features/
  ├── books/
  │    ├── data/
@@ -93,7 +92,7 @@ features/
 
 ## 📊 Data Handling (CRITICAL)
 
-Open Library responses are NOT clean.
+Google Books responses are NOT clean.
 
 ### You MUST handle:
 
@@ -110,11 +109,11 @@ Open Library responses are NOT clean.
 
   * string OR object
 
-* author_name:
+* volumeInfo.authors:
 
   * sometimes missing
 
-* cover_i:
+* volumeInfo.imageLinks:
 
   * may not exist
 
@@ -154,8 +153,8 @@ BookModel → BookEntity
 
 ## 🖼️ Cover Handling
 
-If cover_id exists:
-→ build URL
+If `volumeInfo.imageLinks` has a thumbnail URL:
+→ normalize to HTTPS and display
 
 If NOT:
 → use placeholder image
@@ -172,7 +171,7 @@ If NOT:
 
 ## 📚 Pagination
 
-* Use page parameter
+* Use `startIndex` + `maxResults` (max 40)
 * Implement infinite scroll
 * Do NOT load all data at once
 
@@ -246,7 +245,7 @@ When generating code:
 
 ## 🔥 Final Rule
 
-Open Library API is messy.
+Google Books API is messy.
 
 Your job is to:
 → clean the data

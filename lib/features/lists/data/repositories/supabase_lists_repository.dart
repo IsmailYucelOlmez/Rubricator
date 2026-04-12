@@ -110,7 +110,7 @@ class SupabaseListsRepository implements ListsRepository {
     required String bookId,
     required String title,
     required String author,
-    int? coverId,
+    String? coverImageUrl,
   }) async {
     final rows = await _client
         .from('list_items')
@@ -126,6 +126,9 @@ class SupabaseListsRepository implements ListsRepository {
         .insert(<String, dynamic>{
           'list_id': listId,
           'book_id': bookId,
+          'book_title': title,
+          'book_author': author,
+          'cover_image_url': coverImageUrl,
           'order_index': maxOrder + 1,
           'note': null,
         })
@@ -138,7 +141,8 @@ class SupabaseListsRepository implements ListsRepository {
       bookId: row['book_id']?.toString() ?? bookId,
       bookTitle: (row['book_title'] as String?) ?? title,
       bookAuthor: (row['book_author'] as String?) ?? author,
-      coverId: (row['cover_id'] as num?)?.toInt() ?? coverId,
+      coverImageUrl: _nonEmptyUrl(row['cover_image_url'] as String?) ??
+          coverImageUrl,
       orderIndex: (row['order_index'] as num?)?.toInt() ?? 0,
       note: row['note'] as String?,
     );
@@ -179,7 +183,7 @@ class SupabaseListsRepository implements ListsRepository {
             bookId: row['book_id']?.toString() ?? '',
             bookTitle: (row['book_title'] as String?) ?? (row['book_id']?.toString() ?? 'Unknown'),
             bookAuthor: (row['book_author'] as String?) ?? 'Unknown author',
-            coverId: (row['cover_id'] as num?)?.toInt(),
+            coverImageUrl: row['cover_image_url'] as String?,
             orderIndex: (row['order_index'] as num?)?.toInt() ?? 0,
             note: row['note'] as String?,
           ),
@@ -323,7 +327,7 @@ class SupabaseListsRepository implements ListsRepository {
         .limit(4);
     final preview = (previewRows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
-        .map((e) => (e['cover_id'] as num?)?.toInt())
+        .map((e) => e['cover_image_url'] as String?)
         .toList();
 
     bool likedByMe = false;
@@ -355,10 +359,16 @@ class SupabaseListsRepository implements ListsRepository {
       likeCount: likeCountRes.count,
       commentCount: commentCountRes.count,
       createdAt: DateTime.tryParse(row['created_at']?.toString() ?? '') ?? DateTime.now(),
-      previewCoverIds: preview,
+      previewCoverImageUrls: preview,
       isLikedByMe: likedByMe,
       isSavedByMe: savedByMe,
     );
+  }
+
+  static String? _nonEmptyUrl(String? raw) {
+    final s = raw?.trim();
+    if (s == null || s.isEmpty) return null;
+    return s;
   }
 
   String _fallbackUserName(String? userId) {

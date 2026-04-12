@@ -41,7 +41,6 @@ dependencies:
   flutter_dotenv: ^5.2.1
   url_launcher: ^6.3.2
   cupertino_icons: ^1.0.8
-  google_fonts: ^8.0.2
   flutter_svg: ^2.2.4
 
 dev_dependencies:
@@ -103,6 +102,20 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    - family: HandelsonThree
+      fonts:
+        - asset: assets/zhandelson-three.otf
+    - family: EFCOBrookshire
+      fonts:
+        - asset: assets/EFCO-Brookshire-Regular.ttf
+    - family: HaveHeartOne
+      fonts:
+        - asset: assets/have-heart-one.otf
+    - family: DonauNeueUppercase
+      fonts:
+        - asset: assets/Donau Neue_Uppercase.otf
 
 flutter_launcher_icons:
   android: true

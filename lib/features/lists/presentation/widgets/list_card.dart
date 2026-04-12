@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -40,8 +39,9 @@ class ListCard extends StatelessWidget {
                 height: 74,
                 child: Row(
                   children: List.generate(4, (idx) {
-                    final coverId = idx < list.previewCoverIds.length ? list.previewCoverIds[idx] : null;
-                    final imageUrl = AppConstants.workCoverUrl(coverId, size: 'M');
+                    final imageUrl = idx < list.previewCoverImageUrls.length
+                        ? list.previewCoverImageUrls[idx]
+                        : null;
                     return Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),

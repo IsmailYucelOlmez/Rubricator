@@ -147,11 +147,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Search by title or author (min. 2 characters)';
 
   @override
-  String searchFailed(Object error) {
-    return 'Search failed: $error';
-  }
-
-  @override
   String noBooksFoundFor(Object query) {
     return 'No books found for \"$query\".';
   }
@@ -212,6 +207,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genreMystery => 'Mystery';
 
   @override
+  String get genreThriller => 'Thriller';
+
+  @override
+  String get genreHorror => 'Horror';
+
+  @override
+  String get loadHomeGenresError =>
+      'Could not load genre sections. Please try again.';
+
+  @override
   String get toRead => 'To Read';
 
   @override
@@ -225,6 +230,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dropped => 'Dropped';
+
+  @override
+  String get addToFavorites => 'Add to favorites';
+
+  @override
+  String get removeFromFavorites => 'Remove from favorites';
 
   @override
   String get favorites => 'Favorites';
@@ -627,7 +638,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookSelector => 'Book selector';
 
   @override
-  String get searchViaOpenLibrary => 'Search via Open Library';
+  String get searchViaGoogleBooks => 'Search via Google Books';
 
   @override
   String get search => 'Search';

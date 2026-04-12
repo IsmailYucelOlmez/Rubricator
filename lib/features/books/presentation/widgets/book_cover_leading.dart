@@ -5,16 +5,20 @@ import '../../../../core/theme/app_radius.dart';
 
 /// List tile leading: cover or placeholder (no API calls).
 class BookCoverLeading extends StatelessWidget {
-  const BookCoverLeading({super.key, this.coverId, this.size = 44});
+  const BookCoverLeading({
+    super.key,
+    this.coverImageUrl,
+    this.size = 44,
+  });
 
-  final int? coverId;
+  final String? coverImageUrl;
   final double size;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final mutedIcon = cs.onSurfaceVariant.withValues(alpha: 0.65);
-    final url = AppConstants.workCoverUrl(coverId, size: 'M');
+    final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
       return SizedBox(
         width: size,

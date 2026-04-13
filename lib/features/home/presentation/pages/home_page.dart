@@ -64,46 +64,55 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-          SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
-          ...genreSections.when(
-            data: (map) => [
-              for (final genre in kHomePageGenreKeys)
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.wait([
+            ref.refresh(popularBooksProvider.future),
+            ref.refresh(homeGenreSectionsProvider.future),
+          ]);
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+            SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
+            ...genreSections.when(
+              data: (map) => [
+                for (final genre in kHomePageGenreKeys)
+                  SliverToBoxAdapter(
+                    child: _GenreSection(
+                      genre: genre,
+                      books: map[genre] ?? const <HomeBookEntity>[],
+                      l10n: l10n,
+                    ),
+                  ),
+              ],
+              loading: () => [
+                for (final genre in kHomePageGenreKeys)
+                  SliverToBoxAdapter(
+                    child: _Section(
+                      title: _genreLabel(genre, l10n),
+                      child: const _HorizontalSkeleton(),
+                    ),
+                  ),
+              ],
+              error: (error, stackTrace) => [
                 SliverToBoxAdapter(
-                  child: _GenreSection(
-                    genre: genre,
-                    books: map[genre] ?? const <HomeBookEntity>[],
-                    l10n: l10n,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.sm,
+                      AppSpacing.md,
+                      0,
+                    ),
+                    child: _InlineError(message: l10n.loadHomeGenresError),
                   ),
                 ),
-            ],
-            loading: () => [
-              for (final genre in kHomePageGenreKeys)
-                SliverToBoxAdapter(
-                  child: _Section(
-                    title: _genreLabel(genre, l10n),
-                    child: const _HorizontalSkeleton(),
-                  ),
-                ),
-            ],
-            error: (error, stackTrace) => [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md,
-                    AppSpacing.sm,
-                    AppSpacing.md,
-                    0,
-                  ),
-                  child: _InlineError(message: l10n.loadHomeGenresError),
-                ),
-              ),
-            ],
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
-        ],
+              ],
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
+          ],
+        ),
       ),
     );
   }
@@ -257,7 +266,10 @@ class _BookCard extends StatelessWidget {
               book.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: titleStyle?.copyWith(fontSize: titleFontSize),
+              style: titleStyle?.copyWith(
+                fontSize: titleFontSize,
+                fontFamily: 'Yellowtail',
+              ),
             ),
             const SizedBox(height: 2),
             Text(

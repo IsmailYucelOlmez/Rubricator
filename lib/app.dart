@@ -56,18 +56,18 @@ class _BookAppState extends ConsumerState<BookApp> {
               onDestinationSelected: (index) => setState(() => _currentIndex = index),
               destinations: [
                 NavigationDestination(
-                  icon: const Icon(Icons.menu_book_outlined),
-                  selectedIcon: const Icon(Icons.menu_book),
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home),
                   label: l10n.navHome.toUpperCase(),
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.search_outlined),
-                  selectedIcon: const Icon(Icons.search),
+                  icon: const Icon(Icons.search, fill: 0),
+                  selectedIcon: const Icon(Icons.search, fill: 1),
                   label: l10n.navSearch.toUpperCase(),
                 ),
                 NavigationDestination(
-                  icon: const Icon(Icons.view_list_outlined),
-                  selectedIcon: const Icon(Icons.view_list),
+                  icon: const Icon(Icons.menu_book_outlined),
+                  selectedIcon: const Icon(Icons.menu_book),
                   label: l10n.navLists.toUpperCase(),
                 ),
                 NavigationDestination(

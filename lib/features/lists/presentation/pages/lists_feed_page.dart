@@ -36,7 +36,13 @@ class ListsPage extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm + AppSpacing.xs),
             child: Row(
               children: [
-                if (!embedded) Text(l10n.navLists, style: Theme.of(context).textTheme.headlineSmall),
+                if (!embedded)
+                  Text(
+                    'Listbox',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontFamily: 'EFCOBrookshire',
+                    ),
+                  ),
                 if (!embedded) const Spacer(),
                 IconButton(
                   tooltip: l10n.myListsTooltip,

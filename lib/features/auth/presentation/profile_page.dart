@@ -6,8 +6,10 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_provider.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
+import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
+import '../../user_books/domain/entities/user_book_entity.dart';
 import 'auth_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -22,10 +24,16 @@ class ProfilePage extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: authAsync.when(
-          data: (user) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.profile, style: Theme.of(context).textTheme.headlineSmall),
+          data: (user) => SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text(
+                'Zone',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontFamily: 'EFCOBrookshire',
+                ),
+              ),
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
@@ -76,8 +84,10 @@ class ProfilePage extends ConsumerWidget {
                 ),
                 const HabitProfileSummary(),
                 const StatsPreviewCard(),
+                const _ProfileReadingListsSection(),
               ],
-            ],
+              ],
+            ),
           ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(
@@ -111,6 +121,65 @@ class ProfilePage extends ConsumerWidget {
       return l10n.accountAlreadyExists;
     }
     return s;
+  }
+}
+
+class _ProfileReadingListsSection extends StatelessWidget {
+  const _ProfileReadingListsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      margin: const EdgeInsets.only(top: AppSpacing.md),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Reading Stats Lists', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                _statusButton(context, l10n.toRead, ReadingStatus.toRead),
+                _statusButton(context, l10n.reading, ReadingStatus.reading),
+                _statusButton(context, l10n.reReading, ReadingStatus.reReading),
+                _statusButton(context, l10n.completed, ReadingStatus.completed),
+                _statusButton(context, l10n.dropped, ReadingStatus.dropped),
+                FilledButton.tonalIcon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          const ReadingStatusListPage(showFavoritesOnly: true),
+                    ),
+                  ),
+                  icon: const Icon(Icons.favorite_outline),
+                  label: Text(l10n.favorites),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statusButton(
+    BuildContext context,
+    String label,
+    ReadingStatus status,
+  ) {
+    return FilledButton.tonalIcon(
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ReadingStatusListPage(status: status),
+        ),
+      ),
+      icon: const Icon(Icons.menu_book_outlined),
+      label: Text(label),
+    );
   }
 }
 

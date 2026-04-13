@@ -45,9 +45,7 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
           child: Tooltip(
             message: isFavorite ? l10n.removeFromFavorites : l10n.addToFavorites,
             child: Material(
-              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.92),
-              shape: const CircleBorder(),
-              clipBehavior: Clip.antiAlias,
+              type: MaterialType.transparency,
               child: InkWell(
                 customBorder: const CircleBorder(),
                 onTap: () async {
@@ -70,10 +68,22 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
                   width: buttonSize,
                   height: buttonSize,
                   child: Center(
-                    child: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      size: iconSize,
-                      color: isFavorite ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          size: iconSize,
+                          color: Colors.black,
+                        ),
+                        Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          size: iconSize,
+                          color: isFavorite
+                              ? AppColors.primary
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ],
                     ),
                   ),
                 ),

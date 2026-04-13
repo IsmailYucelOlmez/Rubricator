@@ -71,8 +71,8 @@ class SearchInteractionController {
     if (q.length < 2) return;
     final dedupeKey = '$q|';
     if (_lastLoggedKey == dedupeKey) return;
-    _lastLoggedKey = dedupeKey;
     await _ref.read(_logSearchUseCaseProvider).call(query: q);
+    _lastLoggedKey = dedupeKey;
     _ref.invalidate(popularSearchProvider);
   }
 
@@ -85,8 +85,8 @@ class SearchInteractionController {
     if (q.length < 2 || b.isEmpty) return;
     final dedupeKey = '$q|$b';
     if (_lastLoggedKey == dedupeKey) return;
-    _lastLoggedKey = dedupeKey;
     await _ref.read(_logSearchUseCaseProvider).call(query: q, bookId: b);
+    _lastLoggedKey = dedupeKey;
     _ref.invalidate(popularBooksProvider);
     _ref.invalidate(popularSearchProvider);
   }

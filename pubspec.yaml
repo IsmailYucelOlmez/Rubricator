@@ -107,6 +107,9 @@ flutter:
     - family: HandelsonThree
       fonts:
         - asset: assets/zhandelson-three.otf
+    - family: Yellowtail
+      fonts:
+        - asset: assets/Yellowtail-Regular.otf
     - family: EFCOBrookshire
       fonts:
         - asset: assets/EFCO-Brookshire-Regular.ttf

@@ -30,11 +30,19 @@ class SearchRepositoryImpl implements SearchRepository {
   Future<List<Book>> getPopularBooks() async {
     final topIds = await _remote.fetchPopularBookIds(limit: 10);
     if (topIds.isEmpty) return <Book>[];
-    final books = await Future.wait(
-      topIds.map(_bookRepository.getBookByWorkId),
-      eagerError: false,
+    final books = await Future.wait<Book?>(
+      topIds.map((id) async {
+        try {
+          return await _bookRepository.getBookByWorkId(id);
+        } catch (_) {
+          // Some ids intermittently fail on upstream API (e.g. 503).
+          // Skip failing ids so other popular books can still be shown.
+          return null;
+        }
+      }),
+      eagerError: true,
     );
-    return books;
+    return books.whereType<Book>().toList();
   }
 
   @override

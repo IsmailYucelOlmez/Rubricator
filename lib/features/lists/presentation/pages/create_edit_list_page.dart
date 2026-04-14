@@ -5,6 +5,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/domain/entities/book.dart';
+import '../../../books/presentation/widgets/book_cover_leading.dart';
 import '../../../books/presentation/providers/books_providers.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
@@ -69,10 +70,19 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.initialList != null;
     return Scaffold(
-      appBar: AppBar(title: Text(isEdit ? l10n.editList : l10n.createList)),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: ListView(
+      appBar: AppBar(
+        title: Text(
+          isEdit ? l10n.editList : l10n.createList,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontSize: (Theme.of(context).textTheme.titleLarge?.fontSize ?? 22) * 1.1,
+          ),
+        ),
+      ),
+      body: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.1)),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: ListView(
           children: [
             TextField(controller: _titleCtrl, decoration: InputDecoration(labelText: l10n.title)),
             const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
@@ -89,45 +99,6 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
               title: Text(l10n.public),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text(l10n.bookSelector, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchCtrl,
-                    decoration: InputDecoration(
-                      hintText: l10n.searchViaGoogleBooks,
-                    ),
-                    onSubmitted: (_) => _searchBooks(),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(onPressed: _searchBooks, child: Text(l10n.search)),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            if (_searchResults.isNotEmpty)
-              SizedBox(
-                height: 220,
-                child: ListView.builder(
-                  itemCount: _searchResults.length,
-                  itemBuilder: (_, index) {
-                    final book = _searchResults[index];
-                    final alreadyAdded = _picked.any((b) => b.bookId == book.id);
-                    return ListTile(
-                      dense: true,
-                      title: Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      subtitle: Text(book.author, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      trailing: IconButton(
-                        icon: Icon(alreadyAdded ? Icons.check : Icons.add),
-                        onPressed: alreadyAdded ? null : () => _addBook(book),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             Text(l10n.selectedBooks, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
             if (_loadingItems)
@@ -144,7 +115,12 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                   final item = _picked[index];
                   return ListTile(
                     key: ValueKey(item.bookId),
-                    title: Text(item.title),
+                    title: Text(
+                      item.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontFamily: 'Yellowtail',
+                      ),
+                    ),
                     subtitle: Text(item.author),
                     leading: const Icon(Icons.drag_handle),
                     trailing: IconButton(
@@ -153,6 +129,98 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     ),
                   );
                 },
+              ),
+            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+            Text('Search books', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * 1.1,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: l10n.searchViaGoogleBooks,
+                      hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * 1.1,
+                      ),
+                    ),
+                    onSubmitted: (_) => _searchBooks(),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                FilledButton(
+                  onPressed: _searchBooks,
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                    child: Text(l10n.search),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            if (_searchResults.isNotEmpty)
+              SizedBox(
+                height: 220,
+                child: ListView.builder(
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final book = _searchResults[index];
+                    final alreadyAdded = _picked.any((b) => b.bookId == book.id);
+                    final imageWidth = MediaQuery.of(context).size.width * 0.20;
+                    final resultTitleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontFamily: 'Yellowtail',
+                      fontSize: ((Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8) *
+                          1.1,
+                    );
+                    final resultAuthorStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: ((Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14) * 0.9) *
+                          1.1,
+                    );
+                    return InkWell(
+                      onTap: alreadyAdded ? null : () => _addBook(book),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: imageWidth,
+                              height: imageWidth * 1.4,
+                              child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: resultTitleStyle,
+                                  ),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    book.author,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: resultAuthorStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(alreadyAdded ? Icons.check : Icons.add),
+                              onPressed: alreadyAdded ? null : () => _addBook(book),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             const SizedBox(height: AppSpacing.md),
             FilledButton(
@@ -163,9 +231,13 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(l10n.save),
+                  : MediaQuery(
+                      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                      child: Text(l10n.save),
+                    ),
             ),
           ],
+        ),
         ),
       ),
     );

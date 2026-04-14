@@ -242,7 +242,7 @@ class _BookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleSmall;
-    final titleFontSize = (titleStyle?.fontSize ?? 14) * 1.25;
+    final titleFontSize = (titleStyle?.fontSize ?? 14) * 0.80;
     return SizedBox(
       width: 145,
       child: InkWell(

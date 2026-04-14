@@ -50,7 +50,12 @@ class ReadingStatusListPage extends ConsumerWidget {
                 final book = entry.book;
                 final userBook = entry.userBook;
                 return ListTile(
-                  title: Text(book.title),
+                  title: Text(
+                    book.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontFamily: 'Yellowtail',
+                    ),
+                  ),
                   subtitle: Text(
                     '${book.author} • ${_statusLabel(userBook.status, l10n)}${userBook.progress != null ? ' • ${userBook.progress}%' : ''}',
                   ),

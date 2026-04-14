@@ -33,6 +33,7 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
     final buttonSize = compact ? 22.0 : 26.0;
     final top = compact ? 2.0 : 6.0;
     final right = compact ? 2.0 : 6.0;
+    final isLightTheme = Theme.of(context).brightness == Brightness.light;
 
     return Stack(
       fit: StackFit.expand,
@@ -74,7 +75,7 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
                         Icon(
                           Icons.favorite,
                           size: iconSize,
-                          color: Colors.black,
+                          color: isLightTheme ? Colors.white : Colors.black,
                         ),
                         Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,

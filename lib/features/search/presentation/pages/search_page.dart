@@ -173,7 +173,9 @@ class _DiscoveryView extends StatelessWidget {
       children: [
         Text(
           l10n.recentSearches,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.2,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         popularQueries.when(
@@ -198,7 +200,12 @@ class _DiscoveryView extends StatelessWidget {
           },
         ),
         const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-        Text(l10n.recentSearchedBooks, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          l10n.recentSearchedBooks,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.2,
+          ),
+        ),
         const SizedBox(height: AppSpacing.sm),
         popularBooks.when(
           loading: () => const LinearProgressIndicator(),
@@ -242,7 +249,7 @@ class _DiscoveryView extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(
                                       fontFamily: 'Yellowtail',
-                                      fontSize: 18,
+                                      fontSize: 18 * 0.8,
                                     ),
                               ),
                               Text(
@@ -285,7 +292,7 @@ class _BookList extends StatelessWidget {
           context,
         ).textTheme.titleMedium?.copyWith(
           fontFamily: 'Yellowtail',
-          fontSize: 18,
+          fontSize: 18 * 0.8,
         );
         final authorBaseStyle = Theme.of(context).textTheme.bodyMedium;
         return InkWell(

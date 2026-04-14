@@ -41,6 +41,7 @@ class ListsPage extends ConsumerWidget {
                     'Listbox',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontFamily: 'EFCOBrookshire',
+                      fontSize: (Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24) * 1.1,
                     ),
                   ),
                 if (!embedded) const Spacer(),
@@ -68,6 +69,12 @@ class ListsPage extends ConsumerWidget {
           ),
           TabBar(
             isScrollable: true,
+            labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
+            ),
+            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
+            ),
             tabs: [
               Tab(text: l10n.listsForYou),
               Tab(text: l10n.popular),

@@ -80,22 +80,47 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             data: (items) => Column(
               children: [
                 for (final item in items)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: SizedBox(
-                      width: 40,
-                      height: 56,
-                      child: BookCoverWithFavoriteButton(
-                        bookId: item.bookId,
-                        compact: true,
-                        child: _Cover(coverImageUrl: item.coverImageUrl),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    child: Builder(
+                      builder: (context) {
+                        final coverWidth = MediaQuery.of(context).size.width * 0.20;
+                        final coverHeight = coverWidth * 1.4;
+                        return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: coverWidth,
+                          height: coverHeight,
+                          child: BookCoverWithFavoriteButton(
+                            bookId: item.bookId,
+                            compact: true,
+                            child: _Cover(coverImageUrl: item.coverImageUrl),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.bookTitle,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontFamily: 'Yellowtail',
+                                ),
+                              ),
+                              Text(
+                                item.note?.isNotEmpty == true
+                                    ? '${item.bookAuthor}\n${item.note}'
+                                    : item.bookAuthor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                      },
                     ),
-                    title: Text(item.bookTitle),
-                    subtitle: Text(
-                      item.note?.isNotEmpty == true ? '${item.bookAuthor}\n${item.note}' : item.bookAuthor,
-                    ),
-                    isThreeLine: item.note?.isNotEmpty == true,
                   ),
               ],
             ),
@@ -220,7 +245,7 @@ class _Cover extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
       child: SizedBox(
-        width: 40,
+        width: double.infinity,
         child: imageUrl == null
             ? Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)
             : Image.network(

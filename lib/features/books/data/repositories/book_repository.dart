@@ -107,6 +107,22 @@ class BookRepository {
     return model.toEntity();
   }
 
+  Future<List<Book>> getBooksByAuthorId(String authorId) async {
+    final authorName = _authorNameFromId(authorId);
+    if (authorName.isEmpty) return const <Book>[];
+    final models = await _ds.fetchBooksByAuthor(author: authorName);
+    final prioritized = _prioritizeModels(models);
+    return prioritized.map((m) => m.toEntity()).toList();
+  }
+
+  String _authorNameFromId(String authorId) {
+    final raw = authorId.trim();
+    if (raw.startsWith('g:')) {
+      return Uri.decodeComponent(raw.substring(2)).trim();
+    }
+    return raw;
+  }
+
   Future<List<Book>> getRelatedBooks(Book book) async {
     List<BookModel> models = const <BookModel>[];
     final subject = book.subjectKeys.isNotEmpty ? book.subjectKeys.first : '';

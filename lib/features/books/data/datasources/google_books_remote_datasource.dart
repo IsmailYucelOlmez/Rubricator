@@ -92,6 +92,26 @@ class GoogleBooksRemoteDataSource {
     );
   }
 
+  Future<List<BookModel>> fetchBooksByAuthor({
+    required String author,
+    int limit = 20,
+  }) async {
+    final a = author.trim().replaceAll('"', ' ');
+    if (a.isEmpty) return <BookModel>[];
+    final json = await _api.getJson(
+      '/volumes',
+      queryParameters: <String, dynamic>{
+        'q': 'inauthor:"$a"',
+        'maxResults': _clampedLimit(limit),
+      },
+    );
+    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
+    return itemsRaw
+        .whereType<Map<String, dynamic>>()
+        .map(BookModel.fromGoogleBooksVolume)
+        .toList();
+  }
+
   Future<List<BookModel>> fetchTrendingWorks({int limit = 20}) async {
     final safeLimit = _clampedLimit(limit);
     final json = await _api.getJson(

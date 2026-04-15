@@ -63,6 +63,13 @@ final authorDetailProvider = FutureProvider.family<Author, String>((
   return ref.watch(bookRepositoryProvider).getAuthor(authorId);
 });
 
+final authorBooksProvider = FutureProvider.family<List<Book>, String>((
+  ref,
+  authorId,
+) {
+  return ref.watch(bookRepositoryProvider).getBooksByAuthorId(authorId);
+});
+
 /// Subjects come from the work payload; use the enriched [Book] from [bookDetailProvider].
 final relatedBooksProvider =
     FutureProvider.family<

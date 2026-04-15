@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../domain/entities/book.dart';
+import 'book_detail_page.dart';
 import '../providers/books_providers.dart';
 
 class AuthorDetailPage extends ConsumerWidget {
@@ -14,6 +16,7 @@ class AuthorDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final asyncAuthor = ref.watch(authorDetailProvider(authorId));
+    final asyncAuthorBooks = ref.watch(authorBooksProvider(authorId));
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.author)),
@@ -41,10 +44,13 @@ class AuthorDetailPage extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-              Text(
-                author.bio.isEmpty ? l10n.noBiographyAvailable : author.bio,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              if (author.bio.isNotEmpty)
+                Text(author.bio, style: Theme.of(context).textTheme.bodyLarge)
+              else
+                _AuthorBooksFallback(
+                  booksState: asyncAuthorBooks,
+                  authorName: author.name,
+                ),
             ],
           );
         },
@@ -61,6 +67,54 @@ class AuthorDetailPage extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AuthorBooksFallback extends StatelessWidget {
+  const _AuthorBooksFallback({required this.booksState, required this.authorName});
+
+  final AsyncValue<List<Book>> booksState;
+  final String authorName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return booksState.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Text(l10n.noBiographyAvailable),
+      data: (books) {
+        if (books.isEmpty) return Text(l10n.noBiographyAvailable);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.noBiographyAvailable,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              l10n.relatedBooks,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            ...books.map(
+              (book) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(book.title),
+                subtitle: Text(authorName),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => BookDetailPage(book: book),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

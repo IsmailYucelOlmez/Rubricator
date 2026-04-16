@@ -34,6 +34,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     final list = widget.list;
     final user = ref.watch(authStateProvider).valueOrNull;
+    final displayName = ref.watch(currentUserDisplayNameProvider);
     final isOwner = user?.id == list.userId;
     final itemsAsync = ref.watch(listItemsProvider(list.id));
     final commentsAsync = ref.watch(commentsProvider(list.id));
@@ -165,7 +166,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                       ? null
                       : () => _addComment(
                             userId: user.id,
-                            userName: (user.email ?? 'user').split('@').first,
+                            userName: displayName,
                             listId: list.id,
                           ),
                   child: _commenting

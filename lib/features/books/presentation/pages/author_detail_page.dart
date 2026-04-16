@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/book.dart';
-import 'book_detail_page.dart';
 import '../providers/books_providers.dart';
+import 'book_detail_page.dart';
+import '../widgets/book_cover_leading.dart';
+import '../widgets/book_cover_with_favorite_button.dart';
 
 class AuthorDetailPage extends ConsumerWidget {
   const AuthorDetailPage({super.key, required this.authorId});
@@ -19,19 +22,19 @@ class AuthorDetailPage extends ConsumerWidget {
     final asyncAuthorBooks = ref.watch(authorBooksProvider(authorId));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.author)),
+      appBar: AppBar(
+        title: Text(
+          asyncAuthor.maybeWhen(
+            data: (author) => author.name,
+            orElse: () => l10n.author,
+          ),
+        ),
+      ),
       body: asyncAuthor.when(
         data: (author) {
           return ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const Center(child: Icon(Icons.person, size: 96)),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                author.name,
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
               if (author.birthDate != null || author.deathDate != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text(
@@ -44,13 +47,7 @@ class AuthorDetailPage extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-              if (author.bio.isNotEmpty)
-                Text(author.bio, style: Theme.of(context).textTheme.bodyLarge)
-              else
-                _AuthorBooksFallback(
-                  booksState: asyncAuthorBooks,
-                  authorName: author.name,
-                ),
+              _AuthorBooksSection(booksState: asyncAuthorBooks),
             ],
           );
         },
@@ -71,50 +68,96 @@ class AuthorDetailPage extends ConsumerWidget {
   }
 }
 
-class _AuthorBooksFallback extends StatelessWidget {
-  const _AuthorBooksFallback({required this.booksState, required this.authorName});
+class _AuthorBooksSection extends StatelessWidget {
+  const _AuthorBooksSection({required this.booksState});
 
   final AsyncValue<List<Book>> booksState;
-  final String authorName;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return booksState.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Text(l10n.noBiographyAvailable),
+      error: (error, stackTrace) => Text(
+        l10n.couldNotLoadRelatedBooks,
+        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      ),
       data: (books) {
-        if (books.isEmpty) return Text(l10n.noBiographyAvailable);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        if (books.isEmpty) {
+          return Text(l10n.noBooksFound);
+        }
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: books.length,
+          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+          itemBuilder: (context, index) => _AuthorBookTile(book: books[index]),
+        );
+      },
+    );
+  }
+}
+
+class _AuthorBookTile extends StatelessWidget {
+  const _AuthorBookTile({required this.book});
+
+  final Book book;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontFamily: 'Yellowtail',
+          fontSize: 18 * 0.8,
+        );
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book)),
+      ),
+      child: Ink(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+        ),
+        child: Row(
           children: [
-            Text(
-              l10n.noBiographyAvailable,
-              style: Theme.of(context).textTheme.bodyMedium,
+            SizedBox(
+              width: 56,
+              height: 84,
+              child: BookCoverWithFavoriteButton(
+                bookId: book.id,
+                compact: true,
+                child: BookCoverLeading(
+                  coverImageUrl: book.coverImageUrl,
+                  size: 56,
+                ),
+              ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              l10n.relatedBooks,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            ...books.map(
-              (book) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(book.title),
-                subtitle: Text(authorName),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => BookDetailPage(book: book),
-                    ),
-                  );
-                },
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
               ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

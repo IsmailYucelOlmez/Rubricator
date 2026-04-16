@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -71,9 +74,12 @@ class ProfilePage extends ConsumerWidget {
                   child: Text(l10n.createAccount),
                 ),
               ] else ...[
-                Text(
-                  user.email ?? l10n.signedInFallback,
-                  style: Theme.of(context).textTheme.titleMedium,
+                _ProfileHeader(user: user),
+                const SizedBox(height: AppSpacing.sm),
+                FilledButton.tonalIcon(
+                  onPressed: () => _showEditProfileDialog(context, user),
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Profili duzenle'),
                 ),
                 const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
@@ -112,6 +118,13 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
+  Future<void> _showEditProfileDialog(BuildContext context, User user) {
+    return showDialog<void>(
+      context: context,
+      builder: (_) => _ProfileEditDialog(user: user),
+    );
+  }
+
   static String authMessage(Object e, AppLocalizations l10n) {
     final s = e.toString();
     if (s.contains('Invalid login credentials')) {
@@ -119,6 +132,12 @@ class ProfilePage extends ConsumerWidget {
     }
     if (s.contains('User already registered')) {
       return l10n.accountAlreadyExists;
+    }
+    if (s.contains('Bucket not found') || s.contains('profile-photos')) {
+      return 'Profil fotografi alani hazir degil. Veritabani migrationlarini calistir.';
+    }
+    if (s.contains('row-level security') || s.contains('new row violates row-level security policy')) {
+      return 'Profil fotografi icin Storage izinleri eksik. Supabase policy migrationini uygula.';
     }
     return s;
   }
@@ -278,18 +297,24 @@ class _ProfileSignUpDialog extends StatefulWidget {
 class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  late final TextEditingController _userName;
+  late final TextEditingController _avatarUrl;
 
   @override
   void initState() {
     super.initState();
     _email = TextEditingController();
     _password = TextEditingController();
+    _userName = TextEditingController();
+    _avatarUrl = TextEditingController();
   }
 
   @override
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _userName.dispose();
+    _avatarUrl.dispose();
     super.dispose();
   }
 
@@ -312,6 +337,17 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
             obscureText: true,
             labelText: l10n.passwordMin6,
           ),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
+            controller: _userName,
+            labelText: 'Kullanici adi',
+          ),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
+            controller: _avatarUrl,
+            keyboardType: TextInputType.url,
+            labelText: 'Profil foto URL (opsiyonel)',
+          ),
         ],
       ),
       actions: [
@@ -323,12 +359,16 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
           onPressed: () async {
             final email = _email.text.trim();
             final password = _password.text;
-            if (email.isEmpty || password.length < 6) return;
+            final userName = _userName.text.trim();
+            final avatarUrl = _avatarUrl.text.trim();
+            if (email.isEmpty || password.length < 6 || userName.isEmpty) return;
             try {
               final container = ProviderScope.containerOf(context);
               await container.read(authServiceProvider).signUp(
                     email: email,
                     password: password,
+                    displayName: userName,
+                    avatarUrl: avatarUrl.isEmpty ? null : avatarUrl,
                   );
               if (!mounted) return;
               final messengerCtx = widget.parentContext;
@@ -354,5 +394,207 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
         ),
       ],
     );
+  }
+}
+
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({required this.user});
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    final displayName = userDisplayName(user);
+    final avatarUrl = userAvatarUrl(user);
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+          child: avatarUrl == null ? const Icon(Icons.person_outline) : null,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                user.email ?? AppLocalizations.of(context)!.signedInFallback,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileEditDialog extends StatefulWidget {
+  const _ProfileEditDialog({required this.user});
+
+  final User user;
+
+  @override
+  State<_ProfileEditDialog> createState() => _ProfileEditDialogState();
+}
+
+class _ProfileEditDialogState extends State<_ProfileEditDialog> {
+  late final TextEditingController _userName;
+  late final TextEditingController _avatarUrl;
+  final ImagePicker _picker = ImagePicker();
+  Uint8List? _selectedAvatarBytes;
+  XFile? _selectedAvatar;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userName = TextEditingController(text: userDisplayName(widget.user));
+    _avatarUrl = TextEditingController(text: userAvatarUrl(widget.user) ?? '');
+  }
+
+  @override
+  void dispose() {
+    _userName.dispose();
+    _avatarUrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedAvatarBytes = _selectedAvatarBytes;
+    final avatarInput = _avatarUrl.text.trim();
+    return AlertDialog(
+      title: const Text('Profili duzenle'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 34,
+            backgroundImage: selectedAvatarBytes != null
+                ? MemoryImage(selectedAvatarBytes)
+                : (avatarInput.isNotEmpty ? NetworkImage(avatarInput) : null),
+            child: selectedAvatarBytes == null && avatarInput.isEmpty
+                ? const Icon(Icons.person_outline)
+                : null,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton.icon(
+            onPressed: _saving ? null : _pickAvatarFromGallery,
+            icon: const Icon(Icons.photo_library_outlined),
+            label: const Text('Galeriden foto sec'),
+          ),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
+            controller: _userName,
+            labelText: 'Kullanici adi',
+          ),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          AppInput(
+            controller: _avatarUrl,
+            keyboardType: TextInputType.url,
+            labelText: 'Profil foto URL (opsiyonel)',
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.pop(context),
+          child: Text(AppLocalizations.of(context)!.cancel),
+        ),
+        FilledButton(
+          onPressed: _saving
+              ? null
+              : () async {
+                  final name = _userName.text.trim();
+                  final avatar = _avatarUrl.text.trim();
+                  if (name.isEmpty) return;
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final l10n = AppLocalizations.of(context)!;
+                  setState(() => _saving = true);
+                  try {
+                    final container = ProviderScope.containerOf(context);
+                    String? avatarUrl = avatar.isEmpty ? null : avatar;
+                    final pickedAvatar = _selectedAvatar;
+                    if (pickedAvatar != null) {
+                      final userId =
+                          container.read(authServiceProvider).currentUser?.id;
+                      if (userId == null) {
+                        throw StateError('No signed-in user found.');
+                      }
+                      final bytes = await pickedAvatar.readAsBytes();
+                      avatarUrl = await container
+                          .read(authServiceProvider)
+                          .uploadProfilePhoto(
+                            userId: userId,
+                            bytes: bytes,
+                            fileName: pickedAvatar.name,
+                          );
+                    }
+                    await container.read(authServiceProvider).updateProfile(
+                          displayName: name,
+                          avatarUrl: avatarUrl,
+                        );
+                    if (!mounted) return;
+                    navigator.pop();
+                  } catch (e) {
+                    if (!mounted) return;
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
+                    );
+                  } finally {
+                    if (mounted) setState(() => _saving = false);
+                  }
+                },
+          child: _saving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Kaydet'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickAvatarFromGallery() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final selected = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 1200,
+      );
+      if (!mounted || selected == null) return;
+      final bytes = await selected.readAsBytes();
+      if (!mounted) return;
+      setState(() {
+        _selectedAvatar = selected;
+        _selectedAvatarBytes = bytes;
+        _avatarUrl.clear();
+      });
+    } on MissingPluginException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Galeri eklentisi yuklenemedi. Uygulamayi tam kapatip yeniden ac.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
+      );
+    }
   }
 }

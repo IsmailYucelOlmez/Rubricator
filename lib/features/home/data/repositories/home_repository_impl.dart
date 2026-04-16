@@ -1,14 +1,18 @@
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/repositories/home_repository.dart';
+import '../datasources/home_cache_datasource.dart';
 import '../datasources/home_remote_datasource.dart';
 import '../models/home_book_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-  HomeRepositoryImpl(this._remoteDataSource);
+  HomeRepositoryImpl(this._remoteDataSource, this._cacheDataSource);
 
   final HomeRemoteDataSource _remoteDataSource;
+  final HomeCacheDataSource _cacheDataSource;
 
   static const int _maxBooksPerHomeSection = 10;
+  static const int _maxGoogleBooksFetchSize = 40;
+  static const String _popularGenreCacheKey = 'popular_fiction';
 
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
@@ -56,9 +60,92 @@ class HomeRepositoryImpl implements HomeRepository {
     return chosen.map((s) => s.model).toList();
   }
 
+  Future<List<HomeBookModel>> _getOrRefreshGenreBooks(String genreKey) async {
+    final cachedRow = await _cacheDataSource.getGenreCache(genreKey);
+    final cachedBooks = _prioritizeModels(
+      _cacheDataSource.parseCachedBooks(cachedRow),
+    );
+    if (cachedBooks.isNotEmpty) return cachedBooks;
+
+    if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
+      return cachedBooks;
+    }
+
+    Object? lastError;
+    for (var i = 0; i < _cacheDataSource.maxRetryAttempts; i++) {
+      try {
+        final remote = await _remoteDataSource.fetchBooksByGenre(
+          genreKey,
+          maxResults: _maxGoogleBooksFetchSize,
+        );
+        final prioritized = _prioritizeModels(remote);
+        if (prioritized.isEmpty) {
+          throw StateError('No books returned for genre: $genreKey');
+        }
+        await _cacheDataSource.saveFetchSuccess(
+          genreKey: genreKey,
+          books: prioritized,
+        );
+        return prioritized;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError != null) {
+      await _cacheDataSource.saveFetchFailure(
+        genreKey: genreKey,
+        error: lastError,
+      );
+    }
+    return cachedBooks;
+  }
+
+  Future<List<HomeBookModel>> _getOrRefreshPopularBooks() async {
+    final cachedRow = await _cacheDataSource.getGenreCache(
+      _popularGenreCacheKey,
+    );
+    final cachedBooks = _prioritizeModels(
+      _cacheDataSource.parseCachedBooks(cachedRow),
+    );
+    if (cachedBooks.isNotEmpty) return cachedBooks;
+
+    if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
+      return cachedBooks;
+    }
+
+    Object? lastError;
+    for (var i = 0; i < _cacheDataSource.maxRetryAttempts; i++) {
+      try {
+        final remote = await _remoteDataSource.fetchPopularBooks(
+          maxResults: _maxGoogleBooksFetchSize,
+        );
+        final prioritized = _prioritizeModels(remote);
+        if (prioritized.isEmpty) {
+          throw StateError('No popular books returned');
+        }
+        await _cacheDataSource.saveFetchSuccess(
+          genreKey: _popularGenreCacheKey,
+          books: prioritized,
+        );
+        return prioritized;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError != null) {
+      await _cacheDataSource.saveFetchFailure(
+        genreKey: _popularGenreCacheKey,
+        error: lastError,
+      );
+    }
+    return cachedBooks;
+  }
+
   @override
   Future<List<HomeBookEntity>> getPopularBooks() async {
-    final models = await _remoteDataSource.fetchPopularBooks();
+    final models = await _getOrRefreshPopularBooks();
     final prioritized = _prioritizeModels(models);
     return prioritized
         .take(_maxBooksPerHomeSection)
@@ -68,12 +155,14 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<List<HomeBookEntity>> getBooksByGenre(String genre) async {
-    final models = await _remoteDataSource.fetchBooksByGenre(genre);
-    final prioritized = _prioritizeModels(models);
-    return prioritized
-        .take(_maxBooksPerHomeSection)
-        .map((item) => item.toEntity())
-        .toList();
+    try {
+      final models = await _getOrRefreshGenreBooks(genre);
+      final prioritized = _prioritizeModels(models);
+      return prioritized.map((item) => item.toEntity()).toList();
+    } catch (_) {
+      // Keep genre page usable even when a request fails intermittently.
+      return const <HomeBookEntity>[];
+    }
   }
 
   @override
@@ -86,15 +175,20 @@ class HomeRepositoryImpl implements HomeRepository {
     // so splitting a single combined result by category leaves rows empty.
     final entries = await Future.wait(
       genreKeys.map((g) async {
-        final models = await _remoteDataSource.fetchBooksByGenre(g);
-        final prioritized = _prioritizeModels(models);
-        return MapEntry(
-          g,
-          prioritized
-              .take(_maxBooksPerHomeSection)
-              .map((m) => m.toEntity())
-              .toList(),
-        );
+        try {
+          final models = await _getOrRefreshGenreBooks(g);
+          final prioritized = _prioritizeModels(models);
+          return MapEntry(
+            g,
+            prioritized
+                .take(_maxBooksPerHomeSection)
+                .map((m) => m.toEntity())
+                .toList(),
+          );
+        } catch (_) {
+          // Isolate partial API failures so one genre does not break all rows.
+          return MapEntry(g, const <HomeBookEntity>[]);
+        }
       }),
     );
 

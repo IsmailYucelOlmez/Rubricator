@@ -372,7 +372,6 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   String _fallbackUserName(String? userId) {
-    if (userId == null || userId.isEmpty) return 'user';
-    return 'user_${userId.substring(0, userId.length < 6 ? userId.length : 6)}';
+    return 'user';
   }
 }

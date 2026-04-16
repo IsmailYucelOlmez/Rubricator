@@ -303,13 +303,13 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     setState(() => _saving = true);
     final repo = ref.read(listsRepositoryProvider);
     try {
-      final email = user.email ?? 'user';
+      final displayName = userDisplayName(user);
       final initial = widget.initialList;
       late final String listId;
       if (initial == null) {
         final created = await repo.createList(
           userId: user.id,
-          userName: email.split('@').first,
+          userName: displayName,
           title: _titleCtrl.text.trim(),
           description: _descCtrl.text.trim(),
           isPublic: _isPublic,

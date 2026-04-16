@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../services/api_service.dart';
+import '../../../../services/supabase_service.dart';
+import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/home_book_entity.dart';
@@ -12,8 +14,15 @@ final _homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>(
   (ref) => HomeRemoteDataSource(ref.watch(_homeApiProvider)),
 );
 
+final _homeCacheDataSourceProvider = Provider<HomeCacheDataSource>(
+  (ref) => HomeCacheDataSource(SupabaseService.client),
+);
+
 final homeRepositoryProvider = Provider<HomeRepository>(
-  (ref) => HomeRepositoryImpl(ref.watch(_homeRemoteDataSourceProvider)),
+  (ref) => HomeRepositoryImpl(
+    ref.watch(_homeRemoteDataSourceProvider),
+    ref.watch(_homeCacheDataSourceProvider),
+  ),
 );
 
 final popularBooksProvider = FutureProvider<List<HomeBookEntity>>((ref) {
@@ -32,7 +41,14 @@ const kHomePageGenreKeys = <String>[
 
 final homeGenreSectionsProvider =
     FutureProvider<Map<String, List<HomeBookEntity>>>((ref) {
-  return ref
-      .watch(homeRepositoryProvider)
-      .getHomeGenreSectionBooks(kHomePageGenreKeys);
+      return ref
+          .watch(homeRepositoryProvider)
+          .getHomeGenreSectionBooks(kHomePageGenreKeys);
+    });
+
+final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
+  ref,
+  genreKey,
+) {
+  return ref.watch(homeRepositoryProvider).getBooksByGenre(genreKey);
 });

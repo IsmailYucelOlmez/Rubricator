@@ -12,13 +12,22 @@ class HomeRemoteDataSource {
 
   List<HomeBookModel> _parseVolumeItems(Map<String, dynamic> json) {
     final items = json['items'] as List<dynamic>? ?? <dynamic>[];
-    return items
-        .whereType<Map<String, dynamic>>()
-        .map(HomeBookModel.fromGoogleVolume)
-        .toList();
+    final parsed = <HomeBookModel>[];
+    for (final item in items) {
+      if (item is! Map<String, dynamic>) continue;
+      try {
+        parsed.add(HomeBookModel.fromGoogleVolume(item));
+      } catch (_) {
+        // Skip malformed volume payloads; one bad item should not fail the row.
+      }
+    }
+    return parsed;
   }
 
-  Future<List<HomeBookModel>> fetchBooksByGenre(String genre) async {
+  Future<List<HomeBookModel>> fetchBooksByGenre(
+    String genre, {
+    int maxResults = 30,
+  }) async {
     final safeGenre = subjectQueryTerm(genre);
     if (safeGenre.isEmpty) return const <HomeBookModel>[];
     final q = safeGenre.contains(' ')
@@ -26,20 +35,17 @@ class HomeRemoteDataSource {
         : 'subject:$safeGenre';
     final json = await _api.getJson(
       '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': q,
-        'maxResults': 10,
-      },
+      queryParameters: <String, dynamic>{'q': q, 'maxResults': maxResults},
     );
     return _parseVolumeItems(json);
   }
 
-  Future<List<HomeBookModel>> fetchPopularBooks() async {
+  Future<List<HomeBookModel>> fetchPopularBooks({int maxResults = 30}) async {
     final json = await _api.getJson(
       '/volumes',
       queryParameters: <String, dynamic>{
         'q': 'subject:fiction',
-        'maxResults': 10,
+        'maxResults': maxResults,
       },
     );
     return _parseVolumeItems(json);

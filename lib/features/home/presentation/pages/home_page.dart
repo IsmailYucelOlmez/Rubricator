@@ -10,6 +10,7 @@ import '../../../../core/theme/app_spacing.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
+import 'genre_books_page.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../providers/home_providers.dart';
 
@@ -151,6 +152,28 @@ class _GenreSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Section(
       title: _genreLabel(genre, l10n),
+      trailing: TextButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => GenreBooksPage(
+              genreKey: genre,
+              genreLabel: _genreLabel(genre, l10n),
+            ),
+          ),
+        ),
+        style: TextButton.styleFrom(
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        ),
+        child: const Text(
+          'Show all',
+          style: TextStyle(
+            fontFamily: 'Yellowtail',
+            fontSize: 10,
+          ),
+        ),
+      ),
       child: books.isEmpty
           ? _InlineError(message: l10n.loadGenreBooksError(_genreLabel(genre, l10n)))
           : _HorizontalBookList(books: books),
@@ -189,10 +212,12 @@ class _Section extends StatelessWidget {
   const _Section({
     required this.title,
     required this.child,
+    this.trailing,
   });
 
   final String title;
   final Widget child;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -203,9 +228,16 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: titleStyle?.copyWith(fontSize: titleFontSize * 1.50),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: titleStyle?.copyWith(fontSize: titleFontSize * 1.50),
+                ),
+              ),
+              if (trailing != null) trailing!,
+            ],
           ),
           const SizedBox(height: 10),
           child,

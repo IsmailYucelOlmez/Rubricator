@@ -142,10 +142,30 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 4),
-              Text(
-                detailedBook.author,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              if (detailedBook.authorIds.isNotEmpty)
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => AuthorDetailPage(
+                          authorId: detailedBook.authorIds.first,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    detailedBook.author,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                  ),
+                )
+              else
+                Text(
+                  detailedBook.author,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               const SizedBox(height: 12),
               _ReadingStatusCard(
                 userBook: userBook,
@@ -188,25 +208,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   }
                 },
               ),
-              if (detailedBook.authorIds.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => AuthorDetailPage(
-                            authorId: detailedBook.authorIds.first,
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.person_outlined),
-                    label: Text(l10n.authorProfile),
-                  ),
-                ),
-              ],
               const SizedBox(height: AppSpacing.md),
               _RatingSection(
                 state: rating,

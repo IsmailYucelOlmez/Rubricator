@@ -7,6 +7,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
@@ -101,7 +102,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
       ),
       body: detailedBookAsync.when(
         data: (detailedBook) {
-          final summary = ref.watch(aiSummaryProvider(detailedBook));
           final reviews = ref.watch(reviewListProvider(detailedBook.id));
           final externalReviews = ref.watch(
             externalReviewProvider(detailedBook.id),
@@ -424,21 +424,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     ),
                   );
                 },
-                loading: () => const LinearProgressIndicator(),
+                loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
                 error: (error, stackTrace) => Text(l10n.couldNotLoadRelatedBooks),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(l10n.aiSummary, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.sm),
-              summary.when(
-                data: Text.new,
-                loading: () => const CircularProgressIndicator(),
-                error: (error, stackTrace) => Text(l10n.aiSummaryFailed),
               ),
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const AppLoadingIndicator(),
         error: (error, stackTrace) => Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -615,7 +607,7 @@ class _RatingSection extends StatelessWidget {
                   data.average.toStringAsFixed(1),
                 ),
               ),
-              loading: () => const LinearProgressIndicator(),
+              loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
               error: (error, stackTrace) =>
                   Text(AppLocalizations.of(context)!.couldNotLoadRating),
             ),
@@ -753,8 +745,7 @@ class _ReviewTabsSection extends StatelessWidget {
                                   );
                                 },
                               ),
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
+                        loading: () => const AppLoadingIndicator(),
                         error: (error, stackTrace) => Center(
                           child: Text(
                             AppLocalizations.of(context)!.couldNotLoadReviews,
@@ -813,8 +804,7 @@ class _ReviewTabsSection extends StatelessWidget {
                                   );
                                 },
                               ),
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
+                        loading: () => const AppLoadingIndicator(),
                         error: (error, stackTrace) => Center(
                           child: Text(
                             AppLocalizations.of(context)!
@@ -893,7 +883,7 @@ class _QuoteSection extends StatelessWidget {
                       );
                     },
                   ),
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const AppLoadingIndicator(),
             error: (error, stackTrace) => Center(
               child: Text(AppLocalizations.of(context)!.couldNotLoadQuotes),
             ),

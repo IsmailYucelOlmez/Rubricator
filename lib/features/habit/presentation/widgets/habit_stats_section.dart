@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -49,7 +50,7 @@ class HabitStatsSection extends ConsumerWidget {
       loading: () => const Center(
             child: Padding(
               padding: EdgeInsets.all(AppSpacing.lg),
-              child: CircularProgressIndicator(),
+              child: AppLoadingIndicator(centered: false),
             ),
           ),
       error: (e, _) => Text(AppLocalizations.of(context)!.statsError(e.toString())),

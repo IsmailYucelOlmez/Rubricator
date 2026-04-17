@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
@@ -192,10 +193,10 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
             FilledButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
-                  ? const SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                  ? const AppLoadingIndicator(
+                      size: 22,
+                      strokeWidth: 2,
+                      centered: false,
                     )
                   : Text(l10n.saveLog),
             ),

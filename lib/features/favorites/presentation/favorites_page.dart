@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_loading.dart';
 
 import '../../auth/presentation/auth_provider.dart';
 import '../../books/domain/entities/book.dart';
@@ -134,7 +135,17 @@ class _EntriesList extends StatelessWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.separated(
+        itemCount: 6,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (_, _) => const ListTile(
+          title: AppSkeletonBox(height: 18, width: double.infinity),
+          subtitle: Padding(
+            padding: EdgeInsets.only(top: 6),
+            child: AppSkeletonBox(height: 14, width: 180),
+          ),
+        ),
+      ),
       error: (error, stackTrace) => Center(
         child: Text(l10n.couldNotLoadList(error.toString())),
       ),

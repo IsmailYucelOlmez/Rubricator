@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
@@ -102,7 +103,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
             Text(l10n.selectedBooks, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
             if (_loadingItems)
-              const Center(child: CircularProgressIndicator())
+              const AppLoadingIndicator()
             else if (_picked.isEmpty)
               Text(l10n.noBooksSelectedYet)
             else
@@ -226,10 +227,10 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
             FilledButton(
               onPressed: _saving ? null : _save,
               child: _saving
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                  ? const AppLoadingIndicator(
+                      size: 18,
+                      strokeWidth: 2,
+                      centered: false,
                     )
                   : MediaQuery(
                       data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),

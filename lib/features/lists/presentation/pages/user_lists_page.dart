@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 import '../widgets/list_card.dart';
@@ -80,7 +81,12 @@ class _ListsTab extends StatelessWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.separated(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        itemCount: 5,
+        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+        itemBuilder: (_, _) => const AppSkeletonBox(height: 92),
+      ),
       error: (e, _) => Center(child: Text(l10n.couldNotLoadLists(e.toString()))),
     );
   }

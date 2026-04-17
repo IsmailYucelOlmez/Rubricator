@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../providers/home_providers.dart';
@@ -31,14 +32,19 @@ class GenreBooksPage extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.md),
             itemCount: books.length,
-            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final book = books[index];
               return _GenreBookTile(book: book);
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ListView.separated(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          itemCount: 6,
+          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+          itemBuilder: (_, _) => const AppListTileSkeleton(),
+        ),
         error: (error, stackTrace) => Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -147,11 +153,7 @@ class _GenreCoverImage extends StatelessWidget {
             width: 56,
             height: 84,
             child: Center(
-              child: SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+              child: AppLoadingIndicator(size: 14, strokeWidth: 2, centered: false),
             ),
           ),
         );

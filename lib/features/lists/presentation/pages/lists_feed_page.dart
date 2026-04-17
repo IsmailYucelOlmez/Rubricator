@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
@@ -145,7 +146,12 @@ class _FeedTab extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.separated(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        itemCount: 5,
+        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+        itemBuilder: (_, _) => const AppSkeletonBox(height: 120),
+      ),
       error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.couldNotLoadLists(e.toString()))),
     );
   }

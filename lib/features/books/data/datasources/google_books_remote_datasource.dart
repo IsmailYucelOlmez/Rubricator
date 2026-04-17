@@ -98,18 +98,66 @@ class GoogleBooksRemoteDataSource {
   }) async {
     final a = author.trim().replaceAll('"', ' ');
     if (a.isEmpty) return <BookModel>[];
-    final json = await _api.getJson(
-      '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': 'inauthor:"$a"',
-        'maxResults': _clampedLimit(limit),
-      },
-    );
-    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
-    return itemsRaw
-        .whereType<Map<String, dynamic>>()
-        .map(BookModel.fromGoogleBooksVolume)
-        .toList();
+    final maxResults = _clampedLimit(limit);
+    final variants = _authorSearchVariants(a);
+    final queries = <String>[
+      for (final name in variants) ...[
+        'inauthor:"$name"',
+        'inauthor:$name',
+        name,
+      ],
+    ];
+
+    for (final q in queries) {
+      final json = await _api.getJson(
+        '/volumes',
+        queryParameters: <String, dynamic>{
+          'q': q,
+          'maxResults': maxResults,
+        },
+      );
+      final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
+      final results = itemsRaw
+          .whereType<Map<String, dynamic>>()
+          .map(BookModel.fromGoogleBooksVolume)
+          .toList();
+      if (results.isNotEmpty) {
+        return results;
+      }
+    }
+
+    return <BookModel>[];
+  }
+
+  List<String> _authorSearchVariants(String input) {
+    final base = input.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (base.isEmpty) return const <String>[];
+
+    final variants = <String>[base];
+
+    // Some sources may provide "Last, First" names.
+    if (base.contains(',')) {
+      final parts = base
+          .split(',')
+          .map((p) => p.trim())
+          .where((p) => p.isNotEmpty)
+          .toList();
+      if (parts.length >= 2) {
+        variants.add('${parts.sublist(1).join(' ')} ${parts.first}'.trim());
+      }
+    }
+
+    final noDots = base.replaceAll('.', ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (noDots.isNotEmpty) variants.add(noDots);
+
+    final words = noDots.split(' ').where((w) => w.isNotEmpty).toList();
+    if (words.length >= 2) {
+      variants.add('${words.first} ${words.last}');
+      variants.add(words.last);
+    }
+
+    final seen = <String>{};
+    return variants.where((v) => seen.add(v.toLowerCase())).toList();
   }
 
   Future<List<BookModel>> fetchTrendingWorks({int limit = 20}) async {

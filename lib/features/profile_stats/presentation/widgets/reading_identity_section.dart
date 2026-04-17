@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ReadingIdentitySection extends ConsumerWidget {
@@ -90,7 +91,7 @@ class ReadingIdentitySection extends ConsumerWidget {
               },
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                child: Center(child: AppLoadingIndicator(strokeWidth: 2)),
               ),
               error: (e, _) => Text(
                 AppLocalizations.of(context)!.couldNotLoadGenres(e.toString()),
@@ -128,7 +129,7 @@ class ReadingIdentitySection extends ConsumerWidget {
               },
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                child: Center(child: AppLoadingIndicator(strokeWidth: 2)),
               ),
               error: (e, _) => Text(
                 AppLocalizations.of(context)!.couldNotLoadAuthors(e.toString()),

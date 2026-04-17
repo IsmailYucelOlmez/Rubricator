@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -18,7 +19,7 @@ class HabitCalendarSection extends ConsumerWidget {
     final logsAsync = ref.watch(readingLogsProvider);
     return logsAsync.when(
       data: (logs) => _CalendarBody(logs: logs, weeks: weeks),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const AppLoadingIndicator(),
       error: (e, _) => Text(AppLocalizations.of(context)!.calendarError(e.toString())),
     );
   }

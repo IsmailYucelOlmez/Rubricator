@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../domain/entities/book.dart';
 import '../providers/books_providers.dart';
 import 'book_detail_page.dart';
@@ -19,7 +20,11 @@ class AuthorDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final asyncAuthor = ref.watch(authorDetailProvider(authorId));
-    final asyncAuthorBooks = ref.watch(authorBooksProvider(authorId));
+    final authorQuery = asyncAuthor.maybeWhen(
+      data: (author) => author.name,
+      orElse: () => authorId,
+    );
+    final asyncAuthorBooks = ref.watch(authorBooksProvider(authorQuery));
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +56,7 @@ class AuthorDetailPage extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _AuthorDetailSkeleton(),
         error: (e, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -77,7 +82,13 @@ class _AuthorBooksSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return booksState.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 4,
+        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+        itemBuilder: (_, _) => const AppListTileSkeleton(),
+      ),
       error: (error, stackTrace) => Text(
         l10n.couldNotLoadRelatedBooks,
         style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -94,6 +105,26 @@ class _AuthorBooksSection extends StatelessWidget {
           itemBuilder: (context, index) => _AuthorBookTile(book: books[index]),
         );
       },
+    );
+  }
+}
+
+class _AuthorDetailSkeleton extends StatelessWidget {
+  const _AuthorDetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      children: const [
+        AppSkeletonBox(height: 18, width: 180),
+        SizedBox(height: AppSpacing.md + AppSpacing.xs),
+        AppListTileSkeleton(),
+        SizedBox(height: AppSpacing.sm),
+        AppListTileSkeleton(),
+        SizedBox(height: AppSpacing.sm),
+        AppListTileSkeleton(),
+      ],
     );
   }
 }

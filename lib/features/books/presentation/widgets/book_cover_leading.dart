@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_radius.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 /// List tile leading: cover or placeholder (no API calls).
 class BookCoverLeading extends StatelessWidget {
@@ -53,7 +54,7 @@ class BookCoverLeading extends StatelessWidget {
               child: SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
               ),
             ),
           );

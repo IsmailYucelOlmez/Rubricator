@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
@@ -132,7 +133,14 @@ class _SearchResultsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return state.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.separated(
+        itemCount: 6,
+        separatorBuilder: (context, index) => const Divider(height: 1),
+        itemBuilder: (context, index) => const Padding(
+          padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
+          child: AppListTileSkeleton(),
+        ),
+      ),
       error: (error, stackTrace) => Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -179,7 +187,7 @@ class _DiscoveryView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         popularQueries.when(
-          loading: () => const LinearProgressIndicator(),
+          loading: () => const AppSkeletonBox(height: 28, borderRadius: AppSpacing.sm),
           error: (error, stackTrace) => Text(l10n.loadRecentSearchesError),
           data: (queries) {
             if (queries.isEmpty) {
@@ -208,7 +216,10 @@ class _DiscoveryView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         popularBooks.when(
-          loading: () => const LinearProgressIndicator(),
+          loading: () => const SizedBox(
+            height: AppSpacing.xl * 10,
+            child: AppSkeletonBox(),
+          ),
           error: (error, stackTrace) => Text(l10n.loadRecentSearchedBooksError),
           data: (books) {
             if (books.isEmpty) {

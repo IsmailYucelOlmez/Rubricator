@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_input.dart';
+import '../../../core/widgets/app_loading.dart';
 import 'auth_provider.dart';
 import 'profile_page.dart';
+import 'register_page.dart';
 
 /// Full-screen sign-in (e.g. after tapping favorite while signed out).
 class LoginPage extends ConsumerStatefulWidget {
@@ -83,12 +85,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               FilledButton(
                 onPressed: _submitting ? null : _submit,
                 child: _submitting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                    ? const AppLoadingIndicator(
+                        size: 22,
+                        strokeWidth: 2,
+                        centered: false,
                       )
                     : Text(l10n.signIn),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              TextButton(
+                onPressed: _submitting
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<bool>(builder: (_) => const RegisterPage()),
+                        );
+                      },
+                child: Text(l10n.createAccount),
               ),
             ],
           ),

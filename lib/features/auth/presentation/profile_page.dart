@@ -8,12 +8,15 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_provider.dart';
 import '../../../core/widgets/app_input.dart';
+import '../../../core/widgets/app_loading.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import '../../user_books/domain/entities/user_book_entity.dart';
 import 'auth_provider.dart';
+import 'login_page.dart';
+import 'register_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -65,12 +68,20 @@ class ProfilePage extends ConsumerWidget {
                 Text(l10n.signInPrompt),
                 const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
-                  onPressed: () => _showSignInDialog(context),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<bool>(builder: (_) => const LoginPage()),
+                    );
+                  },
                   child: Text(l10n.signIn),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 OutlinedButton(
-                  onPressed: () => _showSignUpDialog(context),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<bool>(builder: (_) => const RegisterPage()),
+                    );
+                  },
                   child: Text(l10n.createAccount),
                 ),
               ] else ...[
@@ -95,7 +106,7 @@ class ProfilePage extends ConsumerWidget {
               ],
             ),
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const AppLoadingIndicator(),
           error: (error, stackTrace) => Center(
             child: Text(l10n.loadSessionError(error.toString())),
           ),
@@ -554,10 +565,10 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                   }
                 },
           child: _saving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              ? const AppLoadingIndicator(
+                  size: 18,
+                  strokeWidth: 2,
+                  centered: false,
                 )
               : const Text('Kaydet'),
         ),

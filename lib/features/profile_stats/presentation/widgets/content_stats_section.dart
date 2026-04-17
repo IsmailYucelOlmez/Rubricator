@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ContentStatsSection extends ConsumerWidget {
@@ -66,7 +67,7 @@ class ContentStatsSection extends ConsumerWidget {
           },
           loading: () => SizedBox(
             height: AppSpacing.xl * 2 + AppSpacing.md + AppSpacing.sm,
-            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            child: const Center(child: AppLoadingIndicator(strokeWidth: 2)),
           ),
           error: (e, _) => Text(
             AppLocalizations.of(context)!.couldNotLoadContentStats(e.toString()),

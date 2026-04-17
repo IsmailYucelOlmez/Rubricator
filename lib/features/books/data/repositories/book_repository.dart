@@ -118,7 +118,11 @@ class BookRepository {
   String _authorNameFromId(String authorId) {
     final raw = authorId.trim();
     if (raw.startsWith('g:')) {
-      return Uri.decodeComponent(raw.substring(2)).trim();
+      try {
+        return Uri.decodeComponent(raw.substring(2)).trim();
+      } catch (_) {
+        return raw.substring(2).trim();
+      }
     }
     return raw;
   }

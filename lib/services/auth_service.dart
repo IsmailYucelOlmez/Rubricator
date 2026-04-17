@@ -21,6 +21,8 @@ class AuthService {
     required String password,
     String? displayName,
     String? avatarUrl,
+    DateTime? privacyPolicyAcceptedAt,
+    String? privacyPolicyVersion,
   }) {
     return _client.auth.signUp(
       email: email.trim(),
@@ -30,6 +32,10 @@ class AuthService {
           'username': displayName.trim(),
         if (avatarUrl != null && avatarUrl.trim().isNotEmpty)
           'avatar_url': avatarUrl.trim(),
+        if (privacyPolicyAcceptedAt != null)
+          'privacy_policy_accepted_at': privacyPolicyAcceptedAt.toIso8601String(),
+        if (privacyPolicyVersion != null && privacyPolicyVersion.trim().isNotEmpty)
+          'privacy_policy_version': privacyPolicyVersion.trim(),
       },
     );
   }

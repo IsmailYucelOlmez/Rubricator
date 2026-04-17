@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../pages/profile_stats_page.dart';
 import '../providers/profile_stats_providers.dart';
 
@@ -96,7 +97,7 @@ class StatsPreviewCard extends ConsumerWidget {
             ),
             loading: () => SizedBox(
               height: AppSpacing.lg * 5,
-              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              child: const Center(child: AppLoadingIndicator(strokeWidth: 2)),
             ),
             error: (e, _) => Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),

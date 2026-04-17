@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../../domain/entities/list_entities.dart';
@@ -125,7 +126,15 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                   ),
               ],
             ),
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => Column(
+              children: List.generate(
+                4,
+                (_) => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                  child: AppListTileSkeleton(),
+                ),
+              ),
+            ),
             error: (e, _) => Text(l10n.couldNotLoadListItems(e.toString())),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -170,10 +179,10 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                             listId: list.id,
                           ),
                   child: _commenting
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                      ? const AppLoadingIndicator(
+                          size: 18,
+                          strokeWidth: 2,
+                          centered: false,
                         )
                       : Text(l10n.send),
                 ),

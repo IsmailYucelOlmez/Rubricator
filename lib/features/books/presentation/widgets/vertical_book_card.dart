@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../domain/entities/book.dart';
 import '../pages/book_detail_page.dart';
 import 'book_cover_with_favorite_button.dart';
@@ -91,7 +92,7 @@ class _BookCoverFillImage extends StatelessWidget {
             child: SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
             ),
           ),
         );

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../books/domain/entities/book.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../favorites_provider.dart';
@@ -69,7 +69,17 @@ class ReadingStatusListPage extends ConsumerWidget {
               },
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => ListView.separated(
+            itemCount: 6,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (_, _) => const ListTile(
+              title: AppSkeletonBox(height: 18, width: double.infinity),
+              subtitle: Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: AppSkeletonBox(height: 14, width: 180),
+              ),
+            ),
+          ),
           error: (error, stackTrace) => Center(
             child: Text(l10n.couldNotLoadList(error.toString())),
           ),

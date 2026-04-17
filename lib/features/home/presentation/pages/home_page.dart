@@ -7,6 +7,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
@@ -236,7 +237,7 @@ class _Section extends StatelessWidget {
                   style: titleStyle?.copyWith(fontSize: titleFontSize * 1.50),
                 ),
               ),
-              if (trailing != null) trailing!,
+              trailing ?? const SizedBox.shrink(),
             ],
           ),
           const SizedBox(height: 10),
@@ -347,7 +348,7 @@ class _CoverImage extends StatelessWidget {
             child: SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
             ),
           ),
         );

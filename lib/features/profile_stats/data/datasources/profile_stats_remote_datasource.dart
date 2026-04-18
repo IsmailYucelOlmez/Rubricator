@@ -53,7 +53,7 @@ class ProfileStatsRemoteDataSource {
         .whereType<Map<String, dynamic>>()
         .map((e) => (e['rating'] as num?)?.toInt())
         .whereType<int>()
-        .where((r) => r >= 1 && r <= 5)
+        .where((r) => r >= 1 && r <= 10)
         .toList();
   }
 

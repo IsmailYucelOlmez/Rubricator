@@ -5,11 +5,7 @@ import '../../domain/repositories/profile_stats_repository.dart';
 import '../datasources/profile_stats_remote_datasource.dart';
 
 class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
-  ProfileStatsRepositoryImpl(
-    this._remote,
-    this._books,
-    this._currentUserId,
-  );
+  ProfileStatsRepositoryImpl(this._remote, this._books, this._currentUserId);
 
   final ProfileStatsRemoteDataSource _remote;
   final BookRepository _books;
@@ -57,10 +53,11 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
         counts[s] = (counts[s] ?? 0) + 1;
       }
     }
-    final list = counts.entries
-        .map((e) => GenreStat(genre: e.key, count: e.value))
-        .toList()
-      ..sort((a, b) => b.count.compareTo(a.count));
+    final list =
+        counts.entries
+            .map((e) => GenreStat(genre: e.key, count: e.value))
+            .toList()
+          ..sort((a, b) => b.count.compareTo(a.count));
     return list.take(topN).toList();
   }
 
@@ -71,10 +68,11 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
       if (a.isEmpty || a == 'Unknown author') continue;
       counts[a] = (counts[a] ?? 0) + 1;
     }
-    final list = counts.entries
-        .map((e) => AuthorStat(author: e.key, count: e.value))
-        .toList()
-      ..sort((a, b) => b.count.compareTo(a.count));
+    final list =
+        counts.entries
+            .map((e) => AuthorStat(author: e.key, count: e.value))
+            .toList()
+          ..sort((a, b) => b.count.compareTo(a.count));
     return list.take(topN).toList();
   }
 
@@ -96,21 +94,15 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
 
   static RatingStat _ratingStatFromValues(List<int> ratings) {
     if (ratings.isEmpty) {
-      return const RatingStat(
-        averageRating: 0,
-        distribution: <int, int>{},
-      );
+      return const RatingStat(averageRating: 0, distribution: <int, int>{});
     }
-    final dist = <int, int>{for (var s = 1; s <= 5; s++) s: 0};
+    final dist = <int, int>{for (var s = 1; s <= 10; s++) s: 0};
     var sum = 0.0;
     for (final r in ratings) {
       sum += r;
       dist[r] = (dist[r] ?? 0) + 1;
     }
-    return RatingStat(
-      averageRating: sum / ratings.length,
-      distribution: dist,
-    );
+    return RatingStat(averageRating: sum / ratings.length, distribution: dist);
   }
 
   @override
@@ -185,8 +177,7 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
     );
     final completed = _remote.countUserBooks(userId: uid, status: 'completed');
     final dropped = _remote.countUserBooks(userId: uid, status: 'dropped');
-    final favorites =
-        _remote.countUserBooks(userId: uid, isFavorite: true);
+    final favorites = _remote.countUserBooks(userId: uid, isFavorite: true);
 
     return LibraryStat(
       toRead: await toRead,
@@ -205,9 +196,6 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
     }
     final reviews = _remote.countReviews(uid);
     final quotes = _remote.countQuotes(uid);
-    return ContentStat(
-      reviewCount: await reviews,
-      quoteCount: await quotes,
-    );
+    return ContentStat(reviewCount: await reviews, quoteCount: await quotes);
   }
 }

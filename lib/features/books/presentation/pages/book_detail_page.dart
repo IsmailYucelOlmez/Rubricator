@@ -30,7 +30,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
   final _externalTitleController = TextEditingController();
   final _externalUrlController = TextEditingController();
   final _quoteController = TextEditingController();
+  // Rating is stored on a 1-10 scale (half-star steps on a 5-star UI).
   int _selectedRating = 0;
+  bool _isEditingRating = false;
 
   @override
   void dispose() {
@@ -62,7 +64,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final notifier = ref.read(userBookProvider(widget.book.id).notifier);
+              final notifier = ref.read(
+                userBookProvider(widget.book.id).notifier,
+              );
               try {
                 await showModalBottomSheet<void>(
                   context: context,
@@ -108,6 +112,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
           );
           final quotes = ref.watch(quoteProvider(detailedBook.id));
           final rating = ref.watch(ratingProvider(detailedBook.id));
+          final hasUserRated = rating.valueOrNull?.userRating != null;
+          final userRating = rating.valueOrNull?.userRating;
+          final selectedRatingForUi = _selectedRating > 0
+              ? _selectedRating
+              : (userRating ?? 0);
           final coverUrl = AppConstants.bookDetailCoverUrl(
             detailedBook.coverImageUrl,
           );
@@ -156,9 +165,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   child: Text(
                     detailedBook.author,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 )
               else
@@ -178,10 +187,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         onSelect: (selected) async {
                           await ref
                               .read(userBookProvider(widget.book.id).notifier)
-                              .upsert(
-                                status: selected,
-                                isFavorite: isFavorite,
-                              );
+                              .upsert(status: selected, isFavorite: isFavorite);
                           if (!context.mounted) return;
                           Navigator.of(context).pop();
                         },
@@ -211,7 +217,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               const SizedBox(height: AppSpacing.md),
               _RatingSection(
                 state: rating,
-                selectedRating: _selectedRating,
+                selectedRating: selectedRatingForUi,
                 onChanged: (value) => setState(() => _selectedRating = value),
                 onSubmit: () async {
                   try {
@@ -219,10 +225,32 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         .read(ratingProvider(detailedBook.id).notifier)
                         .submit(_selectedRating);
                     _showMessage(l10n.ratingSubmitted);
+                    if (mounted) {
+                      setState(() {
+                        _selectedRating = 0;
+                        _isEditingRating = false;
+                      });
+                    }
                   } catch (e) {
                     if (!mounted) return;
                     _showMessage(e.toString().replaceFirst('Exception: ', ''));
                   }
+                },
+                canEdit: !hasUserRated || _isEditingRating,
+                hasUserRated: hasUserRated,
+                isEditing: _isEditingRating,
+                onTapEdit: () {
+                  if (userRating == null) return;
+                  setState(() {
+                    _isEditingRating = true;
+                    _selectedRating = userRating;
+                  });
+                },
+                onCancelEdit: () {
+                  setState(() {
+                    _isEditingRating = false;
+                    _selectedRating = 0;
+                  });
                 },
               ),
               const SizedBox(height: AppSpacing.md),
@@ -339,7 +367,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 },
               ),
               const SizedBox(height: AppSpacing.lg),
-              Text(l10n.relatedBooks, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                l10n.relatedBooks,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: AppSpacing.sm),
               related.when(
                 data: (list) {
@@ -379,7 +410,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                     bookId: b.id,
                                     compact: true,
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
                                       child: u != null
                                           ? Image.network(
                                               u,
@@ -390,20 +423,27 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                                     context,
                                                     error,
                                                     stackTrace,
-                                                  ) =>
-                                                      ColoredBox(
-                                                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                                  ) => ColoredBox(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .surfaceContainerHighest,
                                                     child: Icon(
                                                       Icons.menu_book_outlined,
-                                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
                                                     ),
                                                   ),
                                             )
                                           : ColoredBox(
-                                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
                                               child: Icon(
                                                 Icons.menu_book_outlined,
-                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
                                             ),
                                     ),
@@ -425,7 +465,8 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   );
                 },
                 loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
-                error: (error, stackTrace) => Text(l10n.couldNotLoadRelatedBooks),
+                error: (error, stackTrace) =>
+                    Text(l10n.couldNotLoadRelatedBooks),
               ),
             ],
           );
@@ -550,7 +591,9 @@ class _StatusBottomSheet extends StatelessWidget {
                       ? Icons.radio_button_checked
                       : Icons.radio_button_unchecked,
                 ),
-                title: Text(_statusLabel(status, AppLocalizations.of(context)!)),
+                title: Text(
+                  _statusLabel(status, AppLocalizations.of(context)!),
+                ),
                 onTap: () => onSelect(status),
               ),
             )
@@ -581,12 +624,22 @@ class _RatingSection extends StatelessWidget {
     required this.selectedRating,
     required this.onChanged,
     required this.onSubmit,
+    required this.canEdit,
+    required this.hasUserRated,
+    required this.isEditing,
+    required this.onTapEdit,
+    required this.onCancelEdit,
   });
 
   final AsyncValue<RatingState> state;
   final int selectedRating;
   final ValueChanged<int> onChanged;
   final VoidCallback onSubmit;
+  final bool canEdit;
+  final bool hasUserRated;
+  final bool isEditing;
+  final VoidCallback onTapEdit;
+  final VoidCallback onCancelEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -603,37 +656,86 @@ class _RatingSection extends StatelessWidget {
             const SizedBox(height: 8),
             state.when(
               data: (data) => Text(
-                AppLocalizations.of(context)!.averageOutOfFive(
-                  data.average.toStringAsFixed(1),
-                ),
+                selectedRating > 0
+                    ? '${selectedRating.toDouble().toStringAsFixed(1)} / 10'
+                    : '${data.average.toStringAsFixed(1)} / 10',
               ),
               loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
               error: (error, stackTrace) =>
                   Text(AppLocalizations.of(context)!.couldNotLoadRating),
             ),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 4,
-              children: List<Widget>.generate(
-                5,
-                (index) => IconButton(
-                  onPressed: () => onChanged(index + 1),
-                  icon: Icon(
-                    selectedRating > index ? Icons.star : Icons.star_border,
-                    color: AppColors.gold,
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List<Widget>.generate(
+                      5,
+                      (index) => GestureDetector(
+                        onTapDown: canEdit
+                            ? (details) {
+                                final dx = details.localPosition.dx;
+                                final isLeftHalf = dx < 18;
+                                final value =
+                                    (index * 2) + (isLeftHalf ? 1 : 2);
+                                onChanged(value);
+                              }
+                            : null,
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(
+                            _starIconFor(selectedRating, index),
+                            color: AppColors.gold,
+                            size: 34,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            FilledButton(
-              onPressed: selectedRating == 0 ? null : onSubmit,
-              child: Text(AppLocalizations.of(context)!.submitRating),
+                if (!hasUserRated)
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                    ),
+                    onPressed: selectedRating == 0 ? null : onSubmit,
+                    child: Text(AppLocalizations.of(context)!.submitRating),
+                  ),
+                if (hasUserRated) ...[
+                  IconButton(
+                    tooltip: isEditing
+                        ? AppLocalizations.of(context)!.submitRating
+                        : AppLocalizations.of(context)!.editReview,
+                    onPressed: isEditing
+                        ? (selectedRating == 0 ? null : onSubmit)
+                        : onTapEdit,
+                    icon: Icon(isEditing ? Icons.check : Icons.edit_outlined),
+                  ),
+                  if (isEditing)
+                    IconButton(
+                      tooltip: AppLocalizations.of(context)!.cancel,
+                      onPressed: onCancelEdit,
+                      icon: const Icon(Icons.close),
+                    ),
+                ],
+              ],
             ),
           ],
         ),
       ),
     );
   }
+}
+
+IconData _starIconFor(int selectedRating, int index) {
+  final value = selectedRating - (index * 2);
+  if (value >= 2) return Icons.star;
+  if (value == 1) return Icons.star_half;
+  return Icons.star_border;
 }
 
 class _ReviewTabsSection extends StatelessWidget {
@@ -708,7 +810,9 @@ class _ReviewTabsSection extends StatelessWidget {
                         data: (list) => list.isEmpty
                             ? Center(
                                 child: Text(
-                                  AppLocalizations.of(context)!.noUserReviewsYet,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.noUserReviewsYet,
                                 ),
                               )
                             : ListView.builder(
@@ -785,8 +889,9 @@ class _ReviewTabsSection extends StatelessWidget {
                         data: (list) => list.isEmpty
                             ? Center(
                                 child: Text(
-                                  AppLocalizations.of(context)!
-                                      .noExternalReviewsYet,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.noExternalReviewsYet,
                                 ),
                               )
                             : ListView.builder(
@@ -807,8 +912,9 @@ class _ReviewTabsSection extends StatelessWidget {
                         loading: () => const AppLoadingIndicator(),
                         error: (error, stackTrace) => Center(
                           child: Text(
-                            AppLocalizations.of(context)!
-                                .couldNotLoadExternalReviews,
+                            AppLocalizations.of(
+                              context,
+                            )!.couldNotLoadExternalReviews,
                           ),
                         ),
                       ),

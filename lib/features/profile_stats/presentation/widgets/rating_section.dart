@@ -33,16 +33,16 @@ class RatingSection extends ConsumerWidget {
                 Text(
                   AppLocalizations.of(context)!.starsGivenToBooks,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 if (!hasData)
                   Text(
                     AppLocalizations.of(context)!.noDataYet,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   )
                 else ...[
                   Row(
@@ -50,29 +50,29 @@ class RatingSection extends ConsumerWidget {
                     children: [
                       Text(
                         r.averageRating.toStringAsFixed(1),
-                        style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              height: 1,
-                            ),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(fontWeight: FontWeight.w600, height: 1),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                         child: Row(
                           children: List.generate(5, (i) {
-                            final filled = i < r.averageRating.round().clamp(0, 5);
-                            return Icon(
-                              filled ? Icons.star : Icons.star_border,
-                              size: 22,
-                              color: AppColors.gold,
-                            );
+                            final starValue = r.averageRating / 2;
+                            final delta = starValue - i;
+                            final icon = delta >= 1
+                                ? Icons.star
+                                : (delta >= 0.5
+                                      ? Icons.star_half
+                                      : Icons.star_border);
+                            return Icon(icon, size: 22, color: AppColors.gold);
                           }),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  for (var stars = 5; stars >= 1; stars--)
+                  for (var stars = 10; stars >= 1; stars--)
                     _StarRow(
                       stars: stars,
                       count: r.distribution[stars] ?? 0,
@@ -96,11 +96,7 @@ class RatingSection extends ConsumerWidget {
 }
 
 class _StarRow extends StatelessWidget {
-  const _StarRow({
-    required this.stars,
-    required this.count,
-    required this.max,
-  });
+  const _StarRow({required this.stars, required this.count, required this.max});
 
   final int stars;
   final int count;
@@ -126,8 +122,9 @@ class _StarRow extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: t,
                 minHeight: 10,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerHighest,
               ),
             ),
           ),
@@ -145,5 +142,3 @@ class _StarRow extends StatelessWidget {
     );
   }
 }
-
-

@@ -20,11 +20,7 @@ class AuthorDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final asyncAuthor = ref.watch(authorDetailProvider(authorId));
-    final authorQuery = asyncAuthor.maybeWhen(
-      data: (author) => author.name,
-      orElse: () => authorId,
-    );
-    final asyncAuthorBooks = ref.watch(authorBooksProvider(authorQuery));
+    final asyncAuthorBooks = ref.watch(authorBooksProvider(authorId));
 
     return Scaffold(
       appBar: AppBar(

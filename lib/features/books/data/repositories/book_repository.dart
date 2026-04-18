@@ -9,6 +9,13 @@ class BookRepository {
 
   final GoogleBooksRemoteDataSource _ds;
 
+  /// In-memory cache for [getBooksByAuthorId] to avoid repeat API calls when
+  /// revisiting an author or when the UI rebuilds with the same logical author.
+  final Map<String, _AuthorBooksCacheEntry> _authorBooksCache =
+      <String, _AuthorBooksCacheEntry>{};
+
+  static const Duration _authorBooksCacheTtl = Duration(days: 7);
+
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
   );
@@ -110,10 +117,35 @@ class BookRepository {
   Future<List<Book>> getBooksByAuthorId(String authorId) async {
     final authorName = _authorNameFromId(authorId);
     if (authorName.isEmpty) return const <Book>[];
-    final models = await _ds.fetchBooksByAuthor(author: authorName);
-    final prioritized = _prioritizeModels(models);
-    return prioritized.map((m) => m.toEntity()).toList();
+    return getBooksByAuthorName(authorName);
   }
+
+  Future<List<Book>> getBooksByAuthorName(String authorName) async {
+    final normalizedAuthorName = authorName.trim();
+    if (normalizedAuthorName.isEmpty) return const <Book>[];
+
+    final cacheKey = _authorBooksCacheKey(normalizedAuthorName);
+    final cached = _authorBooksCache[cacheKey];
+    if (cached != null &&
+        DateTime.now().difference(cached.fetchedAt) < _authorBooksCacheTtl) {
+      return List<Book>.from(cached.books);
+    }
+
+    final models = await _ds.fetchBooksByAuthor(author: normalizedAuthorName);
+    final prioritized = _prioritizeModels(models);
+    final books = prioritized.map((m) => m.toEntity()).toList();
+    // Avoid caching empty states so temporary API misses can recover on retry.
+    if (books.isNotEmpty) {
+      _authorBooksCache[cacheKey] = _AuthorBooksCacheEntry(
+        books: books,
+        fetchedAt: DateTime.now(),
+      );
+    }
+    return List<Book>.from(books);
+  }
+
+  String _authorBooksCacheKey(String authorName) =>
+      authorName.toLowerCase().trim();
 
   String _authorNameFromId(String authorId) {
     final raw = authorId.trim();
@@ -145,6 +177,16 @@ class BookRepository {
     final prioritized = _prioritizeModels(models);
     return prioritized.map((m) => m.toEntity()).toList();
   }
+}
+
+class _AuthorBooksCacheEntry {
+  const _AuthorBooksCacheEntry({
+    required this.books,
+    required this.fetchedAt,
+  });
+
+  final List<Book> books;
+  final DateTime fetchedAt;
 }
 
 class _ScoredBookModel {

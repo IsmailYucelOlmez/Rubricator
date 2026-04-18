@@ -80,4 +80,9 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   Future<double> getAverageRating(String bookId) {
     return _remote.getAverageRating(bookId);
   }
+
+  @override
+  Future<int?> getUserRating(String bookId) {
+    return _remote.getUserRating(bookId);
+  }
 }

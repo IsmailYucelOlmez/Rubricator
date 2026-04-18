@@ -163,4 +163,17 @@ class BookDetailRemoteDataSource {
     final total = values.fold<double>(0, (a, b) => a + b);
     return total / values.length;
   }
+
+  Future<int?> getUserRating(String bookId) async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return null;
+    final row = await _client
+        .from('ratings')
+        .select('rating')
+        .eq('book_id', bookId)
+        .eq('user_id', userId)
+        .maybeSingle();
+    if (row == null) return null;
+    return (row['rating'] as num?)?.toInt();
+  }
 }

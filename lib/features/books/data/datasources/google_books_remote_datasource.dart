@@ -23,6 +23,11 @@ class GoogleBooksRemoteDataSource {
 
   static const int _defaultLimit = 20;
   static const int _maxPageSize = 40;
+  static const List<Duration> _authorRequestRetryDelays = <Duration>[
+    Duration.zero,
+    Duration(milliseconds: 300),
+    Duration(milliseconds: 900),
+  ];
 
   int _clampedLimit(int limit) {
     if (limit < 1) return 1;
@@ -109,24 +114,52 @@ class GoogleBooksRemoteDataSource {
     ];
 
     for (final q in queries) {
-      final json = await _api.getJson(
-        '/volumes',
-        queryParameters: <String, dynamic>{
-          'q': q,
-          'maxResults': maxResults,
-        },
-      );
-      final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
-      final results = itemsRaw
-          .whereType<Map<String, dynamic>>()
-          .map(BookModel.fromGoogleBooksVolume)
-          .toList();
-      if (results.isNotEmpty) {
-        return results;
+      try {
+        final json = await _getJsonWithRetry(
+          '/volumes',
+          queryParameters: <String, dynamic>{
+            'q': q,
+            'maxResults': maxResults,
+          },
+          retryDelays: _authorRequestRetryDelays,
+        );
+        final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
+        final results = itemsRaw
+            .whereType<Map<String, dynamic>>()
+            .map(BookModel.fromGoogleBooksVolume)
+            .toList();
+        if (results.isNotEmpty) {
+          return results;
+        }
+      } catch (_) {
+        // Continue with the next variant to reduce flaky empty states.
       }
     }
 
     return <BookModel>[];
+  }
+
+  Future<Map<String, dynamic>> _getJsonWithRetry(
+    String path, {
+    required Map<String, dynamic> queryParameters,
+    required List<Duration> retryDelays,
+  }) async {
+    Object? lastError;
+    for (var i = 0; i < retryDelays.length; i++) {
+      final delay = retryDelays[i];
+      if (delay > Duration.zero) {
+        await Future<void>.delayed(delay);
+      }
+      try {
+        return await _api.getJson(path, queryParameters: queryParameters);
+      } catch (e) {
+        lastError = e;
+        if (i == retryDelays.length - 1) {
+          rethrow;
+        }
+      }
+    }
+    throw Exception('Request failed after retries: $lastError');
   }
 
   List<String> _authorSearchVariants(String input) {

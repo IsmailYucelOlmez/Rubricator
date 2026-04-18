@@ -17,4 +17,5 @@ abstract class BookDetailRepository {
 
   Future<void> rateBook(RatingEntity rating);
   Future<double> getAverageRating(String bookId);
+  Future<int?> getUserRating(String bookId);
 }

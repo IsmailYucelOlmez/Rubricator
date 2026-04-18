@@ -66,8 +66,12 @@ final authorDetailProvider = FutureProvider.family<Author, String>((
 final authorBooksProvider = FutureProvider.family<List<Book>, String>((
   ref,
   authorId,
-) {
-  return ref.watch(bookRepositoryProvider).getBooksByAuthorId(authorId);
+) async {
+  final repository = ref.watch(bookRepositoryProvider);
+  final author = await ref.watch(authorDetailProvider(authorId).future);
+  final booksFromName = await repository.getBooksByAuthorName(author.name);
+  if (booksFromName.isNotEmpty) return booksFromName;
+  return repository.getBooksByAuthorId(authorId);
 });
 
 /// Subjects come from the work payload; use the enriched [Book] from [bookDetailProvider].
@@ -246,10 +250,15 @@ final quoteProvider =
     );
 
 class RatingState {
-  const RatingState({required this.average, required this.submitting});
+  const RatingState({
+    required this.average,
+    required this.submitting,
+    required this.userRating,
+  });
 
   final double average;
   final bool submitting;
+  final int? userRating;
 }
 
 class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
@@ -258,21 +267,25 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
   @override
   Future<RatingState> build(String arg) async {
     _bookId = arg;
-    final avg = await ref
-        .watch(bookDetailRepositoryProvider)
-        .getAverageRating(arg);
-    return RatingState(average: avg, submitting: false);
+    final repository = ref.watch(bookDetailRepositoryProvider);
+    final avg = await repository.getAverageRating(arg);
+    final userRating = await repository.getUserRating(arg);
+    return RatingState(average: avg, submitting: false, userRating: userRating);
   }
 
   Future<void> submit(int value) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) throw Exception('Sign in required.');
-    if (value < 1 || value > 5) {
-      throw Exception('Rating must be between 1 and 5.');
+    if (value < 1 || value > 10) {
+      throw Exception('Rating must be between 1 and 10.');
     }
     final current = state.valueOrNull;
     state = AsyncData(
-      RatingState(average: current?.average ?? 0, submitting: true),
+      RatingState(
+        average: current?.average ?? 0,
+        submitting: true,
+        userRating: current?.userRating,
+      ),
     );
     state = await AsyncValue.guard(() async {
       await ref
@@ -283,7 +296,7 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
       final avg = await ref
           .read(bookDetailRepositoryProvider)
           .getAverageRating(_bookId);
-      return RatingState(average: avg, submitting: false);
+      return RatingState(average: avg, submitting: false, userRating: value);
     });
   }
 }

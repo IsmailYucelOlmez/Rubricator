@@ -35,7 +35,7 @@ class ProfilePage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
               Text(
-                'Zone',
+                user == null ? l10n.profile : 'Zone',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontFamily: 'EFCOBrookshire',
                 ),

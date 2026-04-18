@@ -611,6 +611,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listsForYou => 'Sana Ozel';
 
   @override
+  String get listsTopTwenty => 'Timeless';
+
+  @override
   String get listsFollowing => 'Takip Edilenler';
 
   @override

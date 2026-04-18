@@ -259,6 +259,7 @@
   ,"couldNotLoadAuthor":"Could not load author. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
   ,"listsForYou":"For You"
+  ,"listsTopTwenty":"Timeless"
   ,"listsFollowing":"Following"
   ,"myLists":"My Lists"
   ,"savedLists":"Saved Lists"

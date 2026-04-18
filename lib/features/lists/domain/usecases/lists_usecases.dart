@@ -13,6 +13,13 @@ class GetPopularListsUseCase {
   Future<List<ListEntity>> call() => _repo.getPopularLists();
 }
 
+class GetTopListsByEngagementUseCase {
+  const GetTopListsByEngagementUseCase(this._repo);
+  final ListsRepository _repo;
+  Future<List<ListEntity>> call({int limit = 20}) =>
+      _repo.getTopListsByEngagement(limit: limit);
+}
+
 class GetFollowingListsUseCase {
   const GetFollowingListsUseCase(this._repo);
   final ListsRepository _repo;

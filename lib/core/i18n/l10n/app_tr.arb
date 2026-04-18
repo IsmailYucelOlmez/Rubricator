@@ -259,6 +259,7 @@
   ,"couldNotLoadAuthor":"Yazar yuklenemedi. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
   ,"listsForYou":"Sana Ozel"
+  ,"listsTopTwenty":"Timeless"
   ,"listsFollowing":"Takip Edilenler"
   ,"myLists":"Listelerim"
   ,"savedLists":"Kaydedilen Listeler"

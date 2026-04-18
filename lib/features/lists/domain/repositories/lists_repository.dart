@@ -3,6 +3,7 @@ import '../entities/list_entities.dart';
 abstract class ListsRepository {
   Future<List<ListEntity>> getFeedLists();
   Future<List<ListEntity>> getPopularLists();
+  Future<List<ListEntity>> getTopListsByEngagement({int limit = 20});
   Future<List<ListEntity>> getFollowingLists();
   Future<List<ListEntity>> getUserLists(String userId);
   Future<List<ListEntity>> getSavedLists(String userId);

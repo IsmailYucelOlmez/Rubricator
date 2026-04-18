@@ -20,16 +20,20 @@ class ListsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final tabLabelStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.1,
+    );
     void invalidateAll() {
       ref.invalidate(listsFeedProvider);
       ref.invalidate(popularListsProvider);
+      ref.invalidate(topListsProvider);
       ref.invalidate(followingListsProvider);
       ref.invalidate(userListsProvider);
       ref.invalidate(savedListsProvider);
     }
 
     final body = DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -68,27 +72,34 @@ class ListsPage extends ConsumerWidget {
               ],
             ),
           ),
-          TabBar(
-            isScrollable: true,
-            labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: TabBar(
+              isScrollable: false,
+              splashFactory: NoSplash.splashFactory,
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              labelStyle: tabLabelStyle,
+              unselectedLabelStyle: tabLabelStyle,
+              tabs: [
+                Tab(text: l10n.listsForYou),
+                Tab(text: l10n.popular),
+                Tab(text: l10n.listsTopTwenty),
+                Tab(text: l10n.listsFollowing),
+              ],
             ),
-            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
-            ),
-            tabs: [
-              Tab(text: l10n.listsForYou),
-              Tab(text: l10n.popular),
-              Tab(text: l10n.listsFollowing),
-            ],
           ),
           Expanded(
-            child: TabBarView(
-              children: [
-                _FeedTab(async: ref.watch(listsFeedProvider), onChanged: invalidateAll),
-                _FeedTab(async: ref.watch(popularListsProvider), onChanged: invalidateAll),
-                _FeedTab(async: ref.watch(followingListsProvider), onChanged: invalidateAll),
-              ],
+            child: ScrollConfiguration(
+              behavior: const _NoTabViewEdgeGlowScrollBehavior(),
+              child: TabBarView(
+                physics: const ClampingScrollPhysics(),
+                children: [
+                  _FeedTab(async: ref.watch(forYouListsProvider), onChanged: invalidateAll),
+                  _FeedTab(async: ref.watch(popularListsProvider), onChanged: invalidateAll),
+                  _FeedTab(async: ref.watch(topListsProvider), onChanged: invalidateAll),
+                  _FeedTab(async: ref.watch(followingListsProvider), onChanged: invalidateAll),
+                ],
+              ),
             ),
           ),
         ],
@@ -96,6 +107,16 @@ class ListsPage extends ConsumerWidget {
     );
     if (embedded) return body;
     return SafeArea(child: body);
+  }
+}
+
+/// Removes Android overscroll glow / edge shading on horizontal [TabBarView] swipes.
+class _NoTabViewEdgeGlowScrollBehavior extends MaterialScrollBehavior {
+  const _NoTabViewEdgeGlowScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }
 

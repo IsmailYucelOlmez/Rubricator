@@ -239,6 +239,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   void _invalidateAll() {
     ref.invalidate(listsFeedProvider);
     ref.invalidate(popularListsProvider);
+    ref.invalidate(topListsProvider);
     ref.invalidate(followingListsProvider);
     ref.invalidate(userListsProvider);
     ref.invalidate(savedListsProvider);

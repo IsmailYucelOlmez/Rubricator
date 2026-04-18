@@ -35,6 +35,36 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> getTopListsByEngagement({int limit = 20}) async {
+    final userId = _currentUserId;
+    final raw = await _client.rpc(
+      'list_top_by_engagement',
+      params: <String, dynamic>{'p_limit': limit},
+    );
+    final rows = (raw as List<dynamic>?) ?? <dynamic>[];
+    final ids = rows
+        .whereType<Map<String, dynamic>>()
+        .map((e) => e['list_id']?.toString())
+        .whereType<String>()
+        .toList();
+    if (ids.isEmpty) return const <ListEntity>[];
+
+    final listRows = await _client.from('lists').select('*').inFilter('id', ids);
+    final byId = <String, Map<String, dynamic>>{
+      for (final row in (listRows as List<dynamic>).whereType<Map<String, dynamic>>())
+        row['id'].toString(): row,
+    };
+    final ordered = <ListEntity>[];
+    for (final id in ids) {
+      final row = byId[id];
+      if (row != null) {
+        ordered.add(await _enrichList(row, userId));
+      }
+    }
+    return ordered;
+  }
+
+  @override
   Future<List<ListEntity>> getFollowingLists() async {
     final userId = _currentUserId;
     if (userId == null) return getFeedLists();

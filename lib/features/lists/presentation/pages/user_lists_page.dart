@@ -15,6 +15,9 @@ class UserListsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final tabLabelStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.1,
+    );
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -33,12 +36,8 @@ class UserListsPage extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xs),
           TabBar(
             isScrollable: true,
-            labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
-            ),
-            unselectedLabelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.25,
-            ),
+            labelStyle: tabLabelStyle,
+            unselectedLabelStyle: tabLabelStyle,
             tabs: [Tab(text: l10n.myLists), Tab(text: l10n.savedLists)],
           ),
           Expanded(

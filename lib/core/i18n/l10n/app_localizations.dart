@@ -1142,6 +1142,12 @@ abstract class AppLocalizations {
   /// **'For You'**
   String get listsForYou;
 
+  /// No description provided for @listsTopTwenty.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeless'**
+  String get listsTopTwenty;
+
   /// No description provided for @listsFollowing.
   ///
   /// In en, this message translates to:

@@ -139,6 +139,29 @@ class InMemoryListsRepository implements ListsRepository {
     return copy;
   }
 
+  int _saveCountForList(String listId) {
+    var n = 0;
+    for (final set in _savesByUser.values) {
+      if (set.contains(listId)) n++;
+    }
+    return n;
+  }
+
+  @override
+  Future<List<ListEntity>> getTopListsByEngagement({int limit = 20}) async {
+    final public = _lists.where((l) => l.isPublic).toList();
+    final scored = <({ListEntity list, int score})>[
+      for (final list in public)
+        (list: list, score: list.likeCount + _saveCountForList(list.id)),
+    ];
+    scored.sort((a, b) {
+      final byScore = b.score.compareTo(a.score);
+      if (byScore != 0) return byScore;
+      return b.list.createdAt.compareTo(a.list.createdAt);
+    });
+    return scored.take(limit).map((e) => e.list).toList();
+  }
+
   @override
   Future<List<ListEntity>> getSavedLists(String userId) async {
     final saved = _savesByUser[userId] ?? const <String>{};

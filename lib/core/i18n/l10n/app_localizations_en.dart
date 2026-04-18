@@ -611,6 +611,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listsForYou => 'For You';
 
   @override
+  String get listsTopTwenty => 'Timeless';
+
+  @override
   String get listsFollowing => 'Following';
 
   @override

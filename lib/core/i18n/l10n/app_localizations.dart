@@ -1333,6 +1333,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete list'**
   String get deleteListTooltip;
+
+  /// No description provided for @privacyPolicyAppBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyAppBar;
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy for Rubricator'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyPolicyLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: 19.04.2026'**
+  String get privacyPolicyLastUpdated;
+
+  /// No description provided for @privacyPolicySection1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Introduction'**
+  String get privacyPolicySection1Title;
+
+  /// No description provided for @privacyPolicySection1Body1.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Rubricator (\"we\", \"our\", or \"us\"). Rubricator is a social reading platform where users can discover books, create lists, track reading habits, and share content.'**
+  String get privacyPolicySection1Body1;
+
+  /// No description provided for @privacyPolicySection1Body2.
+  ///
+  /// In en, this message translates to:
+  /// **'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.'**
+  String get privacyPolicySection1Body2;
+
+  /// No description provided for @privacyPolicySection2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Information We Collect'**
+  String get privacyPolicySection2Title;
+
+  /// No description provided for @privacyPolicySection21Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.1 Personal Information'**
+  String get privacyPolicySection21Title;
+
+  /// No description provided for @privacyPolicySection21Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Email address'**
+  String get privacyPolicySection21Item1;
+
+  /// No description provided for @privacyPolicySection21Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Username'**
+  String get privacyPolicySection21Item2;
+
+  /// No description provided for @privacyPolicySection21Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Profile information (optional)'**
+  String get privacyPolicySection21Item3;
+
+  /// No description provided for @privacyPolicySection22Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.2 User-Generated Content'**
+  String get privacyPolicySection22Title;
+
+  /// No description provided for @privacyPolicySection22Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Book reviews'**
+  String get privacyPolicySection22Item1;
+
+  /// No description provided for @privacyPolicySection22Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Ratings'**
+  String get privacyPolicySection22Item2;
+
+  /// No description provided for @privacyPolicySection22Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Quotes'**
+  String get privacyPolicySection22Item3;
+
+  /// No description provided for @privacyPolicySection22Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Lists you create'**
+  String get privacyPolicySection22Item4;
+
+  /// No description provided for @privacyPolicySection22Item5.
+  ///
+  /// In en, this message translates to:
+  /// **'- Comments'**
+  String get privacyPolicySection22Item5;
+
+  /// No description provided for @privacyPolicySection23Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.3 Usage Data'**
+  String get privacyPolicySection23Title;
+
+  /// No description provided for @privacyPolicySection23Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- App usage interactions'**
+  String get privacyPolicySection23Item1;
+
+  /// No description provided for @privacyPolicySection23Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Feature usage (e.g., lists, stats, search)'**
+  String get privacyPolicySection23Item2;
+
+  /// No description provided for @privacyPolicySection23Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Device information (OS version, device type)'**
+  String get privacyPolicySection23Item3;
+
+  /// No description provided for @privacyPolicySection24Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.4 Authentication Data'**
+  String get privacyPolicySection24Title;
+
+  /// No description provided for @privacyPolicySection24Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Basic profile information'**
+  String get privacyPolicySection24Item1;
+
+  /// No description provided for @privacyPolicySection24Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Email address'**
+  String get privacyPolicySection24Item2;
+
+  /// No description provided for @privacyPolicySection3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. How We Use Your Information'**
+  String get privacyPolicySection3Title;
+
+  /// No description provided for @privacyPolicySection3Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Provide and maintain the app'**
+  String get privacyPolicySection3Item1;
+
+  /// No description provided for @privacyPolicySection3Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Enable social features (lists, comments, likes)'**
+  String get privacyPolicySection3Item2;
+
+  /// No description provided for @privacyPolicySection3Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Personalize content and recommendations'**
+  String get privacyPolicySection3Item3;
+
+  /// No description provided for @privacyPolicySection3Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Improve app performance and features'**
+  String get privacyPolicySection3Item4;
+
+  /// No description provided for @privacyPolicySection3Item5.
+  ///
+  /// In en, this message translates to:
+  /// **'- Communicate important updates'**
+  String get privacyPolicySection3Item5;
+
+  /// No description provided for @privacyPolicySection4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Data Storage and Security'**
+  String get privacyPolicySection4Title;
+
+  /// No description provided for @privacyPolicySection4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is stored securely using third-party infrastructure such as Supabase.'**
+  String get privacyPolicySection4Body;
+
+  /// No description provided for @privacyPolicySection4Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Secure authentication'**
+  String get privacyPolicySection4Item1;
+
+  /// No description provided for @privacyPolicySection4Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Encrypted connections (HTTPS)'**
+  String get privacyPolicySection4Item2;
+
+  /// No description provided for @privacyPolicySection4Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Access control mechanisms'**
+  String get privacyPolicySection4Item3;
+
+  /// No description provided for @privacyPolicySection5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Data Sharing'**
+  String get privacyPolicySection5Title;
+
+  /// No description provided for @privacyPolicySection5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We do NOT sell your personal data.'**
+  String get privacyPolicySection5Body;
+
+  /// No description provided for @privacyPolicySection5Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- With service providers (e.g., backend hosting)'**
+  String get privacyPolicySection5Item1;
+
+  /// No description provided for @privacyPolicySection5Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- To comply with legal obligations'**
+  String get privacyPolicySection5Item2;
+
+  /// No description provided for @privacyPolicySection5Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- To protect user safety and rights'**
+  String get privacyPolicySection5Item3;
+
+  /// No description provided for @privacyPolicySection6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'6. Public Content'**
+  String get privacyPolicySection6Title;
+
+  /// No description provided for @privacyPolicySection6Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Public lists'**
+  String get privacyPolicySection6Item1;
+
+  /// No description provided for @privacyPolicySection6Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Reviews'**
+  String get privacyPolicySection6Item2;
+
+  /// No description provided for @privacyPolicySection6Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Comments'**
+  String get privacyPolicySection6Item3;
+
+  /// No description provided for @privacyPolicySection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Content you share publicly may be visible to other users.'**
+  String get privacyPolicySection6Body;
+
+  /// No description provided for @privacyPolicySection7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'7. Data Retention'**
+  String get privacyPolicySection7Title;
+
+  /// No description provided for @privacyPolicySection7Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- As long as your account is active'**
+  String get privacyPolicySection7Item1;
+
+  /// No description provided for @privacyPolicySection7Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Or as needed to provide services'**
+  String get privacyPolicySection7Item2;
+
+  /// No description provided for @privacyPolicySection7Body.
+  ///
+  /// In en, this message translates to:
+  /// **'You may request deletion of your data at any time.'**
+  String get privacyPolicySection7Body;
+
+  /// No description provided for @privacyPolicySection8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'8. Your Rights'**
+  String get privacyPolicySection8Title;
+
+  /// No description provided for @privacyPolicySection8Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Access your data'**
+  String get privacyPolicySection8Item1;
+
+  /// No description provided for @privacyPolicySection8Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Update your information'**
+  String get privacyPolicySection8Item2;
+
+  /// No description provided for @privacyPolicySection8Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Request deletion of your account'**
+  String get privacyPolicySection8Item3;
+
+  /// No description provided for @privacyPolicySection8Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Withdraw consent'**
+  String get privacyPolicySection8Item4;
+
+  /// No description provided for @privacyPolicySection8Body.
+  ///
+  /// In en, this message translates to:
+  /// **'To exercise these rights, contact us at:'**
+  String get privacyPolicySection8Body;
+
+  /// No description provided for @privacyPolicySection8Email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email: [YOUR EMAIL]'**
+  String get privacyPolicySection8Email;
+
+  /// No description provided for @privacyPolicySection9Title.
+  ///
+  /// In en, this message translates to:
+  /// **'9. Children\'s Privacy'**
+  String get privacyPolicySection9Title;
+
+  /// No description provided for @privacyPolicySection9Body1.
+  ///
+  /// In en, this message translates to:
+  /// **'Rubricator is not intended for users under the age of 13.'**
+  String get privacyPolicySection9Body1;
+
+  /// No description provided for @privacyPolicySection9Body2.
+  ///
+  /// In en, this message translates to:
+  /// **'We do not knowingly collect data from children.'**
+  String get privacyPolicySection9Body2;
+
+  /// No description provided for @privacyPolicySection10Title.
+  ///
+  /// In en, this message translates to:
+  /// **'10. Third-Party Services'**
+  String get privacyPolicySection10Title;
+
+  /// No description provided for @privacyPolicySection10Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Google (authentication, analytics)'**
+  String get privacyPolicySection10Item1;
+
+  /// No description provided for @privacyPolicySection10Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Supabase (data storage)'**
+  String get privacyPolicySection10Item2;
+
+  /// No description provided for @privacyPolicySection10Body.
+  ///
+  /// In en, this message translates to:
+  /// **'These services have their own privacy policies.'**
+  String get privacyPolicySection10Body;
+
+  /// No description provided for @privacyPolicySection11Title.
+  ///
+  /// In en, this message translates to:
+  /// **'11. International Data Transfers'**
+  String get privacyPolicySection11Title;
+
+  /// No description provided for @privacyPolicySection11Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your information may be processed in different countries where our service providers operate.'**
+  String get privacyPolicySection11Body;
+
+  /// No description provided for @privacyPolicySection12Title.
+  ///
+  /// In en, this message translates to:
+  /// **'12. Changes to This Privacy Policy'**
+  String get privacyPolicySection12Title;
+
+  /// No description provided for @privacyPolicySection12Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We may update this policy from time to time. Changes will be reflected by updating the \"Last updated\" date.'**
+  String get privacyPolicySection12Body;
+
+  /// No description provided for @privacyPolicySection13Title.
+  ///
+  /// In en, this message translates to:
+  /// **'13. Contact Us'**
+  String get privacyPolicySection13Title;
+
+  /// No description provided for @privacyPolicySection13Body.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have any questions about this Privacy Policy, contact us:'**
+  String get privacyPolicySection13Body;
+
+  /// No description provided for @privacyPolicySection13Email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email: ismailyucelolmez514@gmail.com'**
+  String get privacyPolicySection13Email;
+
+  /// No description provided for @privacyPolicyFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'By using Rubricator, you agree to this Privacy Policy.'**
+  String get privacyPolicyFooter;
 }
 
 class _AppLocalizationsDelegate

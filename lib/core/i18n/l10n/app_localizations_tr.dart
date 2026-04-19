@@ -717,4 +717,244 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deleteListTooltip => 'Listeyi sil';
+
+  @override
+  String get privacyPolicyAppBar => 'Gizlilik Politikasi';
+
+  @override
+  String get privacyPolicyTitle => 'Rubricator Gizlilik Politikasi';
+
+  @override
+  String get privacyPolicyLastUpdated => 'Son guncelleme: 19.04.2026';
+
+  @override
+  String get privacyPolicySection1Title => '1. Giris';
+
+  @override
+  String get privacyPolicySection1Body1 =>
+      'Rubricator\'a hos geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanicilarin kitap kesfedebildigi, liste olusturabildigi, okuma aliskanliklarini takip edebildigi ve icerik paylasabildigi sosyal bir okuma platformudur.';
+
+  @override
+  String get privacyPolicySection1Body2 =>
+      'Bu Gizlilik Politikasi, mobil uygulamamizi kullanirken bilgilerinizi nasil topladigimizi, kullandigimizi, paylastigimizi ve korudugumuzu aciklar.';
+
+  @override
+  String get privacyPolicySection2Title => '2. Topladigimiz Bilgiler';
+
+  @override
+  String get privacyPolicySection21Title => '2.1 Kisisel Bilgiler';
+
+  @override
+  String get privacyPolicySection21Item1 => '- E-posta adresi';
+
+  @override
+  String get privacyPolicySection21Item2 => '- Kullanici adi';
+
+  @override
+  String get privacyPolicySection21Item3 => '- Profil bilgileri (istege bagli)';
+
+  @override
+  String get privacyPolicySection22Title =>
+      '2.2 Kullanici Tarafindan Uretilen Icerik';
+
+  @override
+  String get privacyPolicySection22Item1 => '- Kitap incelemeleri';
+
+  @override
+  String get privacyPolicySection22Item2 => '- Puanlamalar';
+
+  @override
+  String get privacyPolicySection22Item3 => '- Alintilar';
+
+  @override
+  String get privacyPolicySection22Item4 => '- Olusturdugunuz listeler';
+
+  @override
+  String get privacyPolicySection22Item5 => '- Yorumlar';
+
+  @override
+  String get privacyPolicySection23Title => '2.3 Kullanim Verileri';
+
+  @override
+  String get privacyPolicySection23Item1 => '- Uygulama kullanim etkilesimleri';
+
+  @override
+  String get privacyPolicySection23Item2 =>
+      '- Ozellik kullanimi (ornegin listeler, istatistikler, arama)';
+
+  @override
+  String get privacyPolicySection23Item3 =>
+      '- Cihaz bilgileri (isletim sistemi surumu, cihaz tipi)';
+
+  @override
+  String get privacyPolicySection24Title => '2.4 Kimlik Dogrulama Verileri';
+
+  @override
+  String get privacyPolicySection24Item1 => '- Temel profil bilgileri';
+
+  @override
+  String get privacyPolicySection24Item2 => '- E-posta adresi';
+
+  @override
+  String get privacyPolicySection3Title =>
+      '3. Bilgilerinizi Nasil Kullaniyoruz';
+
+  @override
+  String get privacyPolicySection3Item1 => '- Uygulamayi sunmak ve surdurmek';
+
+  @override
+  String get privacyPolicySection3Item2 =>
+      '- Sosyal ozellikleri etkinlestirmek (listeler, yorumlar, begeniler)';
+
+  @override
+  String get privacyPolicySection3Item3 =>
+      '- Icerigi ve onerileri kisisellestirmek';
+
+  @override
+  String get privacyPolicySection3Item4 =>
+      '- Uygulama performansini ve ozellikleri iyilestirmek';
+
+  @override
+  String get privacyPolicySection3Item5 => '- Onemli guncellemeleri iletmek';
+
+  @override
+  String get privacyPolicySection4Title => '4. Veri Saklama ve Guvenlik';
+
+  @override
+  String get privacyPolicySection4Body =>
+      'Verileriniz, Supabase gibi ucuncu taraf altyapilar kullanilarak guvenli sekilde saklanir.';
+
+  @override
+  String get privacyPolicySection4Item1 => '- Guvenli kimlik dogrulama';
+
+  @override
+  String get privacyPolicySection4Item2 => '- Sifreli baglantilar (HTTPS)';
+
+  @override
+  String get privacyPolicySection4Item3 => '- Erisim kontrol mekanizmalari';
+
+  @override
+  String get privacyPolicySection5Title => '5. Veri Paylasimi';
+
+  @override
+  String get privacyPolicySection5Body => 'Kisisel verilerinizi SATMAYIZ.';
+
+  @override
+  String get privacyPolicySection5Item1 =>
+      '- Hizmet saglayicilarla (ornegin backend barindirma)';
+
+  @override
+  String get privacyPolicySection5Item2 => '- Yasal yukumluluklere uymak icin';
+
+  @override
+  String get privacyPolicySection5Item3 =>
+      '- Kullanici guvenligini ve haklarini korumak icin';
+
+  @override
+  String get privacyPolicySection6Title => '6. Herkese Acik Icerik';
+
+  @override
+  String get privacyPolicySection6Item1 => '- Herkese acik listeler';
+
+  @override
+  String get privacyPolicySection6Item2 => '- Incelemeler';
+
+  @override
+  String get privacyPolicySection6Item3 => '- Yorumlar';
+
+  @override
+  String get privacyPolicySection6Body =>
+      'Herkese acik paylastiginiz icerikler diger kullanicilar tarafindan gorulebilir.';
+
+  @override
+  String get privacyPolicySection7Title => '7. Veri Saklama Suresi';
+
+  @override
+  String get privacyPolicySection7Item1 => '- Hesabiniz aktif oldugu surece';
+
+  @override
+  String get privacyPolicySection7Item2 =>
+      '- Veya hizmetleri sunmak icin gerektigi surece';
+
+  @override
+  String get privacyPolicySection7Body =>
+      'Verilerinizin silinmesini istediginiz zaman talep edebilirsiniz.';
+
+  @override
+  String get privacyPolicySection8Title => '8. Haklariniz';
+
+  @override
+  String get privacyPolicySection8Item1 => '- Verilerinize erisme';
+
+  @override
+  String get privacyPolicySection8Item2 => '- Bilgilerinizi guncelleme';
+
+  @override
+  String get privacyPolicySection8Item3 =>
+      '- Hesabinizin silinmesini talep etme';
+
+  @override
+  String get privacyPolicySection8Item4 => '- Onayi geri cekme';
+
+  @override
+  String get privacyPolicySection8Body =>
+      'Bu haklari kullanmak icin bize ulasin:';
+
+  @override
+  String get privacyPolicySection8Email => 'E-posta: [YOUR EMAIL]';
+
+  @override
+  String get privacyPolicySection9Title => '9. Cocuklarin Gizliligi';
+
+  @override
+  String get privacyPolicySection9Body1 =>
+      'Rubricator, 13 yas altindaki kullanicilar icin tasarlanmamistir.';
+
+  @override
+  String get privacyPolicySection9Body2 =>
+      'Cocuklardan bilerek veri toplamayiz.';
+
+  @override
+  String get privacyPolicySection10Title => '10. Ucuncu Taraf Hizmetler';
+
+  @override
+  String get privacyPolicySection10Item1 =>
+      '- Google (kimlik dogrulama, analiz)';
+
+  @override
+  String get privacyPolicySection10Item2 => '- Supabase (veri depolama)';
+
+  @override
+  String get privacyPolicySection10Body =>
+      'Bu hizmetlerin kendi gizlilik politikalari vardir.';
+
+  @override
+  String get privacyPolicySection11Title => '11. Uluslararasi Veri Aktarimlari';
+
+  @override
+  String get privacyPolicySection11Body =>
+      'Bilgileriniz, hizmet saglayicilarimizin faaliyet gosterdigi farkli ulkelerde islenebilir.';
+
+  @override
+  String get privacyPolicySection12Title =>
+      '12. Bu Gizlilik Politikasindaki Degisiklikler';
+
+  @override
+  String get privacyPolicySection12Body =>
+      'Bu politikayi zaman zaman guncelleyebiliriz. Degisiklikler \"Son guncelleme\" tarihi guncellenerek yansitilir.';
+
+  @override
+  String get privacyPolicySection13Title => '13. Bize Ulasin';
+
+  @override
+  String get privacyPolicySection13Body =>
+      'Bu Gizlilik Politikasi hakkinda sorunuz varsa bize ulasin:';
+
+  @override
+  String get privacyPolicySection13Email =>
+      'E-posta: ismailyucelolmez514@gmail.com';
+
+  @override
+  String get privacyPolicyFooter =>
+      'Rubricator\'u kullanarak bu Gizlilik Politikasi\'ni kabul etmis olursunuz.';
 }

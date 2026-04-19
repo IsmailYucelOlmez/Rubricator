@@ -717,4 +717,241 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteListTooltip => 'Delete list';
+
+  @override
+  String get privacyPolicyAppBar => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy for Rubricator';
+
+  @override
+  String get privacyPolicyLastUpdated => 'Last updated: 19.04.2026';
+
+  @override
+  String get privacyPolicySection1Title => '1. Introduction';
+
+  @override
+  String get privacyPolicySection1Body1 =>
+      'Welcome to Rubricator (\"we\", \"our\", or \"us\"). Rubricator is a social reading platform where users can discover books, create lists, track reading habits, and share content.';
+
+  @override
+  String get privacyPolicySection1Body2 =>
+      'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.';
+
+  @override
+  String get privacyPolicySection2Title => '2. Information We Collect';
+
+  @override
+  String get privacyPolicySection21Title => '2.1 Personal Information';
+
+  @override
+  String get privacyPolicySection21Item1 => '- Email address';
+
+  @override
+  String get privacyPolicySection21Item2 => '- Username';
+
+  @override
+  String get privacyPolicySection21Item3 => '- Profile information (optional)';
+
+  @override
+  String get privacyPolicySection22Title => '2.2 User-Generated Content';
+
+  @override
+  String get privacyPolicySection22Item1 => '- Book reviews';
+
+  @override
+  String get privacyPolicySection22Item2 => '- Ratings';
+
+  @override
+  String get privacyPolicySection22Item3 => '- Quotes';
+
+  @override
+  String get privacyPolicySection22Item4 => '- Lists you create';
+
+  @override
+  String get privacyPolicySection22Item5 => '- Comments';
+
+  @override
+  String get privacyPolicySection23Title => '2.3 Usage Data';
+
+  @override
+  String get privacyPolicySection23Item1 => '- App usage interactions';
+
+  @override
+  String get privacyPolicySection23Item2 =>
+      '- Feature usage (e.g., lists, stats, search)';
+
+  @override
+  String get privacyPolicySection23Item3 =>
+      '- Device information (OS version, device type)';
+
+  @override
+  String get privacyPolicySection24Title => '2.4 Authentication Data';
+
+  @override
+  String get privacyPolicySection24Item1 => '- Basic profile information';
+
+  @override
+  String get privacyPolicySection24Item2 => '- Email address';
+
+  @override
+  String get privacyPolicySection3Title => '3. How We Use Your Information';
+
+  @override
+  String get privacyPolicySection3Item1 => '- Provide and maintain the app';
+
+  @override
+  String get privacyPolicySection3Item2 =>
+      '- Enable social features (lists, comments, likes)';
+
+  @override
+  String get privacyPolicySection3Item3 =>
+      '- Personalize content and recommendations';
+
+  @override
+  String get privacyPolicySection3Item4 =>
+      '- Improve app performance and features';
+
+  @override
+  String get privacyPolicySection3Item5 => '- Communicate important updates';
+
+  @override
+  String get privacyPolicySection4Title => '4. Data Storage and Security';
+
+  @override
+  String get privacyPolicySection4Body =>
+      'Your data is stored securely using third-party infrastructure such as Supabase.';
+
+  @override
+  String get privacyPolicySection4Item1 => '- Secure authentication';
+
+  @override
+  String get privacyPolicySection4Item2 => '- Encrypted connections (HTTPS)';
+
+  @override
+  String get privacyPolicySection4Item3 => '- Access control mechanisms';
+
+  @override
+  String get privacyPolicySection5Title => '5. Data Sharing';
+
+  @override
+  String get privacyPolicySection5Body => 'We do NOT sell your personal data.';
+
+  @override
+  String get privacyPolicySection5Item1 =>
+      '- With service providers (e.g., backend hosting)';
+
+  @override
+  String get privacyPolicySection5Item2 => '- To comply with legal obligations';
+
+  @override
+  String get privacyPolicySection5Item3 =>
+      '- To protect user safety and rights';
+
+  @override
+  String get privacyPolicySection6Title => '6. Public Content';
+
+  @override
+  String get privacyPolicySection6Item1 => '- Public lists';
+
+  @override
+  String get privacyPolicySection6Item2 => '- Reviews';
+
+  @override
+  String get privacyPolicySection6Item3 => '- Comments';
+
+  @override
+  String get privacyPolicySection6Body =>
+      'Content you share publicly may be visible to other users.';
+
+  @override
+  String get privacyPolicySection7Title => '7. Data Retention';
+
+  @override
+  String get privacyPolicySection7Item1 =>
+      '- As long as your account is active';
+
+  @override
+  String get privacyPolicySection7Item2 => '- Or as needed to provide services';
+
+  @override
+  String get privacyPolicySection7Body =>
+      'You may request deletion of your data at any time.';
+
+  @override
+  String get privacyPolicySection8Title => '8. Your Rights';
+
+  @override
+  String get privacyPolicySection8Item1 => '- Access your data';
+
+  @override
+  String get privacyPolicySection8Item2 => '- Update your information';
+
+  @override
+  String get privacyPolicySection8Item3 => '- Request deletion of your account';
+
+  @override
+  String get privacyPolicySection8Item4 => '- Withdraw consent';
+
+  @override
+  String get privacyPolicySection8Body =>
+      'To exercise these rights, contact us at:';
+
+  @override
+  String get privacyPolicySection8Email => 'Email: [YOUR EMAIL]';
+
+  @override
+  String get privacyPolicySection9Title => '9. Children\'s Privacy';
+
+  @override
+  String get privacyPolicySection9Body1 =>
+      'Rubricator is not intended for users under the age of 13.';
+
+  @override
+  String get privacyPolicySection9Body2 =>
+      'We do not knowingly collect data from children.';
+
+  @override
+  String get privacyPolicySection10Title => '10. Third-Party Services';
+
+  @override
+  String get privacyPolicySection10Item1 =>
+      '- Google (authentication, analytics)';
+
+  @override
+  String get privacyPolicySection10Item2 => '- Supabase (data storage)';
+
+  @override
+  String get privacyPolicySection10Body =>
+      'These services have their own privacy policies.';
+
+  @override
+  String get privacyPolicySection11Title => '11. International Data Transfers';
+
+  @override
+  String get privacyPolicySection11Body =>
+      'Your information may be processed in different countries where our service providers operate.';
+
+  @override
+  String get privacyPolicySection12Title =>
+      '12. Changes to This Privacy Policy';
+
+  @override
+  String get privacyPolicySection12Body =>
+      'We may update this policy from time to time. Changes will be reflected by updating the \"Last updated\" date.';
+
+  @override
+  String get privacyPolicySection13Title => '13. Contact Us';
+
+  @override
+  String get privacyPolicySection13Body =>
+      'If you have any questions about this Privacy Policy, contact us:';
+
+  @override
+  String get privacyPolicySection13Email =>
+      'Email: ismailyucelolmez514@gmail.com';
+
+  @override
+  String get privacyPolicyFooter =>
+      'By using Rubricator, you agree to this Privacy Policy.';
 }

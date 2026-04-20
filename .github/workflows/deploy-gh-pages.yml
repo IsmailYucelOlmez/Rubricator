@@ -25,6 +25,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Create assets/.env for CI build
+        run: |
+          mkdir -p assets
+          cat <<EOF > assets/.env
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }}
+          EOF
+
       - name: Build web
         run: |
           REPO_NAME="${GITHUB_REPOSITORY#*/}"

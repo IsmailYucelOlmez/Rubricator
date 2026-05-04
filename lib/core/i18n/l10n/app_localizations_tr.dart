@@ -21,6 +21,43 @@ class AppLocalizationsTr extends AppLocalizations {
   String get navLists => 'Listeler';
 
   @override
+  String get listsFeedHeading => 'Listbox';
+
+  @override
+  String get profileZoneTitle => 'Zone';
+
+  @override
+  String get readingStatsListsTitle => 'Duruma gore okuma listeleri';
+
+  @override
+  String get homeShowAll => 'Tumunu gor';
+
+  @override
+  String get editProfile => 'Profili duzenle';
+
+  @override
+  String get pickPhotoFromGallery => 'Galeriden foto sec';
+
+  @override
+  String get pickProfilePhotoFromGallery => 'Profil fotografi galeriden sec';
+
+  @override
+  String get changeProfilePhoto => 'Profil fotosunu degistir';
+
+  @override
+  String get removeProfilePhotoTooltip => 'Fotografi kaldir';
+
+  @override
+  String get privacyPolicyCheckbox =>
+      'Gizlilik politikasini okudum ve kabul ediyorum.';
+
+  @override
+  String get displayNameLabel => 'Gorunen ad';
+
+  @override
+  String get profilePhotoUrlOptional => 'Profil foto URL (istege bagli)';
+
+  @override
   String get profile => 'Profil';
 
   @override
@@ -214,6 +251,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get loadHomeGenresError =>
       'Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.';
+
+  @override
+  String homeGenreEmptySoft(Object genre) {
+    return '$genre icin henuz oneri yok. Yenilemek icin asagi cekin veya sonra deneyin.';
+  }
 
   @override
   String get toRead => 'Okunacak';
@@ -717,6 +759,79 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deleteListTooltip => 'Listeyi sil';
+
+  @override
+  String get uxErrorNetwork => 'Internet baglantinizi kontrol edin.';
+
+  @override
+  String get uxErrorTimeout => 'Istek zaman asimina ugradi.';
+
+  @override
+  String get uxErrorUnknown => 'Bir hata olustu, lutfen tekrar deneyin.';
+
+  @override
+  String get uxRetry => 'Tekrar dene';
+
+  @override
+  String get uxOfflineBanner => 'Internet baglantisi yok';
+
+  @override
+  String get uxEmailRequired => 'E-posta gerekli';
+
+  @override
+  String get uxEmailInvalid => 'Gecerli bir e-posta girin';
+
+  @override
+  String get uxPasswordRequired => 'Sifre gerekli';
+
+  @override
+  String get uxUserNameRequired => 'Gorunen ad gerekli';
+
+  @override
+  String get uxTitleRequired => 'Baslik gerekli';
+
+  @override
+  String get uxAcceptPrivacyRequired =>
+      'Devam etmek icin gizlilik politikasini kabul edin';
+
+  @override
+  String get uxListCreatedSuccess => 'Liste basariyla olusturuldu';
+
+  @override
+  String get uxListUpdatedSuccess => 'Liste guncellendi';
+
+  @override
+  String get uxRemoveBookFromListTitle => 'Bu kitap kaldirilsin mi?';
+
+  @override
+  String get uxRemoveBookFromListMessage => 'Kitap listeden cikarilacak.';
+
+  @override
+  String get uxRemove => 'Kaldir';
+
+  @override
+  String get uxDeleteReviewTitle => 'Inceleme silinsin mi?';
+
+  @override
+  String get uxDeleteReviewMessage => 'Bu islem geri alinamaz.';
+
+  @override
+  String get uxGalleryPluginError =>
+      'Galeri acilamadi. Uygulamayi tam kapatip yeniden deneyin.';
+
+  @override
+  String get uxProfilePhotoStorageNotReady =>
+      'Profil fotografi alani hazir degil. Veritabani migrationlarini calistirin.';
+
+  @override
+  String get uxProfilePhotoPermissionDenied =>
+      'Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin.';
+
+  @override
+  String get uxMustSignIn => 'Devam etmek icin giris yapin.';
+
+  @override
+  String get uxReviewMinLength => 'Inceleme en az 10 karakter olmalidir.';
 
   @override
   String get privacyPolicyAppBar => 'Gizlilik Politikasi';

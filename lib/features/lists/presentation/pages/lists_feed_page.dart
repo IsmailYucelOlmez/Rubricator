@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
@@ -43,7 +45,7 @@ class ListsPage extends ConsumerWidget {
               children: [
                 if (!embedded)
                   Text(
-                    'Listbox',
+                    l10n.listsFeedHeading,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontFamily: 'EFCOBrookshire',
                       fontSize: (Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24) * 1.1,
@@ -94,10 +96,26 @@ class ListsPage extends ConsumerWidget {
               child: TabBarView(
                 physics: const ClampingScrollPhysics(),
                 children: [
-                  _FeedTab(async: ref.watch(forYouListsProvider), onChanged: invalidateAll),
-                  _FeedTab(async: ref.watch(popularListsProvider), onChanged: invalidateAll),
-                  _FeedTab(async: ref.watch(topListsProvider), onChanged: invalidateAll),
-                  _FeedTab(async: ref.watch(followingListsProvider), onChanged: invalidateAll),
+                  _FeedTab(
+                    async: ref.watch(forYouListsProvider),
+                    onChanged: invalidateAll,
+                    onRetry: () => ref.invalidate(forYouListsProvider),
+                  ),
+                  _FeedTab(
+                    async: ref.watch(popularListsProvider),
+                    onChanged: invalidateAll,
+                    onRetry: () => ref.invalidate(popularListsProvider),
+                  ),
+                  _FeedTab(
+                    async: ref.watch(topListsProvider),
+                    onChanged: invalidateAll,
+                    onRetry: () => ref.invalidate(topListsProvider),
+                  ),
+                  _FeedTab(
+                    async: ref.watch(followingListsProvider),
+                    onChanged: invalidateAll,
+                    onRetry: () => ref.invalidate(followingListsProvider),
+                  ),
                 ],
               ),
             ),
@@ -121,16 +139,22 @@ class _NoTabViewEdgeGlowScrollBehavior extends MaterialScrollBehavior {
 }
 
 class _FeedTab extends ConsumerWidget {
-  const _FeedTab({required this.async, required this.onChanged});
+  const _FeedTab({required this.async, required this.onChanged, required this.onRetry});
   final AsyncValue<List<ListEntity>> async;
   final VoidCallback onChanged;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return async.when(
       data: (lists) {
         final l10n = AppLocalizations.of(context)!;
-        if (lists.isEmpty) return Center(child: Text(l10n.noListsYet));
+        if (lists.isEmpty) {
+          return AppEmptyState(
+            icon: Icons.menu_book_outlined,
+            title: l10n.noListsYet,
+          );
+        }
         final userId = ref.watch(authStateProvider).valueOrNull?.id;
         return ListView.builder(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -173,7 +197,7 @@ class _FeedTab extends ConsumerWidget {
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
         itemBuilder: (_, _) => const AppSkeletonBox(height: 120),
       ),
-      error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.couldNotLoadLists(e.toString()))),
+      error: (e, _) => AsyncErrorView(error: e, onRetry: onRetry),
     );
   }
 }

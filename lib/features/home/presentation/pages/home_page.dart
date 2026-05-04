@@ -8,11 +8,13 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import 'genre_books_page.dart';
 import '../../domain/entities/home_book_entity.dart';
+import '../../domain/entities/home_genre_section.dart';
 import '../providers/home_providers.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -84,7 +86,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                   SliverToBoxAdapter(
                     child: _GenreSection(
                       genre: genre,
-                      books: map[genre] ?? const <HomeBookEntity>[],
+                      section: map[genre] ??
+                          const HomeGenreSection(
+                            books: <HomeBookEntity>[],
+                            loadState: HomeGenreSectionLoadState.error,
+                          ),
                       l10n: l10n,
                     ),
                   ),
@@ -107,7 +113,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                       AppSpacing.md,
                       0,
                     ),
-                    child: _InlineError(message: l10n.loadHomeGenresError),
+                    child: AsyncErrorView(
+                      error: error,
+                      compact: true,
+                      onRetry: () => ref.invalidate(homeGenreSectionsProvider),
+                    ),
                   ),
                 ),
               ],
@@ -132,33 +142,69 @@ class _PopularSection extends ConsumerWidget {
       child: state.when(
         data: (books) => _HorizontalBookList(books: books),
         loading: () => const _HorizontalSkeleton(),
-        error: (error, stackTrace) => _InlineError(message: l10n.loadPopularBooksError),
+        error: (error, stackTrace) => AsyncErrorView(
+          error: error,
+          compact: true,
+          onRetry: () => ref.invalidate(popularBooksProvider),
+        ),
       ),
     );
   }
 }
 
-class _GenreSection extends StatelessWidget {
+class _GenreSection extends ConsumerWidget {
   const _GenreSection({
     required this.genre,
-    required this.books,
+    required this.section,
     required this.l10n,
   });
 
   final String genre;
-  final List<HomeBookEntity> books;
+  final HomeGenreSection section;
   final AppLocalizations l10n;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final genreLabel = _genreLabel(genre, l10n);
+    final theme = Theme.of(context);
+    final softEmpty = SizedBox(
+      height: 72,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            l10n.homeGenreEmptySoft(genreLabel),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    late final Widget body;
+    switch (section.loadState) {
+      case HomeGenreSectionLoadState.ready:
+        body = section.books.isEmpty ? softEmpty : _HorizontalBookList(books: section.books);
+      case HomeGenreSectionLoadState.emptyUnavailable:
+        body = softEmpty;
+      case HomeGenreSectionLoadState.error:
+        body = AsyncErrorView(
+          error: StateError('home_genre:$genre'),
+          compact: true,
+          onRetry: () => ref.invalidate(homeGenreSectionsProvider),
+        );
+    }
+
     return _Section(
-      title: _genreLabel(genre, l10n),
+      title: genreLabel,
       trailing: TextButton(
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => GenreBooksPage(
               genreKey: genre,
-              genreLabel: _genreLabel(genre, l10n),
+              genreLabel: genreLabel,
             ),
           ),
         ),
@@ -167,17 +213,15 @@ class _GenreSection extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         ),
-        child: const Text(
-          'Show all',
+        child: Text(
+          l10n.homeShowAll,
           style: TextStyle(
             fontFamily: 'Yellowtail',
             fontSize: 10,
           ),
         ),
       ),
-      child: books.isEmpty
-          ? _InlineError(message: l10n.loadGenreBooksError(_genreLabel(genre, l10n)))
-          : _HorizontalBookList(books: books),
+      child: body,
     );
   }
 }
@@ -335,6 +379,7 @@ class _CoverImage extends StatelessWidget {
     }
     return Image.network(
       url,
+      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => ColoredBox(
         color: cs.surfaceContainerHighest,
@@ -381,22 +426,3 @@ class _HorizontalSkeleton extends StatelessWidget {
   }
 }
 
-class _InlineError extends StatelessWidget {
-  const _InlineError({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 72,
-      child: Center(
-        child: Text(
-          message,
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}

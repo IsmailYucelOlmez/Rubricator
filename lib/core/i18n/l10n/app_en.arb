@@ -3,6 +3,18 @@
   "navHome": "Home",
   "navSearch": "Search",
   "navLists": "Lists",
+  "listsFeedHeading": "Listbox",
+  "profileZoneTitle": "Zone",
+  "readingStatsListsTitle": "Your reading lists by status",
+  "homeShowAll": "Show all",
+  "editProfile": "Edit profile",
+  "pickPhotoFromGallery": "Choose photo from gallery",
+  "pickProfilePhotoFromGallery": "Choose profile photo from gallery",
+  "changeProfilePhoto": "Change profile photo",
+  "removeProfilePhotoTooltip": "Remove photo",
+  "privacyPolicyCheckbox": "I have read and accept the privacy policy.",
+  "displayNameLabel": "Display name",
+  "profilePhotoUrlOptional": "Profile photo URL (optional)",
   "profile": "Profile",
   "language": "Language",
   "themeAppearance": "Appearance",
@@ -101,6 +113,12 @@
   "genreThriller": "Thriller",
   "genreHorror": "Horror",
   "loadHomeGenresError": "Could not load genre sections. Please try again.",
+  "homeGenreEmptySoft": "No picks for {genre} yet. Pull to refresh or try later.",
+  "@homeGenreEmptySoft": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
   "toRead": "To Read",
   "reading": "Reading",
   "reReading": "Re-reading",
@@ -297,6 +315,29 @@
   ,"myListsTooltip":"My lists"
   ,"editListTooltip":"Edit list"
   ,"deleteListTooltip":"Delete list"
+  ,"uxErrorNetwork":"Check your internet connection."
+  ,"uxErrorTimeout":"The request timed out."
+  ,"uxErrorUnknown":"Something went wrong. Please try again."
+  ,"uxRetry":"Try again"
+  ,"uxOfflineBanner":"No internet connection"
+  ,"uxEmailRequired":"Email is required"
+  ,"uxEmailInvalid":"Enter a valid email address"
+  ,"uxPasswordRequired":"Password is required"
+  ,"uxUserNameRequired":"Display name is required"
+  ,"uxTitleRequired":"Title is required"
+  ,"uxAcceptPrivacyRequired":"Please accept the privacy policy to continue"
+  ,"uxListCreatedSuccess":"List created successfully"
+  ,"uxListUpdatedSuccess":"List updated successfully"
+  ,"uxRemoveBookFromListTitle":"Remove this book?"
+  ,"uxRemoveBookFromListMessage":"It will be removed from this list."
+  ,"uxRemove":"Remove"
+  ,"uxDeleteReviewTitle":"Delete review?"
+  ,"uxDeleteReviewMessage":"This cannot be undone."
+  ,"uxGalleryPluginError":"Gallery could not be opened. Close the app completely and try again."
+  ,"uxProfilePhotoStorageNotReady":"Profile photo storage is not ready yet. Ask the admin to run database migrations."
+  ,"uxProfilePhotoPermissionDenied":"Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration."
+  ,"uxMustSignIn":"Please sign in to continue."
+  ,"uxReviewMinLength":"Reviews must be at least 10 characters."
   ,"privacyPolicyAppBar":"Privacy Policy"
   ,"privacyPolicyTitle":"Privacy Policy for Rubricator"
   ,"privacyPolicyLastUpdated":"Last updated: 19.04.2026"

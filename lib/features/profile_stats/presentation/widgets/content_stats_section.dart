@@ -5,6 +5,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ContentStatsSection extends ConsumerWidget {
@@ -69,8 +70,10 @@ class ContentStatsSection extends ConsumerWidget {
             height: AppSpacing.xl * 2 + AppSpacing.md + AppSpacing.sm,
             child: const Center(child: AppLoadingIndicator(strokeWidth: 2)),
           ),
-          error: (e, _) => Text(
-            AppLocalizations.of(context)!.couldNotLoadContentStats(e.toString()),
+          error: (e, _) => AsyncErrorView(
+            error: e,
+            compact: true,
+            onRetry: () => ref.invalidate(contentStatsProvider),
           ),
         ),
       ),

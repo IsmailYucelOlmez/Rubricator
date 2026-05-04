@@ -79,6 +79,7 @@ class _BookCoverFillImage extends StatelessWidget {
     }
     return Image.network(
       url,
+      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => ColoredBox(
         color: cs.surfaceContainerHighest,

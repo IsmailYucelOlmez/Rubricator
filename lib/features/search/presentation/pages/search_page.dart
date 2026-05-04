@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
@@ -49,10 +50,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final l10n = AppLocalizations.of(context)!;
     final raw = _controller.text.trim();
     final showHint = raw.isEmpty || raw.length < 2;
-    final searchResult = ref.watch(searchProvider);
-    final popularQueries = ref.watch(popularSearchProvider);
-    final popularBooks = ref.watch(popularBooksProvider);
-
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -77,8 +74,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               child: showHint
                   ? _DiscoveryView(
                       l10n: l10n,
-                      popularQueries: popularQueries,
-                      popularBooks: popularBooks,
                       onOpenBook: (book) {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -94,8 +89,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       },
                     )
                   : _SearchResultsView(
-                      l10n: l10n,
-                      state: searchResult,
                       activeQuery: raw,
                       onOpenBook: (book) async {
                         await ref
@@ -117,21 +110,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 }
 
-class _SearchResultsView extends StatelessWidget {
+class _SearchResultsView extends ConsumerWidget {
   const _SearchResultsView({
-    required this.l10n,
-    required this.state,
     required this.activeQuery,
     required this.onOpenBook,
   });
 
-  final AppLocalizations l10n;
-  final AsyncValue<List<Book>> state;
   final String activeQuery;
   final ValueChanged<Book> onOpenBook;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final state = ref.watch(searchProvider);
     return state.when(
       loading: () => ListView.separated(
         itemCount: 6,
@@ -141,15 +132,10 @@ class _SearchResultsView extends StatelessWidget {
           child: AppListTileSkeleton(),
         ),
       ),
-      error: (error, stackTrace) => Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          child: Text(
-            l10n.searchCouldNotComplete,
-            textAlign: TextAlign.center,
+      error: (error, stackTrace) => AsyncErrorView(
+            error: error,
+            onRetry: () => ref.invalidate(searchProvider),
           ),
-        ),
-      ),
       data: (books) {
         if (books.isEmpty) {
           return Center(child: Text(l10n.noBooksFoundFor(activeQuery)));
@@ -160,23 +146,21 @@ class _SearchResultsView extends StatelessWidget {
   }
 }
 
-class _DiscoveryView extends StatelessWidget {
+class _DiscoveryView extends ConsumerWidget {
   const _DiscoveryView({
     required this.l10n,
-    required this.popularQueries,
-    required this.popularBooks,
     required this.onOpenBook,
     required this.onPickQuery,
   });
 
-  final AsyncValue<List<String>> popularQueries;
   final AppLocalizations l10n;
-  final AsyncValue<List<Book>> popularBooks;
   final ValueChanged<Book> onOpenBook;
   final ValueChanged<String> onPickQuery;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final popularQueries = ref.watch(popularSearchProvider);
+    final popularBooks = ref.watch(popularBooksProvider);
     return ListView(
       children: [
         Text(
@@ -188,7 +172,11 @@ class _DiscoveryView extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         popularQueries.when(
           loading: () => const AppSkeletonBox(height: 28, borderRadius: AppSpacing.sm),
-          error: (error, stackTrace) => Text(l10n.loadRecentSearchesError),
+          error: (error, stackTrace) => AsyncErrorView(
+                error: error,
+                compact: true,
+                onRetry: () => ref.invalidate(popularSearchProvider),
+              ),
           data: (queries) {
             if (queries.isEmpty) {
               return Text(l10n.noRecentSearchesYet);
@@ -220,7 +208,11 @@ class _DiscoveryView extends StatelessWidget {
             height: AppSpacing.xl * 10,
             child: AppSkeletonBox(),
           ),
-          error: (error, stackTrace) => Text(l10n.loadRecentSearchedBooksError),
+          error: (error, stackTrace) => AsyncErrorView(
+                error: error,
+                compact: true,
+                onRetry: () => ref.invalidate(popularBooksProvider),
+              ),
           data: (books) {
             if (books.isEmpty) {
               return Text(l10n.noRecentSearchedBooksYet);

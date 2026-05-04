@@ -34,6 +34,7 @@ class BookCoverLeading extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: Image.network(
         url,
+        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
         width: size,
         height: size * 1.4,
         fit: BoxFit.cover,

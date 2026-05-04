@@ -78,6 +78,8 @@ class ListCard extends StatelessWidget {
                                           )
                                         : Image.network(
                                             imageUrl,
+                                            webHtmlElementStrategy:
+                                                WebHtmlElementStrategy.prefer,
                                             fit: BoxFit.cover,
                                             errorBuilder: (_, _, _) => Container(
                                               color: Theme.of(context).colorScheme.surfaceContainerHighest,

@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
@@ -69,12 +71,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } catch (e) {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.couldNotSave(e.toString()))),
-        );
-      }
+      if (mounted) AppFeedback.showErrorSnackBar(context, e);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -170,9 +167,9 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                       expandedInsets: EdgeInsets.zero,
                       label: Text(l10n.book),
                       dropdownMenuEntries: [
-                        const DropdownMenuEntry<String?>(
+                        DropdownMenuEntry<String?>(
                           value: null,
-                          label: 'None',
+                          label: l10n.none,
                         ),
                         ...choices.map(
                           (c) => DropdownMenuEntry<String?>(
@@ -187,7 +184,11 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                 );
               },
               loading: () => const LinearProgressIndicator(minHeight: 2),
-              error: (e, _) => Text(l10n.booksError(e.toString())),
+              error: (e, _) => AsyncErrorView(
+                    error: e,
+                    compact: true,
+                    onRetry: () => ref.invalidate(habitBookChoicesProvider),
+                  ),
             ),
             const SizedBox(height: 24),
             FilledButton(

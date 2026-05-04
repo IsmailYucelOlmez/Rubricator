@@ -1,4 +1,5 @@
 import '../../domain/entities/home_book_entity.dart';
+import '../../domain/entities/home_genre_section.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_cache_datasource.dart';
 import '../datasources/home_remote_datasource.dart';
@@ -60,15 +61,25 @@ class HomeRepositoryImpl implements HomeRepository {
     return chosen.map((s) => s.model).toList();
   }
 
-  Future<List<HomeBookModel>> _getOrRefreshGenreBooks(String genreKey) async {
+  /// Loads raw models and classifies outcome for home-row UX (books vs soft empty vs error).
+  Future<({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState})>
+  _loadGenreModels(String genreKey) async {
     final cachedRow = await _cacheDataSource.getGenreCache(genreKey);
     final cachedBooks = _prioritizeModels(
       _cacheDataSource.parseCachedBooks(cachedRow),
     );
-    if (cachedBooks.isNotEmpty) return cachedBooks;
+    if (cachedBooks.isNotEmpty) {
+      return (
+        models: cachedBooks,
+        sectionState: HomeGenreSectionLoadState.ready,
+      );
+    }
 
     if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
-      return cachedBooks;
+      return (
+        models: const <HomeBookModel>[],
+        sectionState: HomeGenreSectionLoadState.emptyUnavailable,
+      );
     }
 
     Object? lastError;
@@ -86,7 +97,10 @@ class HomeRepositoryImpl implements HomeRepository {
           genreKey: genreKey,
           books: prioritized,
         );
-        return prioritized;
+        return (
+          models: prioritized,
+          sectionState: HomeGenreSectionLoadState.ready,
+        );
       } catch (error) {
         lastError = error;
       }
@@ -98,7 +112,10 @@ class HomeRepositoryImpl implements HomeRepository {
         error: lastError,
       );
     }
-    return cachedBooks;
+    return (
+      models: const <HomeBookModel>[],
+      sectionState: HomeGenreSectionLoadState.error,
+    );
   }
 
   Future<List<HomeBookModel>> _getOrRefreshPopularBooks() async {
@@ -156,8 +173,8 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<HomeBookEntity>> getBooksByGenre(String genre) async {
     try {
-      final models = await _getOrRefreshGenreBooks(genre);
-      final prioritized = _prioritizeModels(models);
+      final loaded = await _loadGenreModels(genre);
+      final prioritized = _prioritizeModels(loaded.models);
       return prioritized.map((item) => item.toEntity()).toList();
     } catch (_) {
       // Keep genre page usable even when a request fails intermittently.
@@ -166,33 +183,51 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Map<String, List<HomeBookEntity>>> getHomeGenreSectionBooks(
+  Future<Map<String, HomeGenreSection>> getHomeGenreSectionBooks(
     List<String> genreKeys,
   ) async {
-    if (genreKeys.isEmpty) return <String, List<HomeBookEntity>>{};
+    if (genreKeys.isEmpty) return <String, HomeGenreSection>{};
 
     // One `subject:` query per row — Google often omits `volumeInfo.categories`,
     // so splitting a single combined result by category leaves rows empty.
     final entries = await Future.wait(
       genreKeys.map((g) async {
         try {
-          final models = await _getOrRefreshGenreBooks(g);
-          final prioritized = _prioritizeModels(models);
+          final loaded = await _loadGenreModels(g);
+          final prioritized = _prioritizeModels(loaded.models);
+          final books = prioritized
+              .take(_maxBooksPerHomeSection)
+              .map((m) => m.toEntity())
+              .toList();
+          if (books.isNotEmpty) {
+            return MapEntry(
+              g,
+              HomeGenreSection(
+                books: books,
+                loadState: HomeGenreSectionLoadState.ready,
+              ),
+            );
+          }
           return MapEntry(
             g,
-            prioritized
-                .take(_maxBooksPerHomeSection)
-                .map((m) => m.toEntity())
-                .toList(),
+            HomeGenreSection(
+              books: const <HomeBookEntity>[],
+              loadState: loaded.sectionState,
+            ),
           );
         } catch (_) {
-          // Isolate partial API failures so one genre does not break all rows.
-          return MapEntry(g, const <HomeBookEntity>[]);
+          return MapEntry(
+            g,
+            const HomeGenreSection(
+              books: <HomeBookEntity>[],
+              loadState: HomeGenreSectionLoadState.error,
+            ),
+          );
         }
       }),
     );
 
-    return Map<String, List<HomeBookEntity>>.fromEntries(entries);
+    return Map<String, HomeGenreSection>.fromEntries(entries);
   }
 
   @override

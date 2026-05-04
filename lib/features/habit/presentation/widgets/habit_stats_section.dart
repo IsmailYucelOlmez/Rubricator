@@ -4,6 +4,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 
 import '../providers/habit_providers.dart';
 
@@ -53,7 +54,11 @@ class HabitStatsSection extends ConsumerWidget {
               child: AppLoadingIndicator(centered: false),
             ),
           ),
-      error: (e, _) => Text(AppLocalizations.of(context)!.statsError(e.toString())),
+      error: (e, _) => AsyncErrorView(
+            error: e,
+            compact: true,
+            onRetry: () => ref.invalidate(readingStatsProvider),
+          ),
     );
   }
 }

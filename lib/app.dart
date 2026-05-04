@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/i18n/locale_provider.dart';
 import 'core/i18n/l10n/app_localizations.dart';
+import 'core/network/connectivity_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_provider.dart';
+import 'core/theme/app_spacing.dart';
 import 'features/lists/presentation/pages/lists_feed_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/search/presentation/pages/search_page.dart';
@@ -50,7 +52,43 @@ class _BookAppState extends ConsumerState<BookApp> {
         builder: (context) {
           final l10n = AppLocalizations.of(context)!;
           return Scaffold(
-            body: _pages[_currentIndex],
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Consumer(
+                  builder: (context, ref, _) {
+                    final offline = ref.watch(isOfflineProvider);
+                    if (!offline) return const SizedBox.shrink();
+                    final scheme = Theme.of(context).colorScheme;
+                    return Material(
+                      color: scheme.errorContainer,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        child: SafeArea(
+                          bottom: false,
+                          child: Row(
+                            children: [
+                              Icon(Icons.wifi_off, size: 18, color: scheme.onErrorContainer),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: Text(
+                                  l10n.uxOfflineBanner,
+                                  style: TextStyle(color: scheme.onErrorContainer),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Expanded(child: _pages[_currentIndex]),
+              ],
+            ),
             bottomNavigationBar: NavigationBar(
               selectedIndex: _currentIndex,
               onDestinationSelected: (index) => setState(() => _currentIndex = index),

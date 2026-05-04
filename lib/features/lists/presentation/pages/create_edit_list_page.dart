@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/domain/entities/book.dart';
@@ -45,6 +46,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
   bool _loadingItems = false;
   List<Book> _searchResults = const <Book>[];
   List<_PickedBook> _picked = <_PickedBook>[];
+  String? _titleError;
 
   @override
   void initState() {
@@ -85,7 +87,20 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: ListView(
           children: [
-            TextField(controller: _titleCtrl, decoration: InputDecoration(labelText: l10n.title)),
+            TextField(
+              controller: _titleCtrl,
+              decoration: InputDecoration(labelText: l10n.title, errorText: _titleError),
+              onEditingComplete: () {
+                FocusScope.of(context).nextFocus();
+                final empty = _titleCtrl.text.trim().isEmpty;
+                setState(() {
+                  _titleError = empty ? l10n.uxTitleRequired : null;
+                });
+              },
+              onChanged: (_) {
+                if (_titleError != null) setState(() => _titleError = null);
+              },
+            ),
             const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
             TextField(
               controller: _descCtrl,
@@ -125,14 +140,14 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     subtitle: Text(item.author),
                     leading: const Icon(Icons.drag_handle),
                     trailing: IconButton(
-                      onPressed: () => setState(() => _picked.removeAt(index)),
+                      onPressed: () => _confirmRemoveBook(index, l10n),
                       icon: const Icon(Icons.delete_outline),
                     ),
                   );
                 },
               ),
             const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-            Text('Search books', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.searchBooksTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
@@ -270,9 +285,29 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
   Future<void> _searchBooks() async {
     final query = _searchCtrl.text.trim();
     if (query.length < 2) return;
-    final result = await ref.read(bookRepositoryProvider).searchBooks(query: query, page: 1);
-    if (!mounted) return;
-    setState(() => _searchResults = result.books.take(20).toList());
+    try {
+      final result = await ref.read(bookRepositoryProvider).searchBooks(query: query, page: 1);
+      if (!mounted) return;
+      setState(() => _searchResults = result.books.take(20).toList());
+    } catch (e) {
+      if (mounted) AppFeedback.showErrorSnackBar(context, e);
+    }
+  }
+
+  Future<void> _confirmRemoveBook(int index, AppLocalizations l10n) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.uxRemoveBookFromListTitle),
+        content: Text(l10n.uxRemoveBookFromListMessage),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.uxRemove)),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _picked.removeAt(index));
   }
 
   void _addBook(Book book) {
@@ -297,11 +332,19 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.read(authStateProvider).valueOrNull;
     if (user == null) return;
-    if (_titleCtrl.text.trim().isEmpty) return;
+    final titleTrim = _titleCtrl.text.trim();
+    if (titleTrim.isEmpty) {
+      setState(() => _titleError = l10n.uxTitleRequired);
+      return;
+    }
 
-    setState(() => _saving = true);
+    setState(() {
+      _titleError = null;
+      _saving = true;
+    });
     final repo = ref.read(listsRepositoryProvider);
     try {
       final displayName = userDisplayName(user);
@@ -311,7 +354,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
         final created = await repo.createList(
           userId: user.id,
           userName: displayName,
-          title: _titleCtrl.text.trim(),
+          title: titleTrim,
           description: _descCtrl.text.trim(),
           isPublic: _isPublic,
         );
@@ -320,7 +363,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
         listId = initial.id;
         await repo.updateList(
           listId: listId,
-          title: _titleCtrl.text.trim(),
+          title: titleTrim,
           description: _descCtrl.text.trim(),
           isPublic: _isPublic,
         );
@@ -353,13 +396,14 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
       await repo.reorderListItems(listId: listId, orderedItemIds: orderedIds);
 
       _invalidateAll();
-      if (mounted) Navigator.of(context).pop(true);
+      if (!mounted) return;
+      AppFeedback.showSuccessSnackBar(
+        context,
+        initial == null ? l10n.uxListCreatedSuccess : l10n.uxListUpdatedSuccess,
+      );
+      Navigator.of(context).pop(true);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotSaveList(e.toString()))),
-        );
-      }
+      if (mounted) AppFeedback.showErrorSnackBar(context, e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

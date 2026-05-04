@@ -6,6 +6,7 @@ import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
 import '../../domain/entities/home_book_entity.dart';
+import '../../domain/entities/home_genre_section.dart';
 import '../../domain/repositories/home_repository.dart';
 
 final _homeApiProvider = Provider<ApiService>((ref) => ApiService());
@@ -40,7 +41,7 @@ const kHomePageGenreKeys = <String>[
 ];
 
 final homeGenreSectionsProvider =
-    FutureProvider<Map<String, List<HomeBookEntity>>>((ref) {
+    FutureProvider<Map<String, HomeGenreSection>>((ref) {
       return ref
           .watch(homeRepositoryProvider)
           .getHomeGenreSectionBooks(kHomePageGenreKeys);

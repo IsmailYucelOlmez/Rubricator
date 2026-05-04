@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../providers/profile_stats_providers.dart';
 
 class ReadingIdentitySection extends ConsumerWidget {
@@ -93,8 +94,10 @@ class ReadingIdentitySection extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: AppLoadingIndicator(strokeWidth: 2)),
               ),
-              error: (e, _) => Text(
-                AppLocalizations.of(context)!.couldNotLoadGenres(e.toString()),
+              error: (e, _) => AsyncErrorView(
+                error: e,
+                compact: true,
+                onRetry: () => ref.invalidate(genreStatsProvider),
               ),
             ),
             const SizedBox(height: 20),
@@ -131,8 +134,10 @@ class ReadingIdentitySection extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: AppLoadingIndicator(strokeWidth: 2)),
               ),
-              error: (e, _) => Text(
-                AppLocalizations.of(context)!.couldNotLoadAuthors(e.toString()),
+              error: (e, _) => AsyncErrorView(
+                error: e,
+                compact: true,
+                onRetry: () => ref.invalidate(authorStatsProvider),
               ),
             ),
           ],

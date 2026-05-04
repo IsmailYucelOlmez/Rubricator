@@ -3,6 +3,18 @@
   "navHome": "Ana Sayfa",
   "navSearch": "Ara",
   "navLists": "Listeler",
+  "listsFeedHeading": "Listbox",
+  "profileZoneTitle": "Zone",
+  "readingStatsListsTitle": "Duruma gore okuma listeleri",
+  "homeShowAll": "Tumunu gor",
+  "editProfile": "Profili duzenle",
+  "pickPhotoFromGallery": "Galeriden foto sec",
+  "pickProfilePhotoFromGallery": "Profil fotografi galeriden sec",
+  "changeProfilePhoto": "Profil fotosunu degistir",
+  "removeProfilePhotoTooltip": "Fotografi kaldir",
+  "privacyPolicyCheckbox": "Gizlilik politikasini okudum ve kabul ediyorum.",
+  "displayNameLabel": "Gorunen ad",
+  "profilePhotoUrlOptional": "Profil foto URL (istege bagli)",
   "profile": "Profil",
   "language": "Dil",
   "themeAppearance": "Gorunum",
@@ -101,6 +113,12 @@
   "genreThriller": "Gerilim",
   "genreHorror": "Korku",
   "loadHomeGenresError": "Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.",
+  "homeGenreEmptySoft": "{genre} icin henuz oneri yok. Yenilemek icin asagi cekin veya sonra deneyin.",
+  "@homeGenreEmptySoft": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
   "toRead": "Okunacak",
   "reading": "Okunuyor",
   "reReading": "Tekrar Okunuyor",
@@ -297,6 +315,29 @@
   ,"myListsTooltip":"Listelerim"
   ,"editListTooltip":"Listeyi duzenle"
   ,"deleteListTooltip":"Listeyi sil"
+  ,"uxErrorNetwork":"Internet baglantinizi kontrol edin."
+  ,"uxErrorTimeout":"Istek zaman asimina ugradi."
+  ,"uxErrorUnknown":"Bir hata olustu, lutfen tekrar deneyin."
+  ,"uxRetry":"Tekrar dene"
+  ,"uxOfflineBanner":"Internet baglantisi yok"
+  ,"uxEmailRequired":"E-posta gerekli"
+  ,"uxEmailInvalid":"Gecerli bir e-posta girin"
+  ,"uxPasswordRequired":"Sifre gerekli"
+  ,"uxUserNameRequired":"Gorunen ad gerekli"
+  ,"uxTitleRequired":"Baslik gerekli"
+  ,"uxAcceptPrivacyRequired":"Devam etmek icin gizlilik politikasini kabul edin"
+  ,"uxListCreatedSuccess":"Liste basariyla olusturuldu"
+  ,"uxListUpdatedSuccess":"Liste guncellendi"
+  ,"uxRemoveBookFromListTitle":"Bu kitap kaldirilsin mi?"
+  ,"uxRemoveBookFromListMessage":"Kitap listeden cikarilacak."
+  ,"uxRemove":"Kaldir"
+  ,"uxDeleteReviewTitle":"Inceleme silinsin mi?"
+  ,"uxDeleteReviewMessage":"Bu islem geri alinamaz."
+  ,"uxGalleryPluginError":"Galeri acilamadi. Uygulamayi tam kapatip yeniden deneyin."
+  ,"uxProfilePhotoStorageNotReady":"Profil fotografi alani hazir degil. Veritabani migrationlarini calistirin."
+  ,"uxProfilePhotoPermissionDenied":"Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin."
+  ,"uxMustSignIn":"Devam etmek icin giris yapin."
+  ,"uxReviewMinLength":"Inceleme en az 10 karakter olmalidir."
   ,"privacyPolicyAppBar":"Gizlilik Politikasi"
   ,"privacyPolicyTitle":"Rubricator Gizlilik Politikasi"
   ,"privacyPolicyLastUpdated":"Son guncelleme: 19.04.2026"

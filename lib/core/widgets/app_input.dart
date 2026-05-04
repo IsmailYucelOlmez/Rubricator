@@ -12,6 +12,8 @@ class AppInput extends StatelessWidget {
     this.minLines,
     this.maxLines = 1,
     this.prefixIcon,
+    this.errorText,
+    this.onEditingComplete,
   });
 
   final TextEditingController controller;
@@ -22,6 +24,8 @@ class AppInput extends StatelessWidget {
   final int? minLines;
   final int? maxLines;
   final Widget? prefixIcon;
+  final String? errorText;
+  final VoidCallback? onEditingComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +35,12 @@ class AppInput extends StatelessWidget {
       keyboardType: keyboardType,
       minLines: minLines,
       maxLines: maxLines,
+      onEditingComplete: onEditingComplete,
       decoration: InputDecoration(
         hintText: hintText,
         labelText: labelText,
         prefixIcon: prefixIcon,
+        errorText: errorText,
       ),
     );
   }

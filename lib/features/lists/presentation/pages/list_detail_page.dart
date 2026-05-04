@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../../domain/entities/list_entities.dart';
@@ -135,7 +137,11 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                 ),
               ),
             ),
-            error: (e, _) => Text(l10n.couldNotLoadListItems(e.toString())),
+            error: (e, _) => AsyncErrorView(
+                  error: e,
+                  compact: true,
+                  onRetry: () => ref.invalidate(listItemsProvider(list.id)),
+                ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(l10n.comments, style: Theme.of(context).textTheme.titleMedium),
@@ -152,7 +158,11 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
               ],
             ),
             loading: () => const SizedBox.shrink(),
-            error: (e, _) => Text(l10n.couldNotLoadComments(e.toString())),
+            error: (e, _) => AsyncErrorView(
+                  error: e,
+                  compact: true,
+                  onRetry: () => ref.invalidate(commentsProvider(list.id)),
+                ),
           ),
           const SizedBox(height: AppSpacing.sm),
           if (user != null)
@@ -211,6 +221,8 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       _commentCtrl.clear();
       ref.invalidate(commentsProvider(listId));
       _invalidateAll();
+    } catch (e) {
+      if (mounted) AppFeedback.showErrorSnackBar(context, e);
     } finally {
       if (mounted) setState(() => _commenting = false);
     }
@@ -230,10 +242,15 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       ),
     );
     if (confirm != true) return;
-    await ref.read(listsRepositoryProvider).deleteList(listId);
-    if (!context.mounted) return;
-    _invalidateAll();
-    Navigator.of(context).pop(true);
+    try {
+      await ref.read(listsRepositoryProvider).deleteList(listId);
+      if (!context.mounted) return;
+      _invalidateAll();
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!context.mounted) return;
+      AppFeedback.showErrorSnackBar(context, e);
+    }
   }
 
   void _invalidateAll() {
@@ -261,6 +278,7 @@ class _Cover extends StatelessWidget {
             ? Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)
             : Image.network(
                 imageUrl,
+                webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => Container(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,

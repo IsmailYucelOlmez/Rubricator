@@ -7,7 +7,9 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
@@ -49,6 +51,21 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  void _feedbackError(Object e) {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final s = e.toString().toLowerCase();
+    if (s.contains('sign in required')) {
+      _showMessage(l10n.uxMustSignIn);
+      return;
+    }
+    if (s.contains('10 characters')) {
+      _showMessage(l10n.uxReviewMinLength);
+      return;
+    }
+    AppFeedback.showErrorSnackBar(context, e);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -84,7 +101,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 );
               } catch (e) {
                 if (!mounted) return;
-                _showMessage(e.toString());
+                _feedbackError(e);
               }
             },
             icon: const Icon(Icons.menu_book_outlined),
@@ -97,7 +114,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     .toggleFavorite();
               } catch (e) {
                 if (!mounted) return;
-                _showMessage(e.toString());
+                _feedbackError(e);
               }
             },
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
@@ -136,6 +153,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   child: Image.network(
                     coverUrl,
+                    webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
                     height: 320,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -195,7 +213,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     );
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString());
+                    _feedbackError(e);
                   }
                 },
                 onProgressChanged: (value) async {
@@ -210,7 +228,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         );
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString());
+                    _feedbackError(e);
                   }
                 },
               ),
@@ -218,6 +236,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               _RatingSection(
                 state: rating,
                 selectedRating: selectedRatingForUi,
+                onRetry: () => ref.invalidate(ratingProvider(detailedBook.id)),
                 onChanged: (value) => setState(() => _selectedRating = value),
                 onSubmit: () async {
                   try {
@@ -233,7 +252,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     }
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 canEdit: !hasUserRated || _isEditingRating,
@@ -267,6 +286,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 reviews: reviews,
                 externalReviews: externalReviews,
                 currentUserId: ref.watch(currentUserIdProvider),
+                onRetryReviews: () => ref.invalidate(reviewListProvider(detailedBook.id)),
+                onRetryExternalReviews: () =>
+                    ref.invalidate(externalReviewProvider(detailedBook.id)),
                 onAddReview: () async {
                   try {
                     await ref
@@ -276,7 +298,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.reviewAdded);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 onEditReview: (review) async {
@@ -294,10 +316,28 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.reviewUpdated);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 onDeleteReview: (review) async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text(l10n.uxDeleteReviewTitle),
+                      content: Text(l10n.uxDeleteReviewMessage),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text(l10n.cancel),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(l10n.delete),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm != true || !mounted) return;
                   try {
                     await ref
                         .read(reviewListProvider(detailedBook.id).notifier)
@@ -305,7 +345,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.reviewDeleted);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 onAddExternalReview: () async {
@@ -321,7 +361,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.externalReviewAdded);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 onOpenExternalReview: (url) async {
@@ -343,6 +383,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               _QuoteSection(
                 controller: _quoteController,
                 quotes: quotes,
+                onRetryQuotes: () => ref.invalidate(quoteProvider(detailedBook.id)),
                 onAddQuote: () async {
                   try {
                     await ref
@@ -352,7 +393,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.quoteAdded);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
                 onLikeQuote: (quoteId) async {
@@ -362,7 +403,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                         .like(quoteId);
                   } catch (e) {
                     if (!mounted) return;
-                    _showMessage(e.toString().replaceFirst('Exception: ', ''));
+                    _feedbackError(e);
                   }
                 },
               ),
@@ -416,6 +457,8 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                       child: u != null
                                           ? Image.network(
                                               u,
+                                              webHtmlElementStrategy:
+                                                  WebHtmlElementStrategy.prefer,
                                               width: 110,
                                               fit: BoxFit.cover,
                                               errorBuilder:
@@ -465,23 +508,25 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   );
                 },
                 loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
-                error: (error, stackTrace) =>
-                    Text(l10n.couldNotLoadRelatedBooks),
+                error: (error, stackTrace) => AsyncErrorView(
+                      error: error,
+                      compact: true,
+                      onRetry: () => ref.invalidate(
+                        relatedBooksProvider((
+                          workId: detailedBook.id,
+                          subjects: detailedBook.subjectKeys,
+                          author: detailedBook.author,
+                        )),
+                      ),
+                    ),
               ),
             ],
           );
         },
         loading: () => const AppLoadingIndicator(),
-        error: (error, stackTrace) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Text(
-              l10n.couldNotLoadThisBook(
-                error.toString().replaceFirst('Exception: ', ''),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        error: (error, stackTrace) => AsyncErrorView(
+          error: error,
+          onRetry: () => ref.invalidate(bookDetailProvider(widget.book.id)),
         ),
       ),
     );
@@ -622,6 +667,7 @@ class _RatingSection extends StatelessWidget {
   const _RatingSection({
     required this.state,
     required this.selectedRating,
+    required this.onRetry,
     required this.onChanged,
     required this.onSubmit,
     required this.canEdit,
@@ -633,6 +679,7 @@ class _RatingSection extends StatelessWidget {
 
   final AsyncValue<RatingState> state;
   final int selectedRating;
+  final VoidCallback onRetry;
   final ValueChanged<int> onChanged;
   final VoidCallback onSubmit;
   final bool canEdit;
@@ -661,8 +708,11 @@ class _RatingSection extends StatelessWidget {
                     : '${data.average.toStringAsFixed(1)} / 10',
               ),
               loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
-              error: (error, stackTrace) =>
-                  Text(AppLocalizations.of(context)!.couldNotLoadRating),
+              error: (error, stackTrace) => AsyncErrorView(
+                    error: error,
+                    compact: true,
+                    onRetry: onRetry,
+                  ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -746,6 +796,8 @@ class _ReviewTabsSection extends StatelessWidget {
     required this.reviews,
     required this.externalReviews,
     required this.currentUserId,
+    required this.onRetryReviews,
+    required this.onRetryExternalReviews,
     required this.onAddReview,
     required this.onEditReview,
     required this.onDeleteReview,
@@ -759,6 +811,8 @@ class _ReviewTabsSection extends StatelessWidget {
   final AsyncValue<List<ReviewEntity>> reviews;
   final AsyncValue<List<ExternalReviewEntity>> externalReviews;
   final String? currentUserId;
+  final VoidCallback onRetryReviews;
+  final VoidCallback onRetryExternalReviews;
   final VoidCallback onAddReview;
   final Future<void> Function(ReviewEntity review) onEditReview;
   final Future<void> Function(ReviewEntity review) onDeleteReview;
@@ -850,11 +904,11 @@ class _ReviewTabsSection extends StatelessWidget {
                                 },
                               ),
                         loading: () => const AppLoadingIndicator(),
-                        error: (error, stackTrace) => Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.couldNotLoadReviews,
-                          ),
-                        ),
+                        error: (error, stackTrace) => AsyncErrorView(
+                              error: error,
+                              compact: true,
+                              onRetry: onRetryReviews,
+                            ),
                       ),
                     ),
                   ],
@@ -910,13 +964,11 @@ class _ReviewTabsSection extends StatelessWidget {
                                 },
                               ),
                         loading: () => const AppLoadingIndicator(),
-                        error: (error, stackTrace) => Center(
-                          child: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!.couldNotLoadExternalReviews,
-                          ),
-                        ),
+                        error: (error, stackTrace) => AsyncErrorView(
+                              error: error,
+                              compact: true,
+                              onRetry: onRetryExternalReviews,
+                            ),
                       ),
                     ),
                   ],
@@ -934,12 +986,14 @@ class _QuoteSection extends StatelessWidget {
   const _QuoteSection({
     required this.controller,
     required this.quotes,
+    required this.onRetryQuotes,
     required this.onAddQuote,
     required this.onLikeQuote,
   });
 
   final TextEditingController controller;
   final AsyncValue<List<QuoteEntity>> quotes;
+  final VoidCallback onRetryQuotes;
   final VoidCallback onAddQuote;
   final Future<void> Function(String quoteId) onLikeQuote;
 
@@ -990,9 +1044,11 @@ class _QuoteSection extends StatelessWidget {
                     },
                   ),
             loading: () => const AppLoadingIndicator(),
-            error: (error, stackTrace) => Center(
-              child: Text(AppLocalizations.of(context)!.couldNotLoadQuotes),
-            ),
+            error: (error, stackTrace) => AsyncErrorView(
+                  error: error,
+                  compact: true,
+                  onRetry: onRetryQuotes,
+                ),
           ),
         ),
       ],

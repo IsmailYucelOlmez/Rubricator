@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../pages/habit_page.dart';
 import '../providers/habit_providers.dart';
@@ -50,7 +51,11 @@ class HabitProfileSummary extends ConsumerWidget {
                   child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
                 ),
               ),
-              error: (e, _) => Text(l10n.todayStatusError(e.toString())),
+              error: (e, _) => AsyncErrorView(
+                    error: e,
+                    compact: true,
+                    onRetry: () => ref.invalidate(todayReadingProvider),
+                  ),
             ),
             const SizedBox(height: AppSpacing.md),
             Row(

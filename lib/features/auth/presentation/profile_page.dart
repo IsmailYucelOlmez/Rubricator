@@ -5,10 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/ux/l10n_app_error.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_provider.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
+import '../../../core/widgets/async_error_view.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
@@ -35,7 +37,7 @@ class ProfilePage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
               Text(
-                user == null ? l10n.profile : 'Zone',
+                user == null ? l10n.profile : l10n.profileZoneTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontFamily: 'EFCOBrookshire',
                 ),
@@ -90,7 +92,7 @@ class ProfilePage extends ConsumerWidget {
                 FilledButton.tonalIcon(
                   onPressed: () => _showEditProfileDialog(context, user),
                   icon: const Icon(Icons.edit_outlined),
-                  label: const Text('Profili duzenle'),
+                  label: Text(l10n.editProfile),
                 ),
                 const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
@@ -107,8 +109,10 @@ class ProfilePage extends ConsumerWidget {
             ),
           ),
           loading: () => const AppLoadingIndicator(),
-          error: (error, stackTrace) => Center(
-            child: Text(l10n.loadSessionError(error.toString())),
+          error: (error, stackTrace) => AsyncErrorView(
+            error: error,
+            compact: true,
+            onRetry: () => ref.invalidate(authStateProvider),
           ),
         ),
       ),
@@ -145,12 +149,12 @@ class ProfilePage extends ConsumerWidget {
       return l10n.accountAlreadyExists;
     }
     if (s.contains('Bucket not found') || s.contains('profile-photos')) {
-      return 'Profil fotografi alani hazir degil. Veritabani migrationlarini calistir.';
+      return l10n.uxProfilePhotoStorageNotReady;
     }
     if (s.contains('row-level security') || s.contains('new row violates row-level security policy')) {
-      return 'Profil fotografi icin Storage izinleri eksik. Supabase policy migrationini uygula.';
+      return l10n.uxProfilePhotoPermissionDenied;
     }
-    return s;
+    return l10n.userFacingMessage(e);
   }
 }
 
@@ -167,7 +171,7 @@ class _ProfileReadingListsSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Reading Stats Lists', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.readingStatsListsTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
             Wrap(
               spacing: AppSpacing.sm,
@@ -351,13 +355,13 @@ class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           AppInput(
             controller: _userName,
-            labelText: 'Kullanici adi',
+            labelText: l10n.displayNameLabel,
           ),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           AppInput(
             controller: _avatarUrl,
             keyboardType: TextInputType.url,
-            labelText: 'Profil foto URL (opsiyonel)',
+            labelText: l10n.profilePhotoUrlOptional,
           ),
         ],
       ),
@@ -421,7 +425,12 @@ class _ProfileHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 24,
-          backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+          backgroundImage: avatarUrl != null
+              ? NetworkImage(
+                  avatarUrl,
+                  webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+                )
+              : null,
           child: avatarUrl == null ? const Icon(Icons.person_outline) : null,
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -481,8 +490,9 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
   Widget build(BuildContext context) {
     final selectedAvatarBytes = _selectedAvatarBytes;
     final avatarInput = _avatarUrl.text.trim();
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Profili duzenle'),
+      title: Text(l10n.editProfile),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -490,7 +500,12 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
             radius: 34,
             backgroundImage: selectedAvatarBytes != null
                 ? MemoryImage(selectedAvatarBytes)
-                : (avatarInput.isNotEmpty ? NetworkImage(avatarInput) : null),
+                : (avatarInput.isNotEmpty
+                    ? NetworkImage(
+                        avatarInput,
+                        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+                      )
+                    : null),
             child: selectedAvatarBytes == null && avatarInput.isEmpty
                 ? const Icon(Icons.person_outline)
                 : null,
@@ -499,25 +514,25 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
           OutlinedButton.icon(
             onPressed: _saving ? null : _pickAvatarFromGallery,
             icon: const Icon(Icons.photo_library_outlined),
-            label: const Text('Galeriden foto sec'),
+            label: Text(l10n.pickPhotoFromGallery),
           ),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           AppInput(
             controller: _userName,
-            labelText: 'Kullanici adi',
+            labelText: l10n.displayNameLabel,
           ),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           AppInput(
             controller: _avatarUrl,
             keyboardType: TextInputType.url,
-            labelText: 'Profil foto URL (opsiyonel)',
+            labelText: l10n.profilePhotoUrlOptional,
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context),
-          child: Text(AppLocalizations.of(context)!.cancel),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _saving
@@ -528,7 +543,7 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                   if (name.isEmpty) return;
                   final navigator = Navigator.of(context);
                   final messenger = ScaffoldMessenger.of(context);
-                  final l10n = AppLocalizations.of(context)!;
+                  final loc = AppLocalizations.of(context)!;
                   setState(() => _saving = true);
                   try {
                     final container = ProviderScope.containerOf(context);
@@ -558,7 +573,7 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                   } catch (e) {
                     if (!mounted) return;
                     messenger.showSnackBar(
-                      SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
+                      SnackBar(content: Text(ProfilePage.authMessage(e, loc))),
                     );
                   } finally {
                     if (mounted) setState(() => _saving = false);
@@ -570,7 +585,7 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                   strokeWidth: 2,
                   centered: false,
                 )
-              : const Text('Kaydet'),
+              : Text(l10n.save),
         ),
       ],
     );
@@ -595,11 +610,7 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
     } on MissingPluginException {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Galeri eklentisi yuklenemedi. Uygulamayi tam kapatip yeniden ac.',
-          ),
-        ),
+        SnackBar(content: Text(l10n.uxGalleryPluginError)),
       );
     } catch (e) {
       if (!mounted) return;

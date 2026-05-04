@@ -5,6 +5,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../domain/entities/book.dart';
 import '../providers/books_providers.dart';
 import 'book_detail_page.dart';
@@ -48,34 +49,28 @@ class AuthorDetailPage extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-              _AuthorBooksSection(booksState: asyncAuthorBooks),
+              _AuthorBooksSection(authorId: authorId, booksState: asyncAuthorBooks),
             ],
           );
         },
         loading: () => const _AuthorDetailSkeleton(),
-        error: (e, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              l10n.couldNotLoadAuthor(
-                e.toString().replaceFirst('Exception: ', ''),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        error: (e, _) => AsyncErrorView(
+          error: e,
+          onRetry: () => ref.invalidate(authorDetailProvider(authorId)),
         ),
       ),
     );
   }
 }
 
-class _AuthorBooksSection extends StatelessWidget {
-  const _AuthorBooksSection({required this.booksState});
+class _AuthorBooksSection extends ConsumerWidget {
+  const _AuthorBooksSection({required this.authorId, required this.booksState});
 
+  final String authorId;
   final AsyncValue<List<Book>> booksState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return booksState.when(
       loading: () => ListView.separated(
@@ -85,9 +80,10 @@ class _AuthorBooksSection extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
         itemBuilder: (_, _) => const AppListTileSkeleton(),
       ),
-      error: (error, stackTrace) => Text(
-        l10n.couldNotLoadRelatedBooks,
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      error: (error, stackTrace) => AsyncErrorView(
+        error: error,
+        compact: true,
+        onRetry: () => ref.invalidate(authorBooksProvider(authorId)),
       ),
       data: (books) {
         if (books.isEmpty) {

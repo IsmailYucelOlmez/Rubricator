@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_loading.dart';
+import '../../../core/widgets/async_error_view.dart';
 
 import '../../auth/presentation/auth_provider.dart';
 import '../../books/domain/entities/book.dart';
@@ -78,6 +79,7 @@ class _ListTabBody extends ConsumerWidget {
     return _EntriesList(
       entriesAsync: entriesAsync,
       emptyText: l10n.noBooksInStatus(_statusLabel(status, l10n)),
+      onRetry: () => ref.invalidate(listEntriesByStatusProvider(status)),
     );
   }
 }
@@ -92,22 +94,28 @@ class _FavoritesTabBody extends ConsumerWidget {
     return _EntriesList(
       entriesAsync: entriesAsync,
       emptyText: l10n.noFavoritesYet,
+      onRetry: () => ref.invalidate(favoriteEntriesProvider),
     );
   }
 }
 
 class _EntriesList extends StatelessWidget {
-  const _EntriesList({required this.entriesAsync, required this.emptyText});
+  const _EntriesList({
+    required this.entriesAsync,
+    required this.emptyText,
+    required this.onRetry,
+  });
 
   final AsyncValue<List<({Book book, UserBookEntity userBook})>> entriesAsync;
   final String emptyText;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return entriesAsync.when(
       data: (entries) {
         if (entries.isEmpty) return Center(child: Text(emptyText));
+        final l10n = AppLocalizations.of(context)!;
         return ListView.separated(
           itemCount: entries.length,
           separatorBuilder: (context, index) => const Divider(height: 1),
@@ -146,8 +154,10 @@ class _EntriesList extends StatelessWidget {
           ),
         ),
       ),
-      error: (error, stackTrace) => Center(
-        child: Text(l10n.couldNotLoadList(error.toString())),
+      error: (error, stackTrace) => AsyncErrorView(
+        error: error,
+        compact: true,
+        onRetry: onRetry,
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../pages/profile_stats_page.dart';
 import '../providers/profile_stats_providers.dart';
 
@@ -101,7 +102,11 @@ class StatsPreviewCard extends ConsumerWidget {
             ),
             error: (e, _) => Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-              child: Text(l10n.loadStatsError(e.toString())),
+              child: AsyncErrorView(
+                error: e,
+                compact: true,
+                onRetry: () => ref.invalidate(profileStatsSummaryProvider),
+              ),
             ),
           ),
         ),

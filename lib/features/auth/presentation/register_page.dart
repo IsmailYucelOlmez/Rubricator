@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/validation/form_validators.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import 'auth_provider.dart';
@@ -29,6 +30,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Uint8List? _selectedAvatarBytes;
   bool _acceptedPrivacy = false;
   bool _submitting = false;
+  String? _emailError;
+  String? _passwordError;
+  String? _userNameError;
+  final _scrollCtrl = ScrollController();
 
   @override
   void initState() {
@@ -43,6 +48,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     _email.dispose();
     _password.dispose();
     _userName.dispose();
+    _scrollCtrl.dispose();
     super.dispose();
   }
 
@@ -52,7 +58,33 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final password = _password.text;
     final userName = _userName.text.trim();
 
-    if (email.isEmpty || password.length < 6 || userName.isEmpty || !_acceptedPrivacy) {
+    setState(() {
+      _emailError = email.isEmpty
+          ? l10n.uxEmailRequired
+          : (!FormValidators.isValidEmail(email) ? l10n.uxEmailInvalid : null);
+      _passwordError = password.isEmpty
+          ? l10n.uxPasswordRequired
+          : (password.length < 6 ? l10n.passwordMin6 : null);
+      _userNameError = userName.isEmpty ? l10n.uxUserNameRequired : null;
+    });
+
+    final hasErrors = _emailError != null || _passwordError != null || _userNameError != null;
+    if (!_acceptedPrivacy) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.uxAcceptPrivacyRequired)),
+      );
+      return;
+    }
+    if (hasErrors) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollCtrl.hasClients) {
+          _scrollCtrl.animateTo(
+            0,
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOut,
+          );
+        }
+      });
       return;
     }
 
@@ -122,11 +154,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     } on MissingPluginException {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Galeri eklentisi yuklenemedi. Uygulamayi tam kapatip yeniden ac.',
-          ),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.uxGalleryPluginError)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -150,6 +178,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       appBar: AppBar(title: Text(l10n.createAccount)),
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: _scrollCtrl,
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,17 +187,40 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
                 labelText: l10n.email,
+                errorText: _emailError,
+                onEditingComplete: () => setState(() {
+                  final v = _email.text.trim();
+                  _emailError = v.isEmpty
+                      ? l10n.uxEmailRequired
+                      : (!FormValidators.isValidEmail(v) ? l10n.uxEmailInvalid : null);
+                }),
               ),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               AppInput(
                 controller: _password,
                 obscureText: true,
                 labelText: l10n.passwordMin6,
+                errorText: _passwordError,
+                onEditingComplete: () => setState(() {
+                  final v = _password.text;
+                  if (v.isEmpty) {
+                    _passwordError = l10n.uxPasswordRequired;
+                  } else if (v.length < 6) {
+                    _passwordError = l10n.passwordMin6;
+                  } else {
+                    _passwordError = null;
+                  }
+                }),
               ),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               AppInput(
                 controller: _userName,
-                labelText: 'Kullanici adi',
+                labelText: l10n.displayNameLabel,
+                errorText: _userNameError,
+                onEditingComplete: () => setState(() {
+                  _userNameError =
+                      _userName.text.trim().isEmpty ? l10n.uxUserNameRequired : null;
+                }),
               ),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
               Row(
@@ -185,14 +237,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     icon: const Icon(Icons.photo_library_outlined),
                     label: Text(
                       _selectedAvatar == null
-                          ? 'Profil foto galeriden sec'
-                          : 'Profil fotosunu degistir',
+                          ? l10n.pickProfilePhotoFromGallery
+                          : l10n.changeProfilePhoto,
                     ),
                   ),
                   if (_selectedAvatar != null)
                     IconButton(
                       onPressed: _submitting ? null : _clearSelectedAvatar,
-                      tooltip: 'Fotografi kaldir',
+                      tooltip: l10n.removeProfilePhotoTooltip,
                       icon: const Icon(Icons.close),
                     ),
                 ],
@@ -209,7 +261,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 controlAffinity: ListTileControlAffinity.leading,
                 title: InkWell(
                   onTap: _openPrivacyPolicy,
-                  child: const Text('Gizlilik politikasini okudum ve kabul ediyorum.'),
+                  child: Text(l10n.privacyPolicyCheckbox),
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),

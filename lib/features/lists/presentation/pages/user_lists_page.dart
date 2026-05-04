@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 import '../widgets/list_card.dart';
@@ -26,7 +28,7 @@ class UserListsPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm + AppSpacing.xs),
             child: Text(
-              'Listbox',
+              l10n.listsFeedHeading,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontFamily: 'EFCOBrookshire',
                 fontSize: (Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24) * 1.1,
@@ -43,8 +45,14 @@ class UserListsPage extends ConsumerWidget {
           Expanded(
             child: TabBarView(
               children: [
-                _ListsTab(async: ref.watch(userListsProvider)),
-                _ListsTab(async: ref.watch(savedListsProvider)),
+                _ListsTab(
+                  async: ref.watch(userListsProvider),
+                  onRetry: () => ref.invalidate(userListsProvider),
+                ),
+                _ListsTab(
+                  async: ref.watch(savedListsProvider),
+                  onRetry: () => ref.invalidate(savedListsProvider),
+                ),
               ],
             ),
           ),
@@ -55,15 +63,18 @@ class UserListsPage extends ConsumerWidget {
 }
 
 class _ListsTab extends StatelessWidget {
-  const _ListsTab({required this.async});
+  const _ListsTab({required this.async, required this.onRetry});
   final AsyncValue<List<ListEntity>> async;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return async.when(
       data: (lists) {
-        if (lists.isEmpty) return Center(child: Text(l10n.noListsYet));
+        if (lists.isEmpty) {
+          return AppEmptyState(icon: Icons.collections_bookmark_outlined, title: l10n.noListsYet);
+        }
         return ListView.builder(
           padding: const EdgeInsets.all(AppSpacing.md),
           itemCount: lists.length,
@@ -86,7 +97,7 @@ class _ListsTab extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
         itemBuilder: (_, _) => const AppSkeletonBox(height: 92),
       ),
-      error: (e, _) => Center(child: Text(l10n.couldNotLoadLists(e.toString()))),
+      error: (e, _) => AsyncErrorView(error: e, onRetry: onRetry),
     );
   }
 }

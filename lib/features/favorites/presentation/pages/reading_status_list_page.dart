@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../favorites_provider.dart';
@@ -40,7 +42,10 @@ class ReadingStatusListPage extends ConsumerWidget {
               final emptyText = showFavoritesOnly
                   ? l10n.noFavoritesYet
                   : l10n.noBooksInStatus(_statusLabel(status!, l10n));
-              return Center(child: Text(emptyText, textAlign: TextAlign.center));
+              return AppEmptyState(
+                icon: showFavoritesOnly ? Icons.favorite_border : Icons.menu_book_outlined,
+                title: emptyText,
+              );
             }
             return ListView.separated(
               itemCount: entries.length,
@@ -80,8 +85,15 @@ class ReadingStatusListPage extends ConsumerWidget {
               ),
             ),
           ),
-          error: (error, stackTrace) => Center(
-            child: Text(l10n.couldNotLoadList(error.toString())),
+          error: (error, stackTrace) => AsyncErrorView(
+            error: error,
+            onRetry: () {
+              if (showFavoritesOnly) {
+                ref.invalidate(favoriteEntriesProvider);
+              } else {
+                ref.invalidate(listEntriesByStatusProvider(status!));
+              }
+            },
           ),
         ),
       ),

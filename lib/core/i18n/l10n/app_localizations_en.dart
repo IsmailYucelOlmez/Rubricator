@@ -21,6 +21,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navLists => 'Lists';
 
   @override
+  String get listsFeedHeading => 'Listbox';
+
+  @override
+  String get profileZoneTitle => 'Zone';
+
+  @override
+  String get readingStatsListsTitle => 'Your reading lists by status';
+
+  @override
+  String get homeShowAll => 'Show all';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get pickPhotoFromGallery => 'Choose photo from gallery';
+
+  @override
+  String get pickProfilePhotoFromGallery => 'Choose profile photo from gallery';
+
+  @override
+  String get changeProfilePhoto => 'Change profile photo';
+
+  @override
+  String get removeProfilePhotoTooltip => 'Remove photo';
+
+  @override
+  String get privacyPolicyCheckbox =>
+      'I have read and accept the privacy policy.';
+
+  @override
+  String get displayNameLabel => 'Display name';
+
+  @override
+  String get profilePhotoUrlOptional => 'Profile photo URL (optional)';
+
+  @override
   String get profile => 'Profile';
 
   @override
@@ -215,6 +252,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loadHomeGenresError =>
       'Could not load genre sections. Please try again.';
+
+  @override
+  String homeGenreEmptySoft(Object genre) {
+    return 'No picks for $genre yet. Pull to refresh or try later.';
+  }
 
   @override
   String get toRead => 'To Read';
@@ -717,6 +759,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteListTooltip => 'Delete list';
+
+  @override
+  String get uxErrorNetwork => 'Check your internet connection.';
+
+  @override
+  String get uxErrorTimeout => 'The request timed out.';
+
+  @override
+  String get uxErrorUnknown => 'Something went wrong. Please try again.';
+
+  @override
+  String get uxRetry => 'Try again';
+
+  @override
+  String get uxOfflineBanner => 'No internet connection';
+
+  @override
+  String get uxEmailRequired => 'Email is required';
+
+  @override
+  String get uxEmailInvalid => 'Enter a valid email address';
+
+  @override
+  String get uxPasswordRequired => 'Password is required';
+
+  @override
+  String get uxUserNameRequired => 'Display name is required';
+
+  @override
+  String get uxTitleRequired => 'Title is required';
+
+  @override
+  String get uxAcceptPrivacyRequired =>
+      'Please accept the privacy policy to continue';
+
+  @override
+  String get uxListCreatedSuccess => 'List created successfully';
+
+  @override
+  String get uxListUpdatedSuccess => 'List updated successfully';
+
+  @override
+  String get uxRemoveBookFromListTitle => 'Remove this book?';
+
+  @override
+  String get uxRemoveBookFromListMessage =>
+      'It will be removed from this list.';
+
+  @override
+  String get uxRemove => 'Remove';
+
+  @override
+  String get uxDeleteReviewTitle => 'Delete review?';
+
+  @override
+  String get uxDeleteReviewMessage => 'This cannot be undone.';
+
+  @override
+  String get uxGalleryPluginError =>
+      'Gallery could not be opened. Close the app completely and try again.';
+
+  @override
+  String get uxProfilePhotoStorageNotReady =>
+      'Profile photo storage is not ready yet. Ask the admin to run database migrations.';
+
+  @override
+  String get uxProfilePhotoPermissionDenied =>
+      'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.';
+
+  @override
+  String get uxMustSignIn => 'Please sign in to continue.';
+
+  @override
+  String get uxReviewMinLength => 'Reviews must be at least 10 characters.';
 
   @override
   String get privacyPolicyAppBar => 'Privacy Policy';

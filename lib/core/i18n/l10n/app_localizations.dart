@@ -122,6 +122,78 @@ abstract class AppLocalizations {
   /// **'Lists'**
   String get navLists;
 
+  /// No description provided for @listsFeedHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Listbox'**
+  String get listsFeedHeading;
+
+  /// No description provided for @profileZoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone'**
+  String get profileZoneTitle;
+
+  /// No description provided for @readingStatsListsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reading lists by status'**
+  String get readingStatsListsTitle;
+
+  /// No description provided for @homeShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get homeShowAll;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfile;
+
+  /// No description provided for @pickPhotoFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo from gallery'**
+  String get pickPhotoFromGallery;
+
+  /// No description provided for @pickProfilePhotoFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose profile photo from gallery'**
+  String get pickProfilePhotoFromGallery;
+
+  /// No description provided for @changeProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change profile photo'**
+  String get changeProfilePhoto;
+
+  /// No description provided for @removeProfilePhotoTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removeProfilePhotoTooltip;
+
+  /// No description provided for @privacyPolicyCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'I have read and accept the privacy policy.'**
+  String get privacyPolicyCheckbox;
+
+  /// No description provided for @displayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get displayNameLabel;
+
+  /// No description provided for @profilePhotoUrlOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo URL (optional)'**
+  String get profilePhotoUrlOptional;
+
   /// No description provided for @profile.
   ///
   /// In en, this message translates to:
@@ -469,6 +541,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load genre sections. Please try again.'**
   String get loadHomeGenresError;
+
+  /// No description provided for @homeGenreEmptySoft.
+  ///
+  /// In en, this message translates to:
+  /// **'No picks for {genre} yet. Pull to refresh or try later.'**
+  String homeGenreEmptySoft(Object genre);
 
   /// No description provided for @toRead.
   ///
@@ -1333,6 +1411,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete list'**
   String get deleteListTooltip;
+
+  /// No description provided for @uxErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection.'**
+  String get uxErrorNetwork;
+
+  /// No description provided for @uxErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'The request timed out.'**
+  String get uxErrorTimeout;
+
+  /// No description provided for @uxErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get uxErrorUnknown;
+
+  /// No description provided for @uxRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get uxRetry;
+
+  /// No description provided for @uxOfflineBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get uxOfflineBanner;
+
+  /// No description provided for @uxEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get uxEmailRequired;
+
+  /// No description provided for @uxEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get uxEmailInvalid;
+
+  /// No description provided for @uxPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get uxPasswordRequired;
+
+  /// No description provided for @uxUserNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name is required'**
+  String get uxUserNameRequired;
+
+  /// No description provided for @uxTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get uxTitleRequired;
+
+  /// No description provided for @uxAcceptPrivacyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the privacy policy to continue'**
+  String get uxAcceptPrivacyRequired;
+
+  /// No description provided for @uxListCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'List created successfully'**
+  String get uxListCreatedSuccess;
+
+  /// No description provided for @uxListUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'List updated successfully'**
+  String get uxListUpdatedSuccess;
+
+  /// No description provided for @uxRemoveBookFromListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this book?'**
+  String get uxRemoveBookFromListTitle;
+
+  /// No description provided for @uxRemoveBookFromListMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'It will be removed from this list.'**
+  String get uxRemoveBookFromListMessage;
+
+  /// No description provided for @uxRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get uxRemove;
+
+  /// No description provided for @uxDeleteReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete review?'**
+  String get uxDeleteReviewTitle;
+
+  /// No description provided for @uxDeleteReviewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get uxDeleteReviewMessage;
+
+  /// No description provided for @uxGalleryPluginError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery could not be opened. Close the app completely and try again.'**
+  String get uxGalleryPluginError;
+
+  /// No description provided for @uxProfilePhotoStorageNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo storage is not ready yet. Ask the admin to run database migrations.'**
+  String get uxProfilePhotoStorageNotReady;
+
+  /// No description provided for @uxProfilePhotoPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.'**
+  String get uxProfilePhotoPermissionDenied;
+
+  /// No description provided for @uxMustSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to continue.'**
+  String get uxMustSignIn;
+
+  /// No description provided for @uxReviewMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews must be at least 10 characters.'**
+  String get uxReviewMinLength;
 
   /// No description provided for @privacyPolicyAppBar.
   ///

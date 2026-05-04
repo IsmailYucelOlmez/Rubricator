@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/services/reading_streak_calculator.dart';
@@ -88,7 +89,11 @@ class HabitLogsList extends ConsumerWidget {
         );
       },
       loading: () => const AppLoadingIndicator(),
-      error: (e, _) => Text(AppLocalizations.of(context)!.logsError(e.toString())),
+      error: (e, _) => AsyncErrorView(
+            error: e,
+            compact: true,
+            onRetry: () => ref.invalidate(readingLogsProvider),
+          ),
     );
   }
 

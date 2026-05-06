@@ -180,7 +180,7 @@ abstract final class AppTheme {
       brightness: Brightness.light,
     ).copyWith(
       primary: AppColors.primary,
-      onPrimary: Colors.white,
+      onPrimary: AppColors.textPrimary,
       secondary: AppColors.gold,
       onSecondary: AppColors.lightOnSurface,
       surface: AppColors.lightSurface,
@@ -267,7 +267,7 @@ abstract final class AppTheme {
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textPrimary,
         extendedTextStyle: textTheme.labelLarge,
       ),
       snackBarTheme: SnackBarThemeData(
@@ -304,7 +304,7 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
           textStyle: textTheme.labelLarge,
@@ -313,7 +313,7 @@ abstract final class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textPrimary,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),

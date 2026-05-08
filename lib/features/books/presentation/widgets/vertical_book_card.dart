@@ -45,7 +45,7 @@ class VerticalBookCard extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
               style: titleStyle?.copyWith(
                 fontSize: titleFontSize,
-                fontFamily: 'Yellowtail',
+                fontFamily: 'LTSoul',
               ),
             ),
             const SizedBox(height: 2),

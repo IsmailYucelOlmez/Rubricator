@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// Display (largest headings): EFCO Brookshire.
-/// Headlines & titles: Have Heart One.
-/// Body / labels: Handelson Three.
-/// Donau Uppercase: only for all-caps UI (e.g. bottom nav — use [bottomNavLabel]).
+/// Display (largest headings): Nouveau.
+/// Headlines & titles: Sansita Swashed.
+/// Body / labels: Cesare.
+/// Sinistre: bottom nav labels (use [bottomNavLabel]).
 abstract final class AppTypography {
-  static const String _handelson = 'HandelsonThree';
-  static const String _brookshire = 'EFCOBrookshire';
-  static const String _haveHeartOne = 'HaveHeartOne';
-  static const String _donauUpper = 'DonauNeueUppercase';
+  static const String _cesare = 'Cesare';
+  static const String _nouveau = 'Nouveau';
+  static const String _sansitaSwashed = 'SansitaSwashed';
+  static const String _sinistre = 'Sinistre';
 
-  /// Material [NavigationBar] labels; pair with `label: l10n.foo.toUpperCase()`.
+  /// Material [NavigationBar] labels in title case (no transform applied).
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(
-      fontFamily: _donauUpper,
+      fontFamily: _sinistre,
       fontSize: 11,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.4,
@@ -29,14 +29,14 @@ abstract final class AppTypography {
     final onSurfaceVariant =
         brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightOnSurfaceVariant;
 
-    TextStyle brookshire({
+    TextStyle nouveau({
       double fontSize = 24,
       FontWeight fontWeight = FontWeight.w700,
       Color? color,
       double? height,
     }) {
       return TextStyle(
-        fontFamily: _brookshire,
+        fontFamily: _nouveau,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -44,14 +44,14 @@ abstract final class AppTypography {
       );
     }
 
-    TextStyle handelson({
+    TextStyle cesare({
       double fontSize = 14,
       FontWeight fontWeight = FontWeight.w400,
       Color? color,
       double? height,
     }) {
       return TextStyle(
-        fontFamily: _handelson,
+        fontFamily: _cesare,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -59,14 +59,14 @@ abstract final class AppTypography {
       );
     }
 
-    TextStyle haveHeartOne({
+    TextStyle sansitaSwashed({
       double fontSize = 24,
       FontWeight fontWeight = FontWeight.w700,
       Color? color,
       double? height,
     }) {
       return TextStyle(
-        fontFamily: _haveHeartOne,
+        fontFamily: _sansitaSwashed,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -75,21 +75,21 @@ abstract final class AppTypography {
     }
 
     return base.copyWith(
-      displayLarge: brookshire(fontSize: 36, fontWeight: FontWeight.w700),
-      displayMedium: brookshire(fontSize: 32),
-      displaySmall: brookshire(fontSize: 28),
-      headlineLarge: haveHeartOne(fontSize: 28),
-      headlineMedium: haveHeartOne(fontSize: 24),
-      headlineSmall: haveHeartOne(fontSize: 22, fontWeight: FontWeight.w600),
-      titleLarge: haveHeartOne(fontSize: 22, fontWeight: FontWeight.w600),
-      titleMedium: haveHeartOne(fontSize: 18, fontWeight: FontWeight.w600),
-      titleSmall: haveHeartOne(fontSize: 16, fontWeight: FontWeight.w600),
-      bodyLarge: handelson(fontSize: 16),
-      bodyMedium: handelson(fontSize: 14),
-      bodySmall: handelson(fontSize: 12, color: onSurfaceVariant),
-      labelLarge: handelson(fontSize: 14, fontWeight: FontWeight.w600),
-      labelMedium: handelson(fontSize: 12, fontWeight: FontWeight.w500),
-      labelSmall: handelson(
+      displayLarge: nouveau(fontSize: 36, fontWeight: FontWeight.w700),
+      displayMedium: nouveau(fontSize: 32),
+      displaySmall: nouveau(fontSize: 28),
+      headlineLarge: sansitaSwashed(fontSize: 28),
+      headlineMedium: sansitaSwashed(fontSize: 24),
+      headlineSmall: sansitaSwashed(fontSize: 22, fontWeight: FontWeight.w600),
+      titleLarge: sansitaSwashed(fontSize: 22, fontWeight: FontWeight.w600),
+      titleMedium: sansitaSwashed(fontSize: 18, fontWeight: FontWeight.w600),
+      titleSmall: sansitaSwashed(fontSize: 16, fontWeight: FontWeight.w600),
+      bodyLarge: cesare(fontSize: 16),
+      bodyMedium: cesare(fontSize: 14),
+      bodySmall: cesare(fontSize: 12, color: onSurfaceVariant),
+      labelLarge: cesare(fontSize: 14, fontWeight: FontWeight.w600),
+      labelMedium: cesare(fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: cesare(
         fontSize: 11,
         fontWeight: FontWeight.w300,
         color: onSurfaceVariant,

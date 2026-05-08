@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -54,11 +53,17 @@ class _HomePageState extends ConsumerState<HomePage> {
             0,
             _appBarPad,
           ),
-          child: SvgPicture.asset(
-            'assets/RubricatorLogov2.svg',
-            height: _logoHeight,
-            fit: BoxFit.contain,
+          child: Align(
             alignment: Alignment.centerLeft,
+            child: Text(
+              'Rubricator',
+              style: TextStyle(
+                fontFamily: 'Nouveau',
+                fontSize: _logoHeight * 0.7,
+                height: 1.0,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
           ),
         ),
         actions: [
@@ -216,7 +221,7 @@ class _GenreSection extends ConsumerWidget {
         child: Text(
           l10n.homeShowAll,
           style: TextStyle(
-            fontFamily: 'Yellowtail',
+            fontFamily: 'LTMuseum',
             fontSize: 10,
           ),
         ),
@@ -345,7 +350,7 @@ class _BookCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: titleStyle?.copyWith(
                 fontSize: titleFontSize,
-                fontFamily: 'Yellowtail',
+                fontFamily: 'LTSoul',
               ),
             ),
             const SizedBox(height: 2),

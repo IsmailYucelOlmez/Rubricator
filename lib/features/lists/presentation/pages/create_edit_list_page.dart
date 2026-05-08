@@ -134,7 +134,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     title: Text(
                       item.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontFamily: 'Yellowtail',
+                        fontFamily: 'LTSoul',
                       ),
                     ),
                     subtitle: Text(item.author),
@@ -187,7 +187,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     final alreadyAdded = _picked.any((b) => b.bookId == book.id);
                     final imageWidth = MediaQuery.of(context).size.width * 0.20;
                     final resultTitleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontFamily: 'Yellowtail',
+                      fontFamily: 'LTSoul',
                       fontSize: ((Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8) *
                           1.1,
                     );

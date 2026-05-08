@@ -96,22 +96,22 @@ class _BookAppState extends ConsumerState<BookApp> {
                 NavigationDestination(
                   icon: const Icon(Icons.home_outlined),
                   selectedIcon: const Icon(Icons.home),
-                  label: l10n.navHome.toUpperCase(),
+                  label: l10n.navHome,
                 ),
                 NavigationDestination(
                   icon: const Icon(Icons.search, fill: 0),
                   selectedIcon: const Icon(Icons.search, fill: 1),
-                  label: l10n.navSearch.toUpperCase(),
+                  label: l10n.navSearch,
                 ),
                 NavigationDestination(
                   icon: const Icon(Icons.menu_book_outlined),
                   selectedIcon: const Icon(Icons.menu_book),
-                  label: l10n.navLists.toUpperCase(),
+                  label: l10n.navLists,
                 ),
                 NavigationDestination(
                   icon: const Icon(Icons.person_outline),
                   selectedIcon: const Icon(Icons.person),
-                  label: l10n.profile.toUpperCase(),
+                  label: l10n.profile,
                 ),
               ],
             ),

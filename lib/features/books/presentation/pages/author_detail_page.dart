@@ -129,7 +129,7 @@ class _AuthorBookTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontFamily: 'Yellowtail',
+          fontFamily: 'LTSoul',
           fontSize: 18 * 0.8,
         );
     return InkWell(

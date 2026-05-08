@@ -72,7 +72,6 @@ flutter:
   assets:
     - assets/.env
     - assets/RubricatorLogov1pngv2.png
-    - assets/RubricatorLogov2.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -106,21 +105,51 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   fonts:
-    - family: HandelsonThree
+    - family: Cesare
       fonts:
-        - asset: assets/zhandelson-three.otf
-    - family: Yellowtail
+        - asset: assets/XCicero_Cesare/Cesare-Regular.otf
+    - family: LTSoul
       fonts:
-        - asset: assets/Yellowtail-Regular.otf
-    - family: EFCOBrookshire
+        - asset: assets/LTSoul-V2/LTSoul-Regular.otf
+        - asset: assets/LTSoul-V2/LTSoul-Medium.otf
+          weight: 500
+        - asset: assets/LTSoul-V2/LTSoul-SemiBold.otf
+          weight: 600
+        - asset: assets/LTSoul-V2/LTSoul-Bold.otf
+          weight: 700
+    - family: LTMuseum
       fonts:
-        - asset: assets/EFCO-Brookshire-Regular.ttf
-    - family: HaveHeartOne
+        - asset: assets/LTMuseum-1011/LTMuseum-Light.ttf
+          weight: 300
+        - asset: assets/LTMuseum-1011/LTMuseum-Medium.ttf
+          weight: 500
+        - asset: assets/LTMuseum-1011/LTMuseum-Bold.ttf
+          weight: 700
+        - asset: assets/LTMuseum-1011/LTMuseum-Black.ttf
+          weight: 900
+    - family: Nouveau
       fonts:
-        - asset: assets/have-heart-one.otf
-    - family: DonauNeueUppercase
+        - asset: assets/DT_nouveau/DT Nouveau/DTNouveau-Regular.otf
+    - family: SansitaSwashed
       fonts:
-        - asset: assets/Donau Neue_Uppercase.otf
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-Light.ttf
+          weight: 300
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-Regular.ttf
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-Medium.ttf
+          weight: 500
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-SemiBold.ttf
+          weight: 600
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-Bold.ttf
+          weight: 700
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-ExtraBold.ttf
+          weight: 800
+        - asset: assets/Sansita_Swashed/static/SansitaSwashed-Black.ttf
+          weight: 900
+    - family: Sinistre
+      fonts:
+        - asset: assets/sinistre-main/fonts/Sinistre-Regular.otf
+        - asset: assets/sinistre-main/fonts/Sinistre-Bold.otf
+          weight: 700
 
 flutter_launcher_icons:
   android: true

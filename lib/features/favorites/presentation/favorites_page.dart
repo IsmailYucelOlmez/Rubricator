@@ -127,7 +127,7 @@ class _EntriesList extends StatelessWidget {
               title: Text(
                 book.title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontFamily: 'Yellowtail',
+                  fontFamily: 'LTSoul',
                 ),
               ),
               subtitle: Text(

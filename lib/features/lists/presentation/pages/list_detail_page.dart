@@ -110,7 +110,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                               Text(
                                 item.bookTitle,
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontFamily: 'Yellowtail',
+                                  fontFamily: 'LTSoul',
                                 ),
                               ),
                               Text(

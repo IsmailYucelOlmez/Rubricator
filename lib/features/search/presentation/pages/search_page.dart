@@ -251,7 +251,7 @@ class _DiscoveryView extends ConsumerWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(
-                                      fontFamily: 'Yellowtail',
+                                      fontFamily: 'LTSoul',
                                       fontSize: 18 * 0.8,
                                     ),
                               ),
@@ -294,7 +294,7 @@ class _BookList extends StatelessWidget {
         final titleStyle = Theme.of(
           context,
         ).textTheme.titleMedium?.copyWith(
-          fontFamily: 'Yellowtail',
+          fontFamily: 'LTSoul',
           fontSize: 18 * 0.8,
         );
         final authorBaseStyle = Theme.of(context).textTheme.bodyMedium;

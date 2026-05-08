@@ -39,7 +39,7 @@ class ProfilePage extends ConsumerWidget {
               Text(
                 user == null ? l10n.profile : l10n.profileZoneTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontFamily: 'EFCOBrookshire',
+                  fontFamily: 'Nouveau',
                 ),
               ),
               const SizedBox(height: AppSpacing.md),

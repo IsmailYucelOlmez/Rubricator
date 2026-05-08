@@ -30,7 +30,7 @@ class UserListsPage extends ConsumerWidget {
             child: Text(
               l10n.listsFeedHeading,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontFamily: 'EFCOBrookshire',
+                fontFamily: 'Nouveau',
                 fontSize: (Theme.of(context).textTheme.headlineSmall?.fontSize ?? 24) * 1.1,
               ),
             ),

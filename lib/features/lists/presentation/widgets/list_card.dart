@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/list_entities.dart';
@@ -21,7 +20,6 @@ class ListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final previewCount = list.previewCoverImageUrls.isEmpty ? 4 : list.previewCoverImageUrls.length.clamp(1, 5);
     final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
       fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8,
@@ -29,10 +27,6 @@ class ListCard extends StatelessWidget {
     final descriptionStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
       fontSize: (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14) * 0.8,
     );
-    final userNameStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-      fontSize: (Theme.of(context).textTheme.bodySmall?.fontSize ?? 12) * 0.8,
-    );
-    final metaStyle = Theme.of(context).textTheme.bodySmall;
     final statsStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
       fontSize: (Theme.of(context).textTheme.bodySmall?.fontSize ?? 12) * 0.9,
     );
@@ -48,7 +42,7 @@ class ListCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  flex: 6,
+                  flex: 1,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     child: Container(
@@ -97,7 +91,7 @@ class ListCard extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                  flex: 4,
+                  flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -108,56 +102,70 @@ class ListCard extends StatelessWidget {
                         style: titleStyle,
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        '@${list.userName}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: userNameStyle,
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
                       Expanded(
-                        child: Text(
-                          list.description.trim().isEmpty ? list.title : list.description,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: descriptionStyle,
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            list.description.trim().isEmpty
+                                ? list.title
+                                : list.description,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            style: descriptionStyle,
+                          ),
                         ),
                       ),
                       Row(
                         children: [
-                          IconButton(
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: onLikeTap,
-                            icon: Icon(
-                              list.isLikedByMe ? Icons.favorite : Icons.favorite_border,
-                              size: 16,
+                          Expanded(
+                            child: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: onLikeTap,
+                                    icon: Icon(
+                                      list.isLikedByMe
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  Text('${list.likeCount}', style: statsStyle),
+                                ],
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 0),
-                          Text('${list.likeCount}', style: statsStyle),
-                          const SizedBox(width: AppSpacing.sm),
-                          IconButton(
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: onSaveTap,
-                            icon: Icon(
-                              list.isSavedByMe ? Icons.bookmark : Icons.bookmark_outline,
-                              size: 16,
+                          Expanded(
+                            child: Center(
+                              child: IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: onSaveTap,
+                                icon: Icon(
+                                  list.isSavedByMe
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_outline,
+                                  size: 16,
+                                ),
+                              ),
                             ),
                           ),
-                          const Spacer(),
-                          const Icon(Icons.mode_comment_outlined, size: 16),
-                          const SizedBox(width: AppSpacing.xs),
-                          Flexible(
-                            child: Text(
-                              '${list.commentCount}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: statsStyle,
-                              textAlign: TextAlign.end,
+                          Expanded(
+                            child: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.mode_comment_outlined, size: 16),
+                                  const SizedBox(width: AppSpacing.xs),
+                                  Text('${list.commentCount}', style: statsStyle),
+                                ],
+                              ),
                             ),
                           ),
                         ],

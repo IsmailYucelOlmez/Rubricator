@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -77,183 +79,275 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
         title: Text(
           isEdit ? l10n.editList : l10n.createList,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontSize: (Theme.of(context).textTheme.titleLarge?.fontSize ?? 22) * 1.1,
+            fontSize:
+                (Theme.of(context).textTheme.titleLarge?.fontSize ?? 22) * 1.1,
           ),
         ),
       ),
-      body: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.1)),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: ListView(
-          children: [
-            TextField(
-              controller: _titleCtrl,
-              decoration: InputDecoration(labelText: l10n.title, errorText: _titleError),
-              onEditingComplete: () {
-                FocusScope.of(context).nextFocus();
-                final empty = _titleCtrl.text.trim().isEmpty;
-                setState(() {
-                  _titleError = empty ? l10n.uxTitleRequired : null;
-                });
-              },
-              onChanged: (_) {
-                if (_titleError != null) setState(() => _titleError = null);
-              },
-            ),
-            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-            TextField(
-              controller: _descCtrl,
-              decoration: InputDecoration(labelText: l10n.description),
-              minLines: 3,
-              maxLines: 5,
-            ),
-            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-            SwitchListTile(
-              value: _isPublic,
-              onChanged: (value) => setState(() => _isPublic = value),
-              title: Text(l10n.public),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(l10n.selectedBooks, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.sm),
-            if (_loadingItems)
-              const AppLoadingIndicator()
-            else if (_picked.isEmpty)
-              Text(l10n.noBooksSelectedYet)
-            else
-              ReorderableListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _picked.length,
-                onReorder: _reorder,
-                itemBuilder: (context, index) {
-                  final item = _picked[index];
-                  return ListTile(
-                    key: ValueKey(item.bookId),
-                    title: Text(
-                      item.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontFamily: 'LTSoul',
+      body: ResponsiveScaffoldBody(
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(1.1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.md,
+                        AppSpacing.md,
+                        AppSpacing.md,
+                        AppSpacing.sm,
                       ),
-                    ),
-                    subtitle: Text(item.author),
-                    leading: const Icon(Icons.drag_handle),
-                    trailing: IconButton(
-                      onPressed: () => _confirmRemoveBook(index, l10n),
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                  );
-                },
-              ),
-            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-            Text(l10n.searchBooksTitle, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchCtrl,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * 1.1,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: l10n.searchViaGoogleBooks,
-                      hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * 1.1,
-                      ),
-                    ),
-                    onSubmitted: (_) => _searchBooks(),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(
-                  onPressed: _searchBooks,
-                  child: MediaQuery(
-                    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-                    child: Text(l10n.search),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            if (_searchResults.isNotEmpty)
-              SizedBox(
-                height: 220,
-                child: ListView.builder(
-                  itemCount: _searchResults.length,
-                  itemBuilder: (context, index) {
-                    final book = _searchResults[index];
-                    final alreadyAdded = _picked.any((b) => b.bookId == book.id);
-                    final imageWidth = MediaQuery.of(context).size.width * 0.20;
-                    final resultTitleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontFamily: 'LTSoul',
-                      fontSize: ((Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8) *
-                          1.1,
-                    );
-                    final resultAuthorStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: ((Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14) * 0.9) *
-                          1.1,
-                    );
-                    return InkWell(
-                      onTap: alreadyAdded ? null : () => _addBook(book),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: imageWidth,
-                              height: imageWidth * 1.4,
-                              child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextField(
+                            controller: _titleCtrl,
+                            decoration: InputDecoration(
+                              labelText: l10n.title,
+                              errorText: _titleError,
                             ),
-                            const SizedBox(width: AppSpacing.sm),
+                            onEditingComplete: () {
+                              FocusScope.of(context).nextFocus();
+                              final empty = _titleCtrl.text.trim().isEmpty;
+                              setState(() {
+                                _titleError = empty
+                                    ? l10n.uxTitleRequired
+                                    : null;
+                              });
+                            },
+                            onChanged: (_) {
+                              if (_titleError != null) {
+                                setState(() => _titleError = null);
+                              }
+                            },
+                          ),
+                          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+                          TextField(
+                            controller: _descCtrl,
+                            decoration: InputDecoration(
+                              labelText: l10n.description,
+                            ),
+                            minLines: 3,
+                            maxLines: 5,
+                          ),
+                          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+                          SwitchListTile(
+                            value: _isPublic,
+                            onChanged: (value) =>
+                                setState(() => _isPublic = value),
+                            title: Text(l10n.public),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            l10n.selectedBooks,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          if (_loadingItems)
+                            const AppLoadingIndicator()
+                          else if (_picked.isEmpty)
+                            Text(l10n.noBooksSelectedYet)
+                          else
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    book.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: resultTitleStyle,
-                                  ),
-                                  const SizedBox(height: AppSpacing.xs),
-                                  Text(
-                                    book.author,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: resultAuthorStyle,
-                                  ),
-                                ],
+                              child: ReorderableListView.builder(
+                                buildDefaultDragHandles: false,
+                                itemCount: _picked.length,
+                                onReorder: _reorder,
+                                itemBuilder: (context, index) {
+                                  final item = _picked[index];
+                                  return ListTile(
+                                    key: ValueKey(item.bookId),
+                                    leading: ReorderableDragStartListener(
+                                      index: index,
+                                      child: Icon(
+                                        Icons.drag_handle,
+                                        color: IconTheme.of(context).color,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      item.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(fontFamily: 'LTSoul'),
+                                    ),
+                                    subtitle: Text(item.author),
+                                    trailing: IconButton(
+                                      onPressed: () =>
+                                          _confirmRemoveBook(index, l10n),
+                                      icon: const Icon(Icons.delete_outline),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(alreadyAdded ? Icons.check : Icons.add),
-                              onPressed: alreadyAdded ? null : () => _addBook(book),
-                            ),
-                          ],
-                        ),
+                          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+                          Text(
+                            l10n.searchBooksTitle,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchCtrl,
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        fontSize:
+                                            (Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge
+                                                    ?.fontSize ??
+                                                16) *
+                                            1.1,
+                                      ),
+                                  decoration: InputDecoration(
+                                    hintText: l10n.searchViaGoogleBooks,
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          fontSize:
+                                              (Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge
+                                                      ?.fontSize ??
+                                                  16) *
+                                              1.1,
+                                        ),
+                                  ),
+                                  onSubmitted: (_) => _searchBooks(),
+                                ),
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              FilledButton(
+                                onPressed: _searchBooks,
+                                child: MediaQuery(
+                                  data: MediaQuery.of(
+                                    context,
+                                  ).copyWith(textScaler: TextScaler.noScaling),
+                                  child: Text(l10n.search),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                        ],
                       ),
-                    );
-                  },
-                ),
-              ),
-            const SizedBox(height: AppSpacing.md),
-            FilledButton(
-              onPressed: _saving ? null : _save,
-              child: _saving
-                  ? const AppLoadingIndicator(
-                      size: 18,
-                      strokeWidth: 2,
-                      centered: false,
-                    )
-                  : MediaQuery(
-                      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-                      child: Text(l10n.save),
                     ),
+                  ),
+                  if (_searchResults.isNotEmpty)
+                    Expanded(
+                      flex: 2,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.md,
+                          0,
+                          AppSpacing.md,
+                          AppSpacing.sm,
+                        ),
+                        itemCount: _searchResults.length,
+                        itemBuilder: (context, index) =>
+                            _buildSearchResultItem(context, index),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            SafeArea(
+              top: false,
+              minimum: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
+              child: FilledButton(
+                onPressed: _saving ? null : _save,
+                child: _saving
+                    ? const AppLoadingIndicator(
+                        size: 18,
+                        strokeWidth: 2,
+                        centered: false,
+                      )
+                    : MediaQuery(
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(textScaler: TextScaler.noScaling),
+                        child: Text(l10n.save),
+                      ),
+              ),
             ),
           ],
         ),
+      ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResultItem(BuildContext context, int index) {
+    final book = _searchResults[index];
+    final alreadyAdded = _picked.any((b) => b.bookId == book.id);
+    final layoutW = MediaQuery.sizeOf(context).width;
+    final basis = context.isTabletLayout ? AppBreakpoints.contentMaxWidth : layoutW;
+    final imageWidth = (basis * 0.20).clamp(72.0, 120.0);
+    final resultTitleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontFamily: 'LTSoul',
+      fontSize:
+          ((Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8) *
+          1.1,
+    );
+    final resultAuthorStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      fontSize:
+          ((Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14) * 0.9) *
+          1.1,
+    );
+    return InkWell(
+      onTap: alreadyAdded ? null : () => _addBook(book),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          children: [
+            SizedBox(
+              width: imageWidth,
+              height: imageWidth * 1.4,
+              child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: resultTitleStyle,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: resultAuthorStyle,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: Icon(alreadyAdded ? Icons.check : Icons.add),
+              onPressed: alreadyAdded ? null : () => _addBook(book),
+            ),
+          ],
         ),
       ),
     );
@@ -262,7 +356,9 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
   Future<void> _loadInitialItems(String listId) async {
     setState(() => _loadingItems = true);
     try {
-      final items = await ref.read(listsRepositoryProvider).getListItems(listId);
+      final items = await ref
+          .read(listsRepositoryProvider)
+          .getListItems(listId);
       if (!mounted) return;
       setState(() {
         _picked = items
@@ -286,7 +382,9 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     final query = _searchCtrl.text.trim();
     if (query.length < 2) return;
     try {
-      final result = await ref.read(bookRepositoryProvider).searchBooks(query: query, page: 1);
+      final result = await ref
+          .read(bookRepositoryProvider)
+          .searchBooks(query: query, page: 1);
       if (!mounted) return;
       setState(() => _searchResults = result.books.take(20).toList());
     } catch (e) {
@@ -301,8 +399,14 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
         title: Text(l10n.uxRemoveBookFromListTitle),
         content: Text(l10n.uxRemoveBookFromListMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.uxRemove)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.uxRemove),
+          ),
         ],
       ),
     );
@@ -392,7 +496,10 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
 
       final finalItems = await repo.getListItems(listId);
       final finalByBookId = {for (final i in finalItems) i.bookId: i.id};
-      final orderedIds = _picked.map((p) => finalByBookId[p.bookId]).whereType<String>().toList();
+      final orderedIds = _picked
+          .map((p) => finalByBookId[p.bookId])
+          .whereType<String>()
+          .toList();
       await repo.reorderListItems(listId: listId, orderedItemIds: orderedIds);
 
       _invalidateAll();
@@ -413,7 +520,6 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     ref.invalidate(listsFeedProvider);
     ref.invalidate(popularListsProvider);
     ref.invalidate(topListsProvider);
-    ref.invalidate(followingListsProvider);
     ref.invalidate(userListsProvider);
     ref.invalidate(savedListsProvider);
   }

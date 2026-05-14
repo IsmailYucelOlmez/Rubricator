@@ -294,7 +294,7 @@
   ,"noListsYet":"No lists yet."
   ,"couldNotLoadLists":"Could not load lists: {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
-  ,"byUser":"by @{userName}"
+  ,"byUser":"by {userName}"
   ,"@byUser":{"placeholders":{"userName":{}}}
   ,"books":"Books"
   ,"comments":"Comments"

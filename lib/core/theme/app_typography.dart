@@ -16,14 +16,17 @@ abstract final class AppTypography {
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(
       fontFamily: _sinistre,
-      fontSize: 11,
+      fontSize: 11 * 1.20,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.4,
       color: color,
     );
   }
 
-  static TextTheme textTheme({Brightness brightness = Brightness.dark}) {
+  static TextTheme textTheme({
+    Brightness brightness = Brightness.dark,
+    double cesareFontSizeFactor = 1.0,
+  }) {
     final base = ThemeData(brightness: brightness, useMaterial3: true).textTheme;
     final onSurface = brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightOnSurface;
     final onSurfaceVariant =
@@ -52,7 +55,7 @@ abstract final class AppTypography {
     }) {
       return TextStyle(
         fontFamily: _cesare,
-        fontSize: fontSize,
+        fontSize: fontSize * cesareFontSizeFactor,
         fontWeight: fontWeight,
         color: color ?? onSurface,
         height: height,

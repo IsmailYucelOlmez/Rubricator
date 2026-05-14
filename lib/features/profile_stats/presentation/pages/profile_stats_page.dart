@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
@@ -21,11 +22,13 @@ class ProfileStatsPage extends ConsumerWidget {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.readingStats)),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Text(
-              l10n.signInToSeeStats,
-              textAlign: TextAlign.center,
+          child: ResponsiveScaffoldBody(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                l10n.signInToSeeStats,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
@@ -34,23 +37,24 @@ class ProfileStatsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.readingStats)),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.read(profileStatsGenerationProvider.notifier).state++;
-          ref.invalidate(genreStatsProvider);
-          ref.invalidate(authorStatsProvider);
-          ref.invalidate(ratingStatsProvider);
-          ref.invalidate(libraryStatsProvider);
-          ref.invalidate(contentStatsProvider);
-          ref.invalidate(profileStatsSummaryProvider);
-          await Future.wait<void>([
-            ref.read(genreStatsProvider.future),
-            ref.read(authorStatsProvider.future),
-            ref.read(ratingStatsProvider.future),
-            ref.read(libraryStatsProvider.future),
-            ref.read(contentStatsProvider.future),
-          ]);
-        },
+      body: ResponsiveScaffoldBody(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.read(profileStatsGenerationProvider.notifier).state++;
+            ref.invalidate(genreStatsProvider);
+            ref.invalidate(authorStatsProvider);
+            ref.invalidate(ratingStatsProvider);
+            ref.invalidate(libraryStatsProvider);
+            ref.invalidate(contentStatsProvider);
+            ref.invalidate(profileStatsSummaryProvider);
+            await Future.wait<void>([
+              ref.read(genreStatsProvider.future),
+              ref.read(authorStatsProvider.future),
+              ref.read(ratingStatsProvider.future),
+              ref.read(libraryStatsProvider.future),
+              ref.read(contentStatsProvider.future),
+            ]);
+          },
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           physics: const AlwaysScrollableScrollPhysics(),
@@ -64,6 +68,7 @@ class ProfileStatsPage extends ConsumerWidget {
             ContentStatsSection(),
             SizedBox(height: AppSpacing.xl),
           ],
+        ),
         ),
       ),
     );

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -73,13 +75,14 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.wait([
-            ref.refresh(popularBooksProvider.future),
-            ref.refresh(homeGenreSectionsProvider.future),
-          ]);
-        },
+      body: ResponsiveScaffoldBody(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await Future.wait([
+              ref.refresh(popularBooksProvider.future),
+              ref.refresh(homeGenreSectionsProvider.future),
+            ]);
+          },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
@@ -129,6 +132,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
           ],
+        ),
         ),
       ),
     );
@@ -222,7 +226,7 @@ class _GenreSection extends ConsumerWidget {
           l10n.homeShowAll,
           style: TextStyle(
             fontFamily: 'LTMuseum',
-            fontSize: 10,
+            fontSize: 10 * 1.2,
           ),
         ),
       ),
@@ -283,7 +287,7 @@ class _Section extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: titleStyle?.copyWith(fontSize: titleFontSize * 1.50),
+                  style: titleStyle?.copyWith(fontSize: titleFontSize*1.10),
                 ),
               ),
               trailing ?? const SizedBox.shrink(),
@@ -324,9 +328,11 @@ class _BookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleSmall;
-    final titleFontSize = (titleStyle?.fontSize ?? 14) * 0.80;
+    final titleFontSize = (titleStyle?.fontSize ?? 14) * 1.1;
+    final authorStyle = Theme.of(context).textTheme.bodySmall;
+    final authorFontSize = (authorStyle?.fontSize ?? 12) * 1.40;
     return SizedBox(
-      width: 145,
+      width: context.isTabletLayout ? 158 : 145,
       child: InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book.toBook())),
@@ -358,7 +364,7 @@ class _BookCard extends StatelessWidget {
               book.authorNames,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: authorStyle?.copyWith(fontSize: authorFontSize),
             ),
           ],
         ),
@@ -420,7 +426,7 @@ class _HorizontalSkeleton extends StatelessWidget {
         itemCount: 4,
         separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         itemBuilder: (_, index) => Container(
-          width: 145,
+          width: context.isTabletLayout ? 158 : 145,
           decoration: BoxDecoration(
             color: placeholder,
             borderRadius: BorderRadius.circular(AppRadius.md),

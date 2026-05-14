@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -12,6 +14,31 @@ import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../providers/search_notifier.dart';
+
+/// Matches home horizontal [HomePage] `_BookCard` title typography.
+TextStyle? _homeLikeBookTitleStyle(TextTheme theme) {
+  final titleSmall = theme.titleSmall;
+  return titleSmall?.copyWith(
+    fontFamily: 'LTSoul',
+    fontSize: (titleSmall.fontSize ?? 14) * 1.1,
+  );
+}
+
+/// Matches home horizontal [HomePage] `_BookCard` author typography.
+TextStyle? _homeLikeBookAuthorStyle(TextTheme theme) {
+  final bodySmall = theme.bodySmall;
+  return bodySmall?.copyWith(
+    fontSize: (bodySmall.fontSize ?? 12) * 1.40,
+  );
+}
+
+/// Author line on search results list only (`_BookList`).
+TextStyle? _searchResultsAuthorStyle(TextTheme theme) {
+  final bodySmall = theme.bodySmall;
+  return bodySmall?.copyWith(
+    fontSize: (bodySmall.fontSize ?? 12) * 1.60,
+  );
+}
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -51,9 +78,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     final raw = _controller.text.trim();
     final showHint = raw.isEmpty || raw.length < 2;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
+      child: ResponsiveScaffoldBody(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
@@ -104,6 +132,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -226,8 +255,9 @@ class _DiscoveryView extends ConsumerWidget {
                     const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
                 itemBuilder: (context, index) {
                   final book = books[index];
+                  final theme = Theme.of(context);
                   return SizedBox(
-                    width: 160,
+                    width: context.isTabletLayout ? 176 : 160,
                     child: InkWell(
                       onTap: () => onOpenBook(book),
                       child: Card(
@@ -249,17 +279,13 @@ class _DiscoveryView extends ConsumerWidget {
                                 book.title,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontFamily: 'LTSoul',
-                                      fontSize: 18 * 0.8,
-                                    ),
+                                style: _homeLikeBookTitleStyle(theme.textTheme),
                               ),
                               Text(
                                 book.author,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall,
+                                style: _homeLikeBookAuthorStyle(theme.textTheme),
                               ),
                             ],
                           ),
@@ -290,19 +316,19 @@ class _BookList extends StatelessWidget {
       separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final book = books[index];
-        final imageWidth = MediaQuery.of(context).size.width * 0.25;
-        final titleStyle = Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(
-          fontFamily: 'LTSoul',
-          fontSize: 18 * 0.8,
-        );
-        final authorBaseStyle = Theme.of(context).textTheme.bodyMedium;
+        final screenW = MediaQuery.sizeOf(context).width;
+        final imageWidth = context.isTabletLayout
+            ? (screenW * 0.18).clamp(96.0, 132.0)
+            : screenW * 0.25;
+        final textTheme = Theme.of(context).textTheme;
+        final titleStyle = _homeLikeBookTitleStyle(textTheme);
+        final authorStyle = _searchResultsAuthorStyle(textTheme);
         return InkWell(
           onTap: () => onOpenBook(book),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   width: imageWidth,
@@ -317,7 +343,7 @@ class _BookList extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         book.title,
@@ -325,13 +351,11 @@ class _BookList extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         book.author,
                         softWrap: true,
-                        style: authorBaseStyle?.copyWith(
-                          fontSize: (titleStyle?.fontSize ?? 16) * 0.75,
-                        ),
+                        style: authorStyle,
                       ),
                     ],
                   ),

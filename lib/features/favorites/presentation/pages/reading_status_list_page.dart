@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -34,9 +35,10 @@ class ReadingStatusListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: entriesAsync.when(
+      body: ResponsiveScaffoldBody(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: entriesAsync.when(
           data: (entries) {
             if (entries.isEmpty) {
               final emptyText = showFavoritesOnly
@@ -95,6 +97,7 @@ class ReadingStatusListPage extends ConsumerWidget {
               }
             },
           ),
+        ),
         ),
       ),
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -32,31 +34,33 @@ class AuthorDetailPage extends ConsumerWidget {
           ),
         ),
       ),
-      body: asyncAuthor.when(
-        data: (author) {
-          return ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            children: [
-              if (author.birthDate != null || author.deathDate != null) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  [
-                    if (author.birthDate != null) author.birthDate,
-                    if (author.deathDate != null) '– ${author.deathDate}',
-                  ].join(' '),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+      body: ResponsiveScaffoldBody(
+        child: asyncAuthor.when(
+          data: (author) {
+            return ListView(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              children: [
+                if (author.birthDate != null || author.deathDate != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    [
+                      if (author.birthDate != null) author.birthDate,
+                      if (author.deathDate != null) '– ${author.deathDate}',
+                    ].join(' '),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.md + AppSpacing.xs),
+                _AuthorBooksSection(authorId: authorId, booksState: asyncAuthorBooks),
               ],
-              const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-              _AuthorBooksSection(authorId: authorId, booksState: asyncAuthorBooks),
-            ],
-          );
-        },
-        loading: () => const _AuthorDetailSkeleton(),
-        error: (e, _) => AsyncErrorView(
-          error: e,
-          onRetry: () => ref.invalidate(authorDetailProvider(authorId)),
+            );
+          },
+          loading: () => const _AuthorDetailSkeleton(),
+          error: (e, _) => AsyncErrorView(
+            error: e,
+            onRetry: () => ref.invalidate(authorDetailProvider(authorId)),
+          ),
         ),
       ),
     );
@@ -73,12 +77,32 @@ class _AuthorBooksSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return booksState.when(
-      loading: () => ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 4,
-        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (_, _) => const AppListTileSkeleton(),
+      loading: () => LayoutBuilder(
+        builder: (context, constraints) {
+          final twoCol = constraints.maxWidth >= AppBreakpoints.listsTwoColumnMinWidth;
+          if (!twoCol) {
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 4,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, _) => const AppListTileSkeleton(),
+            );
+          }
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 3.2,
+            ),
+            itemCount: 6,
+            itemBuilder: (_, _) => const AppListTileSkeleton(),
+          );
+        },
       ),
       error: (error, stackTrace) => AsyncErrorView(
         error: error,
@@ -89,12 +113,32 @@ class _AuthorBooksSection extends ConsumerWidget {
         if (books.isEmpty) {
           return Text(l10n.noBooksFound);
         }
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: books.length,
-          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-          itemBuilder: (context, index) => _AuthorBookTile(book: books[index]),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final twoCol = constraints.maxWidth >= AppBreakpoints.listsTwoColumnMinWidth;
+            if (!twoCol) {
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: books.length,
+                separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                itemBuilder: (context, index) => _AuthorBookTile(book: books[index]),
+              );
+            }
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: AppSpacing.md,
+                mainAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 3.2,
+              ),
+              itemCount: books.length,
+              itemBuilder: (_, i) => _AuthorBookTile(book: books[i]),
+            );
+          },
         );
       },
     );

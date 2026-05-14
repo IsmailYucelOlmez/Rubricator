@@ -20,12 +20,6 @@ class GetTopListsByEngagementUseCase {
       _repo.getTopListsByEngagement(limit: limit);
 }
 
-class GetFollowingListsUseCase {
-  const GetFollowingListsUseCase(this._repo);
-  final ListsRepository _repo;
-  Future<List<ListEntity>> call() => _repo.getFollowingLists();
-}
-
 class GetUserListsUseCase {
   const GetUserListsUseCase(this._repo);
   final ListsRepository _repo;

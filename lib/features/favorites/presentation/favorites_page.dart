@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
@@ -19,9 +20,10 @@ class ListsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final signedIn = ref.watch(authStateProvider).valueOrNull != null;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: DefaultTabController(
+      child: ResponsiveScaffoldBody(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: DefaultTabController(
           length: 6,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +63,7 @@ class ListsPage extends ConsumerWidget {
                 ),
             ],
           ),
+        ),
         ),
       ),
     );

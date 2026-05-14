@@ -704,7 +704,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String byUser(Object userName) {
-    return '@$userName tarafindan';
+    return '$userName tarafindan';
   }
 
   @override

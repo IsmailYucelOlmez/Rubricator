@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/ux/l10n_app_error.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/theme_mode_provider.dart';
@@ -29,9 +30,10 @@ class ProfilePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final themeMode = ref.watch(themeModeProvider);
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: authAsync.when(
+      child: ResponsiveScaffoldBody(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: authAsync.when(
           data: (user) => SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,21 +117,8 @@ class ProfilePage extends ConsumerWidget {
             onRetry: () => ref.invalidate(authStateProvider),
           ),
         ),
+        ),
       ),
-    );
-  }
-
-  Future<void> _showSignInDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (_) => const _ProfileSignInDialog(),
-    );
-  }
-
-  Future<void> _showSignUpDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (_) => _ProfileSignUpDialog(parentContext: context),
     );
   }
 
@@ -217,201 +206,6 @@ class _ProfileReadingListsSection extends StatelessWidget {
   }
 }
 
-class _ProfileSignInDialog extends StatefulWidget {
-  const _ProfileSignInDialog();
-
-  @override
-  State<_ProfileSignInDialog> createState() => _ProfileSignInDialogState();
-}
-
-class _ProfileSignInDialogState extends State<_ProfileSignInDialog> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-
-  @override
-  void initState() {
-    super.initState();
-    _email = TextEditingController();
-    _password = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.signIn),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AppInput(
-            controller: _email,
-            keyboardType: TextInputType.emailAddress,
-            labelText: l10n.email,
-          ),
-          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-          AppInput(
-            controller: _password,
-            obscureText: true,
-            labelText: l10n.password,
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () async {
-            final email = _email.text.trim();
-            final password = _password.text;
-            if (email.isEmpty || password.isEmpty) return;
-            try {
-              final container = ProviderScope.containerOf(context);
-              await container.read(authServiceProvider).signIn(
-                    email: email,
-                    password: password,
-                  );
-              if (!mounted) return;
-              // Defer pop so auth stream rebuilds don't overlap dialog dispose
-              // (avoids framework _dependents.isEmpty assertion with Riverpod).
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) Navigator.of(context).pop();
-              });
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
-                );
-              }
-            }
-          },
-          child: Text(l10n.signIn),
-        ),
-      ],
-    );
-  }
-}
-
-class _ProfileSignUpDialog extends StatefulWidget {
-  const _ProfileSignUpDialog({required this.parentContext});
-
-  final BuildContext parentContext;
-
-  @override
-  State<_ProfileSignUpDialog> createState() => _ProfileSignUpDialogState();
-}
-
-class _ProfileSignUpDialogState extends State<_ProfileSignUpDialog> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
-  late final TextEditingController _userName;
-  late final TextEditingController _avatarUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _email = TextEditingController();
-    _password = TextEditingController();
-    _userName = TextEditingController();
-    _avatarUrl = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    _userName.dispose();
-    _avatarUrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
-      title: Text(l10n.createAccount),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AppInput(
-            controller: _email,
-            keyboardType: TextInputType.emailAddress,
-            labelText: l10n.email,
-          ),
-          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-          AppInput(
-            controller: _password,
-            obscureText: true,
-            labelText: l10n.passwordMin6,
-          ),
-          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-          AppInput(
-            controller: _userName,
-            labelText: l10n.displayNameLabel,
-          ),
-          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-          AppInput(
-            controller: _avatarUrl,
-            keyboardType: TextInputType.url,
-            labelText: l10n.profilePhotoUrlOptional,
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () async {
-            final email = _email.text.trim();
-            final password = _password.text;
-            final userName = _userName.text.trim();
-            final avatarUrl = _avatarUrl.text.trim();
-            if (email.isEmpty || password.length < 6 || userName.isEmpty) return;
-            try {
-              final container = ProviderScope.containerOf(context);
-              await container.read(authServiceProvider).signUp(
-                    email: email,
-                    password: password,
-                    displayName: userName,
-                    avatarUrl: avatarUrl.isEmpty ? null : avatarUrl,
-                  );
-              if (!mounted) return;
-              final messengerCtx = widget.parentContext;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) Navigator.of(context).pop();
-                if (messengerCtx.mounted) {
-                  ScaffoldMessenger.of(messengerCtx).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.confirmAccountEmailNotice),
-                    ),
-                  );
-                }
-              });
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
-                );
-              }
-            }
-          },
-          child: Text(l10n.signUp),
-        ),
-      ],
-    );
-  }
-}
-
 class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader({required this.user});
 
@@ -423,16 +217,7 @@ class _ProfileHeader extends StatelessWidget {
     final avatarUrl = userAvatarUrl(user);
     return Row(
       children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundImage: avatarUrl != null
-              ? NetworkImage(
-                  avatarUrl,
-                  webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-                )
-              : null,
-          child: avatarUrl == null ? const Icon(Icons.person_outline) : null,
-        ),
+        _RoundNetworkAvatar(url: avatarUrl, radius: 24),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
@@ -496,20 +281,16 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 34,
-            backgroundImage: selectedAvatarBytes != null
-                ? MemoryImage(selectedAvatarBytes)
-                : (avatarInput.isNotEmpty
-                    ? NetworkImage(
-                        avatarInput,
-                        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-                      )
-                    : null),
-            child: selectedAvatarBytes == null && avatarInput.isEmpty
-                ? const Icon(Icons.person_outline)
-                : null,
-          ),
+          if (selectedAvatarBytes != null)
+            CircleAvatar(
+              radius: 34,
+              backgroundImage: MemoryImage(selectedAvatarBytes),
+            )
+          else
+            _RoundNetworkAvatar(
+              url: avatarInput.isEmpty ? null : avatarInput,
+              radius: 34,
+            ),
           const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             onPressed: _saving ? null : _pickAvatarFromGallery,
@@ -618,5 +399,54 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
         SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
       );
     }
+  }
+}
+
+/// Round avatar that renders network images through `Image.network` so that
+/// Flutter web can fall back to an HTML `<img>` element when the image host
+/// does not allow CORS canvas reads. `CircleAvatar.backgroundImage` uses
+/// `DecorationImage`, which forces the Skia path and throws "Same-Origin
+/// Policy" errors every frame for cross-origin images (e.g. Supabase Storage).
+class _RoundNetworkAvatar extends StatelessWidget {
+  const _RoundNetworkAvatar({required this.url, required this.radius});
+
+  final String? url;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final diameter = radius * 2;
+    final placeholder = Container(
+      width: diameter,
+      height: diameter,
+      alignment: Alignment.center,
+      color: scheme.primaryContainer,
+      child: Icon(
+        Icons.person_outline,
+        size: radius,
+        color: scheme.onPrimaryContainer,
+      ),
+    );
+    final avatarUrl = url;
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return ClipOval(child: placeholder);
+    }
+    return ClipOval(
+      child: SizedBox(
+        width: diameter,
+        height: diameter,
+        child: Image.network(
+          avatarUrl,
+          fit: BoxFit.cover,
+          webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+          errorBuilder: (_, __, ___) => placeholder,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return placeholder;
+          },
+        ),
+      ),
+    );
   }
 }

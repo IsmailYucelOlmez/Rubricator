@@ -1319,7 +1319,7 @@ abstract class AppLocalizations {
   /// No description provided for @byUser.
   ///
   /// In en, this message translates to:
-  /// **'by @{userName}'**
+  /// **'by {userName}'**
   String byUser(Object userName);
 
   /// No description provided for @books.

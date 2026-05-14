@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/layout/app_breakpoints.dart';
+import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/ux/app_feedback.dart';
 import '../../../core/validation/form_validators.dart';
@@ -98,10 +100,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.signIn)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          controller: _scrollCtrl,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
+        child: ResponsiveScaffoldBody(
+          maxWidth: AppBreakpoints.formMaxWidth,
+          child: SingleChildScrollView(
+            controller: _scrollCtrl,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(l10n.signInPrompt, style: Theme.of(context).textTheme.bodyMedium),
@@ -145,6 +149,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

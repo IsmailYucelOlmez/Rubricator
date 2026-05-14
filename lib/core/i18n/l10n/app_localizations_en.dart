@@ -704,7 +704,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String byUser(Object userName) {
-    return 'by @$userName';
+    return 'by $userName';
   }
 
   @override

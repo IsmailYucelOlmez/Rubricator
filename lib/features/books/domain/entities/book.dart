@@ -1,4 +1,7 @@
 /// Domain entity for a Google Books volume.
+///
+/// [id] is the stable key; equality uses [id] so Riverpod `family` providers
+/// treat the same volume as one cache entry even when lists carry richer metadata.
 class Book {
   const Book({
     required this.id,
@@ -56,6 +59,14 @@ class Book {
       'subjectKeys': subjectKeys,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Book && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(

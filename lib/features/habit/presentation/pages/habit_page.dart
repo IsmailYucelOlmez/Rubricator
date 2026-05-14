@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
@@ -22,11 +23,13 @@ class HabitPage extends ConsumerWidget {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.readingHabit)),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Text(
-              l10n.signInForHabit,
-              textAlign: TextAlign.center,
+          child: ResponsiveScaffoldBody(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                l10n.signInForHabit,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
@@ -49,9 +52,10 @@ class HabitPage extends ConsumerWidget {
         icon: const Icon(Icons.timer_outlined),
         label: Text(l10n.log),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        children: const [
+      body: ResponsiveScaffoldBody(
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          children: const [
           HabitStreakWidget(),
           SizedBox(height: AppSpacing.md),
           HabitStatsSection(),
@@ -63,6 +67,7 @@ class HabitPage extends ConsumerWidget {
           HabitLogsList(),
           SizedBox(height: AppSpacing.xl * 2 + AppSpacing.md),
         ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
@@ -17,11 +18,12 @@ class PrivacyPolicyPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.privacyPolicyAppBar)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: ResponsiveScaffoldBody(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Text(
                 l10n.privacyPolicyTitle,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -150,6 +152,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               Text(l10n.privacyPolicyFooter),
             ],
           ),
+        ),
         ),
       ),
     );

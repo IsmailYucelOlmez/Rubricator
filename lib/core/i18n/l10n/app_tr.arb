@@ -294,7 +294,7 @@
   ,"noListsYet":"Henuz liste yok."
   ,"couldNotLoadLists":"Listeler yuklenemedi: {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
-  ,"byUser":"@{userName} tarafindan"
+  ,"byUser":"{userName} tarafindan"
   ,"@byUser":{"placeholders":{"userName":{}}}
   ,"books":"Kitaplar"
   ,"comments":"Yorumlar"

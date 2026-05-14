@@ -22,9 +22,6 @@ final getPopularListsUseCaseProvider = Provider<GetPopularListsUseCase>(
 final getTopListsByEngagementUseCaseProvider = Provider<GetTopListsByEngagementUseCase>(
   (ref) => GetTopListsByEngagementUseCase(ref.watch(listsRepositoryProvider)),
 );
-final getFollowingListsUseCaseProvider = Provider<GetFollowingListsUseCase>(
-  (ref) => GetFollowingListsUseCase(ref.watch(listsRepositoryProvider)),
-);
 final getUserListsUseCaseProvider = Provider<GetUserListsUseCase>(
   (ref) => GetUserListsUseCase(ref.watch(listsRepositoryProvider)),
 );
@@ -135,10 +132,6 @@ final popularListsProvider = FutureProvider<List<ListEntity>>((ref) {
 
 final topListsProvider = FutureProvider<List<ListEntity>>((ref) {
   return ref.read(getTopListsByEngagementUseCaseProvider).call(limit: 20);
-});
-
-final followingListsProvider = FutureProvider<List<ListEntity>>((ref) {
-  return ref.read(getFollowingListsUseCaseProvider).call();
 });
 
 final userListsProvider = FutureProvider<List<ListEntity>>((ref) {

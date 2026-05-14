@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/i18n/l10n/app_localizations.dart';
+import '../../../core/layout/app_breakpoints.dart';
+import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/validation/form_validators.dart';
 import '../../../core/widgets/app_input.dart';
@@ -177,10 +179,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.createAccount)),
       body: SafeArea(
-        child: SingleChildScrollView(
-          controller: _scrollCtrl,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
+        child: ResponsiveScaffoldBody(
+          maxWidth: AppBreakpoints.formMaxWidth,
+          child: SingleChildScrollView(
+            controller: _scrollCtrl,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AppInput(
@@ -277,6 +281,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

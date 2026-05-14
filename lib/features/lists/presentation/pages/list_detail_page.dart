@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -71,9 +73,10 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        children: [
+      body: ResponsiveScaffoldBody(
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          children: [
           Text(list.description),
           const SizedBox(height: AppSpacing.sm),
           Text(l10n.byUser(list.userName), style: Theme.of(context).textTheme.bodySmall),
@@ -88,41 +91,49 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                     child: Builder(
                       builder: (context) {
-                        final coverWidth = MediaQuery.of(context).size.width * 0.20;
+                        final layoutW = MediaQuery.sizeOf(context).width;
+                        final basis = context.isTabletLayout ? AppBreakpoints.contentMaxWidth : layoutW;
+                        final coverWidth = (basis * 0.20).clamp(72.0, 120.0);
                         final coverHeight = coverWidth * 1.4;
+                        final baseAuthorStyle = DefaultTextStyle.of(context).style;
+                        final baseAuthorSize = baseAuthorStyle.fontSize ?? 14;
+                        final authorStyle = baseAuthorStyle.copyWith(
+                          fontSize: baseAuthorSize * 1.2,
+                        );
                         return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: coverWidth,
-                          height: coverHeight,
-                          child: BookCoverWithFavoriteButton(
-                            bookId: item.bookId,
-                            compact: true,
-                            child: _Cover(coverImageUrl: item.coverImageUrl),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.bookTitle,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontFamily: 'LTSoul',
-                                ),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: coverWidth,
+                              height: coverHeight,
+                              child: BookCoverWithFavoriteButton(
+                                bookId: item.bookId,
+                                compact: true,
+                                child: _Cover(coverImageUrl: item.coverImageUrl),
                               ),
-                              Text(
-                                item.note?.isNotEmpty == true
-                                    ? '${item.bookAuthor}\n${item.note}'
-                                    : item.bookAuthor,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.bookTitle,
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontFamily: 'LTSoul',
+                                    ),
+                                  ),
+                                  Text(
+                                    item.note?.isNotEmpty == true
+                                        ? '${item.bookAuthor}\n${item.note}'
+                                        : item.bookAuthor,
+                                    style: authorStyle,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
+                            ),
+                          ],
+                        );
                       },
                     ),
                   ),
@@ -200,6 +211,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             ),
         ],
       ),
+      ),
     );
   }
 
@@ -257,7 +269,6 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     ref.invalidate(listsFeedProvider);
     ref.invalidate(popularListsProvider);
     ref.invalidate(topListsProvider);
-    ref.invalidate(followingListsProvider);
     ref.invalidate(userListsProvider);
     ref.invalidate(savedListsProvider);
   }

@@ -6,7 +6,7 @@ import 'app_spacing.dart';
 import 'app_typography.dart';
 
 abstract final class AppTheme {
-  static ThemeData get dark {
+  static ThemeData dark({double cesareFontSizeFactor = 1.0}) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
@@ -24,7 +24,10 @@ abstract final class AppTheme {
       surfaceContainer: AppColors.surface,
     );
 
-    final textTheme = AppTypography.textTheme(brightness: Brightness.dark);
+    final textTheme = AppTypography.textTheme(
+      brightness: Brightness.dark,
+      cesareFontSizeFactor: cesareFontSizeFactor,
+    );
 
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.md),
@@ -72,6 +75,14 @@ abstract final class AppTheme {
           );
         }),
       ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.35),
+        selectedIconTheme: const IconThemeData(color: AppColors.gold, size: 24),
+        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary, size: 24),
+        selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.gold),
+        unselectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.textSecondary),
+      ),
       tabBarTheme: TabBarThemeData(
         labelColor: AppColors.gold,
         unselectedLabelColor: AppColors.textSecondary,
@@ -113,6 +124,7 @@ abstract final class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
         titleTextStyle: textTheme.titleLarge,
         contentTextStyle: textTheme.bodyMedium,
+        constraints: const BoxConstraints(maxWidth: 520),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: AppColors.surface,
@@ -174,7 +186,7 @@ abstract final class AppTheme {
     );
   }
 
-  static ThemeData get light {
+  static ThemeData light({double cesareFontSizeFactor = 1.0}) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.light,
@@ -192,7 +204,10 @@ abstract final class AppTheme {
       surfaceContainer: AppColors.lightSurface,
     );
 
-    final textTheme = AppTypography.textTheme(brightness: Brightness.light);
+    final textTheme = AppTypography.textTheme(
+      brightness: Brightness.light,
+      cesareFontSizeFactor: cesareFontSizeFactor,
+    );
 
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.md),
@@ -240,6 +255,16 @@ abstract final class AppTheme {
           );
         }),
       ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: AppColors.lightSurface,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.22),
+        selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 24),
+        unselectedIconTheme:
+            IconThemeData(color: AppColors.lightOnSurfaceVariant, size: 24),
+        selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.primary),
+        unselectedLabelTextStyle:
+            AppTypography.bottomNavLabel(color: AppColors.lightOnSurfaceVariant),
+      ),
       tabBarTheme: TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.lightOnSurfaceVariant,
@@ -281,6 +306,7 @@ abstract final class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
         titleTextStyle: textTheme.titleLarge,
         contentTextStyle: textTheme.bodyMedium,
+        constraints: const BoxConstraints(maxWidth: 520),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: AppColors.lightSurface,

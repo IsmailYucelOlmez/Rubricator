@@ -33,12 +33,19 @@ final currentUserIdProvider = Provider<String?>(
   (ref) => ref.watch(_supabaseProvider).auth.currentUser?.id,
 );
 
-final bookDetailProvider = FutureProvider.family<BookEntity, String>((
-  ref,
-  workId,
-) {
-  return ref.watch(bookDetailRepositoryProvider).getBookDetail(workId);
-});
+final bookDetailProvider =
+    FutureProvider.family<BookEntity, Book>((ref, book) async {
+      final b = await ref.watch(bookRepositoryProvider).getBookDetail(book);
+      return BookEntity(
+        id: b.id,
+        title: b.title,
+        author: b.author,
+        coverImageUrl: b.coverImageUrl,
+        description: b.description,
+        authorIds: b.authorIds,
+        subjectKeys: b.subjectKeys,
+      );
+    });
 
 final aiSummaryProvider = FutureProvider.family<String, BookEntity>((
   ref,

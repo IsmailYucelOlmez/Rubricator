@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -69,7 +70,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final detailedBookAsync = ref.watch(bookDetailProvider(widget.book.id));
+    final detailedBookAsync = ref.watch(bookDetailProvider(widget.book));
     final userBookAsync = ref.watch(userBookProvider(widget.book.id));
     final userBook = userBookAsync.valueOrNull;
     final isFavorite = userBook?.isFavorite ?? false;
@@ -121,8 +122,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
           ),
         ],
       ),
-      body: detailedBookAsync.when(
-        data: (detailedBook) {
+      body: ResponsiveScaffoldBody(
+        child: detailedBookAsync.when(
+            data: (detailedBook) {
           final reviews = ref.watch(reviewListProvider(detailedBook.id));
           final externalReviews = ref.watch(
             externalReviewProvider(detailedBook.id),
@@ -523,12 +525,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
             ],
           );
         },
-        loading: () => const AppLoadingIndicator(),
-        error: (error, stackTrace) => AsyncErrorView(
-          error: error,
-          onRetry: () => ref.invalidate(bookDetailProvider(widget.book.id)),
+            loading: () => const AppLoadingIndicator(),
+            error: (error, stackTrace) => AsyncErrorView(
+              error: error,
+              onRetry: () => ref.invalidate(bookDetailProvider(widget.book)),
+            ),
+          ),
         ),
-      ),
     );
   }
 }

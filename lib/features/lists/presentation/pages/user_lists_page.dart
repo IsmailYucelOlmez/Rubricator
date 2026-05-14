@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -18,7 +19,7 @@ class UserListsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final tabLabelStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.1,
+      fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 1.1 * 0.8,
     );
     return DefaultTabController(
       length: 2,
@@ -26,7 +27,12 @@ class UserListsPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm + AppSpacing.xs),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.md,
+              right: AppSpacing.md,
+              top: AppSpacing.sm + AppSpacing.xs,
+              bottom: AppSpacing.xs,
+            ),
             child: Text(
               l10n.listsFeedHeading,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -35,9 +41,9 @@ class UserListsPage extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
           TabBar(
             isScrollable: true,
+            labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
             labelStyle: tabLabelStyle,
             unselectedLabelStyle: tabLabelStyle,
             tabs: [Tab(text: l10n.myLists), Tab(text: l10n.savedLists)],
@@ -75,27 +81,67 @@ class _ListsTab extends StatelessWidget {
         if (lists.isEmpty) {
           return AppEmptyState(icon: Icons.collections_bookmark_outlined, title: l10n.noListsYet);
         }
-        return ListView.builder(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          itemCount: lists.length,
-          itemBuilder: (context, index) {
-            final list = lists[index];
-            return ListCard(
-              list: list,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => ListDetailPage(list: list)),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final twoCol =
+                constraints.maxWidth >= AppBreakpoints.listsTwoColumnMinWidth;
+            Widget cardFor(int index) {
+              final list = lists[index];
+              return ListCard(
+                list: list,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => ListDetailPage(list: list)),
+                ),
+                onLikeTap: () {},
+                onSaveTap: () {},
+              );
+            }
+
+            if (!twoCol) {
+              return ListView.builder(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                itemCount: lists.length,
+                itemBuilder: (context, index) => cardFor(index),
+              );
+            }
+            return GridView.builder(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: AppSpacing.md,
+                mainAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 2.45,
               ),
-              onLikeTap: () {},
-              onSaveTap: () {},
+              itemCount: lists.length,
+              itemBuilder: (context, index) => cardFor(index),
             );
           },
         );
       },
-      loading: () => ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        itemCount: 5,
-        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (_, _) => const AppSkeletonBox(height: 92),
+      loading: () => LayoutBuilder(
+        builder: (context, constraints) {
+          final twoCol =
+              constraints.maxWidth >= AppBreakpoints.listsTwoColumnMinWidth;
+          if (!twoCol) {
+            return ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: 5,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, _) => const AppSkeletonBox(height: 92),
+            );
+          }
+          return GridView.builder(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.sm,
+              childAspectRatio: 2.45,
+            ),
+            itemCount: 6,
+            itemBuilder: (_, _) => const AppSkeletonBox(height: 92),
+          );
+        },
       ),
       error: (e, _) => AsyncErrorView(error: e, onRetry: onRetry),
     );

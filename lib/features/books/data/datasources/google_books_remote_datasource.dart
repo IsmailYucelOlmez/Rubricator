@@ -71,8 +71,15 @@ class GoogleBooksRemoteDataSource {
   }
 
   Future<BookModel> fetchVolumeMerged(String volumeId, BookModel seed) async {
-    final json = await _api.getJson('/volumes/${volumeId.trim()}');
-    return BookModel.fromGoogleBooksVolume(json, mergeFrom: seed);
+    final id = volumeId.trim();
+    if (id.isEmpty) return seed;
+    try {
+      final json = await _api.getJson('/volumes/$id');
+      return BookModel.fromGoogleBooksVolume(json, mergeFrom: seed);
+    } catch (_) {
+      // Wrong id space (e.g. Open Library OL…W ids), outages (503), or network.
+      return seed;
+    }
   }
 
   /// Google Books has no author entity; [authorId] uses `g:` + URI-encoded name.

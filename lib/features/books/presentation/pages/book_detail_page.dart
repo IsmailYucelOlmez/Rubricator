@@ -12,6 +12,7 @@ import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
+import '../../../user_books/domain/entities/user_book_snapshot.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/book_detail_entities.dart';
@@ -52,11 +53,43 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  UserBookSnapshot _snapshotFor({
+    required String title,
+    required String author,
+    required List<String> categories,
+  }) {
+    return UserBookSnapshot(
+      title: title,
+      author: author,
+      categories: categories,
+    );
+  }
+
+  Future<void> _setReadingStatus(
+    ReadingStatus selected, {
+    required bool isFavorite,
+    required String title,
+    required String author,
+    required List<String> categories,
+  }) async {
+    await ref.read(userBookProvider(widget.book.id).notifier).upsert(
+          status: selected,
+          isFavorite: isFavorite,
+          snapshot: selected == ReadingStatus.completed
+              ? _snapshotFor(
+                  title: title,
+                  author: author,
+                  categories: categories,
+                )
+              : null,
+        );
+  }
+
   void _feedbackError(Object e) {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     final s = e.toString().toLowerCase();
-    if (s.contains('sign in required')) {
+    if (s.contains('sign in required') || s.contains('sign in to')) {
       _showMessage(l10n.uxMustSignIn);
       return;
     }
@@ -82,18 +115,18 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final notifier = ref.read(
-                userBookProvider(widget.book.id).notifier,
-              );
               try {
                 await showModalBottomSheet<void>(
                   context: context,
                   builder: (context) => _StatusBottomSheet(
                     current: status,
                     onSelect: (selected) async {
-                      await notifier.upsert(
-                        status: selected,
+                      await _setReadingStatus(
+                        selected,
                         isFavorite: isFavorite,
+                        title: widget.book.title,
+                        author: widget.book.author,
+                        categories: widget.book.subjectKeys,
                       );
                       if (!context.mounted) return;
                       Navigator.of(context).pop();
@@ -205,9 +238,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                       builder: (context) => _StatusBottomSheet(
                         current: status,
                         onSelect: (selected) async {
-                          await ref
-                              .read(userBookProvider(widget.book.id).notifier)
-                              .upsert(status: selected, isFavorite: isFavorite);
+                          await _setReadingStatus(
+                            selected,
+                            isFavorite: isFavorite,
+                            title: detailedBook.title,
+                            author: detailedBook.author,
+                            categories: detailedBook.subjectKeys,
+                          );
                           if (!context.mounted) return;
                           Navigator.of(context).pop();
                         },
@@ -220,13 +257,23 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 },
                 onProgressChanged: (value) async {
                   final current = userBook?.status ?? ReadingStatus.toRead;
+                  final completed = value >= 100;
+                  final status =
+                      completed ? ReadingStatus.completed : current;
                   try {
                     await ref
                         .read(userBookProvider(widget.book.id).notifier)
                         .upsert(
-                          status: current,
+                          status: status,
                           isFavorite: isFavorite,
-                          progress: value,
+                          progress: completed ? null : value,
+                          snapshot: completed
+                              ? _snapshotFor(
+                                  title: detailedBook.title,
+                                  author: detailedBook.author,
+                                  categories: detailedBook.subjectKeys,
+                                )
+                              : null,
                         );
                   } catch (e) {
                     if (!mounted) return;

@@ -1,5 +1,25 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+class CompletedUserBookRecord {
+  const CompletedUserBookRecord({
+    required this.bookId,
+    this.bookTitle,
+    this.bookAuthor,
+    this.bookCategories = const [],
+  });
+
+  final String bookId;
+  final String? bookTitle;
+  final String? bookAuthor;
+  final List<String> bookCategories;
+
+  bool get hasSnapshot =>
+      bookTitle != null &&
+      bookTitle!.isNotEmpty &&
+      bookAuthor != null &&
+      bookAuthor!.isNotEmpty;
+}
+
 class ProfileStatsRemoteDataSource {
   ProfileStatsRemoteDataSource(this._client);
 
@@ -24,23 +44,41 @@ class ProfileStatsRemoteDataSource {
     return res.count;
   }
 
-  Future<List<String>> fetchCompletedBookIds(String userId) async {
+  Future<List<CompletedUserBookRecord>> fetchCompletedBooks(String userId) async {
     final rows = await _client
         .from('user_books')
-        .select('book_id')
+        .select('book_id, book_title, book_author, book_categories')
         .eq('user_id', userId)
         .eq('status', 'completed')
+        .order('completed_at', ascending: false)
         .order('updated_at', ascending: false);
     final list = rows as List<dynamic>;
     final seen = <String>{};
-    final out = <String>[];
+    final out = <CompletedUserBookRecord>[];
     for (final e in list) {
       if (e is! Map<String, dynamic>) continue;
       final id = e['book_id'] as String?;
       if (id == null || id.isEmpty) continue;
-      if (seen.add(id)) out.add(id);
+      if (!seen.add(id)) continue;
+      final categoriesRaw = e['book_categories'];
+      final categories = categoriesRaw is List<dynamic>
+          ? categoriesRaw.map((c) => c.toString()).where((s) => s.isNotEmpty).toList()
+          : const <String>[];
+      out.add(
+        CompletedUserBookRecord(
+          bookId: id,
+          bookTitle: e['book_title'] as String?,
+          bookAuthor: e['book_author'] as String?,
+          bookCategories: categories,
+        ),
+      );
     }
     return out;
+  }
+
+  Future<List<String>> fetchCompletedBookIds(String userId) async {
+    final rows = await fetchCompletedBooks(userId);
+    return rows.map((e) => e.bookId).toList();
   }
 
   Future<List<int>> fetchUserRatings(String userId) async {

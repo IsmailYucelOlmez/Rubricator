@@ -20,6 +20,12 @@ abstract class ListsRepository {
   });
   Future<void> removeBookFromList(String listItemId);
   Future<List<ListItemEntity>> getListItems(String listId);
+
+  /// Batch-fetch items for recommendation scoring (first [maxItemsPerList] per list).
+  Future<Map<String, List<ListItemEntity>>> getListItemsByListIds(
+    List<String> listIds, {
+    int maxItemsPerList = 10,
+  });
   Future<ListEntity> createList({
     required String userId,
     required String userName,

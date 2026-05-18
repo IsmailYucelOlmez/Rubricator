@@ -101,29 +101,125 @@ int _listGenreMatchScore(ListEntity list, Map<String, int> weights) {
   return score;
 }
 
+Map<String, int> _buildAuthorWeights(List<AuthorStat> stats) {
+  final weights = <String, int>{};
+  for (final stat in stats) {
+    final key = _normalizeAuthorKey(stat.author);
+    if (key.isEmpty) continue;
+    weights[key] = (weights[key] ?? 0) + stat.count;
+  }
+  return weights;
+}
+
+String _normalizeAuthorKey(String author) {
+  return author.trim().toLowerCase();
+}
+
+bool _authorKeysMatch(String a, String b) {
+  if (a.isEmpty || b.isEmpty) return false;
+  if (a == b) return true;
+  if (a.contains(b) || b.contains(a)) return true;
+  final aLast = a.split(RegExp(r'\s+')).lastOrNull ?? '';
+  final bLast = b.split(RegExp(r'\s+')).lastOrNull ?? '';
+  return aLast.length > 2 && aLast == bLast;
+}
+
+int _authorMatchInHaystack(String haystack, Map<String, int> weights) {
+  var score = 0;
+  for (final entry in weights.entries) {
+    if (_authorKeysMatch(haystack, entry.key)) {
+      score += entry.value;
+    }
+  }
+  return score;
+}
+
+int _listItemsAuthorScore(
+  List<ListItemEntity> items,
+  Map<String, int> weights,
+) {
+  var score = 0;
+  for (final item in items) {
+    final author = _normalizeAuthorKey(item.bookAuthor);
+    if (author.isEmpty || author == 'unknown author') continue;
+    for (final entry in weights.entries) {
+      if (_authorKeysMatch(author, entry.key)) {
+        score += entry.value;
+        break;
+      }
+    }
+  }
+  return score;
+}
+
+int _popularityBoost(ListEntity list) {
+  return (list.likeCount ~/ 5) + (list.commentCount ~/ 3);
+}
+
+int _combinedListScore({
+  required ListEntity list,
+  required Map<String, int> genreWeights,
+  required Map<String, int> authorWeights,
+  required List<ListItemEntity> items,
+}) {
+  final genreScore = _listGenreMatchScore(list, genreWeights);
+  final metaHaystack =
+      '${list.title} ${list.description}'.toLowerCase();
+  final authorMetaScore = _authorMatchInHaystack(metaHaystack, authorWeights);
+  final authorItemScore = _listItemsAuthorScore(items, authorWeights);
+  final authorScore = authorMetaScore + (authorItemScore * 2);
+  final tasteScore = ((genreScore * 6) + (authorScore * 4)) ~/ 10;
+  return tasteScore + _popularityBoost(list);
+}
+
+List<ListEntity> _sortListsByScore(
+  List<({ListEntity list, int score})> scored,
+) {
+  scored.sort((a, b) {
+    final byScore = b.score.compareTo(a.score);
+    if (byScore != 0) return byScore;
+    final byLikes = b.list.likeCount.compareTo(a.list.likeCount);
+    if (byLikes != 0) return byLikes;
+    return b.list.createdAt.compareTo(a.list.createdAt);
+  });
+  return <ListEntity>[for (final entry in scored) entry.list];
+}
+
 final forYouListsProvider = FutureProvider<List<ListEntity>>((ref) async {
+  final repo = ref.watch(listsRepositoryProvider);
   final baseLists = await ref.read(getFeedListsUseCaseProvider).call();
   final userId = ref.watch(authStateProvider).valueOrNull?.id;
   if (userId == null) return baseLists;
 
-  final statsAsync = ref.watch(genreStatsProvider);
-  final stats = statsAsync.valueOrNull;
-  if (stats == null || stats.isEmpty) return baseLists;
+  final genreStats = ref.watch(genreStatsProvider).valueOrNull ?? const <GenreStat>[];
+  final authorStats =
+      ref.watch(authorStatsProvider).valueOrNull ?? const <AuthorStat>[];
+  if (genreStats.isEmpty && authorStats.isEmpty) {
+    return ref.read(getPopularListsUseCaseProvider).call();
+  }
 
-  final weights = _buildGenreWeights(stats);
+  final genreWeights = _buildGenreWeights(genreStats);
+  final authorWeights = _buildAuthorWeights(authorStats);
+  final itemsByListId = await repo.getListItemsByListIds(
+    baseLists.map((l) => l.id).toList(),
+  );
+
   final scored = <({ListEntity list, int score})>[
     for (final list in baseLists)
-      (list: list, score: _listGenreMatchScore(list, weights)),
+      (
+        list: list,
+        score: _combinedListScore(
+          list: list,
+          genreWeights: genreWeights,
+          authorWeights: authorWeights,
+          items: itemsByListId[list.id] ?? const <ListItemEntity>[],
+        ),
+      ),
   ];
-  final hasAnyScore = scored.any((entry) => entry.score > 0);
-  if (!hasAnyScore) return baseLists;
-
-  scored.sort((a, b) {
-    final byScore = b.score.compareTo(a.score);
-    if (byScore != 0) return byScore;
-    return b.list.createdAt.compareTo(a.list.createdAt);
-  });
-  return <ListEntity>[for (final entry in scored) entry.list];
+  if (!scored.any((entry) => entry.score > 0)) {
+    return ref.read(getPopularListsUseCaseProvider).call();
+  }
+  return _sortListsByScore(scored);
 });
 
 final popularListsProvider = FutureProvider<List<ListEntity>>((ref) {

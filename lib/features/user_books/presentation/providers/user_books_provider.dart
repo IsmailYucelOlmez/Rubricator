@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
+import '../../../lists/presentation/providers/lists_providers.dart';
+import '../../../profile_stats/presentation/providers/profile_stats_providers.dart';
 import '../../data/user_books_repository.dart';
 import '../../domain/entities/user_book_entity.dart';
+import '../../domain/entities/user_book_snapshot.dart';
 
 final userBooksRepositoryProvider = Provider<UserBooksRepository>(
   (ref) => UserBooksRepository(),
@@ -38,11 +41,16 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
     required ReadingStatus status,
     bool? isFavorite,
     int? progress,
+    UserBookSnapshot? snapshot,
   }) async {
+    final userId = ref.read(authStateProvider).valueOrNull?.id;
+    if (userId == null || userId.isEmpty) {
+      throw UserBooksException('Sign in to manage your reading list.');
+    }
+
     final previous = state.valueOrNull;
     final previousStatus = previous?.status;
     final now = DateTime.now();
-    final userId = ref.read(authStateProvider).valueOrNull?.id ?? '';
     final optimistic = (previous ??
             UserBookEntity(
               id: '',
@@ -59,6 +67,10 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
           isFavorite: isFavorite ?? previous?.isFavorite ?? false,
           progress: status == ReadingStatus.reading ? progress : null,
           updatedAt: now,
+          completedAt: status == ReadingStatus.completed ? now : null,
+          bookTitle: snapshot?.title ?? previous?.bookTitle,
+          bookAuthor: snapshot?.author ?? previous?.bookAuthor,
+          bookCategories: snapshot?.categories ?? previous?.bookCategories ?? const [],
         );
     state = AsyncData(optimistic);
 
@@ -70,14 +82,30 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
             status: status,
             isFavorite: isFavorite,
             progress: progress,
+            snapshot: status == ReadingStatus.completed ? snapshot : null,
           );
       if (previousStatus != null && previousStatus != status) {
         ref.invalidate(userBooksByStatusProvider(previousStatus));
       }
       ref.invalidate(userBooksByStatusProvider(status));
       ref.invalidate(favoriteUserBooksProvider);
+      _invalidateProfileStatsIfNeeded(previousStatus, status);
       return ref.read(userBooksRepositoryProvider).getUserBook(_bookId);
     });
+  }
+
+  void _invalidateProfileStatsIfNeeded(
+    ReadingStatus? previous,
+    ReadingStatus next,
+  ) {
+    if (previous == ReadingStatus.completed || next == ReadingStatus.completed) {
+      ref.read(profileStatsGenerationProvider.notifier).state++;
+      ref.invalidate(profileStatsSummaryProvider);
+      ref.invalidate(genreStatsProvider);
+      ref.invalidate(authorStatsProvider);
+      ref.invalidate(libraryStatsProvider);
+      ref.invalidate(forYouListsProvider);
+    }
   }
 
   Future<void> toggleFavorite() async {

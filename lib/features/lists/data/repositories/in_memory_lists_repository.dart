@@ -133,6 +133,21 @@ class InMemoryListsRepository implements ListsRepository {
   }
 
   @override
+  Future<Map<String, List<ListItemEntity>>> getListItemsByListIds(
+    List<String> listIds, {
+    int maxItemsPerList = 10,
+  }) async {
+    final out = <String, List<ListItemEntity>>{};
+    for (final listId in listIds) {
+      final items = await getListItems(listId);
+      if (items.isNotEmpty) {
+        out[listId] = items.take(maxItemsPerList).toList();
+      }
+    }
+    return out;
+  }
+
+  @override
   Future<List<ListEntity>> getPopularLists() async {
     final copy = List<ListEntity>.from(_lists);
     copy.sort((a, b) => b.likeCount.compareTo(a.likeCount));

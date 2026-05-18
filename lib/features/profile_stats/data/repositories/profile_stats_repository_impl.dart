@@ -2,7 +2,8 @@ import '../../../books/data/repositories/book_repository.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../domain/entities/profile_stats_entities.dart';
 import '../../domain/repositories/profile_stats_repository.dart';
-import '../datasources/profile_stats_remote_datasource.dart';
+import '../datasources/profile_stats_remote_datasource.dart'
+    show CompletedUserBookRecord, ProfileStatsRemoteDataSource;
 
 class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
   ProfileStatsRepositoryImpl(this._remote, this._books, this._currentUserId);
@@ -25,23 +26,58 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
     return id;
   }
 
-  Future<List<Book>> _booksForIds(List<String> ids) async {
-    if (ids.isEmpty) return const <Book>[];
+  Book _bookFromSnapshot(CompletedUserBookRecord row) {
+    return Book(
+      id: row.bookId,
+      title: row.bookTitle!,
+      author: row.bookAuthor!,
+      description: '',
+      subjectKeys: row.bookCategories,
+    );
+  }
+
+  Future<List<Book>> _booksForCompleted(List<CompletedUserBookRecord> rows) async {
+    if (rows.isEmpty) return const <Book>[];
     final out = <Book>[];
-    for (var i = 0; i < ids.length; i += _fetchConcurrency) {
-      final end = (i + _fetchConcurrency > ids.length)
-          ? ids.length
-          : i + _fetchConcurrency;
-      final chunk = ids.sublist(i, end);
-      for (final id in chunk) {
-        try {
-          out.add(await _books.getBookByWorkId(id));
-        } catch (_) {
-          // Skip missing or API errors; stats stay useful for the rest.
-        }
+    final needFetch = <String>[];
+
+    for (final row in rows) {
+      if (row.hasSnapshot) {
+        out.add(_bookFromSnapshot(row));
+      } else {
+        needFetch.add(row.bookId);
       }
     }
-    return out;
+
+    if (needFetch.isEmpty) return out;
+
+    final fetchedById = <String, Book>{};
+    for (var i = 0; i < needFetch.length; i += _fetchConcurrency) {
+      final end = (i + _fetchConcurrency > needFetch.length)
+          ? needFetch.length
+          : i + _fetchConcurrency;
+      final chunk = needFetch.sublist(i, end);
+      await Future.wait(
+        chunk.map((id) async {
+          try {
+            fetchedById[id] = await _books.getBookByWorkId(id);
+          } catch (_) {
+            // Skip missing or API errors.
+          }
+        }),
+      );
+    }
+
+    final merged = <Book>[];
+    for (final row in rows) {
+      if (row.hasSnapshot) {
+        merged.add(_bookFromSnapshot(row));
+      } else {
+        final book = fetchedById[row.bookId];
+        if (book != null) merged.add(book);
+      }
+    }
+    return merged;
   }
 
   static List<GenreStat> _genreStatsFromBooks(List<Book> books, int topN) {
@@ -82,8 +118,8 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
       if (uid == null) {
         return const ReadingIdentityStats(genres: [], authors: []);
       }
-      final ids = await _remote.fetchCompletedBookIds(uid);
-      final books = await _booksForIds(ids);
+      final completed = await _remote.fetchCompletedBooks(uid);
+      final books = await _booksForCompleted(completed);
       return ReadingIdentityStats(
         genres: _genreStatsFromBooks(books, _genreTop),
         authors: _authorStatsFromBooks(books, _authorTop),
@@ -118,15 +154,15 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
 
     final completedF = _remote.countUserBooks(userId: uid, status: 'completed');
     final ratingsF = _remote.fetchUserRatings(uid);
-    final idsF = _remote.fetchCompletedBookIds(uid);
+    final completedRowsF = _remote.fetchCompletedBooks(uid);
 
     final completed = await completedF;
     final ratings = await ratingsF;
     final ratingStat = _ratingStatFromValues(ratings);
 
-    final ids = await idsF;
-    final sampleIds = ids.take(_summaryGenreSample).toList();
-    final sampleBooks = await _booksForIds(sampleIds);
+    final completedRows = await completedRowsF;
+    final sampleRows = completedRows.take(_summaryGenreSample).toList();
+    final sampleBooks = await _booksForCompleted(sampleRows);
     final genres = _genreStatsFromBooks(sampleBooks, 1);
     final topGenre = genres.isEmpty ? '—' : genres.first.genre;
 

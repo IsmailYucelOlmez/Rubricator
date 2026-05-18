@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/supabase_service.dart';
 import '../domain/entities/user_book_entity.dart';
+import '../domain/entities/user_book_snapshot.dart';
 
 class UserBooksException implements Exception {
   UserBooksException(this.message);
@@ -41,6 +42,7 @@ class UserBooksRepository {
     required ReadingStatus status,
     bool? isFavorite,
     int? progress,
+    UserBookSnapshot? snapshot,
   }) async {
     final userId = _requireUserId();
     if (progress != null && (progress < 0 || progress > 100)) {
@@ -50,16 +52,29 @@ class UserBooksRepository {
       throw UserBooksException('Progress is only available while reading.');
     }
 
+    final payload = <String, dynamic>{
+      'user_id': userId,
+      'book_id': bookId,
+      'status': readingStatusToDb(status),
+      ...?(isFavorite != null
+          ? <String, dynamic>{'is_favorite': isFavorite}
+          : null),
+      'progress': status == ReadingStatus.reading ? progress : null,
+    };
+
+    if (status == ReadingStatus.completed) {
+      payload['completed_at'] = DateTime.now().toUtc().toIso8601String();
+      if (snapshot != null) {
+        payload['book_title'] = snapshot.title;
+        payload['book_author'] = snapshot.author;
+        payload['book_categories'] = snapshot.categories;
+      }
+    } else {
+      payload['completed_at'] = null;
+    }
+
     await _client.from('user_books').upsert(
-      <String, dynamic>{
-        'user_id': userId,
-        'book_id': bookId,
-        'status': readingStatusToDb(status),
-        ...?(isFavorite != null
-            ? <String, dynamic>{'is_favorite': isFavorite}
-            : null),
-        'progress': status == ReadingStatus.reading ? progress : null,
-      },
+      payload,
       onConflict: 'user_id,book_id',
     );
   }

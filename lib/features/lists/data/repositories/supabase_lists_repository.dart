@@ -222,6 +222,41 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   @override
+  Future<Map<String, List<ListItemEntity>>> getListItemsByListIds(
+    List<String> listIds, {
+    int maxItemsPerList = 10,
+  }) async {
+    if (listIds.isEmpty) return const <String, List<ListItemEntity>>{};
+    final rows = await _client
+        .from('list_items')
+        .select('*')
+        .inFilter('list_id', listIds)
+        .order('order_index', ascending: true);
+    final grouped = <String, List<ListItemEntity>>{};
+    for (final row in (rows as List<dynamic>).whereType<Map<String, dynamic>>()) {
+      final listId = row['list_id']?.toString();
+      if (listId == null) continue;
+      final bucket = grouped.putIfAbsent(listId, () => <ListItemEntity>[]);
+      if (bucket.length >= maxItemsPerList) continue;
+      bucket.add(
+        ListItemEntity(
+          id: row['id'].toString(),
+          listId: listId,
+          bookId: row['book_id']?.toString() ?? '',
+          bookTitle:
+              (row['book_title'] as String?) ??
+              (row['book_id']?.toString() ?? 'Unknown'),
+          bookAuthor: (row['book_author'] as String?) ?? 'Unknown author',
+          coverImageUrl: row['cover_image_url'] as String?,
+          orderIndex: (row['order_index'] as num?)?.toInt() ?? 0,
+          note: row['note'] as String?,
+        ),
+      );
+    }
+    return grouped;
+  }
+
+  @override
   Future<ListEntity> createList({
     required String userId,
     required String userName,

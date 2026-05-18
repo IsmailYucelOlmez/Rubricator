@@ -32,6 +32,14 @@ String readingStatusToDb(ReadingStatus status) {
   }
 }
 
+List<String> _categoriesFromMap(Map<String, dynamic> map) {
+  final raw = map['book_categories'];
+  if (raw is List<dynamic>) {
+    return raw.map((e) => e.toString()).where((s) => s.isNotEmpty).toList();
+  }
+  return const [];
+}
+
 class UserBookEntity {
   const UserBookEntity({
     required this.id,
@@ -42,6 +50,10 @@ class UserBookEntity {
     required this.progress,
     required this.createdAt,
     required this.updatedAt,
+    this.bookTitle,
+    this.bookAuthor,
+    this.bookCategories = const [],
+    this.completedAt,
   });
 
   final String id;
@@ -52,6 +64,16 @@ class UserBookEntity {
   final int? progress;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? bookTitle;
+  final String? bookAuthor;
+  final List<String> bookCategories;
+  final DateTime? completedAt;
+
+  bool get hasCompletedSnapshot =>
+      bookTitle != null &&
+      bookTitle!.isNotEmpty &&
+      bookAuthor != null &&
+      bookAuthor!.isNotEmpty;
 
   UserBookEntity copyWith({
     String? id,
@@ -62,6 +84,10 @@ class UserBookEntity {
     int? progress,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? bookTitle,
+    String? bookAuthor,
+    List<String>? bookCategories,
+    DateTime? completedAt,
   }) {
     return UserBookEntity(
       id: id ?? this.id,
@@ -72,6 +98,10 @@ class UserBookEntity {
       progress: progress ?? this.progress,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      bookTitle: bookTitle ?? this.bookTitle,
+      bookAuthor: bookAuthor ?? this.bookAuthor,
+      bookCategories: bookCategories ?? this.bookCategories,
+      completedAt: completedAt ?? this.completedAt,
     );
   }
 
@@ -87,6 +117,10 @@ class UserBookEntity {
           DateTime.now(),
       updatedAt: DateTime.tryParse(map['updated_at'] as String? ?? '') ??
           DateTime.now(),
+      bookTitle: map['book_title'] as String?,
+      bookAuthor: map['book_author'] as String?,
+      bookCategories: _categoriesFromMap(map),
+      completedAt: DateTime.tryParse(map['completed_at'] as String? ?? ''),
     );
   }
 }

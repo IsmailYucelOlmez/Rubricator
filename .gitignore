@@ -12,6 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 *.env
+supabase/.env
+
+# Deno
+supabase/functions/.deno/
 
 # IntelliJ related
 *.iml

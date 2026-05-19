@@ -1,16 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../core/constants/app_constants.dart';
+import 'supabase_service.dart';
 
+/// Google Books traffic goes through the `google-books` edge function so
+/// [GOOGLE_BOOKS_API_KEY] stays a Supabase secret, not a client bundle value.
 class ApiService {
   ApiService()
     : _dio = Dio(
         BaseOptions(
-          baseUrl: AppConstants.googleBooksBaseUrl,
+          baseUrl: '${SupabaseService.url}/functions/v1/google-books',
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 15),
           sendTimeout: const Duration(seconds: 15),
+          headers: SupabaseService.edgeFunctionHeaders(),
           validateStatus: (code) => code != null && code < 500,
         ),
       ) {
@@ -29,20 +32,15 @@ class ApiService {
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    final params = <String, dynamic>{...(queryParameters ?? {})};
-    final key = AppConstants.googleBooksApiKey.trim();
-    if (key.isNotEmpty) {
-      params.putIfAbsent('key', () => key);
-    }
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         path,
-        queryParameters: params,
+        queryParameters: queryParameters,
       );
       final data = response.data;
       if (response.statusCode != null && response.statusCode! >= 400) {
         throw Exception(
-          'Google Books returned ${response.statusCode} for $path',
+          'Google Books proxy returned ${response.statusCode} for $path',
         );
       }
       return data ?? <String, dynamic>{};

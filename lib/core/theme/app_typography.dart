@@ -4,7 +4,7 @@ import 'app_colors.dart';
 
 /// Display (largest headings): Nouveau.
 /// Headlines & titles: Sansita Swashed.
-/// Body / labels: Cesare.
+/// Body / labels: Cesare (unless the string contains `@` — then Sansita Swashed).
 /// Sinistre: bottom nav labels (use [bottomNavLabel]).
 abstract final class AppTypography {
   static const String _cesare = 'Cesare';
@@ -13,6 +13,12 @@ abstract final class AppTypography {
   static const String _sinistre = 'Sinistre';
 
   /// Material [NavigationBar] labels in title case (no transform applied).
+  /// Uses Sansita Swashed instead of Cesare when [text] contains `@` (e.g. emails).
+  static TextStyle withAtSignFont(TextStyle style, String text) {
+    if (!text.contains('@')) return style;
+    return style.copyWith(fontFamily: _sansitaSwashed);
+  }
+
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(
       fontFamily: _sinistre,
@@ -99,4 +105,8 @@ abstract final class AppTypography {
       ),
     );
   }
+}
+
+extension AtSignTextStyle on TextStyle {
+  TextStyle forContent(String text) => AppTypography.withAtSignFont(this, text);
 }

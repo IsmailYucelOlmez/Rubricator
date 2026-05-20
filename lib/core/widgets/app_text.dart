@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_typography.dart';
+
 /// Section title — maps to headline typography from theme.
 class AppSectionTitle extends StatelessWidget {
   const AppSectionTitle(this.data, {super.key, this.maxLines = 1});
@@ -31,7 +33,10 @@ class AppSecondaryText extends StatelessWidget {
       data,
       maxLines: maxLines,
       overflow: maxLines != null ? TextOverflow.ellipsis : null,
-      style: Theme.of(context).textTheme.bodySmall,
+      style: AppTypography.withAtSignFont(
+        Theme.of(context).textTheme.bodySmall!,
+        data,
+      ),
     );
   }
 }

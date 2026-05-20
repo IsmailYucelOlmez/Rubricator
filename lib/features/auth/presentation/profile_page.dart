@@ -8,13 +8,14 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/ux/l10n_app_error.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/theme_mode_provider.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
+import '../../profile/presentation/widgets/theme_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import '../../user_books/domain/entities/user_book_entity.dart';
 import 'auth_provider.dart';
@@ -28,7 +29,6 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authAsync = ref.watch(authStateProvider);
     final l10n = AppLocalizations.of(context)!;
-    final themeMode = ref.watch(themeModeProvider);
     return SafeArea(
       child: ResponsiveScaffoldBody(
         child: Padding(
@@ -44,31 +44,43 @@ class ProfilePage extends ConsumerWidget {
                   fontFamily: 'Nouveau',
                 ),
               ),
+              if (user != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                _ProfileHeader(user: user),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.tonalIcon(
+                        onPressed: () => _showEditProfileDialog(context, user),
+                        icon: const Icon(Icons.edit_outlined),
+                        label: Text(
+                          l10n.editProfile,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () async {
+                          await ref.read(authServiceProvider).signOut();
+                        },
+                        child: Text(
+                          l10n.signOut,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
-              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-              Text(l10n.themeAppearance, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: AppSpacing.xs),
-              SegmentedButton<ThemeMode>(
-                segments: [
-                  ButtonSegment<ThemeMode>(
-                    value: ThemeMode.light,
-                    label: Text(l10n.themeLight),
-                    icon: const Icon(Icons.light_mode_outlined, size: 18),
-                  ),
-                  ButtonSegment<ThemeMode>(
-                    value: ThemeMode.dark,
-                    label: Text(l10n.themeDark),
-                    icon: const Icon(Icons.dark_mode_outlined, size: 18),
-                  ),
-                ],
-                selected: {themeMode},
-                onSelectionChanged: (selected) {
-                  ref.read(themeModeProvider.notifier).setTheme(selected.first);
-                },
-              ),
-              const SizedBox(height: AppSpacing.md),
+              const ThemeSelector(),
+              if (user != null) const _ProfileReadingListsSection(),
               if (user == null) ...[
+                const SizedBox(height: AppSpacing.md),
                 Text(l10n.signInPrompt),
                 const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
                 FilledButton(
@@ -89,23 +101,8 @@ class ProfilePage extends ConsumerWidget {
                   child: Text(l10n.createAccount),
                 ),
               ] else ...[
-                _ProfileHeader(user: user),
-                const SizedBox(height: AppSpacing.sm),
-                FilledButton.tonalIcon(
-                  onPressed: () => _showEditProfileDialog(context, user),
-                  icon: const Icon(Icons.edit_outlined),
-                  label: Text(l10n.editProfile),
-                ),
-                const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-                FilledButton(
-                  onPressed: () async {
-                    await ref.read(authServiceProvider).signOut();
-                  },
-                  child: Text(l10n.signOut),
-                ),
                 const HabitProfileSummary(),
                 const StatsPreviewCard(),
-                const _ProfileReadingListsSection(),
               ],
               ],
             ),
@@ -150,6 +147,9 @@ class ProfilePage extends ConsumerWidget {
 class _ProfileReadingListsSection extends StatelessWidget {
   const _ProfileReadingListsSection();
 
+  static const _buttonHeight = 40.0;
+  static const _iconSize = 18.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -162,24 +162,49 @@ class _ProfileReadingListsSection extends StatelessWidget {
           children: [
             Text(l10n.readingStatsListsTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                _statusButton(context, l10n.toRead, ReadingStatus.toRead),
-                _statusButton(context, l10n.reading, ReadingStatus.reading),
-                _statusButton(context, l10n.reReading, ReadingStatus.reReading),
-                _statusButton(context, l10n.completed, ReadingStatus.completed),
-                _statusButton(context, l10n.dropped, ReadingStatus.dropped),
-                FilledButton.tonalIcon(
+            _buttonRow(
+              context,
+              [
+                _ReadingListButtonSpec(
+                  label: l10n.toRead,
+                  icon: Icons.menu_book_outlined,
+                  onPressed: () => _openStatus(context, ReadingStatus.toRead),
+                ),
+                _ReadingListButtonSpec(
+                  label: l10n.reading,
+                  icon: Icons.menu_book_outlined,
+                  onPressed: () => _openStatus(context, ReadingStatus.reading),
+                ),
+                _ReadingListButtonSpec(
+                  label: l10n.reReading,
+                  icon: Icons.menu_book_outlined,
+                  onPressed: () => _openStatus(context, ReadingStatus.reReading),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _buttonRow(
+              context,
+              [
+                _ReadingListButtonSpec(
+                  label: l10n.completed,
+                  icon: Icons.menu_book_outlined,
+                  onPressed: () => _openStatus(context, ReadingStatus.completed),
+                ),
+                _ReadingListButtonSpec(
+                  label: l10n.dropped,
+                  icon: Icons.menu_book_outlined,
+                  onPressed: () => _openStatus(context, ReadingStatus.dropped),
+                ),
+                _ReadingListButtonSpec(
+                  label: l10n.favorites,
+                  icon: Icons.favorite_outline,
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) =>
                           const ReadingStatusListPage(showFavoritesOnly: true),
                     ),
                   ),
-                  icon: const Icon(Icons.favorite_outline),
-                  label: Text(l10n.favorites),
                 ),
               ],
             ),
@@ -189,21 +214,58 @@ class _ProfileReadingListsSection extends StatelessWidget {
     );
   }
 
-  Widget _statusButton(
-    BuildContext context,
-    String label,
-    ReadingStatus status,
-  ) {
-    return FilledButton.tonalIcon(
-      onPressed: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ReadingStatusListPage(status: status),
-        ),
+  static void _openStatus(BuildContext context, ReadingStatus status) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ReadingStatusListPage(status: status),
       ),
-      icon: const Icon(Icons.menu_book_outlined),
-      label: Text(label),
     );
   }
+
+  Widget _buttonRow(BuildContext context, List<_ReadingListButtonSpec> specs) {
+    return Row(
+      children: [
+        for (var i = 0; i < specs.length; i++) ...[
+          if (i > 0) const SizedBox(width: AppSpacing.sm),
+          Expanded(child: _fixedListButton(context, specs[i])),
+        ],
+      ],
+    );
+  }
+
+  Widget _fixedListButton(BuildContext context, _ReadingListButtonSpec spec) {
+    return SizedBox(
+      height: _buttonHeight,
+      width: double.infinity,
+      child: FilledButton.tonalIcon(
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          minimumSize: const Size(0, _buttonHeight),
+          fixedSize: const Size.fromHeight(_buttonHeight),
+        ),
+        onPressed: spec.onPressed,
+        icon: Icon(spec.icon, size: _iconSize),
+        label: Text(
+          spec.label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+}
+
+class _ReadingListButtonSpec {
+  const _ReadingListButtonSpec({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
 }
 
 class _ProfileHeader extends StatelessWidget {
@@ -211,27 +273,33 @@ class _ProfileHeader extends StatelessWidget {
 
   final User user;
 
+  static const _baseAvatarRadius = 24.0;
+  static const _avatarScale = 2.0;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final displayName = userDisplayName(user);
     final avatarUrl = userAvatarUrl(user);
+    final avatarRadius = _baseAvatarRadius * _avatarScale;
+
+    final nameStyle = Theme.of(context).textTheme.titleMedium!;
+    final emailStyle = Theme.of(context).textTheme.bodySmall!;
+    final emailText = user.email ?? l10n.signedInFallback;
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _RoundNetworkAvatar(url: avatarUrl, radius: 24),
-        const SizedBox(width: AppSpacing.sm),
+        _RoundNetworkAvatar(url: avatarUrl, radius: avatarRadius),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                displayName,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                user.email ?? AppLocalizations.of(context)!.signedInFallback,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(displayName, style: nameStyle.forContent(displayName)),
+              const SizedBox(height: AppSpacing.xs),
+              Text(emailText, style: emailStyle.forContent(emailText)),
             ],
           ),
         ),

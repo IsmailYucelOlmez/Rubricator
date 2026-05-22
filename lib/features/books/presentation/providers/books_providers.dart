@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../auth/presentation/auth_provider.dart';
 import '../../../../services/ai_service.dart';
 import '../../../../services/api_service.dart';
 import '../../data/repositories/book_detail_repository_impl.dart';
@@ -17,9 +17,6 @@ final bookRepositoryProvider = Provider<BookRepository>(
 );
 
 final _aiServiceProvider = Provider<AiService>((ref) => AiService());
-final _supabaseProvider = Provider<SupabaseClient>(
-  (ref) => Supabase.instance.client,
-);
 
 final trendingBooksProvider = FutureProvider<List<Book>>((ref) {
   return ref.watch(bookRepositoryProvider).trendingBooks();
@@ -29,9 +26,12 @@ final bookDetailRepositoryProvider = Provider<BookDetailRepository>(
   (ref) => BookDetailRepositoryImpl(ref.watch(_apiProvider)),
 );
 
-final currentUserIdProvider = Provider<String?>(
-  (ref) => ref.watch(_supabaseProvider).auth.currentUser?.id,
-);
+final currentUserIdProvider = Provider<String?>((ref) {
+  ref.watch(authStateProvider);
+  final sessionUserId = ref.watch(authServiceProvider).currentUser?.id;
+  if (sessionUserId != null) return sessionUserId;
+  return ref.watch(authStateProvider).valueOrNull?.id;
+});
 
 final bookDetailProvider =
     FutureProvider.family<BookEntity, Book>((ref, book) async {
@@ -274,6 +274,7 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
   @override
   Future<RatingState> build(String arg) async {
     _bookId = arg;
+    ref.watch(authStateProvider);
     final repository = ref.watch(bookDetailRepositoryProvider);
     final avg = await repository.getAverageRating(arg);
     final userRating = await repository.getUserRating(arg);
@@ -281,7 +282,9 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
   }
 
   Future<void> submit(int value) async {
-    final userId = ref.read(currentUserIdProvider);
+    final userId =
+        ref.read(authServiceProvider).currentUser?.id ??
+        ref.read(currentUserIdProvider);
     if (userId == null) throw Exception('Sign in required.');
     if (value < 1 || value > 10) {
       throw Exception('Rating must be between 1 and 10.');

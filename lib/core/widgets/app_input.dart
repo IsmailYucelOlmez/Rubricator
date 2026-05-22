@@ -14,6 +14,7 @@ class AppInput extends StatelessWidget {
     this.prefixIcon,
     this.errorText,
     this.onEditingComplete,
+    this.style,
   });
 
   final TextEditingController controller;
@@ -26,11 +27,13 @@ class AppInput extends StatelessWidget {
   final Widget? prefixIcon;
   final String? errorText;
   final VoidCallback? onEditingComplete;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      style: style,
       obscureText: obscureText,
       keyboardType: keyboardType,
       minLines: minLines,

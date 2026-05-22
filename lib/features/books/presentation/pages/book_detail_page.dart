@@ -8,6 +8,7 @@ import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -19,6 +20,12 @@ import '../../domain/entities/book_detail_entities.dart';
 import '../providers/books_providers.dart';
 import '../widgets/book_cover_with_favorite_button.dart';
 import 'author_detail_page.dart';
+
+TextStyle _bookDetailBodyStyle(BuildContext context) =>
+    AppTypography.formInputStyle(Theme.of(context).textTheme.bodyMedium!);
+
+TextStyle _bookDetailInputStyle(BuildContext context) =>
+    AppTypography.formInputStyle(Theme.of(context).textTheme.bodyLarge!);
 
 class BookDetailPage extends ConsumerStatefulWidget {
   const BookDetailPage({super.key, required this.book});
@@ -281,7 +288,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   }
                 },
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm),
               _RatingSection(
                 state: rating,
                 selectedRating: selectedRatingForUi,
@@ -326,9 +333,125 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                 detailedBook.description.isEmpty
                     ? l10n.noDescriptionAvailable
                     : detailedBook.description,
+                style: _bookDetailBodyStyle(context),
               ),
               const SizedBox(height: AppSpacing.lg),
-              _ReviewTabsSection(
+              Text(
+                l10n.relatedBooks,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              related.when(
+                data: (list) {
+                  if (list.isEmpty) {
+                    return Text(
+                      l10n.noRelatedTitlesFound,
+                      style: _bookDetailBodyStyle(context),
+                    );
+                  }
+                  return SizedBox(
+                    height: 200,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: list.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
+                      itemBuilder: (context, i) {
+                        final b = list[i];
+                        final u = AppConstants.bookThumbnailUrl(
+                          b.coverImageUrl,
+                        );
+                        return SizedBox(
+                          width: 110,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => BookDetailPage(book: b),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: BookCoverWithFavoriteButton(
+                                    bookId: b.id,
+                                    compact: true,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
+                                      child: u != null
+                                          ? Image.network(
+                                              u,
+                                              webHtmlElementStrategy:
+                                                  WebHtmlElementStrategy.prefer,
+                                              width: 110,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => ColoredBox(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .surfaceContainerHighest,
+                                                    child: Icon(
+                                                      Icons.menu_book_outlined,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                                  ),
+                                            )
+                                          : ColoredBox(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                              child: Icon(
+                                                Icons.menu_book_outlined,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Text(
+                                  b.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTypography.formInputStyle(
+                                    Theme.of(context).textTheme.bodySmall!,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
+                error: (error, stackTrace) => AsyncErrorView(
+                      error: error,
+                      compact: true,
+                      onRetry: () => ref.invalidate(
+                        relatedBooksProvider((
+                          workId: detailedBook.id,
+                          subjects: detailedBook.subjectKeys,
+                          author: detailedBook.author,
+                        )),
+                      ),
+                    ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              _ReviewsAndQuotesSection(
                 reviewController: _reviewController,
                 externalTitleController: _externalTitleController,
                 externalUrlController: _externalUrlController,
@@ -427,10 +550,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _showMessage(l10n.couldNotOpenBrowser);
                   }
                 },
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              _QuoteSection(
-                controller: _quoteController,
+                quoteController: _quoteController,
                 quotes: quotes,
                 onRetryQuotes: () => ref.invalidate(quoteProvider(detailedBook.id)),
                 onAddQuote: () async {
@@ -455,119 +575,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _feedbackError(e);
                   }
                 },
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                l10n.relatedBooks,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              related.when(
-                data: (list) {
-                  if (list.isEmpty) {
-                    return Text(
-                      l10n.noRelatedTitlesFound,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    );
-                  }
-                  return SizedBox(
-                    height: 200,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: list.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-                      itemBuilder: (context, i) {
-                        final b = list[i];
-                        final u = AppConstants.bookThumbnailUrl(
-                          b.coverImageUrl,
-                        );
-                        return SizedBox(
-                          width: 110,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => BookDetailPage(book: b),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: BookCoverWithFavoriteButton(
-                                    bookId: b.id,
-                                    compact: true,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.sm,
-                                      ),
-                                      child: u != null
-                                          ? Image.network(
-                                              u,
-                                              webHtmlElementStrategy:
-                                                  WebHtmlElementStrategy.prefer,
-                                              width: 110,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (
-                                                    context,
-                                                    error,
-                                                    stackTrace,
-                                                  ) => ColoredBox(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .surfaceContainerHighest,
-                                                    child: Icon(
-                                                      Icons.menu_book_outlined,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurfaceVariant,
-                                                    ),
-                                                  ),
-                                            )
-                                          : ColoredBox(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainerHighest,
-                                              child: Icon(
-                                                Icons.menu_book_outlined,
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurfaceVariant,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  b.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-                loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
-                error: (error, stackTrace) => AsyncErrorView(
-                      error: error,
-                      compact: true,
-                      onRetry: () => ref.invalidate(
-                        relatedBooksProvider((
-                          workId: detailedBook.id,
-                          subjects: detailedBook.subjectKeys,
-                          author: detailedBook.author,
-                        )),
-                      ),
-                    ),
               ),
             ],
           );
@@ -643,7 +650,10 @@ class _ReadingStatusCard extends StatelessWidget {
             ),
             if (status == ReadingStatus.reading) ...[
               const SizedBox(height: 8),
-              Text(l10n.progressPercent(progress)),
+              Text(
+                l10n.progressPercent(progress),
+                style: _bookDetailBodyStyle(context),
+              ),
               Slider(
                 value: progress.toDouble(),
                 min: 0,
@@ -756,6 +766,7 @@ class _RatingSection extends StatelessWidget {
                 selectedRating > 0
                     ? '${selectedRating.toDouble().toStringAsFixed(1)} / 10'
                     : '${data.average.toStringAsFixed(1)} / 10',
+                style: _bookDetailBodyStyle(context),
               ),
               loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
               error: (error, stackTrace) => AsyncErrorView(
@@ -838,6 +849,98 @@ IconData _starIconFor(int selectedRating, int index) {
   return Icons.star_border;
 }
 
+class _ReviewsAndQuotesSection extends StatelessWidget {
+  const _ReviewsAndQuotesSection({
+    required this.reviewController,
+    required this.externalTitleController,
+    required this.externalUrlController,
+    required this.reviews,
+    required this.externalReviews,
+    required this.currentUserId,
+    required this.onRetryReviews,
+    required this.onRetryExternalReviews,
+    required this.onAddReview,
+    required this.onEditReview,
+    required this.onDeleteReview,
+    required this.onAddExternalReview,
+    required this.onOpenExternalReview,
+    required this.quoteController,
+    required this.quotes,
+    required this.onRetryQuotes,
+    required this.onAddQuote,
+    required this.onLikeQuote,
+  });
+
+  final TextEditingController reviewController;
+  final TextEditingController externalTitleController;
+  final TextEditingController externalUrlController;
+  final AsyncValue<List<ReviewEntity>> reviews;
+  final AsyncValue<List<ExternalReviewEntity>> externalReviews;
+  final String? currentUserId;
+  final VoidCallback onRetryReviews;
+  final VoidCallback onRetryExternalReviews;
+  final VoidCallback onAddReview;
+  final Future<void> Function(ReviewEntity review) onEditReview;
+  final Future<void> Function(ReviewEntity review) onDeleteReview;
+  final VoidCallback onAddExternalReview;
+  final Future<void> Function(String url) onOpenExternalReview;
+  final TextEditingController quoteController;
+  final AsyncValue<List<QuoteEntity>> quotes;
+  final VoidCallback onRetryQuotes;
+  final VoidCallback onAddQuote;
+  final Future<void> Function(String quoteId) onLikeQuote;
+
+  static const _tabPanelHeight = 400.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TabBar(
+            tabs: [
+              Tab(text: l10n.reviews),
+              Tab(text: l10n.quotes),
+            ],
+          ),
+          SizedBox(
+            height: _tabPanelHeight,
+            child: TabBarView(
+              children: [
+                _ReviewTabsSection(
+                  reviewController: reviewController,
+                  externalTitleController: externalTitleController,
+                  externalUrlController: externalUrlController,
+                  reviews: reviews,
+                  externalReviews: externalReviews,
+                  currentUserId: currentUserId,
+                  onRetryReviews: onRetryReviews,
+                  onRetryExternalReviews: onRetryExternalReviews,
+                  onAddReview: onAddReview,
+                  onEditReview: onEditReview,
+                  onDeleteReview: onDeleteReview,
+                  onAddExternalReview: onAddExternalReview,
+                  onOpenExternalReview: onOpenExternalReview,
+                ),
+                _QuoteSection(
+                  controller: quoteController,
+                  quotes: quotes,
+                  onRetryQuotes: onRetryQuotes,
+                  onAddQuote: onAddQuote,
+                  onLikeQuote: onLikeQuote,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ReviewTabsSection extends StatelessWidget {
   const _ReviewTabsSection({
     required this.reviewController,
@@ -876,19 +979,13 @@ class _ReviewTabsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppLocalizations.of(context)!.reviews,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
           TabBar(
             tabs: [
               Tab(text: AppLocalizations.of(context)!.userReviews),
               Tab(text: AppLocalizations.of(context)!.externalReviews),
             ],
           ),
-          SizedBox(
-            height: 380,
+          Expanded(
             child: TabBarView(
               children: [
                 Column(
@@ -897,6 +994,7 @@ class _ReviewTabsSection extends StatelessWidget {
                       controller: reviewController,
                       minLines: 2,
                       maxLines: 4,
+                      style: _bookDetailInputStyle(context),
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.writeReviewHint,
                       ),
@@ -917,6 +1015,7 @@ class _ReviewTabsSection extends StatelessWidget {
                                   AppLocalizations.of(
                                     context,
                                   )!.noUserReviewsYet,
+                                  style: _bookDetailBodyStyle(context),
                                 ),
                               )
                             : ListView.builder(
@@ -925,9 +1024,13 @@ class _ReviewTabsSection extends StatelessWidget {
                                   final item = list[index];
                                   final own = item.userId == currentUserId;
                                   return ListTile(
-                                    title: Text(item.content),
+                                    title: Text(
+                                      item.content,
+                                      style: _bookDetailBodyStyle(context),
+                                    ),
                                     subtitle: Text(
                                       item.createdAt.toLocal().toString(),
+                                      style: _bookDetailBodyStyle(context),
                                     ),
                                     trailing: own
                                         ? Wrap(
@@ -967,6 +1070,7 @@ class _ReviewTabsSection extends StatelessWidget {
                   children: [
                     TextField(
                       controller: externalTitleController,
+                      style: _bookDetailInputStyle(context),
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.reviewTitle,
                       ),
@@ -974,6 +1078,7 @@ class _ReviewTabsSection extends StatelessWidget {
                     const SizedBox(height: 8),
                     TextField(
                       controller: externalUrlController,
+                      style: _bookDetailInputStyle(context),
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.reviewUrlHint,
                       ),
@@ -996,6 +1101,7 @@ class _ReviewTabsSection extends StatelessWidget {
                                   AppLocalizations.of(
                                     context,
                                   )!.noExternalReviewsYet,
+                                  style: _bookDetailBodyStyle(context),
                                 ),
                               )
                             : ListView.builder(
@@ -1003,8 +1109,14 @@ class _ReviewTabsSection extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   final item = list[index];
                                   return ListTile(
-                                    title: Text(item.title),
-                                    subtitle: Text(item.url),
+                                    title: Text(
+                                      item.title,
+                                      style: _bookDetailBodyStyle(context),
+                                    ),
+                                    subtitle: Text(
+                                      item.url,
+                                      style: _bookDetailBodyStyle(context),
+                                    ),
                                     trailing: IconButton(
                                       onPressed: () =>
                                           onOpenExternalReview(item.url),
@@ -1052,15 +1164,11 @@ class _QuoteSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          AppLocalizations.of(context)!.quotes,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
         TextField(
           controller: controller,
           minLines: 2,
           maxLines: 4,
+          style: _bookDetailInputStyle(context),
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context)!.addMemorableQuote,
           ),
@@ -1074,17 +1182,24 @@ class _QuoteSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        SizedBox(
-          height: 220,
+        Expanded(
           child: quotes.when(
             data: (list) => list.isEmpty
-                ? Center(child: Text(AppLocalizations.of(context)!.noQuotesYet))
+                ? Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.noQuotesYet,
+                      style: _bookDetailBodyStyle(context),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: list.length,
                     itemBuilder: (context, index) {
                       final item = list[index];
                       return ListTile(
-                        title: Text(item.content),
+                        title: Text(
+                          item.content,
+                          style: _bookDetailBodyStyle(context),
+                        ),
                         trailing: TextButton.icon(
                           onPressed: () => onLikeQuote(item.id),
                           icon: const Icon(Icons.thumb_up_outlined),
@@ -1134,7 +1249,12 @@ class _EditReviewDialogState extends State<_EditReviewDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(AppLocalizations.of(context)!.editReview),
-      content: TextField(controller: _controller, minLines: 2, maxLines: 5),
+      content: TextField(
+        controller: _controller,
+        minLines: 2,
+        maxLines: 5,
+        style: _bookDetailInputStyle(context),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

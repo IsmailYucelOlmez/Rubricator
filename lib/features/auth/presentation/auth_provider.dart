@@ -6,8 +6,13 @@ import '../../../services/auth_service.dart';
 final authServiceProvider = Provider<AuthService>((ref) => AuthService());
 
 /// Supabase session as a stream — use for sign-in / sign-out / persistence.
-final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authServiceProvider).authStateStream;
+///
+/// Yields [AuthService.currentUser] first so restored sessions are visible
+/// before the first [onAuthStateChange] event (avoids false "signed out" reads).
+final authStateProvider = StreamProvider<User?>((ref) async* {
+  final auth = ref.watch(authServiceProvider);
+  yield auth.currentUser;
+  yield* auth.authStateStream;
 });
 
 String userDisplayName(User? user) {

@@ -9,6 +9,7 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/layout/app_breakpoints.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/validation/form_validators.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
@@ -176,6 +177,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final inputStyle = AppTypography.formInputStyle(
+      Theme.of(context).textTheme.bodyLarge!,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(l10n.createAccount)),
       body: SafeArea(
@@ -192,6 +196,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 keyboardType: TextInputType.emailAddress,
                 labelText: l10n.email,
                 errorText: _emailError,
+                style: inputStyle,
                 onEditingComplete: () => setState(() {
                   final v = _email.text.trim();
                   _emailError = v.isEmpty
@@ -205,6 +210,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 obscureText: true,
                 labelText: l10n.passwordMin6,
                 errorText: _passwordError,
+                style: inputStyle,
                 onEditingComplete: () => setState(() {
                   final v = _password.text;
                   if (v.isEmpty) {
@@ -221,6 +227,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 controller: _userName,
                 labelText: l10n.displayNameLabel,
                 errorText: _userNameError,
+                style: inputStyle,
                 onEditingComplete: () => setState(() {
                   _userNameError =
                       _userName.text.trim().isEmpty ? l10n.uxUserNameRequired : null;

@@ -5,6 +5,7 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/layout/app_breakpoints.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/ux/app_feedback.dart';
 import '../../../core/validation/form_validators.dart';
 import '../../../core/widgets/app_input.dart';
@@ -97,6 +98,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final inputStyle = AppTypography.formInputStyle(
+      Theme.of(context).textTheme.bodyLarge!,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(l10n.signIn)),
       body: SafeArea(
@@ -115,6 +119,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
                 labelText: l10n.email,
                 errorText: _emailError,
+                style: inputStyle,
                 onEditingComplete: () => _onEmailBlur(l10n),
               ),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
@@ -123,6 +128,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 obscureText: true,
                 labelText: l10n.password,
                 errorText: _passwordError,
+                style: inputStyle,
                 onEditingComplete: () => _onPasswordBlur(l10n),
               ),
               const SizedBox(height: AppSpacing.md),

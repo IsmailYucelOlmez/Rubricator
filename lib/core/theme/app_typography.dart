@@ -19,6 +19,11 @@ abstract final class AppTypography {
     return style.copyWith(fontFamily: _sansitaSwashed);
   }
 
+  /// Typed text in form fields (e.g. login); uses Sansita Swashed at [base] size.
+  static TextStyle formInputStyle(TextStyle base) {
+    return base.copyWith(fontFamily: _sansitaSwashed);
+  }
+
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(
       fontFamily: _sinistre,

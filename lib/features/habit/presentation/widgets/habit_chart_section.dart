@@ -66,27 +66,37 @@ class _ChartCard extends StatelessWidget {
             SizedBox(
               height: AppSpacing.lg * 5,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: ordered.map((day) {
                   final m = daily[day] ?? 0;
-                  final h = 8.0 + (m / denom) * 100;
                   final isToday = day == today;
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs / 2),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Tooltip(
-                            message: AppLocalizations.of(context)!.minutesShort(m),
-                            child: Container(
-                              height: h.clamp(4, 110),
-                              decoration: BoxDecoration(
-                                color: isToday
-                                    ? AppColors.primary
-                                    : AppColors.primary.withValues(alpha: 0.35),
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
-                              ),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final maxBar = constraints.maxHeight;
+                                final h = 8.0 + (m / denom) * (maxBar - 8);
+                                return Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Tooltip(
+                                    message: AppLocalizations.of(context)!.minutesShort(m),
+                                    child: Container(
+                                      height: h.clamp(4, maxBar),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: isToday
+                                            ? AppColors.primary
+                                            : AppColors.primary.withValues(alpha: 0.35),
+                                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
@@ -94,7 +104,8 @@ class _ChartCard extends StatelessWidget {
                             '${day.day}',
                             style: Theme.of(context).textTheme.labelSmall,
                             maxLines: 1,
-                            overflow: TextOverflow.clip,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -143,34 +154,49 @@ class _WeeklyBars extends StatelessWidget {
     return SizedBox(
       height: AppSpacing.xl * 3 + AppSpacing.sm,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: List.generate(6, (i) {
           final m = weekTotals[i] ?? 0;
-          final h = 10.0 + (m / denom) * 80;
           final label = i == 0
               ? AppLocalizations.of(context)!.thisWeekShort
               : AppLocalizations.of(context)!.weeksAgoShort(i);
+          final labelStyle = Theme.of(context).textTheme.labelSmall;
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Tooltip(
-                    message: AppLocalizations.of(context)!.minutesShort(m),
-                    child: Container(
-                      height: h.clamp(6, 92),
-                      decoration: BoxDecoration(
-                        color: AppColors.gold.withValues(alpha: 0.28),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final maxBar = constraints.maxHeight;
+                        final h = 10.0 + (m / denom) * (maxBar - 10);
+                        return Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Tooltip(
+                            message: AppLocalizations.of(context)!.minutesShort(m),
+                            child: Container(
+                              height: h.clamp(6, maxBar),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: AppColors.gold.withValues(alpha: 0.28),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelSmall,
-                    textAlign: TextAlign.center,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      label,
+                      style: labelStyle,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                    ),
                   ),
                 ],
               ),

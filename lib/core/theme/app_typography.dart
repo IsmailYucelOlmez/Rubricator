@@ -12,17 +12,27 @@ abstract final class AppTypography {
   static const String _sansitaSwashed = 'SansitaSwashed';
   static const String _sinistre = 'Sinistre';
 
-  /// Material [NavigationBar] labels in title case (no transform applied).
-  /// Uses Sansita Swashed instead of Cesare when [text] contains `@` (e.g. emails).
-  static TextStyle withAtSignFont(TextStyle style, String text) {
-    if (!text.contains('@')) return style;
-    return style.copyWith(fontFamily: _sansitaSwashed);
+  /// Sansita used instead of Cesare — scaled down so line metrics stay close to Cesare.
+  static const double sansitaBodySizeFactor = 0.85;
+
+  /// Cesare → Sansita Swashed (login fields, book detail body, habit page labels, etc.).
+  static TextStyle cesareReplacementStyle(TextStyle base) {
+    final size = base.fontSize;
+    return base.copyWith(
+      fontFamily: _sansitaSwashed,
+      fontSize: size == null ? null : size * sansitaBodySizeFactor,
+    );
   }
 
-  /// Typed text in form fields (e.g. login); uses Sansita Swashed at [base] size.
-  static TextStyle formInputStyle(TextStyle base) {
-    return base.copyWith(fontFamily: _sansitaSwashed);
+  /// Material [NavigationBar] labels in title case (no transform applied).
+  /// Uses [cesareReplacementStyle] when [text] contains `@` (e.g. emails).
+  static TextStyle withAtSignFont(TextStyle style, String text) {
+    if (!text.contains('@')) return style;
+    return cesareReplacementStyle(style);
   }
+
+  /// Alias for [cesareReplacementStyle] (form fields and other Cesare swaps).
+  static TextStyle formInputStyle(TextStyle base) => cesareReplacementStyle(base);
 
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(

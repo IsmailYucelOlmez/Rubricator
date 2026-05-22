@@ -39,7 +39,7 @@ class _CalendarBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final today = ReadingStreakCalculator.dateOnly(DateTime.now());
-    final startMonday = _mondayOf(today).subtract(Duration(days: 7 * (weeks - 1)));
+    final thisWeekMonday = _mondayOf(today);
 
     final byDay = <DateTime, int>{};
     for (final log in logs) {
@@ -87,12 +87,14 @@ class _CalendarBody extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(weeks, (w) {
+                  // w=0: current week (left); w increases → further into the past (right).
+                  final weekMonday = thisWeekMonday.subtract(Duration(days: 7 * w));
                   return Padding(
                     padding: const EdgeInsets.only(right: AppSpacing.xs),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(7, (weekday) {
-                        final day = startMonday.add(Duration(days: w * 7 + weekday));
+                        final day = weekMonday.add(Duration(days: weekday));
                         if (day.isAfter(today)) {
                           return const SizedBox(width: 11, height: 11);
                         }

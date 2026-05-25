@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../providers/profile_stats_providers.dart';
@@ -19,15 +20,18 @@ class ProfileStatsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     if (user == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.readingStats)),
-        body: Center(
-          child: ResponsiveScaffoldBody(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text(
-                l10n.signInToSeeStats,
-                textAlign: TextAlign.center,
+      return Theme(
+        data: AppTypography.themeWithSansitaBody(context),
+        child: Scaffold(
+          appBar: AppBar(title: Text(l10n.readingStats)),
+          body: Center(
+            child: ResponsiveScaffoldBody(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Text(
+                  l10n.signInToSeeStats,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
@@ -35,7 +39,9 @@ class ProfileStatsPage extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
+    return Theme(
+      data: AppTypography.themeWithSansitaBody(context),
+      child: Scaffold(
       appBar: AppBar(title: Text(l10n.readingStats)),
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(
@@ -70,6 +76,7 @@ class ProfileStatsPage extends ConsumerWidget {
           ],
         ),
         ),
+      ),
       ),
     );
   }

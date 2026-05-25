@@ -50,7 +50,7 @@ class RatingSection extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        r.averageRating.toStringAsFixed(1),
+                        '${r.averageRating.toStringAsFixed(1)}',
                         style: Theme.of(context).textTheme.displaySmall
                             ?.copyWith(fontWeight: FontWeight.w600, height: 1),
                       ),
@@ -58,16 +58,17 @@ class RatingSection extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                         child: Row(
-                          children: List.generate(5, (i) {
-                            final starValue = r.averageRating / 2;
-                            final delta = starValue - i;
-                            final icon = delta >= 1
-                                ? Icons.star
-                                : (delta >= 0.5
-                                      ? Icons.star_half
-                                      : Icons.star_border);
-                            return Icon(icon, size: 22, color: AppColors.gold);
-                          }),
+                          children: List.generate(
+                            5,
+                            (i) => _RatingStar(
+                              fill: _starFillForTenPointRating(
+                                r.averageRating,
+                                i,
+                              ),
+                              size: 22,
+                              color: AppColors.gold,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -93,6 +94,48 @@ class RatingSection extends ConsumerWidget {
             onRetry: () => ref.invalidate(ratingStatsProvider),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Each of 5 stars represents 2 points on the 1–10 scale (same as book detail).
+double _starFillForTenPointRating(double rating, int index) {
+  final value = rating - (index * 2);
+  if (value <= 0) return 0;
+  if (value >= 2) return 1;
+  return value / 2;
+}
+
+class _RatingStar extends StatelessWidget {
+  const _RatingStar({
+    required this.fill,
+    required this.size,
+    required this.color,
+  });
+
+  final double fill;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Icon(Icons.star_border, size: size, color: color),
+          if (fill > 0)
+            ClipRect(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                widthFactor: fill.clamp(0.0, 1.0),
+                child: Icon(Icons.star, size: size, color: color),
+              ),
+            ),
+        ],
       ),
     );
   }

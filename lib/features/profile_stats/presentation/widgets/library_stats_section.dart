@@ -62,7 +62,7 @@ class LibraryStatsSection extends ConsumerWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
-                        childAspectRatio: 1.35,
+                        childAspectRatio: 2.8,
                         children: tiles
                             .map(
                               (t) => _StatTile(
@@ -113,25 +113,29 @@ class _StatTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm + AppSpacing.xs,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
           children: [
             Icon(icon, size: 22, color: AppColors.gold),
-            const Spacer(),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               '$value',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                  ),
-            ),
-            Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
                   ),
             ),
           ],

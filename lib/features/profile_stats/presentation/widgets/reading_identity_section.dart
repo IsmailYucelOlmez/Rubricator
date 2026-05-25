@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -116,15 +117,46 @@ class ReadingIdentitySection extends ConsumerWidget {
                         ),
                   );
                 }
+                final maxC = authors.map((a) => a.count).reduce((a, b) => a > b ? a : b);
                 return Column(
                   children: authors.map((a) {
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(a.author),
-                      trailing: Text(
-                        '${a.count}',
-                        style: Theme.of(context).textTheme.labelLarge,
+                    final t = maxC > 0 ? a.count / maxC : 0.0;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  a.author,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                              Text(
+                                '${a.count}',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: t,
+                              minHeight: 8,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppColors.gold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),

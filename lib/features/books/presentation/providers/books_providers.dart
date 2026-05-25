@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../profile_stats/presentation/providers/profile_stats_revision.dart';
+
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../../services/ai_service.dart';
 import '../../../../services/api_service.dart';
@@ -303,6 +305,7 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
           .rateBook(
             RatingEntity(bookId: _bookId, userId: userId, rating: value),
           );
+      ref.read(userRatingsRevisionProvider.notifier).state++;
       final avg = await ref
           .read(bookDetailRepositoryProvider)
           .getAverageRating(_bookId);

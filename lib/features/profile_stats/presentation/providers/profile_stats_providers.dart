@@ -8,6 +8,7 @@ import '../../data/repositories/profile_stats_repository_impl.dart';
 import '../../domain/entities/profile_stats_entities.dart';
 import '../../domain/repositories/profile_stats_repository.dart';
 import '../../domain/usecases/profile_stats_usecases.dart';
+import 'profile_stats_revision.dart';
 
 final profileStatsRemoteProvider = Provider<ProfileStatsRemoteDataSource>(
   (ref) => ProfileStatsRemoteDataSource(Supabase.instance.client),
@@ -55,6 +56,7 @@ final getContentStatsUseCaseProvider = Provider<GetContentStatsUseCase>(
 final profileStatsSummaryProvider =
     FutureProvider<ProfileStatsSummary>((ref) async {
   ref.watch(authStateProvider);
+  ref.watch(userRatingsRevisionProvider);
   final userId = ref.watch(authStateProvider).valueOrNull?.id;
   if (userId == null) {
     return const ProfileStatsSummary(
@@ -83,6 +85,7 @@ final authorStatsProvider = FutureProvider<List<AuthorStat>>((ref) async {
 
 final ratingStatsProvider = FutureProvider<RatingStat>((ref) async {
   ref.watch(authStateProvider);
+  ref.watch(userRatingsRevisionProvider);
   final userId = ref.watch(authStateProvider).valueOrNull?.id;
   if (userId == null) {
     return const RatingStat(averageRating: 0, distribution: <int, int>{});

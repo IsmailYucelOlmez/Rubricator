@@ -24,6 +24,29 @@ abstract final class AppTypography {
     );
   }
 
+  /// Cesare → Sansita Swashed without changing [base] font sizes.
+  static TextStyle sansitaBodyStyle(TextStyle base) {
+    return base.copyWith(fontFamily: _sansitaSwashed);
+  }
+
+  /// Page theme: body and label styles use Sansita instead of Cesare (sizes unchanged).
+  static ThemeData themeWithSansitaBody(BuildContext context) {
+    final theme = Theme.of(context);
+    final tt = theme.textTheme;
+    TextStyle? swap(TextStyle? style) =>
+        style == null ? null : sansitaBodyStyle(style);
+    return theme.copyWith(
+      textTheme: tt.copyWith(
+        bodyLarge: swap(tt.bodyLarge),
+        bodyMedium: swap(tt.bodyMedium),
+        bodySmall: swap(tt.bodySmall),
+        labelLarge: swap(tt.labelLarge),
+        labelMedium: swap(tt.labelMedium),
+        labelSmall: swap(tt.labelSmall),
+      ),
+    );
+  }
+
   /// Material [NavigationBar] labels in title case (no transform applied).
   /// Uses [cesareReplacementStyle] when [text] contains `@` (e.g. emails).
   static TextStyle withAtSignFont(TextStyle style, String text) {

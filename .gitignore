@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 *.env
+env.production.json
+env.development.json
 supabase/.env
 
 # Deno

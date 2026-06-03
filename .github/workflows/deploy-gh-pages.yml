@@ -25,12 +25,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Create assets/.env for CI build
+      - name: Create env.production.json for CI build
         run: |
-          mkdir -p assets
-          cat <<EOF > assets/.env
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          cat > env.production.json <<EOF
+          {
+            "API_URL": "${SUPABASE_URL}/functions/v1",
+            "SUPABASE_URL": "${SUPABASE_URL}",
+            "SUPABASE_ANON_KEY": "${{ secrets.SUPABASE_ANON_KEY }}"
+          }
           EOF
 
       - name: Build web
@@ -41,7 +44,9 @@ jobs:
           else
             BASE_HREF="/${REPO_NAME}/"
           fi
-          flutter build web --release --base-href "${BASE_HREF}"
+          flutter build web --release \
+            --dart-define-from-file=env.production.json \
+            --base-href "${BASE_HREF}"
 
       - name: Add account deletion page
         run: |

@@ -69,6 +69,20 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
             ),
           ),
         );
+        await ref.read(notificationService).rescheduleReminder();
+
+        final prefs = await SharedPreferences.getInstance();
+
+        await prefs.setInt(
+          'current_streak',
+          stats.currentStreak,
+        );
+
+        await prefs.setString(
+          'last_entry_date',
+          DateTime.now().toIso8601String(),
+        );
+
       }
     } on HabitValidationException catch (e) {
       if (mounted) {

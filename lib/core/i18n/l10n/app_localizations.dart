@@ -899,7 +899,7 @@ abstract class AppLocalizations {
   /// No description provided for @readingLoggedOffline.
   ///
   /// In en, this message translates to:
-  /// **'Reading saved offline. It will sync when you're back online.'**
+  /// **'Reading saved offline. It will sync when you\'re back online.'**
   String get readingLoggedOffline;
 
   /// No description provided for @readingLogsSynced.

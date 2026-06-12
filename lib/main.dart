@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:workmanager/workmanager.dart';
+import 'core/background/notification_task.dart';
+import 'services/notification_service.dart';
+
 import 'app.dart';
 import 'core/env.dart';
 import 'services/supabase_service.dart';
@@ -21,6 +25,13 @@ Future<void> main() async {
 
   try {
     await SupabaseService.initialize();
+
+    await NotificationService.instance.initialize();
+
+    await Workmanager().initialize(
+      callbackDispatcher,
+    );
+    
   } catch (error, stackTrace) {
     FlutterError.reportError(
       FlutterErrorDetails(exception: error, stack: stackTrace),

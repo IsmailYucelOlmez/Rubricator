@@ -202,6 +202,8 @@
   ,"log":"Kayit"
   ,"signInForHabit":"Okumayi kaydetmek, serileri gormek ve aktivite takvimi icin giris yapin."
   ,"readingLogged":"Okuma kaydedildi"
+  ,"readingLoggedOffline":"Okuma cevrimdisi kaydedildi. Baglanti gelince senkronize edilecek."
+  ,"readingLogsSynced":"Bekleyen okuma kayitlari senkronize edildi"
   ,"couldNotSave":"Kaydedilemedi: {error}"
   ,"@couldNotSave":{"placeholders":{"error":{}}}
   ,"addMinutesOrPagesPrompt":"Bugunden en az dakika veya sayfa ekleyin."

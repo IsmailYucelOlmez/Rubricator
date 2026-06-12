@@ -444,6 +444,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get readingLogged => 'Okuma kaydedildi';
 
   @override
+  String get readingLoggedOffline =>
+      'Okuma cevrimdisi kaydedildi. Baglanti gelince senkronize edilecek.';
+
+  @override
+  String get readingLogsSynced => 'Bekleyen okuma kayitlari senkronize edildi';
+
+  @override
   String couldNotSave(Object error) {
     return 'Kaydedilemedi: $error';
   }

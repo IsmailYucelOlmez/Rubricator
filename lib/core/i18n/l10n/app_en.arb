@@ -202,6 +202,8 @@
   ,"log":"Log"
   ,"signInForHabit":"Sign in to log reading, see streaks, and view your activity calendar."
   ,"readingLogged":"Reading logged"
+  ,"readingLoggedOffline":"Reading saved offline. It will sync when you're back online."
+  ,"readingLogsSynced":"Pending reading logs synced"
   ,"couldNotSave":"Could not save: {error}"
   ,"@couldNotSave":{"placeholders":{"error":{}}}
   ,"addMinutesOrPagesPrompt":"Add at least minutes or pages from today."

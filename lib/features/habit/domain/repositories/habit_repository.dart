@@ -1,8 +1,9 @@
 import '../entities/reading_log_entity.dart';
+import '../entities/reading_log_save_outcome.dart';
 import '../entities/reading_stats_entity.dart';
 
 abstract class HabitRepository {
-  Future<void> addReadingLog({
+  Future<ReadingLogSaveOutcome> addReadingLog({
     String? bookId,
     required int minutesRead,
     required int pagesRead,
@@ -16,4 +17,6 @@ abstract class HabitRepository {
   Future<ReadingStatsEntity> getReadingStats();
 
   Future<bool> hasReadToday();
+
+  Future<int> syncPendingLogs();
 }

@@ -445,6 +445,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readingLogged => 'Reading logged';
 
   @override
+  String get readingLoggedOffline =>
+      'Reading saved offline. It will sync when you\'re back online.';
+
+  @override
+  String get readingLogsSynced => 'Pending reading logs synced';
+
+  @override
   String couldNotSave(Object error) {
     return 'Could not save: $error';
   }

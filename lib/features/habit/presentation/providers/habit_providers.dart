@@ -5,9 +5,13 @@ import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/presentation/providers/books_providers.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
+import '../../../../core/network/connectivity_provider.dart';
+import '../../../../core/network/network_errors.dart';
+import '../../data/datasources/habit_pending_logs_local_datasource.dart';
 import '../../data/datasources/habit_remote_datasource.dart';
 import '../../data/repositories/habit_repository_impl.dart';
 import '../../domain/entities/reading_log_entity.dart';
+import '../../domain/entities/reading_log_save_outcome.dart';
 import '../../domain/entities/reading_stats_entity.dart';
 import '../../domain/repositories/habit_repository.dart';
 import '../../domain/usecases/habit_usecases.dart';
@@ -16,10 +20,20 @@ final _habitRemoteProvider = Provider<HabitRemoteDataSource>(
   (ref) => HabitRemoteDataSource(Supabase.instance.client),
 );
 
+final _habitPendingLogsLocalProvider = Provider<HabitPendingLogsLocalDataSource>(
+  (ref) => HabitPendingLogsLocalDataSource(),
+);
+
 final habitRepositoryProvider = Provider<HabitRepository>((ref) {
   return HabitRepositoryImpl(
     ref.watch(_habitRemoteProvider),
+    ref.watch(_habitPendingLogsLocalProvider),
     () => ref.watch(authStateProvider).valueOrNull?.id,
+    () async {
+      final results = ref.read(connectivityStreamProvider).valueOrNull;
+      if (results == null) return false;
+      return isConnectivityOffline(results);
+    },
   );
 });
 
@@ -102,23 +116,40 @@ final habitLogControllerProvider = Provider<HabitLogController>((ref) {
   return HabitLogController(ref);
 });
 
+class AddLogResult {
+  const AddLogResult({required this.savedOffline});
+
+  final bool savedOffline;
+}
+
 class HabitLogController {
   HabitLogController(this._ref);
 
   final Ref _ref;
 
-  Future<void> addLog({
+  void _invalidateHabitData() {
+    _ref.invalidate(readingStatsProvider);
+    _ref.invalidate(readingLogsProvider);
+    _ref.invalidate(todayReadingProvider);
+  }
+
+  Future<AddLogResult> addLog({
     String? bookId,
     required int minutesRead,
     required int pagesRead,
   }) async {
-    await _ref.read(addReadingLogUseCaseProvider).call(
+    final outcome = await _ref.read(addReadingLogUseCaseProvider).call(
           bookId: bookId,
           minutesRead: minutesRead,
           pagesRead: pagesRead,
         );
-    _ref.invalidate(readingStatsProvider);
-    _ref.invalidate(readingLogsProvider);
-    _ref.invalidate(todayReadingProvider);
+    _invalidateHabitData();
+    return AddLogResult(
+      savedOffline: outcome == ReadingLogSaveOutcome.savedOffline,
+    );
+  }
+
+  Future<int> syncPendingLogs() {
+    return _ref.read(habitRepositoryProvider).syncPendingLogs();
   }
 }

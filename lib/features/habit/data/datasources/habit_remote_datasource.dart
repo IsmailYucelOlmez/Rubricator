@@ -25,11 +25,12 @@ class HabitRemoteDataSource {
     String? bookId,
     required int minutesRead,
     required int pagesRead,
+    DateTime? date,
   }) async {
     await _client.from('reading_logs').insert(<String, dynamic>{
       'user_id': userId,
       'book_id': (bookId == null || bookId.trim().isEmpty) ? null : bookId.trim(),
-      'date': _todayLocalIsoDate(),
+      'date': date != null ? _formatIsoDate(date) : _todayLocalIsoDate(),
       'minutes_read': minutesRead,
       'pages_read': pagesRead,
     });

@@ -54,7 +54,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
     final pages = _parseInt(_pages);
     setState(() => _submitting = true);
     try {
-      await ref.read(habitLogControllerProvider).addLog(
+      final result = await ref.read(habitLogControllerProvider).addLog(
             bookId: _bookId,
             minutesRead: minutes,
             pagesRead: pages,
@@ -63,7 +63,11 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
         final l10n = AppLocalizations.of(context)!;
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.readingLogged)),
+          SnackBar(
+            content: Text(
+              result.savedOffline ? l10n.readingLoggedOffline : l10n.readingLogged,
+            ),
+          ),
         );
       }
     } on HabitValidationException catch (e) {

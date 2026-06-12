@@ -1,4 +1,5 @@
 import '../entities/reading_log_entity.dart';
+import '../entities/reading_log_save_outcome.dart';
 import '../entities/reading_stats_entity.dart';
 import '../repositories/habit_repository.dart';
 
@@ -14,7 +15,7 @@ class AddReadingLogUseCase {
   const AddReadingLogUseCase(this._repository);
   final HabitRepository _repository;
 
-  Future<void> call({
+  Future<ReadingLogSaveOutcome> call({
     String? bookId,
     required int minutesRead,
     required int pagesRead,

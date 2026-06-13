@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
-
+import '../../../../services/notification_service.dart';
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
 
+final notificationService = Provider<NotificationService>((ref) => NotificationService.instance);
 Future<void> showHabitQuickAddBottomSheet(BuildContext context) async {
   await showModalBottomSheet<void>(
     context: context,
@@ -69,13 +71,19 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
             ),
           ),
         );
-        await ref.read(notificationService).rescheduleReminder();
+        await ref.read(notificationService).scheduleNotification(
+          id: 1001,
+          title: 'Reading Reminder',
+          body: 'You have not logged your reading today. Your streak will be broken.',
+          hour: 9,
+          minute: 0,
+        );
 
         final prefs = await SharedPreferences.getInstance();
-
+          
         await prefs.setInt(
           'current_streak',
-          stats.currentStreak,
+          ref.read(readingStatsProvider).valueOrNull?.currentStreak ?? 0,
         );
 
         await prefs.setString(

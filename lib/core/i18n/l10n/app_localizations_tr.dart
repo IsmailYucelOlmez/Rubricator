@@ -82,6 +82,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get turkish => 'Turkce';
 
   @override
+  String get notifications => 'Bildirimler';
+
+  @override
   String get signInPrompt =>
       'Favorileri cihazlar arasinda esitlemek icin giris yapin.';
 

@@ -224,6 +224,8 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get themeDark;
 
+  String get notifications;
+
   /// No description provided for @selectLanguage.
   ///
   /// In en, this message translates to:

@@ -2,10 +2,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/i18n/l10n/app_localizations.dart';
-import '../../../core/network/connectivity_provider.dart';
-import '../../../core/network/network_errors.dart';
-import 'habit_providers.dart';
+import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/network/connectivity_provider.dart';
+import '../../../../core/network/network_errors.dart';
+import '../providers/habit_providers.dart';
 
 /// Watches connectivity and syncs queued quick logs when the device goes online.
 class HabitOfflineSyncListener extends ConsumerStatefulWidget {

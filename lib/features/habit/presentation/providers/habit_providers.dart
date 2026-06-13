@@ -6,7 +6,6 @@ import '../../../books/presentation/providers/books_providers.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../../../core/network/connectivity_provider.dart';
-import '../../../../core/network/network_errors.dart';
 import '../../data/datasources/habit_pending_logs_local_datasource.dart';
 import '../../data/datasources/habit_remote_datasource.dart';
 import '../../data/repositories/habit_repository_impl.dart';
@@ -29,11 +28,7 @@ final habitRepositoryProvider = Provider<HabitRepository>((ref) {
     ref.watch(_habitRemoteProvider),
     ref.watch(_habitPendingLogsLocalProvider),
     () => ref.watch(authStateProvider).valueOrNull?.id,
-    () async {
-      final results = ref.read(connectivityStreamProvider).valueOrNull;
-      if (results == null) return false;
-      return isConnectivityOffline(results);
-    },
+    () async => ref.read(isOfflineProvider),
   );
 });
 

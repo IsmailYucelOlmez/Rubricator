@@ -19,12 +19,12 @@ import 'features/habit/presentation/widgets/habit_offline_sync_listener.dart';
 import 'core/notification/reading_reminder_bootstrap.dart';
 
 /// App-wide default; home & search tabs override to 1.0.
-const double _kAppCesareFontSizeFactor = 1.2;
+const double _kAppBodyFontSizeFactor = 1.2;
 
-ThemeData _themeWithCesareFactor(BuildContext context, double cesareFontSizeFactor) {
+ThemeData _themeWithBodyFontFactor(BuildContext context, double bodyFontSizeFactor) {
   return Theme.of(context).brightness == Brightness.dark
-      ? AppTheme.dark(cesareFontSizeFactor: cesareFontSizeFactor)
-      : AppTheme.light(cesareFontSizeFactor: cesareFontSizeFactor);
+      ? AppTheme.dark(bodyFontSizeFactor: bodyFontSizeFactor)
+      : AppTheme.light(bodyFontSizeFactor: bodyFontSizeFactor);
 }
 
 class BookApp extends ConsumerStatefulWidget {
@@ -40,17 +40,17 @@ class _BookAppState extends ConsumerState<BookApp> {
   Widget _tabBody(BuildContext context) {
     return switch (_currentIndex) {
       0 => Theme(
-          data: _themeWithCesareFactor(context, 1.0),
+          data: _themeWithBodyFontFactor(context, 1.0),
           child: const HomePage(),
         ),
       1 => Theme(
-          data: _themeWithCesareFactor(context, 1.0),
+          data: _themeWithBodyFontFactor(context, 1.0),
           child: const SearchPage(),
         ),
       2 => const ListsPage(),
       3 => const ProfilePage(),
       _ => Theme(
-          data: _themeWithCesareFactor(context, 1.0),
+          data: _themeWithBodyFontFactor(context, 1.0),
           child: const HomePage(),
         ),
     };
@@ -71,8 +71,8 @@ class _BookAppState extends ConsumerState<BookApp> {
       ],
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: _webPageTransitions(AppTheme.light(cesareFontSizeFactor: _kAppCesareFontSizeFactor)),
-      darkTheme: _webPageTransitions(AppTheme.dark(cesareFontSizeFactor: _kAppCesareFontSizeFactor)),
+      theme: _webPageTransitions(AppTheme.light(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
+      darkTheme: _webPageTransitions(AppTheme.dark(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
       themeMode: themeMode,
       home: ReadingReminderBootstrap(
         child: HabitOfflineSyncListener(

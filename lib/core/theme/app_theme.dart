@@ -6,7 +6,7 @@ import 'app_spacing.dart';
 import 'app_typography.dart';
 
 abstract final class AppTheme {
-  static ThemeData dark({double cesareFontSizeFactor = 1.0}) {
+  static ThemeData dark({double bodyFontSizeFactor = 1.0}) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
@@ -26,7 +26,7 @@ abstract final class AppTheme {
 
     final textTheme = AppTypography.textTheme(
       brightness: Brightness.dark,
-      cesareFontSizeFactor: cesareFontSizeFactor,
+      bodyFontSizeFactor: bodyFontSizeFactor,
     );
 
     final inputBorder = OutlineInputBorder(
@@ -186,7 +186,7 @@ abstract final class AppTheme {
     );
   }
 
-  static ThemeData light({double cesareFontSizeFactor = 1.0}) {
+  static ThemeData light({double bodyFontSizeFactor = 1.0}) {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.light,
@@ -206,7 +206,7 @@ abstract final class AppTheme {
 
     final textTheme = AppTypography.textTheme(
       brightness: Brightness.light,
-      cesareFontSizeFactor: cesareFontSizeFactor,
+      bodyFontSizeFactor: bodyFontSizeFactor,
     );
 
     final inputBorder = OutlineInputBorder(

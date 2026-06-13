@@ -18,8 +18,10 @@ class HabitPendingLogsLocalDataSource {
   Future<List<PendingReadingLogModel>> getAll() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_storageKey);
-    if (raw == null || raw.isEmpty) return const <PendingReadingLogModel>[];
-    return PendingReadingLogModel.decodeList(raw);
+    if (raw == null || raw.isEmpty) return <PendingReadingLogModel>[];
+    return List<PendingReadingLogModel>.from(
+      PendingReadingLogModel.decodeList(raw),
+    );
   }
 
   Future<List<PendingReadingLogModel>> getForUser(String userId) async {
@@ -27,7 +29,7 @@ class HabitPendingLogsLocalDataSource {
     return all.where((l) => l.userId == userId).toList();
   }
 
-  Future<void> enqueue({
+  Future<String> enqueue({
     required String userId,
     String? bookId,
     required int minutesRead,
@@ -36,8 +38,9 @@ class HabitPendingLogsLocalDataSource {
   }) async {
     final now = DateTime.now();
     final logDate = date ?? DateTime(now.year, now.month, now.day);
+    final localId = _newLocalId();
     final entry = PendingReadingLogModel(
-      localId: _newLocalId(),
+      localId: localId,
       userId: userId,
       bookId: bookId?.trim().isEmpty == true ? null : bookId?.trim(),
       minutesRead: minutesRead,
@@ -48,6 +51,7 @@ class HabitPendingLogsLocalDataSource {
     final all = await getAll();
     all.add(entry);
     await _save(all);
+    return localId;
   }
 
   Future<void> remove(String localId) async {

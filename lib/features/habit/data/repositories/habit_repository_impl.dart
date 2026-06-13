@@ -45,7 +45,7 @@ class HabitRepositoryImpl implements HabitRepository {
     return !d.isBefore(s) && !d.isAfter(e);
   }
 
-  Future<void> _queueLocally({
+  Future<String> _queueLocally({
     required String userId,
     String? bookId,
     required int minutesRead,
@@ -66,35 +66,31 @@ class HabitRepositoryImpl implements HabitRepository {
     required int pagesRead,
   }) async {
     final uid = _requireUserId();
+
+    final localId = await _queueLocally(
+      userId: uid,
+      bookId: bookId,
+      minutesRead: minutesRead,
+      pagesRead: pagesRead,
+    );
+
     if (await _isOffline()) {
-      await _queueLocally(
-        userId: uid,
-        bookId: bookId,
-        minutesRead: minutesRead,
-        pagesRead: pagesRead,
-      );
       return ReadingLogSaveOutcome.savedOffline;
     }
 
     try {
-      await _remote.insertLog(
-        userId: uid,
-        bookId: bookId,
-        minutesRead: minutesRead,
-        pagesRead: pagesRead,
-      );
+      await _remote
+          .insertLog(
+            userId: uid,
+            bookId: bookId,
+            minutesRead: minutesRead,
+            pagesRead: pagesRead,
+          )
+          .timeout(const Duration(seconds: 15));
+      await _local.remove(localId);
       return ReadingLogSaveOutcome.synced;
-    } catch (e) {
-      if (isLikelyNetworkError(e)) {
-        await _queueLocally(
-          userId: uid,
-          bookId: bookId,
-          minutesRead: minutesRead,
-          pagesRead: pagesRead,
-        );
-        return ReadingLogSaveOutcome.savedOffline;
-      }
-      rethrow;
+    } catch (_) {
+      return ReadingLogSaveOutcome.savedOffline;
     }
   }
 
@@ -188,31 +184,35 @@ class HabitRepositoryImpl implements HabitRepository {
       return _statsFromPending(uid, pending);
     }
 
-    final map = await _remote.fetchUserSummary();
-    if (map == null) {
-      return const ReadingStatsEntity(
-        totalMinutes: 0,
-        totalPages: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      );
-    }
-    final totalMinutes = (map['total_minutes'] as num?)?.toInt() ?? 0;
-    final totalPages = (map['total_pages'] as num?)?.toInt() ?? 0;
-    final rawDates = map['active_dates'];
-    final dates = <DateTime>[];
-    if (rawDates is List) {
-      for (final e in rawDates) {
-        final d = _parseSummaryDate(e);
-        if (d != null) dates.add(d);
+    try {
+      final map = await _remote.fetchUserSummary();
+      if (map == null) {
+        return const ReadingStatsEntity(
+          totalMinutes: 0,
+          totalPages: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+        );
       }
+      final totalMinutes = (map['total_minutes'] as num?)?.toInt() ?? 0;
+      final totalPages = (map['total_pages'] as num?)?.toInt() ?? 0;
+      final rawDates = map['active_dates'];
+      final dates = <DateTime>[];
+      if (rawDates is List) {
+        for (final e in rawDates) {
+          final d = _parseSummaryDate(e);
+          if (d != null) dates.add(d);
+        }
+      }
+      return ReadingStreakCalculator.fromSummary(
+        totalMinutes: totalMinutes,
+        totalPages: totalPages,
+        activeDates: dates,
+        today: DateTime.now(),
+      );
+    } catch (_) {
+      return _statsFromPending(uid, pending);
     }
-    return ReadingStreakCalculator.fromSummary(
-      totalMinutes: totalMinutes,
-      totalPages: totalPages,
-      activeDates: dates,
-      today: DateTime.now(),
-    );
   }
 
   Future<ReadingStatsEntity> _statsFromPending(
@@ -238,7 +238,7 @@ class HabitRepositoryImpl implements HabitRepository {
           }
         }
       } catch (e) {
-        if (!isLikelyNetworkError(e)) rethrow;
+        if (!isLikelyNetworkError(e) && pendingLogs.isEmpty) rethrow;
       }
     }
 

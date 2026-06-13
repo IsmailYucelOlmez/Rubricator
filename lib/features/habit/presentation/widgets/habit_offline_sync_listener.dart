@@ -19,13 +19,28 @@ class HabitOfflineSyncListener extends ConsumerStatefulWidget {
 }
 
 class _HabitOfflineSyncListenerState
-    extends ConsumerState<HabitOfflineSyncListener> {
+    extends ConsumerState<HabitOfflineSyncListener>
+    with WidgetsBindingObserver {
   bool _wasOffline = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncIfOnline());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _syncIfOnline();
+    }
   }
 
   Future<void> _syncIfOnline() async {

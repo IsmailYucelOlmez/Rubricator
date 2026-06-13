@@ -106,9 +106,6 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   fonts:
-    - family: Cesare
-      fonts:
-        - asset: assets/XCicero_Cesare/Cesare-Regular.otf
     - family: LTSoul
       fonts:
         - asset: assets/LTSoul-V2/LTSoul-Regular.otf

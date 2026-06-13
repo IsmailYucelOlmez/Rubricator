@@ -63,9 +63,9 @@ class PendingReadingLogModel {
   }
 
   static List<PendingReadingLogModel> decodeList(String raw) {
-    if (raw.trim().isEmpty) return const <PendingReadingLogModel>[];
+    if (raw.trim().isEmpty) return <PendingReadingLogModel>[];
     final decoded = jsonDecode(raw);
-    if (decoded is! List) return const <PendingReadingLogModel>[];
+    if (decoded is! List) return <PendingReadingLogModel>[];
     return decoded
         .whereType<Map<String, dynamic>>()
         .map(PendingReadingLogModel.fromJson)

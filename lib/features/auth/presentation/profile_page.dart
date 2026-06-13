@@ -8,7 +8,6 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/ux/l10n_app_error.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
@@ -299,9 +298,9 @@ class _ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(displayName, style: nameStyle.forContent(displayName)),
+              Text(displayName, style: nameStyle),
               const SizedBox(height: AppSpacing.xs),
-              Text(emailText, style: emailStyle.forContent(emailText)),
+              Text(emailText, style: emailStyle),
             ],
           ),
         ),

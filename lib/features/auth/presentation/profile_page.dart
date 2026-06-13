@@ -8,13 +8,13 @@ import '../../../core/i18n/l10n/app_localizations.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/ux/l10n_app_error.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
+import '../../profile/presentation/widgets/notification_selector.dart';
 import '../../profile/presentation/widgets/theme_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import '../../user_books/domain/entities/user_book_entity.dart';
@@ -78,6 +78,7 @@ class ProfilePage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const ThemeSelector(),
+              const NotificationSelector(),
               if (user != null) const _ProfileReadingListsSection(),
               if (user == null) ...[
                 const SizedBox(height: AppSpacing.md),
@@ -297,9 +298,9 @@ class _ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(displayName, style: nameStyle.forContent(displayName)),
+              Text(displayName, style: nameStyle),
               const SizedBox(height: AppSpacing.xs),
-              Text(emailText, style: emailStyle.forContent(emailText)),
+              Text(emailText, style: emailStyle),
             ],
           ),
         ),

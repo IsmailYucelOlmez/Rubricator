@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../widgets/habit_calendar_section.dart';
@@ -15,24 +14,6 @@ import '../widgets/habit_streak_widget.dart';
 
 class HabitPage extends ConsumerWidget {
   const HabitPage({super.key});
-
-  /// Body/labels on this page use Sansita Swashed instead of Cesare.
-  static ThemeData _themeWithoutCesare(BuildContext context) {
-    final theme = Theme.of(context);
-    final tt = theme.textTheme;
-    TextStyle? sansita(TextStyle? style) =>
-        style == null ? null : AppTypography.cesareReplacementStyle(style);
-    return theme.copyWith(
-      textTheme: tt.copyWith(
-        bodyLarge: sansita(tt.bodyLarge),
-        bodyMedium: sansita(tt.bodyMedium),
-        bodySmall: sansita(tt.bodySmall),
-        labelLarge: sansita(tt.labelLarge),
-        labelMedium: sansita(tt.labelMedium),
-        labelSmall: sansita(tt.labelSmall),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,10 +36,8 @@ class HabitPage extends ConsumerWidget {
       );
     }
 
-    return Theme(
-      data: _themeWithoutCesare(context),
-      child: Scaffold(
-        appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
           title: Text(l10n.readingHabit),
           actions: [
             IconButton(
@@ -90,7 +69,6 @@ class HabitPage extends ConsumerWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

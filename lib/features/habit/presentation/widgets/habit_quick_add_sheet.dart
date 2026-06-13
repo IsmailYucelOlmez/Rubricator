@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/notification/reading_reminder_prefs.dart';
+import '../../../../core/notification/reading_reminder_scheduler.dart';
+import '../../../../core/ux/l10n_app_error.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
-import '../../../../core/widgets/async_error_view.dart';
-
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
-
 Future<void> showHabitQuickAddBottomSheet(BuildContext context) async {
   await showModalBottomSheet<void>(
     context: context,
@@ -32,15 +34,32 @@ class _HabitQuickAddBody extends ConsumerStatefulWidget {
 }
 
 class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
-  final _minutes = TextEditingController(text: '0');
-  final _pages = TextEditingController(text: '0');
+  final _minutes = TextEditingController();
+  final _pages = TextEditingController();
   String? _bookId;
   bool _submitting = false;
+  String? _formError;
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in [_minutes, _pages]) {
+      controller.addListener(_clearFormError);
+    }
+  }
+
+  void _clearFormError() {
+    if (_formError == null) return;
+    setState(() => _formError = null);
+  }
 
   @override
   void dispose() {
-    _minutes.dispose();
-    _pages.dispose();
+    for (final controller in [_minutes, _pages]) {
+      controller
+        ..removeListener(_clearFormError)
+        ..dispose();
+    }
     super.dispose();
   }
 
@@ -49,31 +68,77 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
     return v ?? 0;
   }
 
+  String? _normalizedBookId() {
+    final raw = _bookId?.trim();
+    if (raw == null || raw.isEmpty) return null;
+    return raw;
+  }
+
   Future<void> _submit() async {
     final minutes = _parseInt(_minutes);
     final pages = _parseInt(_pages);
-    setState(() => _submitting = true);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (minutes <= 0 && pages <= 0) {
+      setState(() => _formError = l10n.addMinutesOrPagesPrompt);
+      return;
+    }
+
+    setState(() {
+      _submitting = true;
+      _formError = null;
+    });
+
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     try {
-      await ref.read(habitLogControllerProvider).addLog(
-            bookId: _bookId,
+      final bookId = _normalizedBookId();
+      final result = await ref.read(habitLogControllerProvider).addLog(
+            bookId: bookId,
             minutesRead: minutes,
             pagesRead: pages,
           );
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.readingLogged)),
-        );
-      }
+      if (!mounted) return;
+
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            result.savedOffline ? l10n.readingLoggedOffline : l10n.readingLogged,
+          ),
+        ),
+      );
+      unawaited(_syncReminderAfterLog(ref));
     } on HabitValidationException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+        setState(() => _formError = e.message);
+      }
+    } on StateError {
+      if (mounted) {
+        setState(() => _formError = l10n.signInForHabit);
       }
     } catch (e) {
-      if (mounted) AppFeedback.showErrorSnackBar(context, e);
+      if (mounted) {
+        setState(() => _formError = l10n.userFacingMessage(e));
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  static Future<void> _syncReminderAfterLog(WidgetRef ref) async {
+    try {
+      final stats = await ref.read(readingStatsProvider.future);
+      await ReadingReminderScheduler.syncStreakAfterLog(
+        currentStreak: stats.currentStreak,
+      );
+    } catch (_) {
+      final prefs = await SharedPreferences.getInstance();
+      final savedStreak = prefs.getInt(kReadingReminderStreakKey) ?? 0;
+      await ReadingReminderScheduler.syncStreakAfterLog(
+        currentStreak: savedStreak,
+      );
     }
   }
 
@@ -183,14 +248,25 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                   ],
                 );
               },
-              loading: () => const LinearProgressIndicator(minHeight: 2),
-              error: (e, _) => AsyncErrorView(
-                    error: e,
-                    compact: true,
-                    onRetry: () => ref.invalidate(habitBookChoicesProvider),
-                  ),
+              loading: () => Text(
+                l10n.bookOptional,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              error: (error, _) => Text(
+                l10n.optionalAddBooksPrompt,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
             const SizedBox(height: 24),
+            if (_formError != null) ...[
+              Text(
+                _formError!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
             FilledButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting

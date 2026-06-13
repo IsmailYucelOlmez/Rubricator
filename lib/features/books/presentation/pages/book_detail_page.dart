@@ -8,7 +8,6 @@ import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -22,10 +21,10 @@ import '../widgets/book_cover_with_favorite_button.dart';
 import 'author_detail_page.dart';
 
 TextStyle _bookDetailBodyStyle(BuildContext context) =>
-    AppTypography.formInputStyle(Theme.of(context).textTheme.bodyMedium!);
+    Theme.of(context).textTheme.bodyMedium!;
 
 TextStyle _bookDetailInputStyle(BuildContext context) =>
-    AppTypography.formInputStyle(Theme.of(context).textTheme.bodyLarge!);
+    Theme.of(context).textTheme.bodyLarge!;
 
 class BookDetailPage extends ConsumerStatefulWidget {
   const BookDetailPage({super.key, required this.book});
@@ -425,9 +424,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                   b.title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.formInputStyle(
-                                    Theme.of(context).textTheme.bodySmall!,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),

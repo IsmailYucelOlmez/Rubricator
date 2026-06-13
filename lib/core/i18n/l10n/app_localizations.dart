@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get themeDark;
 
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
   /// No description provided for @selectLanguage.
   ///
   /// In en, this message translates to:
@@ -896,6 +902,18 @@ abstract class AppLocalizations {
   /// **'Reading logged'**
   String get readingLogged;
 
+  /// No description provided for @readingLoggedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading saved offline. It will sync when you\'re back online.'**
+  String get readingLoggedOffline;
+
+  /// No description provided for @readingLogsSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reading logs synced'**
+  String get readingLogsSynced;
+
   /// No description provided for @couldNotSave.
   ///
   /// In en, this message translates to:
@@ -1093,6 +1111,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load streak: {error}'**
   String couldNotLoadStreak(Object error);
+
+  /// No description provided for @readingReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading reminder'**
+  String get readingReminderTitle;
+
+  /// No description provided for @readingReminderBodyNoStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not logged reading today. Add a quick log to start your habit.'**
+  String get readingReminderBodyNoStreak;
+
+  /// No description provided for @readingReminderBodyWithStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not logged reading today. Log before midnight to keep your {streak}-day streak.'**
+  String readingReminderBodyWithStreak(int streak);
+
+  /// No description provided for @readingReminderChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading reminders'**
+  String get readingReminderChannelName;
+
+  /// No description provided for @readingReminderChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reading reminders'**
+  String get readingReminderChannelDescription;
 
   /// No description provided for @signInToSeeStats.
   ///

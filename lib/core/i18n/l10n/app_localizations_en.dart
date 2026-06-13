@@ -73,6 +73,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeDark => 'Dark';
 
   @override
+  String get notifications => 'Notifications';
+
+  @override
   String get selectLanguage => 'Select Language';
 
   @override
@@ -445,6 +448,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readingLogged => 'Reading logged';
 
   @override
+  String get readingLoggedOffline =>
+      'Reading saved offline. It will sync when you\'re back online.';
+
+  @override
+  String get readingLogsSynced => 'Pending reading logs synced';
+
+  @override
   String couldNotSave(Object error) {
     return 'Could not save: $error';
   }
@@ -574,6 +584,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String couldNotLoadStreak(Object error) {
     return 'Could not load streak: $error';
   }
+
+  @override
+  String get readingReminderTitle => 'Reading reminder';
+
+  @override
+  String get readingReminderBodyNoStreak =>
+      'You have not logged reading today. Add a quick log to start your habit.';
+
+  @override
+  String readingReminderBodyWithStreak(int streak) {
+    return 'You have not logged reading today. Log before midnight to keep your $streak-day streak.';
+  }
+
+  @override
+  String get readingReminderChannelName => 'Reading reminders';
+
+  @override
+  String get readingReminderChannelDescription => 'Daily reading reminders';
 
   @override
   String get signInToSeeStats =>

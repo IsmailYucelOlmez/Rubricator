@@ -1,0 +1,4 @@
+enum ReadingLogSaveOutcome {
+  synced,
+  savedOffline,
+}

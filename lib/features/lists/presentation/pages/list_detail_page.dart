@@ -6,7 +6,6 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -82,10 +81,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
           const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.byUser(list.userName),
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .forContent(list.userName),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: AppSpacing.md),
           Text(l10n.books, style: Theme.of(context).textTheme.titleMedium),

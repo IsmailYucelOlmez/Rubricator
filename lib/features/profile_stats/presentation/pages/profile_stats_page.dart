@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../providers/profile_stats_providers.dart';
@@ -20,18 +19,15 @@ class ProfileStatsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     if (user == null) {
-      return Theme(
-        data: AppTypography.themeWithSansitaBody(context),
-        child: Scaffold(
-          appBar: AppBar(title: Text(l10n.readingStats)),
-          body: Center(
-            child: ResponsiveScaffoldBody(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Text(
-                  l10n.signInToSeeStats,
-                  textAlign: TextAlign.center,
-                ),
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.readingStats)),
+        body: Center(
+          child: ResponsiveScaffoldBody(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                l10n.signInToSeeStats,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -39,9 +35,7 @@ class ProfileStatsPage extends ConsumerWidget {
       );
     }
 
-    return Theme(
-      data: AppTypography.themeWithSansitaBody(context),
-      child: Scaffold(
+    return Scaffold(
       appBar: AppBar(title: Text(l10n.readingStats)),
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(
@@ -61,22 +55,21 @@ class ProfileStatsPage extends ConsumerWidget {
               ref.read(contentStatsProvider.future),
             ]);
           },
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: const [
-            ReadingIdentitySection(),
-            SizedBox(height: AppSpacing.md + AppSpacing.xs),
-            LibraryStatsSection(),
-            SizedBox(height: AppSpacing.md + AppSpacing.xs),
-            RatingSection(),
-            SizedBox(height: AppSpacing.md + AppSpacing.xs),
-            ContentStatsSection(),
-            SizedBox(height: AppSpacing.xl),
-          ],
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              ReadingIdentitySection(),
+              SizedBox(height: AppSpacing.md + AppSpacing.xs),
+              LibraryStatsSection(),
+              SizedBox(height: AppSpacing.md + AppSpacing.xs),
+              RatingSection(),
+              SizedBox(height: AppSpacing.md + AppSpacing.xs),
+              ContentStatsSection(),
+              SizedBox(height: AppSpacing.xl),
+            ],
+          ),
         ),
-        ),
-      ),
       ),
     );
   }

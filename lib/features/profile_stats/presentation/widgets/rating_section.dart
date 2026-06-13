@@ -47,28 +47,58 @@ class RatingSection extends ConsumerWidget {
                   )
                 else ...[
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '${r.averageRating.toStringAsFixed(1)}',
+                        r.averageRating.toStringAsFixed(1),
                         style: Theme.of(context).textTheme.displaySmall
                             ?.copyWith(fontWeight: FontWeight.w600, height: 1),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                        child: Row(
-                          children: List.generate(
-                            5,
-                            (i) => _RatingStar(
-                              fill: _starFillForTenPointRating(
-                                r.averageRating,
-                                i,
-                              ),
-                              size: 22,
-                              color: AppColors.gold,
+                      Text(
+                        '0',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontSize: 10,
+                          height: 1,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.sm),
+                            border: Border.all(
+                              color: AppColors.textPrimary,
+                              width: 0.5,
                             ),
                           ),
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.sm),
+                            child: LinearProgressIndicator(
+                              value: (r.averageRating / 10).clamp(0.0, 1.0),
+                              minHeight: 10,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        '10',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontSize: 10,
+                          height: 1,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -94,48 +124,6 @@ class RatingSection extends ConsumerWidget {
             onRetry: () => ref.invalidate(ratingStatsProvider),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Each of 5 stars represents 2 points on the 1–10 scale (same as book detail).
-double _starFillForTenPointRating(double rating, int index) {
-  final value = rating - (index * 2);
-  if (value <= 0) return 0;
-  if (value >= 2) return 1;
-  return value / 2;
-}
-
-class _RatingStar extends StatelessWidget {
-  const _RatingStar({
-    required this.fill,
-    required this.size,
-    required this.color,
-  });
-
-  final double fill;
-  final double size;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Icon(Icons.star_border, size: size, color: color),
-          if (fill > 0)
-            ClipRect(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                widthFactor: fill.clamp(0.0, 1.0),
-                child: Icon(Icons.star, size: size, color: color),
-              ),
-            ),
-        ],
       ),
     );
   }

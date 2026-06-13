@@ -253,6 +253,12 @@
   ,"@longestDays":{"placeholders":{"days":{"type":"int"}}}
   ,"couldNotLoadStreak":"Seri yuklenemedi: {error}"
   ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
+  ,"readingReminderTitle":"Okuma Hatirlatmasi"
+  ,"readingReminderBodyNoStreak":"Bugun henuz okuma kaydi eklemedin. Hizlica bir kayit ekleyerek okuma aliskanligina basla."
+  ,"readingReminderBodyWithStreak":"Bugun henuz okuma kaydi eklemedin. {streak} gunluk serini korumak icin gece yarisi oncesi kayit ekle."
+  ,"@readingReminderBodyWithStreak":{"placeholders":{"streak":{"type":"int"}}}
+  ,"readingReminderChannelName":"Okuma hatirlatmalari"
+  ,"readingReminderChannelDescription":"Gunluk okuma hatirlatmalari"
   ,"signInToSeeStats":"Kutuphane analizlerini ve okuma kimliginizi gormek icin giris yapin."
   ,"contentYouAdded":"Eklediginiz icerik"
   ,"reviewsAndQuotes":"Yorumlar ve alintilar"

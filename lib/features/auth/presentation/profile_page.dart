@@ -15,6 +15,7 @@ import '../../../core/widgets/async_error_view.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
+import '../../profile/presentation/widgets/notification_selector.dart';
 import '../../profile/presentation/widgets/theme_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import '../../user_books/domain/entities/user_book_entity.dart';
@@ -78,6 +79,7 @@ class ProfilePage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const ThemeSelector(),
+              const NotificationSelector(),
               if (user != null) const _ProfileReadingListsSection(),
               if (user == null) ...[
                 const SizedBox(height: AppSpacing.md),

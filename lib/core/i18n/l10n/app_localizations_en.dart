@@ -586,6 +586,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get readingReminderTitle => 'Reading reminder';
+
+  @override
+  String get readingReminderBodyNoStreak =>
+      'You have not logged reading today. Add a quick log to start your habit.';
+
+  @override
+  String readingReminderBodyWithStreak(int streak) {
+    return 'You have not logged reading today. Log before midnight to keep your $streak-day streak.';
+  }
+
+  @override
+  String get readingReminderChannelName => 'Reading reminders';
+
+  @override
+  String get readingReminderChannelDescription => 'Daily reading reminders';
+
+  @override
   String get signInToSeeStats =>
       'Sign in to see your library analytics and reading identity.';
 

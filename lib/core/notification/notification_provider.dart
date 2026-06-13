@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _prefsKey = 'app_notification_mode';
+import 'reading_reminder_prefs.dart';
+import 'reading_reminder_scheduler.dart';
+
+enum NotificationMode { enabled, disabled }
 
 final notificationModeProvider = StateNotifierProvider<NotificationModeNotifier, NotificationMode>(
   (ref) => NotificationModeNotifier(),
@@ -15,14 +17,23 @@ class NotificationModeNotifier extends StateNotifier<NotificationMode> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_prefsKey);
-    state = raw == 'enabled' ? NotificationMode.enabled : NotificationMode.disabled;
+    final raw = prefs.getString(kAppNotificationModeKey);
+    state = raw == 'disabled' ? NotificationMode.disabled : NotificationMode.enabled;
+    await ReadingReminderScheduler.ensureScheduled(
+      state == NotificationMode.enabled,
+    );
   }
 
   Future<void> setNotificationMode(NotificationMode mode) async {
     final resolved = mode == NotificationMode.enabled ? NotificationMode.enabled : NotificationMode.disabled;
     state = resolved;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsKey, resolved == NotificationMode.enabled ? 'enabled' : 'disabled');
+    await prefs.setString(
+      kAppNotificationModeKey,
+      resolved == NotificationMode.enabled ? 'enabled' : 'disabled',
+    );
+    await ReadingReminderScheduler.ensureScheduled(
+      resolved == NotificationMode.enabled,
+    );
   }
 }

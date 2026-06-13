@@ -253,6 +253,12 @@
   ,"@longestDays":{"placeholders":{"days":{"type":"int"}}}
   ,"couldNotLoadStreak":"Could not load streak: {error}"
   ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
+  ,"readingReminderTitle":"Reading reminder"
+  ,"readingReminderBodyNoStreak":"You have not logged reading today. Add a quick log to start your habit."
+  ,"readingReminderBodyWithStreak":"You have not logged reading today. Log before midnight to keep your {streak}-day streak."
+  ,"@readingReminderBodyWithStreak":{"placeholders":{"streak":{"type":"int"}}}
+  ,"readingReminderChannelName":"Reading reminders"
+  ,"readingReminderChannelDescription":"Daily reading reminders"
   ,"signInToSeeStats":"Sign in to see your library analytics and reading identity."
   ,"contentYouAdded":"Content you added"
   ,"reviewsAndQuotes":"Reviews and quotes"

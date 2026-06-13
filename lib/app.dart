@@ -16,6 +16,7 @@ import 'features/home/presentation/pages/home_page.dart';
 import 'features/search/presentation/pages/search_page.dart';
 import 'features/auth/presentation/profile_page.dart';
 import 'features/habit/presentation/widgets/habit_offline_sync_listener.dart';
+import 'core/notification/reading_reminder_bootstrap.dart';
 
 /// App-wide default; home & search tabs override to 1.0.
 const double _kAppCesareFontSizeFactor = 1.2;
@@ -73,9 +74,10 @@ class _BookAppState extends ConsumerState<BookApp> {
       theme: _webPageTransitions(AppTheme.light(cesareFontSizeFactor: _kAppCesareFontSizeFactor)),
       darkTheme: _webPageTransitions(AppTheme.dark(cesareFontSizeFactor: _kAppCesareFontSizeFactor)),
       themeMode: themeMode,
-      home: HabitOfflineSyncListener(
-        child: Builder(
-          builder: (context) {
+      home: ReadingReminderBootstrap(
+        child: HabitOfflineSyncListener(
+          child: Builder(
+            builder: (context) {
           final l10n = AppLocalizations.of(context)!;
           final tablet = context.isTabletLayout;
           final offlineBanner = Consumer(
@@ -199,6 +201,7 @@ class _BookAppState extends ConsumerState<BookApp> {
           );
         },
         ),
+      ),
       ),
     );
   }

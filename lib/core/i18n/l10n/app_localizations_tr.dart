@@ -73,6 +73,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get themeDark => 'Koyu';
 
   @override
+  String get notifications => 'Bildirimler';
+
+  @override
   String get selectLanguage => 'Dil Sec';
 
   @override
@@ -80,9 +83,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get turkish => 'Turkce';
-
-  @override
-  String get notifications => 'Bildirimler';
 
   @override
   String get signInPrompt =>
@@ -584,6 +584,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String couldNotLoadStreak(Object error) {
     return 'Seri yuklenemedi: $error';
   }
+
+  @override
+  String get readingReminderTitle => 'Okuma Hatirlatmasi';
+
+  @override
+  String get readingReminderBodyNoStreak =>
+      'Bugun henuz okuma kaydi eklemedin. Hizlica bir kayit ekleyerek okuma aliskanligina basla.';
+
+  @override
+  String readingReminderBodyWithStreak(int streak) {
+    return 'Bugun henuz okuma kaydi eklemedin. $streak gunluk serini korumak icin gece yarisi oncesi kayit ekle.';
+  }
+
+  @override
+  String get readingReminderChannelName => 'Okuma hatirlatmalari';
+
+  @override
+  String get readingReminderChannelDescription => 'Gunluk okuma hatirlatmalari';
 
   @override
   String get signInToSeeStats =>

@@ -127,3 +127,37 @@ class AuthService {
     }
   }
 }
+
+Future<void> sendOtpEmail(String email) async {
+  try {
+    await Supabase.instance.client.auth.resetPasswordForEmail(email);
+    // Kullanıcıya başarılı mesajı gösterin ve Kod Girme ekranına yönlendirin.
+  } catch (e) {
+    print("Hata: $e");
+  }
+}
+
+Future<void> verifyOtpAndUpdatePassword({
+  required String email,
+  required String otpToken,
+  required String newPassword,
+}) async {
+  try {
+    // 1. Gelen OTP kodunu doğrula (Kullanıcı otomatik olarak doğrulanmış/giriş yapmış olur)
+    final AuthResponse response = await Supabase.instance.client.auth.verifyOTP(
+      email: email,
+      token: otpToken,
+      type: OtpType.recovery, // Şifre kurtarma türü
+    );
+
+    if (response.session != null) {
+      // 2. Kullanıcı oturumu açıldığı için hemen şifresini güncelle
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      print("Şifre başarıyla güncellendi!");
+    }
+  } catch (e) {
+    print("Doğrulama veya güncelleme hatası: $e");
+  }
+}

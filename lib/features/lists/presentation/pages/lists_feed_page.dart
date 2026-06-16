@@ -28,10 +28,6 @@ class ListsPage extends ConsumerWidget {
     final tabLabelStyle = theme.textTheme.titleMedium?.copyWith(
       fontSize: (theme.textTheme.titleMedium?.fontSize ?? 16) * 0.9,
     );
-    final labelLarge = theme.textTheme.labelLarge;
-    final createListLabelStyle = labelLarge?.copyWith(
-      fontSize: (labelLarge.fontSize ?? 14) * 1.05,
-    );
     void invalidateAll() {
       ref.invalidate(listsFeedProvider);
       ref.invalidate(popularListsProvider);
@@ -77,17 +73,22 @@ class ListsPage extends ConsumerWidget {
                   icon: const Icon(Icons.collections_bookmark_outlined),
                 ),
                 FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm + AppSpacing.xs,
+                      vertical: AppSpacing.sm + AppSpacing.xs,
+                    ),
+                    minimumSize: const Size(0, 40),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   onPressed: () async {
                     await Navigator.of(context).push(
                       MaterialPageRoute<void>(builder: (_) => const CreateEditListPage()),
                     );
                     invalidateAll();
                   },
-                  icon: const Icon(Icons.add),
-                  label: Text(
-                    l10n.createList,
-                    style: createListLabelStyle,
-                  ),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(l10n.createList),
                 ),
               ],
             ),

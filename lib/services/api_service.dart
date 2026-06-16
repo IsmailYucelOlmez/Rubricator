@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../core/logging/app_logger.dart';
 import 'supabase_service.dart';
 
 /// Google Books traffic goes through the `google-books` edge function so
@@ -32,6 +33,7 @@ class ApiService {
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
+    AppLogger.info('api', 'GET $path', data: queryParameters);
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         path,
@@ -43,8 +45,10 @@ class ApiService {
           'Google Books proxy returned ${response.statusCode} for $path',
         );
       }
+      AppLogger.info('api', 'GET $path OK', data: {'status': response.statusCode});
       return data ?? <String, dynamic>{};
-    } on DioException catch (e) {
+    } on DioException catch (e, stackTrace) {
+      await AppLogger.error('api', 'GET $path failed', e, stackTrace);
       final type = e.type.name;
       throw Exception(
         e.message != null && e.message!.isNotEmpty

@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordMin6.
   ///
   /// In en, this message translates to:
-  /// **'Password (min 6 characters)'**
+  /// **'Password (min 6, upper, lower, punctuation)'**
   String get passwordMin6;
 
   /// No description provided for @cancel.
@@ -1585,6 +1585,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.'**
   String get uxProfilePhotoPermissionDenied;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email. We will send an 8-digit code (not a link) to reset your password.'**
+  String get forgotPasswordPrompt;
+
+  /// No description provided for @sendResetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get sendResetCode;
+
+  /// No description provided for @resetCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'An 8-digit code was sent to your email.'**
+  String get resetCodeSent;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code sent to {email}.'**
+  String resetPasswordPrompt(String email);
+
+  /// No description provided for @otpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'8-digit verification code'**
+  String get otpCodeLabel;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get updatePassword;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get resendCode;
+
+  /// No description provided for @uxOtpIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the full 8-digit code.'**
+  String get uxOtpIncomplete;
+
+  /// No description provided for @uxPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get uxPasswordMismatch;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password was updated successfully.'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @invalidOrExpiredOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired verification code.'**
+  String get invalidOrExpiredOtp;
+
+  /// No description provided for @uxPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get uxPasswordTooShort;
+
+  /// No description provided for @uxPasswordMissingUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include an uppercase letter.'**
+  String get uxPasswordMissingUppercase;
+
+  /// No description provided for @uxPasswordMissingLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include a lowercase letter.'**
+  String get uxPasswordMissingLowercase;
+
+  /// No description provided for @uxPasswordMissingPunctuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include a punctuation character.'**
+  String get uxPasswordMissingPunctuation;
 
   /// No description provided for @uxMustSignIn.
   ///

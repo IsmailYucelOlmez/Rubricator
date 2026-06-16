@@ -9,6 +9,35 @@ import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 import '../providers/profile_stats_providers.dart';
 
+Color _ratingBorderColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.light
+      ? AppColors.lightOnSurface
+      : AppColors.textPrimary.withValues(alpha: 0.4);
+}
+
+Widget _borderedProgressBar(
+  BuildContext context, {
+  required double value,
+  double minHeight = 8,
+}) {
+  final scheme = Theme.of(context).colorScheme;
+  return DecoratedBox(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      border: Border.all(color: _ratingBorderColor(context), width: 0.5),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: LinearProgressIndicator(
+        value: value.clamp(0.0, 1.0),
+        minHeight: minHeight,
+        backgroundColor: scheme.outline.withValues(alpha: 0.18),
+        color: AppColors.primary,
+      ),
+    ),
+  );
+}
+
 class RatingSection extends ConsumerWidget {
   const RatingSection({super.key});
 
@@ -17,6 +46,10 @@ class RatingSection extends ConsumerWidget {
     final async = ref.watch(ratingStatsProvider);
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: BorderSide(color: _ratingBorderColor(context), width: 0.5),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: async.when(
@@ -37,7 +70,7 @@ class RatingSection extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.sm),
                 if (!hasData)
                   Text(
                     AppLocalizations.of(context)!.noDataYet,
@@ -51,8 +84,10 @@ class RatingSection extends ConsumerWidget {
                     children: [
                       Text(
                         r.averageRating.toStringAsFixed(1),
-                        style: Theme.of(context).textTheme.displaySmall
-                            ?.copyWith(fontWeight: FontWeight.w600, height: 1),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          height: 1,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
@@ -67,27 +102,10 @@ class RatingSection extends ConsumerWidget {
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Expanded(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.sm),
-                            border: Border.all(
-                              color: AppColors.textPrimary,
-                              width: 0.5,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.sm),
-                            child: LinearProgressIndicator(
-                              value: (r.averageRating / 10).clamp(0.0, 1.0),
-                              minHeight: 10,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              color: AppColors.primary,
-                            ),
-                          ),
+                        child: _borderedProgressBar(
+                          context,
+                          value: r.averageRating / 10,
+                          minHeight: 8,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.xs),
@@ -103,7 +121,7 @@ class RatingSection extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.sm),
                   for (var stars = 10; stars >= 1; stars--)
                     _StarRow(
                       stars: stars,
@@ -140,35 +158,24 @@ class _StarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = max > 0 ? count / max : 0.0;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Row(
         children: [
           SizedBox(
-            width: 72,
+            width: 56,
             child: Text(
               '$stars ★',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-              child: LinearProgressIndicator(
-                value: t,
-                minHeight: 10,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest,
-              ),
-            ),
-          ),
+          Expanded(child: _borderedProgressBar(context, value: t)),
           const SizedBox(width: AppSpacing.sm),
           SizedBox(
-            width: 28,
+            width: 24,
             child: Text(
               '$count',
               textAlign: TextAlign.end,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ),
         ],

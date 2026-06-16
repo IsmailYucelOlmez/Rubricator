@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/logging/app_logger.dart';
 import 'supabase_service.dart';
 
 /// All Supabase Auth calls live here — UI uses [authStateProvider] / this via Riverpod.
@@ -23,34 +24,87 @@ class AuthService {
     String? avatarUrl,
     DateTime? privacyPolicyAcceptedAt,
     String? privacyPolicyVersion,
-  }) {
-    return _client.auth.signUp(
-      email: email.trim(),
-      password: password,
-      data: <String, dynamic>{
-        if (displayName != null && displayName.trim().isNotEmpty)
-          'username': displayName.trim(),
-        if (avatarUrl != null && avatarUrl.trim().isNotEmpty)
-          'avatar_url': avatarUrl.trim(),
-        if (privacyPolicyAcceptedAt != null)
-          'privacy_policy_accepted_at': privacyPolicyAcceptedAt.toIso8601String(),
-        if (privacyPolicyVersion != null && privacyPolicyVersion.trim().isNotEmpty)
-          'privacy_policy_version': privacyPolicyVersion.trim(),
-      },
-    );
+  }) async {
+    AppLogger.info('auth', 'Sign up attempt');
+    try {
+      final response = await _client.auth.signUp(
+        email: email.trim(),
+        password: password,
+        data: <String, dynamic>{
+          if (displayName != null && displayName.trim().isNotEmpty)
+            'username': displayName.trim(),
+          if (avatarUrl != null && avatarUrl.trim().isNotEmpty)
+            'avatar_url': avatarUrl.trim(),
+          if (privacyPolicyAcceptedAt != null)
+            'privacy_policy_accepted_at': privacyPolicyAcceptedAt.toIso8601String(),
+          if (privacyPolicyVersion != null && privacyPolicyVersion.trim().isNotEmpty)
+            'privacy_policy_version': privacyPolicyVersion.trim(),
+        },
+      );
+      AppLogger.info(
+        'auth',
+        'Sign up success',
+        data: {'userId': response.user?.id},
+      );
+      return response;
+    } catch (error, stackTrace) {
+      await AppLogger.error('auth', 'Sign up failed', error, stackTrace);
+      rethrow;
+    }
   }
 
   Future<AuthResponse> signIn({
     required String email,
     required String password,
-  }) {
-    return _client.auth.signInWithPassword(
-      email: email.trim(),
-      password: password,
-    );
+  }) async {
+    AppLogger.info('auth', 'Sign in attempt');
+    try {
+      final response = await _client.auth.signInWithPassword(
+        email: email.trim(),
+        password: password,
+      );
+      AppLogger.info(
+        'auth',
+        'Sign in success',
+        data: {'userId': response.user?.id},
+      );
+      return response;
+    } catch (error, stackTrace) {
+      await AppLogger.error('auth', 'Sign in failed', error, stackTrace);
+      rethrow;
+    }
   }
 
-  Future<void> signOut() => _client.auth.signOut();
+  Future<void> signOut() async {
+    AppLogger.info('auth', 'Sign out');
+    try {
+      await _client.auth.signOut();
+      AppLogger.info('auth', 'Sign out success');
+    } catch (error, stackTrace) {
+      await AppLogger.error('auth', 'Sign out failed', error, stackTrace);
+      rethrow;
+    }
+  }
+
+  Future<void> sendPasswordResetOtp(String email) {
+    return _client.auth.resetPasswordForEmail(email.trim());
+  }
+
+  Future<void> verifyOtpAndResetPassword({
+    required String email,
+    required String otpToken,
+    required String newPassword,
+  }) async {
+    final response = await _client.auth.verifyOTP(
+      email: email.trim(),
+      token: otpToken.trim(),
+      type: OtpType.recovery,
+    );
+    if (response.session == null) {
+      throw StateError('Password recovery verification failed.');
+    }
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
+  }
 
   Future<void> updateProfile({
     required String displayName,

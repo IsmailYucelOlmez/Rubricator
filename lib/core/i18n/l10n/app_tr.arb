@@ -39,7 +39,7 @@
   "accountAlreadyExists": "Bu e-posta ile bir hesap zaten var.",
   "email": "E-posta",
   "password": "Sifre",
-  "passwordMin6": "Sifre (en az 6 karakter)",
+  "passwordMin6": "Sifre (en az 6 karakter, buyuk/kucuk harf, noktalama)",
   "cancel": "Iptal",
   "signUp": "Kayit ol",
   "confirmAccountEmailNotice": "Gerekliyse hesabinizi onaylamak icin e-postanizi kontrol edin.",
@@ -345,6 +345,26 @@
   ,"uxGalleryPluginError":"Galeri acilamadi. Uygulamayi tam kapatip yeniden deneyin."
   ,"uxProfilePhotoStorageNotReady":"Profil fotografi alani hazir degil. Veritabani migrationlarini calistirin."
   ,"uxProfilePhotoPermissionDenied":"Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin."
+  ,"forgotPassword":"Sifremi unuttum?"
+  ,"forgotPasswordTitle":"Sifremi unuttum"
+  ,"forgotPasswordPrompt":"E-posta adresinizi girin. Sifrenizi sifirlamak icin 8 haneli bir kod (baglanti degil) gonderilecektir."
+  ,"sendResetCode":"Kod gonder"
+  ,"resetCodeSent":"8 haneli kod e-posta adresinize gonderildi."
+  ,"resetPasswordTitle":"Sifreyi yenile"
+  ,"resetPasswordPrompt":"{email} adresine gonderilen kodu girin."
+  ,"@resetPasswordPrompt":{"placeholders":{"email":{"type":"String"}}}
+  ,"otpCodeLabel":"8 haneli dogrulama kodu"
+  ,"confirmPassword":"Sifreyi onayla"
+  ,"updatePassword":"Sifreyi guncelle"
+  ,"resendCode":"Kodu tekrar gonder"
+  ,"uxOtpIncomplete":"Lutfen 8 haneli kodu eksiksiz girin."
+  ,"uxPasswordMismatch":"Sifreler eslesmiyor."
+  ,"passwordResetSuccess":"Sifreniz basariyla guncellendi."
+  ,"invalidOrExpiredOtp":"Gecersiz veya suresi dolmus dogrulama kodu."
+  ,"uxPasswordTooShort":"Sifre en az 6 karakter olmalidir."
+  ,"uxPasswordMissingUppercase":"Sifre en az bir buyuk harf icermelidir."
+  ,"uxPasswordMissingLowercase":"Sifre en az bir kucuk harf icermelidir."
+  ,"uxPasswordMissingPunctuation":"Sifre en az bir noktalama isareti icermelidir."
   ,"uxMustSignIn":"Devam etmek icin giris yapin."
   ,"uxReviewMinLength":"Inceleme en az 10 karakter olmalidir."
   ,"privacyPolicyAppBar":"Gizlilik Politikasi"

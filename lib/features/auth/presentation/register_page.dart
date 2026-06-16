@@ -10,6 +10,7 @@ import '../../../core/layout/app_breakpoints.dart';
 import '../../../core/layout/responsive_scaffold_body.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/validation/form_validators.dart';
+import '../../../core/validation/password_validation_messages.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import 'auth_provider.dart';
@@ -64,9 +65,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       _emailError = email.isEmpty
           ? l10n.uxEmailRequired
           : (!FormValidators.isValidEmail(email) ? l10n.uxEmailInvalid : null);
-      _passwordError = password.isEmpty
-          ? l10n.uxPasswordRequired
-          : (password.length < 6 ? l10n.passwordMin6 : null);
+      _passwordError = l10n.passwordFieldError(password);
       _userNameError = userName.isEmpty ? l10n.uxUserNameRequired : null;
     });
 
@@ -209,14 +208,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 errorText: _passwordError,
                 style: inputStyle,
                 onEditingComplete: () => setState(() {
-                  final v = _password.text;
-                  if (v.isEmpty) {
-                    _passwordError = l10n.uxPasswordRequired;
-                  } else if (v.length < 6) {
-                    _passwordError = l10n.passwordMin6;
-                  } else {
-                    _passwordError = null;
-                  }
+                  _passwordError = l10n.passwordFieldError(_password.text);
                 }),
               ),
               const SizedBox(height: AppSpacing.sm + AppSpacing.xs),

@@ -118,7 +118,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get password => 'Sifre';
 
   @override
-  String get passwordMin6 => 'Sifre (en az 6 karakter)';
+  String get passwordMin6 =>
+      'Sifre (en az 6 karakter, buyuk/kucuk harf, noktalama)';
 
   @override
   String get cancel => 'Iptal';
@@ -854,6 +855,70 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get uxProfilePhotoPermissionDenied =>
       'Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin.';
+
+  @override
+  String get forgotPassword => 'Sifremi unuttum?';
+
+  @override
+  String get forgotPasswordTitle => 'Sifremi unuttum';
+
+  @override
+  String get forgotPasswordPrompt =>
+      'E-posta adresinizi girin. Sifrenizi sifirlamak icin 8 haneli bir kod (baglanti degil) gonderilecektir.';
+
+  @override
+  String get sendResetCode => 'Kod gonder';
+
+  @override
+  String get resetCodeSent => '8 haneli kod e-posta adresinize gonderildi.';
+
+  @override
+  String get resetPasswordTitle => 'Sifreyi yenile';
+
+  @override
+  String resetPasswordPrompt(String email) {
+    return '$email adresine gonderilen kodu girin.';
+  }
+
+  @override
+  String get otpCodeLabel => '8 haneli dogrulama kodu';
+
+  @override
+  String get confirmPassword => 'Sifreyi onayla';
+
+  @override
+  String get updatePassword => 'Sifreyi guncelle';
+
+  @override
+  String get resendCode => 'Kodu tekrar gonder';
+
+  @override
+  String get uxOtpIncomplete => 'Lutfen 8 haneli kodu eksiksiz girin.';
+
+  @override
+  String get uxPasswordMismatch => 'Sifreler eslesmiyor.';
+
+  @override
+  String get passwordResetSuccess => 'Sifreniz basariyla guncellendi.';
+
+  @override
+  String get invalidOrExpiredOtp =>
+      'Gecersiz veya suresi dolmus dogrulama kodu.';
+
+  @override
+  String get uxPasswordTooShort => 'Sifre en az 6 karakter olmalidir.';
+
+  @override
+  String get uxPasswordMissingUppercase =>
+      'Sifre en az bir buyuk harf icermelidir.';
+
+  @override
+  String get uxPasswordMissingLowercase =>
+      'Sifre en az bir kucuk harf icermelidir.';
+
+  @override
+  String get uxPasswordMissingPunctuation =>
+      'Sifre en az bir noktalama isareti icermelidir.';
 
   @override
   String get uxMustSignIn => 'Devam etmek icin giris yapin.';

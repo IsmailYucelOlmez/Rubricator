@@ -107,6 +107,9 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final iconColor = Theme.of(context).brightness == Brightness.light
+        ? AppColors.primary
+        : AppColors.gold;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.6),
@@ -119,7 +122,7 @@ class _StatTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: AppColors.gold),
+            Icon(icon, size: 22, color: iconColor),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(

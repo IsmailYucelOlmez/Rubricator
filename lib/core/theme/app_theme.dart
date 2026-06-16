@@ -151,7 +151,7 @@ abstract final class AppTheme {
           foregroundColor: AppColors.textPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.labelLarge?.copyWith(color: AppColors.textPrimary),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -333,7 +333,7 @@ abstract final class AppTheme {
           foregroundColor: AppColors.textPrimary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.labelLarge?.copyWith(color: AppColors.textPrimary),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

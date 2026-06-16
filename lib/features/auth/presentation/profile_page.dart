@@ -132,6 +132,11 @@ class ProfilePage extends ConsumerWidget {
     if (s.contains('Invalid login credentials')) {
       return l10n.invalidEmailOrPassword;
     }
+    if (s.contains('Token has expired') ||
+        s.contains('invalid') && s.toLowerCase().contains('otp') ||
+        s.contains('recovery_failed')) {
+      return l10n.invalidOrExpiredOtp;
+    }
     if (s.contains('User already registered')) {
       return l10n.accountAlreadyExists;
     }

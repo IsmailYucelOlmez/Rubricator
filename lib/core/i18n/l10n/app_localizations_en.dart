@@ -118,7 +118,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get password => 'Password';
 
   @override
-  String get passwordMin6 => 'Password (min 6 characters)';
+  String get passwordMin6 => 'Password (min 6, upper, lower, punctuation)';
 
   @override
   String get cancel => 'Cancel';
@@ -855,6 +855,69 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get uxProfilePhotoPermissionDenied =>
       'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot password';
+
+  @override
+  String get forgotPasswordPrompt =>
+      'Enter your email. We will send an 8-digit code (not a link) to reset your password.';
+
+  @override
+  String get sendResetCode => 'Send code';
+
+  @override
+  String get resetCodeSent => 'An 8-digit code was sent to your email.';
+
+  @override
+  String get resetPasswordTitle => 'Reset password';
+
+  @override
+  String resetPasswordPrompt(String email) {
+    return 'Enter the code sent to $email.';
+  }
+
+  @override
+  String get otpCodeLabel => '8-digit verification code';
+
+  @override
+  String get confirmPassword => 'Confirm password';
+
+  @override
+  String get updatePassword => 'Update password';
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get uxOtpIncomplete => 'Please enter the full 8-digit code.';
+
+  @override
+  String get uxPasswordMismatch => 'Passwords do not match.';
+
+  @override
+  String get passwordResetSuccess => 'Your password was updated successfully.';
+
+  @override
+  String get invalidOrExpiredOtp => 'Invalid or expired verification code.';
+
+  @override
+  String get uxPasswordTooShort => 'Password must be at least 6 characters.';
+
+  @override
+  String get uxPasswordMissingUppercase =>
+      'Password must include an uppercase letter.';
+
+  @override
+  String get uxPasswordMissingLowercase =>
+      'Password must include a lowercase letter.';
+
+  @override
+  String get uxPasswordMissingPunctuation =>
+      'Password must include a punctuation character.';
 
   @override
   String get uxMustSignIn => 'Please sign in to continue.';

@@ -3,6 +3,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
+import '../core/logging/app_logger.dart';
 import '../core/notification/reading_reminder_localization.dart';
 import '../core/notification/reading_reminder_logic.dart';
 import '../core/notification/reading_reminder_prefs.dart';
@@ -39,6 +40,7 @@ class NotificationService {
     await androidPlugin?.requestExactAlarmsPermission();
 
     _initialized = true;
+    AppLogger.info('notifications', 'Service initialized');
   }
 
   Future<void> showReadingReminder({required int streak}) async {

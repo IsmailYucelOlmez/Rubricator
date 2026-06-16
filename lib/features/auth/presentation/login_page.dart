@@ -10,6 +10,7 @@ import '../../../core/validation/form_validators.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import 'auth_provider.dart';
+import 'forgot_password_page.dart';
 import 'register_page.dart';
 
 /// Full-screen sign-in (e.g. after tapping favorite while signed out).
@@ -128,7 +129,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 style: inputStyle,
                 onEditingComplete: () => _onPasswordBlur(l10n),
               ),
-              const SizedBox(height: AppSpacing.md),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _submitting
+                      ? null
+                      : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(builder: (_) => const ForgotPasswordPage()),
+                          );
+                        },
+                  child: Text(l10n.forgotPassword),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
               FilledButton(
                 onPressed: _submitting ? null : () => _submit(l10n),
                 child: _submitting

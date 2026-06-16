@@ -11,6 +11,10 @@ class Env {
 
   static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
+  static const sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
+  static bool get hasSentryConfig => sentryDsn.trim().isNotEmpty;
+
   static bool get hasSupabaseConfig =>
       supabaseUrl.trim().isNotEmpty && supabaseAnonKey.trim().isNotEmpty;
 

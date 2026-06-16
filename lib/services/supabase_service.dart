@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/env.dart';
+import '../core/logging/app_logger.dart';
 
 /// Central Supabase client bootstrap. Keys come from dart-defines — never hardcode.
 class SupabaseService {
@@ -12,6 +13,7 @@ class SupabaseService {
       url: Env.supabaseUrl.trim(),
       anonKey: Env.supabaseAnonKey.trim(),
     );
+    AppLogger.info('supabase', 'Client initialized');
   }
 
   static SupabaseClient get client => Supabase.instance.client;

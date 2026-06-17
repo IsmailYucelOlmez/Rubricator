@@ -179,7 +179,7 @@ class _WeeklyBars extends StatelessWidget {
                               height: h.clamp(6, maxBar),
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: AppColors.gold.withValues(alpha: 0.28),
+                                color: AppColors.accent(context).withValues(alpha: 0.28),
                                 borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                             ),

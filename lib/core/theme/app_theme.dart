@@ -193,8 +193,8 @@ abstract final class AppTheme {
     ).copyWith(
       primary: AppColors.primary,
       onPrimary: AppColors.textPrimary,
-      secondary: AppColors.gold,
-      onSecondary: AppColors.lightOnSurface,
+      secondary: AppColors.lightOnSurface,
+      onSecondary: AppColors.lightSurface,
       surface: AppColors.lightSurface,
       onSurface: AppColors.lightOnSurface,
       onSurfaceVariant: AppColors.lightOnSurfaceVariant,

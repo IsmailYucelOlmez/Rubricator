@@ -2,13 +2,13 @@ import '../entities/home_book_entity.dart';
 import '../entities/home_genre_section.dart';
 
 abstract class HomeRepository {
-  Future<List<HomeBookEntity>> getPopularBooks();
+  Stream<List<HomeBookEntity>> streamPopularBooks();
+  Future<List<HomeBookEntity>> refreshPopularBooks();
+
   Future<List<HomeBookEntity>> getBooksByGenre(String genre);
 
-  /// Home genre rows: one Google Books `subject:` query per key (parallel).
-  Future<Map<String, HomeGenreSection>> getHomeGenreSectionBooks(
-    List<String> genreKeys,
-  );
+  Stream<HomeGenreSection> streamHomeGenreSection(String genreKey);
+  Future<HomeGenreSection> refreshHomeGenreSection(String genreKey);
 
   Future<List<HomeBookEntity>> searchBooks(String query);
 }

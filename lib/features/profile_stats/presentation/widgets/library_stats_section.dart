@@ -107,9 +107,7 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final iconColor = Theme.of(context).brightness == Brightness.light
-        ? AppColors.primary
-        : AppColors.gold;
+    final iconColor = AppColors.accent(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest.withValues(alpha: 0.6),

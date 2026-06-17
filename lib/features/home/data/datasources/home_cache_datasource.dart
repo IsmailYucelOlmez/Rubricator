@@ -9,7 +9,8 @@ class HomeCacheDataSource {
 
   static const String _table = 'genre_books_cache';
   static const List<int> _defaultAllowedWeekdays = <int>[1, 3, 5];
-  static const int _maxRetryAttempts = 5;
+  static const int _maxRetryAttempts = 2;
+  static const Duration staleAfter = Duration(hours: 192);
 
   Future<GenreCacheSnapshot?> getGenreCache(String genreKey) async {
     final rows = await _client
@@ -20,6 +21,13 @@ class HomeCacheDataSource {
     if (rows.isEmpty) return null;
     final row = rows.first;
     return GenreCacheSnapshot.fromJson(row);
+  }
+
+  bool isStale(GenreCacheSnapshot? row, {DateTime? now}) {
+    if (row == null) return true;
+    final lastFetchAt = row.lastFetchAt;
+    if (lastFetchAt == null) return true;
+    return (now ?? DateTime.now()).difference(lastFetchAt) > staleAfter;
   }
 
   bool canAttemptFetchToday(GenreCacheSnapshot? row, {DateTime? now}) {
@@ -115,15 +123,22 @@ class GenreCacheSnapshot {
     required this.allowedWeekdays,
     required this.fetchCompleted,
     required this.isActive,
+    required this.lastFetchAt,
   });
 
   final List<dynamic> booksJson;
   final List<int> allowedWeekdays;
   final bool fetchCompleted;
   final bool isActive;
+  final DateTime? lastFetchAt;
 
   factory GenreCacheSnapshot.fromJson(Map<String, dynamic> json) {
     final allowedRaw = json['allowed_weekdays'];
+    final lastFetchRaw = json['last_fetch_at'];
+    DateTime? lastFetchAt;
+    if (lastFetchRaw is String && lastFetchRaw.isNotEmpty) {
+      lastFetchAt = DateTime.tryParse(lastFetchRaw);
+    }
     return GenreCacheSnapshot(
       booksJson: (json['books_json'] as List<dynamic>?) ?? const <dynamic>[],
       allowedWeekdays: allowedRaw is List
@@ -134,6 +149,7 @@ class GenreCacheSnapshot {
           : const <int>[],
       fetchCompleted: json['fetch_completed'] == true,
       isActive: json['is_active'] != false,
+      lastFetchAt: lastFetchAt,
     );
   }
 }

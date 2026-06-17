@@ -32,7 +32,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final genreSections = ref.watch(homeGenreSectionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,58 +77,25 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(
           onRefresh: () async {
+            final repo = ref.read(homeRepositoryProvider);
             await Future.wait([
-              ref.refresh(popularBooksProvider.future),
-              ref.refresh(homeGenreSectionsProvider.future),
+              repo.refreshPopularBooks(),
+              ...kHomePageGenreKeys.map(repo.refreshHomeGenreSection),
             ]);
+            ref.invalidate(popularBooksProvider);
+            for (final genre in kHomePageGenreKeys) {
+              ref.invalidate(homeGenreSectionProvider(genre));
+            }
           },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
             SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
-            ...genreSections.when(
-              data: (map) => [
-                for (final genre in kHomePageGenreKeys)
-                  SliverToBoxAdapter(
-                    child: _GenreSection(
-                      genre: genre,
-                      section: map[genre] ??
-                          const HomeGenreSection(
-                            books: <HomeBookEntity>[],
-                            loadState: HomeGenreSectionLoadState.error,
-                          ),
-                      l10n: l10n,
-                    ),
-                  ),
-              ],
-              loading: () => [
-                for (final genre in kHomePageGenreKeys)
-                  SliverToBoxAdapter(
-                    child: _Section(
-                      title: _genreLabel(genre, l10n),
-                      child: const _HorizontalSkeleton(),
-                    ),
-                  ),
-              ],
-              error: (error, stackTrace) => [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md,
-                      AppSpacing.sm,
-                      AppSpacing.md,
-                      0,
-                    ),
-                    child: AsyncErrorView(
-                      error: error,
-                      compact: true,
-                      onRetry: () => ref.invalidate(homeGenreSectionsProvider),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            for (final genre in kHomePageGenreKeys)
+              SliverToBoxAdapter(
+                child: _GenreSectionLoader(genre: genre, l10n: l10n),
+              ),
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
           ],
         ),
@@ -155,6 +121,37 @@ class _PopularSection extends ConsumerWidget {
           error: error,
           compact: true,
           onRetry: () => ref.invalidate(popularBooksProvider),
+        ),
+      ),
+    );
+  }
+}
+
+class _GenreSectionLoader extends ConsumerWidget {
+  const _GenreSectionLoader({required this.genre, required this.l10n});
+
+  final String genre;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sectionState = ref.watch(homeGenreSectionProvider(genre));
+    return sectionState.when(
+      data: (section) => _GenreSection(
+        genre: genre,
+        section: section,
+        l10n: l10n,
+      ),
+      loading: () => _Section(
+        title: _genreLabel(genre, l10n),
+        child: const _HorizontalSkeleton(),
+      ),
+      error: (error, stackTrace) => _Section(
+        title: _genreLabel(genre, l10n),
+        child: AsyncErrorView(
+          error: error,
+          compact: true,
+          onRetry: () => ref.invalidate(homeGenreSectionProvider(genre)),
         ),
       ),
     );
@@ -202,7 +199,7 @@ class _GenreSection extends ConsumerWidget {
         body = AsyncErrorView(
           error: StateError('home_genre:$genre'),
           compact: true,
-          onRetry: () => ref.invalidate(homeGenreSectionsProvider),
+          onRetry: () => ref.invalidate(homeGenreSectionProvider(genre)),
         );
     }
 

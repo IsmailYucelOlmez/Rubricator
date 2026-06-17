@@ -12,6 +12,7 @@ class HomeRepositoryImpl implements HomeRepository {
   final HomeCacheDataSource _cacheDataSource;
 
   static const int _maxBooksPerHomeSection = 10;
+  static const int _maxHomeGoogleBooksFetchSize = 15;
   static const int _maxGoogleBooksFetchSize = 40;
   static const String _popularGenreCacheKey = 'popular_fiction';
 
@@ -61,9 +62,9 @@ class HomeRepositoryImpl implements HomeRepository {
     return chosen.map((s) => s.model).toList();
   }
 
-  /// Loads raw models and classifies outcome for home-row UX (books vs soft empty vs error).
+  /// Loads raw models and classifies outcome for genre-page UX (blocking, no SWR).
   Future<({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState})>
-  _loadGenreModels(String genreKey) async {
+  _loadGenreModels(String genreKey, {required int maxResults}) async {
     final cachedRow = await _cacheDataSource.getGenreCache(genreKey);
     final cachedBooks = _prioritizeModels(
       _cacheDataSource.parseCachedBooks(cachedRow),
@@ -82,12 +83,34 @@ class HomeRepositoryImpl implements HomeRepository {
       );
     }
 
+    return _fetchAndCacheModels(
+      genreKey,
+      maxResults: maxResults,
+      cachedRow: cachedRow,
+    );
+  }
+
+  Future<({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState})>
+  _fetchAndCacheModels(
+    String genreKey, {
+    required int maxResults,
+    GenreCacheSnapshot? cachedRow,
+    bool ignoreWeekdaySchedule = false,
+  }) async {
+    final row = cachedRow ?? await _cacheDataSource.getGenreCache(genreKey);
+    if (!ignoreWeekdaySchedule && !_cacheDataSource.canAttemptFetchToday(row)) {
+      return (
+        models: const <HomeBookModel>[],
+        sectionState: HomeGenreSectionLoadState.emptyUnavailable,
+      );
+    }
+
     Object? lastError;
     for (var i = 0; i < _cacheDataSource.maxRetryAttempts; i++) {
       try {
         final remote = await _remoteDataSource.fetchBooksByGenre(
           genreKey,
-          maxResults: _maxGoogleBooksFetchSize,
+          maxResults: maxResults,
         );
         final prioritized = _prioritizeModels(remote);
         if (prioritized.isEmpty) {
@@ -118,24 +141,26 @@ class HomeRepositoryImpl implements HomeRepository {
     );
   }
 
-  Future<List<HomeBookModel>> _getOrRefreshPopularBooks() async {
-    final cachedRow = await _cacheDataSource.getGenreCache(
+  Future<({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState})>
+  _fetchAndCachePopularBooks({
+    GenreCacheSnapshot? cachedRow,
+    bool ignoreWeekdaySchedule = false,
+  }) async {
+    final row = cachedRow ?? await _cacheDataSource.getGenreCache(
       _popularGenreCacheKey,
     );
-    final cachedBooks = _prioritizeModels(
-      _cacheDataSource.parseCachedBooks(cachedRow),
-    );
-    if (cachedBooks.isNotEmpty) return cachedBooks;
-
-    if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
-      return cachedBooks;
+    if (!ignoreWeekdaySchedule && !_cacheDataSource.canAttemptFetchToday(row)) {
+      return (
+        models: const <HomeBookModel>[],
+        sectionState: HomeGenreSectionLoadState.emptyUnavailable,
+      );
     }
 
     Object? lastError;
     for (var i = 0; i < _cacheDataSource.maxRetryAttempts; i++) {
       try {
         final remote = await _remoteDataSource.fetchPopularBooks(
-          maxResults: _maxGoogleBooksFetchSize,
+          maxResults: _maxHomeGoogleBooksFetchSize,
         );
         final prioritized = _prioritizeModels(remote);
         if (prioritized.isEmpty) {
@@ -145,7 +170,10 @@ class HomeRepositoryImpl implements HomeRepository {
           genreKey: _popularGenreCacheKey,
           books: prioritized,
         );
-        return prioritized;
+        return (
+          models: prioritized,
+          sectionState: HomeGenreSectionLoadState.ready,
+        );
       } catch (error) {
         lastError = error;
       }
@@ -157,23 +185,108 @@ class HomeRepositoryImpl implements HomeRepository {
         error: lastError,
       );
     }
-    return cachedBooks;
+    return (
+      models: const <HomeBookModel>[],
+      sectionState: HomeGenreSectionLoadState.error,
+    );
   }
 
-  @override
-  Future<List<HomeBookEntity>> getPopularBooks() async {
-    final models = await _getOrRefreshPopularBooks();
-    final prioritized = _prioritizeModels(models);
-    return prioritized
+  List<HomeBookEntity> _homeBooksFromModels(List<HomeBookModel> models) {
+    return _prioritizeModels(models)
         .take(_maxBooksPerHomeSection)
         .map((item) => item.toEntity())
         .toList();
   }
 
+  HomeGenreSection _homeSectionFromModels(List<HomeBookModel> models) {
+    final books = _homeBooksFromModels(models);
+    if (books.isNotEmpty) {
+      return HomeGenreSection(
+        books: books,
+        loadState: HomeGenreSectionLoadState.ready,
+      );
+    }
+    return const HomeGenreSection(
+      books: <HomeBookEntity>[],
+      loadState: HomeGenreSectionLoadState.error,
+    );
+  }
+
+  HomeGenreSection _homeSectionFromLoaded(
+    ({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState}) loaded,
+  ) {
+    final books = _homeBooksFromModels(loaded.models);
+    if (books.isNotEmpty) {
+      return HomeGenreSection(
+        books: books,
+        loadState: HomeGenreSectionLoadState.ready,
+      );
+    }
+    return HomeGenreSection(
+      books: const <HomeBookEntity>[],
+      loadState: loaded.sectionState,
+    );
+  }
+
+  bool _sameBookIds(List<HomeBookModel> a, List<HomeBookModel> b) {
+    final aIds = _homeBooksFromModels(a).map((book) => book.id).toList();
+    final bIds = _homeBooksFromModels(b).map((book) => book.id).toList();
+    if (aIds.length != bIds.length) return false;
+    for (var i = 0; i < aIds.length; i++) {
+      if (aIds[i] != bIds[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  Stream<List<HomeBookEntity>> streamPopularBooks() async* {
+    final cachedRow = await _cacheDataSource.getGenreCache(_popularGenreCacheKey);
+    final cachedBooks = _prioritizeModels(
+      _cacheDataSource.parseCachedBooks(cachedRow),
+    );
+
+    if (cachedBooks.isNotEmpty) {
+      yield _homeBooksFromModels(cachedBooks);
+      if (_cacheDataSource.isStale(cachedRow)) {
+        final refreshed = await _fetchAndCachePopularBooks(
+          cachedRow: cachedRow,
+          ignoreWeekdaySchedule: true,
+        );
+        if (refreshed.models.isNotEmpty &&
+            refreshed.sectionState == HomeGenreSectionLoadState.ready &&
+            !_sameBookIds(cachedBooks, refreshed.models)) {
+          yield _homeBooksFromModels(refreshed.models);
+        }
+      }
+      return;
+    }
+
+    if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
+      yield const <HomeBookEntity>[];
+      return;
+    }
+
+    final loaded = await _fetchAndCachePopularBooks(cachedRow: cachedRow);
+    if (loaded.models.isNotEmpty) {
+      yield _homeBooksFromModels(loaded.models);
+    } else {
+      yield const <HomeBookEntity>[];
+    }
+  }
+
+  @override
+  Future<List<HomeBookEntity>> refreshPopularBooks() async {
+    final loaded = await _fetchAndCachePopularBooks(ignoreWeekdaySchedule: true);
+    return _homeBooksFromModels(loaded.models);
+  }
+
   @override
   Future<List<HomeBookEntity>> getBooksByGenre(String genre) async {
     try {
-      final loaded = await _loadGenreModels(genre);
+      final loaded = await _loadGenreModels(
+        genre,
+        maxResults: _maxGoogleBooksFetchSize,
+      );
       final prioritized = _prioritizeModels(loaded.models);
       return prioritized.map((item) => item.toEntity()).toList();
     } catch (_) {
@@ -183,51 +296,54 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Map<String, HomeGenreSection>> getHomeGenreSectionBooks(
-    List<String> genreKeys,
-  ) async {
-    if (genreKeys.isEmpty) return <String, HomeGenreSection>{};
-
-    // One `subject:` query per row — Google often omits `volumeInfo.categories`,
-    // so splitting a single combined result by category leaves rows empty.
-    final entries = await Future.wait(
-      genreKeys.map((g) async {
-        try {
-          final loaded = await _loadGenreModels(g);
-          final prioritized = _prioritizeModels(loaded.models);
-          final books = prioritized
-              .take(_maxBooksPerHomeSection)
-              .map((m) => m.toEntity())
-              .toList();
-          if (books.isNotEmpty) {
-            return MapEntry(
-              g,
-              HomeGenreSection(
-                books: books,
-                loadState: HomeGenreSectionLoadState.ready,
-              ),
-            );
-          }
-          return MapEntry(
-            g,
-            HomeGenreSection(
-              books: const <HomeBookEntity>[],
-              loadState: loaded.sectionState,
-            ),
-          );
-        } catch (_) {
-          return MapEntry(
-            g,
-            const HomeGenreSection(
-              books: <HomeBookEntity>[],
-              loadState: HomeGenreSectionLoadState.error,
-            ),
-          );
-        }
-      }),
+  Stream<HomeGenreSection> streamHomeGenreSection(String genreKey) async* {
+    final cachedRow = await _cacheDataSource.getGenreCache(genreKey);
+    final cachedBooks = _prioritizeModels(
+      _cacheDataSource.parseCachedBooks(cachedRow),
     );
 
-    return Map<String, HomeGenreSection>.fromEntries(entries);
+    if (cachedBooks.isNotEmpty) {
+      yield _homeSectionFromModels(cachedBooks);
+      if (_cacheDataSource.isStale(cachedRow)) {
+        final refreshed = await _fetchAndCacheModels(
+          genreKey,
+          maxResults: _maxHomeGoogleBooksFetchSize,
+          cachedRow: cachedRow,
+          ignoreWeekdaySchedule: true,
+        );
+        if (refreshed.models.isNotEmpty &&
+            refreshed.sectionState == HomeGenreSectionLoadState.ready &&
+            !_sameBookIds(cachedBooks, refreshed.models)) {
+          yield _homeSectionFromModels(refreshed.models);
+        }
+      }
+      return;
+    }
+
+    if (!_cacheDataSource.canAttemptFetchToday(cachedRow)) {
+      yield const HomeGenreSection(
+        books: <HomeBookEntity>[],
+        loadState: HomeGenreSectionLoadState.emptyUnavailable,
+      );
+      return;
+    }
+
+    final loaded = await _fetchAndCacheModels(
+      genreKey,
+      maxResults: _maxHomeGoogleBooksFetchSize,
+      cachedRow: cachedRow,
+    );
+    yield _homeSectionFromLoaded(loaded);
+  }
+
+  @override
+  Future<HomeGenreSection> refreshHomeGenreSection(String genreKey) async {
+    final loaded = await _fetchAndCacheModels(
+      genreKey,
+      maxResults: _maxHomeGoogleBooksFetchSize,
+      ignoreWeekdaySchedule: true,
+    );
+    return _homeSectionFromLoaded(loaded);
   }
 
   @override

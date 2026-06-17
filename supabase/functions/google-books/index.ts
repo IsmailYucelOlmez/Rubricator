@@ -57,6 +57,7 @@ Deno.serve(async (req: Request) => {
         ...corsHeaders,
         "Content-Type": upstream.headers.get("Content-Type") ??
           "application/json",
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400",
       },
     });
   } catch (error) {

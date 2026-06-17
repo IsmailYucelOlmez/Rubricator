@@ -26,8 +26,8 @@ final homeRepositoryProvider = Provider<HomeRepository>(
   ),
 );
 
-final popularBooksProvider = FutureProvider<List<HomeBookEntity>>((ref) {
-  return ref.watch(homeRepositoryProvider).getPopularBooks();
+final popularBooksProvider = StreamProvider<List<HomeBookEntity>>((ref) {
+  return ref.watch(homeRepositoryProvider).streamPopularBooks();
 });
 
 /// Google Books `subject:` keys for home genre rows (underscore → space in API).
@@ -40,11 +40,11 @@ const kHomePageGenreKeys = <String>[
   'horror',
 ];
 
-final homeGenreSectionsProvider =
-    FutureProvider<Map<String, HomeGenreSection>>((ref) {
+final homeGenreSectionProvider =
+    StreamProvider.family<HomeGenreSection, String>((ref, genreKey) {
       return ref
           .watch(homeRepositoryProvider)
-          .getHomeGenreSectionBooks(kHomePageGenreKeys);
+          .streamHomeGenreSection(genreKey);
     });
 
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((

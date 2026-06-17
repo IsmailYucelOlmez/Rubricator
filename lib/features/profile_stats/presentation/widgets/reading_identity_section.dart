@@ -151,8 +151,8 @@ class ReadingIdentitySection extends ConsumerWidget {
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .surfaceContainerHighest,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppColors.gold,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.accent(context),
                               ),
                             ),
                           ),

@@ -35,9 +35,7 @@ Color _bookDetailBorderColor(BuildContext context) {
 
 Color _bookDetailStarColor(BuildContext context, {required bool filled}) {
   if (filled) {
-    return Theme.of(context).brightness == Brightness.light
-        ? AppColors.primary
-        : AppColors.gold;
+    return AppColors.accent(context);
   }
   return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
 }

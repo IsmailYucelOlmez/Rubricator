@@ -20,7 +20,7 @@ class HabitStreakWidget extends ConsumerWidget {
         if (compact) {
           return Row(
             children: [
-              Icon(Icons.local_fire_department, color: AppColors.gold, size: 22),
+              Icon(Icons.local_fire_department, color: AppColors.accent(context), size: 22),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 AppLocalizations.of(context)!.dayStreak(s.currentStreak),
@@ -35,7 +35,7 @@ class HabitStreakWidget extends ConsumerWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(Icons.local_fire_department, color: AppColors.gold, size: 36),
+                Icon(Icons.local_fire_department, color: AppColors.accent(context), size: 36),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(

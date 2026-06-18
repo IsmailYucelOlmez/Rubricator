@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../services/api_service.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../core/network/supabase_service.dart';
+import '../services/api_service.dart';
 import '../models/book_detail_models.dart';
 import '../models/book_model.dart';
 import 'google_books_remote_datasource.dart';
@@ -76,9 +76,55 @@ class BookDetailRemoteDataSource {
         .select()
         .eq('book_id', bookId)
         .order('created_at', ascending: false);
-    return (rows as List<dynamic>)
+    final reviews = (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(ReviewModel.fromJson)
+        .toList();
+    if (reviews.isEmpty) return reviews;
+
+    final userIds = reviews.map((r) => r.userId).toSet().toList();
+    final ratingRows = await _client
+        .from('ratings')
+        .select('user_id, rating')
+        .eq('book_id', bookId)
+        .inFilter('user_id', userIds);
+    final favoriteRows = await _client
+        .from('user_books')
+        .select('user_id, is_favorite')
+        .eq('book_id', bookId)
+        .inFilter('user_id', userIds);
+
+    final ratingsByUser = <String, int>{};
+    for (final row in ratingRows as List<dynamic>) {
+      if (row is! Map<String, dynamic>) continue;
+      final userId = (row['user_id'] ?? '').toString();
+      final rating = (row['rating'] as num?)?.toInt();
+      if (userId.isNotEmpty && rating != null) {
+        ratingsByUser[userId] = rating;
+      }
+    }
+
+    final favoritesByUser = <String, bool>{};
+    for (final row in favoriteRows as List<dynamic>) {
+      if (row is! Map<String, dynamic>) continue;
+      final userId = (row['user_id'] ?? '').toString();
+      if (userId.isEmpty) continue;
+      favoritesByUser[userId] = row['is_favorite'] as bool? ?? false;
+    }
+
+    return reviews
+        .map(
+          (review) => ReviewModel(
+            id: review.id,
+            bookId: review.bookId,
+            userId: review.userId,
+            content: review.content,
+            createdAt: review.createdAt,
+            likes: review.likes,
+            userRating: ratingsByUser[review.userId],
+            isFavorite: favoritesByUser[review.userId] ?? false,
+          ),
+        )
         .toList();
   }
 
@@ -114,16 +160,19 @@ class BookDetailRemoteDataSource {
   }
 
   Future<void> likeQuote(String quoteId) async {
-    final row = await _client
-        .from('quotes')
-        .select('likes')
-        .eq('id', quoteId)
-        .single();
-    final currentLikes = ((row['likes'] as num?)?.toInt() ?? 0) + 1;
-    await _client
-        .from('quotes')
-        .update(<String, dynamic>{'likes': currentLikes})
-        .eq('id', quoteId);
+    _requiredUserId();
+    await _client.rpc<void>(
+      'increment_quote_likes',
+      params: <String, dynamic>{'quote_id': quoteId},
+    );
+  }
+
+  Future<void> likeReview(String reviewId) async {
+    _requiredUserId();
+    await _client.rpc<void>(
+      'increment_review_likes',
+      params: <String, dynamic>{'review_id': reviewId},
+    );
   }
 
   Future<List<QuoteModel>> getQuotes(String bookId) async {

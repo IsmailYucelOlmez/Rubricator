@@ -7,6 +7,9 @@ class ReviewModel {
     required this.userId,
     required this.content,
     required this.createdAt,
+    this.likes = 0,
+    this.userRating,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -14,6 +17,9 @@ class ReviewModel {
   final String userId;
   final String content;
   final DateTime createdAt;
+  final int likes;
+  final int? userRating;
+  final bool isFavorite;
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
@@ -24,6 +30,7 @@ class ReviewModel {
       createdAt:
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      likes: (json['likes'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -33,6 +40,7 @@ class ReviewModel {
     'user_id': userId,
     'content': content,
     'created_at': createdAt.toUtc().toIso8601String(),
+    'likes': likes,
   };
 
   ReviewEntity toEntity() => ReviewEntity(
@@ -41,6 +49,9 @@ class ReviewModel {
     userId: userId,
     content: content,
     createdAt: createdAt,
+    likes: likes,
+    userRating: userRating,
+    isFavorite: isFavorite,
   );
 
   factory ReviewModel.fromEntity(ReviewEntity entity) => ReviewModel(
@@ -49,6 +60,9 @@ class ReviewModel {
     userId: entity.userId,
     content: entity.content,
     createdAt: entity.createdAt,
+    likes: entity.likes,
+    userRating: entity.userRating,
+    isFavorite: entity.isFavorite,
   );
 }
 

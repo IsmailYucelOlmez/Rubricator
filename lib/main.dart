@@ -8,13 +8,13 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'core/notification/reading_reminder_scheduler.dart';
 import 'core/logging/app_logger.dart';
 
-import 'services/notification_service.dart';
+import 'core/notification/notification_service.dart';
 
 import 'app.dart';
 
 import 'core/env.dart';
 
-import 'services/supabase_service.dart';
+import 'core/network/supabase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

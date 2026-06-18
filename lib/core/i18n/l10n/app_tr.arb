@@ -187,6 +187,8 @@
   "writeReviewHint": "Yorumunuzu yazin (en az 10 karakter)",
   "addReview": "Yorum ekle",
   "noUserReviewsYet": "Henuz kullanici yorumu yok.",
+  "reviewUserRating": "Puan: {rating}/10",
+  "reviewInFavorites": "Favorilerde",
   "couldNotLoadReviews": "Yorumlar yuklenemedi.",
   "reviewTitle": "Yorum basligi",
   "reviewUrlHint": "https://example.com/review",

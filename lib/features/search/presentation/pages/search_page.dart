@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
-import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -13,30 +12,14 @@ import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
+import '../../../books/presentation/widgets/book_search_result_tile.dart';
 import '../providers/search_notifier.dart';
-
-/// Matches home horizontal [HomePage] `_BookCard` title typography.
-TextStyle? _homeLikeBookTitleStyle(TextTheme theme) {
-  final titleSmall = theme.titleSmall;
-  return titleSmall?.copyWith(
-    fontFamily: 'LTSoul',
-    fontSize: (titleSmall.fontSize ?? 14) * 1.1,
-  );
-}
 
 /// Matches home horizontal [HomePage] `_BookCard` author typography.
 TextStyle? _homeLikeBookAuthorStyle(TextTheme theme) {
   final bodySmall = theme.bodySmall;
   return bodySmall?.copyWith(
     fontSize: (bodySmall.fontSize ?? 12) * 1.40,
-  );
-}
-
-/// Author line on search results list only (`_BookList`).
-TextStyle? _searchResultsAuthorStyle(TextTheme theme) {
-  final bodySmall = theme.bodySmall;
-  return bodySmall?.copyWith(
-    fontSize: (bodySmall.fontSize ?? 12) * 1.60,
   );
 }
 
@@ -139,7 +122,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 }
 
-class _SearchResultsView extends ConsumerWidget {
+class _SearchResultsView extends ConsumerStatefulWidget {
   const _SearchResultsView({
     required this.activeQuery,
     required this.onOpenBook,
@@ -149,7 +132,35 @@ class _SearchResultsView extends ConsumerWidget {
   final ValueChanged<Book> onOpenBook;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_SearchResultsView> createState() => _SearchResultsViewState();
+}
+
+class _SearchResultsViewState extends ConsumerState<_SearchResultsView> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 240) {
+      ref.read(searchProvider.notifier).loadMore();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(searchProvider);
     return state.when(
@@ -165,11 +176,29 @@ class _SearchResultsView extends ConsumerWidget {
             error: error,
             onRetry: () => ref.invalidate(searchProvider),
           ),
-      data: (books) {
+      data: (pagination) {
+        final books = pagination.books;
         if (books.isEmpty) {
-          return Center(child: Text(l10n.noBooksFoundFor(activeQuery)));
+          return Center(child: Text(l10n.noBooksFoundFor(widget.activeQuery)));
         }
-        return _BookList(books: books, onOpenBook: onOpenBook);
+        return ListView.separated(
+          controller: _scrollController,
+          itemCount: books.length + (pagination.isLoadingMore ? 1 : 0),
+          separatorBuilder: (context, index) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            if (index >= books.length) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: Center(child: AppLoadingIndicator()),
+              );
+            }
+            final book = books[index];
+            return BookSearchResultTile(
+              book: book,
+              onTap: () => widget.onOpenBook(book),
+            );
+          },
+        );
       },
     );
   }
@@ -210,17 +239,22 @@ class _DiscoveryView extends ConsumerWidget {
             if (queries.isEmpty) {
               return Text(l10n.noRecentSearchesYet);
             }
-            return Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: queries
-                  .map(
-                    (q) => ActionChip(
-                      label: Text(q),
-                      onPressed: () => onPickQuery(q),
-                    ),
-                  )
-                  .toList(),
+            final displayQueries = queries.take(6).toList();
+            return SizedBox(
+              height: 104,
+              child: Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                clipBehavior: Clip.hardEdge,
+                children: displayQueries
+                    .map(
+                      (q) => ActionChip(
+                        label: Text(q),
+                        onPressed: () => onPickQuery(q),
+                      ),
+                    )
+                    .toList(),
+              ),
             );
           },
         ),
@@ -246,125 +280,54 @@ class _DiscoveryView extends ConsumerWidget {
             if (books.isEmpty) {
               return Text(l10n.noRecentSearchedBooksYet);
             }
-            return SizedBox(
-              height: AppSpacing.xl * 10,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: books.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-                itemBuilder: (context, index) {
-                  final book = books[index];
-                  final theme = Theme.of(context);
-                  return SizedBox(
-                    width: context.isTabletLayout ? 176 : 160,
-                    child: InkWell(
-                      onTap: () => onOpenBook(book),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: BookCoverWithFavoriteButton(
-                                  bookId: book.id,
-                                  child: BookCoverLeading(
-                                    coverImageUrl: book.coverImageUrl,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                book.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: _homeLikeBookTitleStyle(theme.textTheme),
-                              ),
-                              Text(
-                                book.author,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: _homeLikeBookAuthorStyle(theme.textTheme),
-                              ),
-                            ],
+            final displayBooks = books.take(6).toList();
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: AppSpacing.sm,
+                mainAxisSpacing: AppSpacing.sm,
+                childAspectRatio: 0.52,
+              ),
+              itemCount: displayBooks.length,
+              itemBuilder: (context, index) {
+                final book = displayBooks[index];
+                final theme = Theme.of(context);
+                return InkWell(
+                  onTap: () => onOpenBook(book),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: BookCoverWithFavoriteButton(
+                          bookId: book.id,
+                          child: BookCoverLeading(
+                            coverImageUrl: book.coverImageUrl,
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _BookList extends StatelessWidget {
-  const _BookList({required this.books, required this.onOpenBook});
-
-  final List<Book> books;
-  final ValueChanged<Book> onOpenBook;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: books.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final book = books[index];
-        final screenW = MediaQuery.sizeOf(context).width;
-        final imageWidth = context.isTabletLayout
-            ? (screenW * 0.18).clamp(96.0, 132.0)
-            : screenW * 0.25;
-        final textTheme = Theme.of(context).textTheme;
-        final titleStyle = _homeLikeBookTitleStyle(textTheme);
-        final authorStyle = _searchResultsAuthorStyle(textTheme);
-        return InkWell(
-          onTap: () => onOpenBook(book),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: imageWidth,
-                  height: imageWidth * 1.4,
-                  child: BookCoverWithFavoriteButton(
-                    bookId: book.id,
-                    compact: true,
-                    child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         book.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
+                        style: bookListTitleStyle(theme.textTheme),
                       ),
-                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         book.author,
-                        softWrap: true,
-                        style: authorStyle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: _homeLikeBookAuthorStyle(theme.textTheme),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+                );
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }

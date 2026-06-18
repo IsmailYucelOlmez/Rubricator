@@ -1,13 +1,16 @@
-import '../../../../services/api_service.dart';
+import '../services/api_service.dart';
 import '../../domain/entities/author.dart';
 import '../../domain/entities/book.dart';
 import '../datasources/google_books_remote_datasource.dart';
 import '../models/book_model.dart';
 
 class BookRepository {
-  BookRepository(ApiService api) : _ds = GoogleBooksRemoteDataSource(api);
+  BookRepository(ApiService api, {String preferredLanguageCode = 'en'})
+    : _ds = GoogleBooksRemoteDataSource(api),
+      _preferredLanguageCode = preferredLanguageCode;
 
   final GoogleBooksRemoteDataSource _ds;
+  final String _preferredLanguageCode;
 
   /// In-memory cache for [getBooksByAuthorId] to avoid repeat API calls when
   /// revisiting an author or when the UI rebuilds with the same logical author.
@@ -22,12 +25,17 @@ class BookRepository {
 
   int _getLanguageScore(BookModel book) {
     final langs = book.languages;
-    if (langs != null &&
-        (langs.contains('eng') ||
-            langs.contains('en') ||
-            langs.contains('tur') ||
-            langs.contains('tr'))) {
-      return 3;
+    if (langs != null) {
+      final preferred = _preferredLanguageCode.toLowerCase();
+      final preferredCodes = preferred == 'tr'
+          ? const {'tur', 'tr'}
+          : const {'eng', 'en'};
+      final secondaryCodes = preferred == 'tr'
+          ? const {'eng', 'en'}
+          : const {'tur', 'tr'};
+
+      if (langs.any(preferredCodes.contains)) return 4;
+      if (langs.any(secondaryCodes.contains)) return 3;
     }
 
     final title = book.title.trim();
@@ -62,7 +70,7 @@ class BookRepository {
       return a.index.compareTo(b.index);
     });
 
-    final highQuality = scored.where((s) => s.score >= 2).toList();
+    final highQuality = scored.where((s) => s.score >= 3).toList();
     final chosen = highQuality.isNotEmpty ? highQuality : scored;
     return chosen.map((s) => s.model).toList();
   }

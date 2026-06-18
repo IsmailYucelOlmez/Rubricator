@@ -20,9 +20,6 @@ final searchRepositoryProvider = Provider<SearchRepository>((ref) {
   );
 });
 
-final _searchBooksUseCaseProvider = Provider<SearchBooksUseCase>(
-  (ref) => SearchBooksUseCase(ref.watch(searchRepositoryProvider)),
-);
 final _logSearchUseCaseProvider = Provider<LogSearchUseCase>(
   (ref) => LogSearchUseCase(ref.watch(searchRepositoryProvider)),
 );
@@ -38,11 +35,89 @@ final _getSearchHistoryUseCaseProvider = Provider<GetSearchHistoryUseCase>(
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-final searchProvider = FutureProvider.autoDispose<List<Book>>((ref) async {
-  final query = ref.watch(searchQueryProvider).trim();
-  if (query.length < 2) return const <Book>[];
-  return ref.watch(_searchBooksUseCaseProvider).call(query);
-});
+class SearchPaginationState {
+  const SearchPaginationState({
+    required this.books,
+    required this.hasMore,
+    required this.isLoadingMore,
+    required this.query,
+  });
+
+  final List<Book> books;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final String query;
+}
+
+final searchProvider =
+    AsyncNotifierProvider.autoDispose<SearchPaginationNotifier, SearchPaginationState>(
+      SearchPaginationNotifier.new,
+    );
+
+class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPaginationState> {
+  int _page = 1;
+
+  @override
+  Future<SearchPaginationState> build() async {
+    _page = 1;
+    final query = ref.watch(searchQueryProvider).trim();
+    if (query.length < 2) {
+      return const SearchPaginationState(
+        books: <Book>[],
+        hasMore: false,
+        isLoadingMore: false,
+        query: '',
+      );
+    }
+    final result = await ref
+        .read(bookRepositoryProvider)
+        .searchBooks(query: query, page: 1);
+    return SearchPaginationState(
+      books: result.books,
+      hasMore: result.hasMore,
+      isLoadingMore: false,
+      query: query,
+    );
+  }
+
+  Future<void> loadMore() async {
+    final current = state.valueOrNull;
+    if (current == null ||
+        current.isLoadingMore ||
+        !current.hasMore ||
+        current.query.length < 2) {
+      return;
+    }
+
+    final nextPage = _page + 1;
+    state = AsyncData(
+      SearchPaginationState(
+        books: current.books,
+        hasMore: current.hasMore,
+        isLoadingMore: true,
+        query: current.query,
+      ),
+    );
+
+    try {
+      final result = await ref
+          .read(bookRepositoryProvider)
+          .searchBooks(query: current.query, page: nextPage);
+      _page = nextPage;
+      final merged = <Book>[...current.books, ...result.books];
+      state = AsyncData(
+        SearchPaginationState(
+          books: merged,
+          hasMore: result.hasMore,
+          isLoadingMore: false,
+          query: current.query,
+        ),
+      );
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+    }
+  }
+}
 
 final popularSearchProvider = FutureProvider<List<String>>((ref) {
   return ref.watch(_getPopularSearchesUseCaseProvider).call();

@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../services/supabase_service.dart';
+import '../../../core/network/supabase_service.dart';
 import '../domain/entities/user_book_entity.dart';
 import '../domain/entities/user_book_snapshot.dart';
 

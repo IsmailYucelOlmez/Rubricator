@@ -399,6 +399,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noUserReviewsYet => 'No user reviews yet.';
 
   @override
+  String reviewUserRating(int rating) {
+    return 'Rating: $rating/10';
+  }
+
+  @override
+  String get reviewInFavorites => 'In favorites';
+
+  @override
   String get couldNotLoadReviews => 'Could not load reviews.';
 
   @override

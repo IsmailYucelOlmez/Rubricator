@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../../services/supabase_service.dart';
+import '../../../../core/network/supabase_service.dart';
 import '../../domain/entities/list_entities.dart';
 import '../../domain/repositories/lists_repository.dart';
 

@@ -399,6 +399,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noUserReviewsYet => 'Henuz kullanici yorumu yok.';
 
   @override
+  String reviewUserRating(int rating) {
+    return 'Puan: $rating/10';
+  }
+
+  @override
+  String get reviewInFavorites => 'Favorilerde';
+
+  @override
   String get couldNotLoadReviews => 'Yorumlar yuklenemedi.';
 
   @override

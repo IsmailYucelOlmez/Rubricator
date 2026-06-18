@@ -621,6 +621,16 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                     _feedbackError(e);
                   }
                 },
+                onLikeReview: (reviewId) async {
+                  try {
+                    await ref
+                        .read(reviewListProvider(detailedBook.id).notifier)
+                        .like(reviewId);
+                  } catch (e) {
+                    if (!mounted) return;
+                    _feedbackError(e);
+                  }
+                },
               ),
             ],
           );
@@ -1017,6 +1027,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
     required this.quotes,
     required this.onRetryQuotes,
     required this.onLikeQuote,
+    required this.onLikeReview,
   });
 
   final AsyncValue<List<ReviewEntity>> reviews;
@@ -1030,6 +1041,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
   final AsyncValue<List<QuoteEntity>> quotes;
   final VoidCallback onRetryQuotes;
   final Future<void> Function(String quoteId) onLikeQuote;
+  final Future<void> Function(String reviewId) onLikeReview;
 
   static const _tabPanelHeight = 400.0;
 
@@ -1060,6 +1072,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
                   onEditReview: onEditReview,
                   onDeleteReview: onDeleteReview,
                   onOpenExternalReview: onOpenExternalReview,
+                  onLikeReview: onLikeReview,
                 ),
                 _QuoteSection(
                   quotes: quotes,
@@ -1085,6 +1098,7 @@ class _ReviewSection extends StatefulWidget {
     required this.onEditReview,
     required this.onDeleteReview,
     required this.onOpenExternalReview,
+    required this.onLikeReview,
   });
 
   final AsyncValue<List<ReviewEntity>> reviews;
@@ -1095,6 +1109,7 @@ class _ReviewSection extends StatefulWidget {
   final Future<void> Function(ReviewEntity review) onEditReview;
   final Future<void> Function(ReviewEntity review) onDeleteReview;
   final Future<void> Function(String url) onOpenExternalReview;
+  final Future<void> Function(String reviewId) onLikeReview;
 
   @override
   State<_ReviewSection> createState() => _ReviewSectionState();
@@ -1197,17 +1212,31 @@ class _ReviewSectionState extends State<_ReviewSection> {
                           itemBuilder: (context, index) {
                             final item = list[index];
                             final own = item.userId == widget.currentUserId;
+                            final meta = <String>[
+                              if (item.userRating != null)
+                                l10n.reviewUserRating(item.userRating!),
+                              if (item.isFavorite) l10n.reviewInFavorites,
+                              item.createdAt.toLocal().toString(),
+                            ].join(' · ');
                             return ListTile(
                               title: Text(
                                 item.content,
                                 style: _bookDetailBodyStyle(context),
                               ),
                               subtitle: Text(
-                                item.createdAt.toLocal().toString(),
+                                meta,
                                 style: _bookDetailBodyStyle(context),
                               ),
-                              trailing: own
-                                  ? Wrap(
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () => widget.onLikeReview(item.id),
+                                    icon: const Icon(Icons.thumb_up_outlined),
+                                    label: Text(item.likes.toString()),
+                                  ),
+                                  if (own)
+                                    Wrap(
                                       spacing: 4,
                                       children: [
                                         IconButton(
@@ -1222,8 +1251,9 @@ class _ReviewSectionState extends State<_ReviewSection> {
                                               const Icon(Icons.delete_outline),
                                         ),
                                       ],
-                                    )
-                                  : null,
+                                    ),
+                                ],
+                              ),
                             );
                           },
                         ),

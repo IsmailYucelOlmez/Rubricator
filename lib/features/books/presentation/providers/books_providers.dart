@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../profile_stats/presentation/providers/profile_stats_revision.dart';
 
 import '../../../auth/presentation/auth_provider.dart';
-import '../../../../services/ai_service.dart';
-import '../../../../services/api_service.dart';
+import '../../../../core/i18n/locale_provider.dart';
+import '../../data/services/ai_service.dart';
+import '../../data/services/api_service.dart';
 import '../../data/repositories/book_detail_repository_impl.dart';
 import '../../data/repositories/book_repository.dart';
 import '../../domain/entities/author.dart';
@@ -15,7 +16,10 @@ import '../../domain/repositories/book_detail_repository.dart';
 final _apiProvider = Provider<ApiService>((ref) => ApiService());
 
 final bookRepositoryProvider = Provider<BookRepository>(
-  (ref) => BookRepository(ref.watch(_apiProvider)),
+  (ref) => BookRepository(
+    ref.watch(_apiProvider),
+    preferredLanguageCode: ref.watch(localeProvider).languageCode,
+  ),
 );
 
 final _aiServiceProvider = Provider<AiService>((ref) => AiService());
@@ -147,10 +151,46 @@ class ReviewListNotifier
               userId: review.userId,
               content: content.trim(),
               createdAt: review.createdAt,
+              likes: review.likes,
+              userRating: review.userRating,
+              isFavorite: review.isFavorite,
             ),
           );
       return ref.read(bookDetailRepositoryProvider).getReviews(_bookId);
     });
+  }
+
+  Future<void> like(String reviewId) async {
+    final current = state.valueOrNull;
+    if (current != null) {
+      state = AsyncData(
+        current
+            .map(
+              (review) => review.id == reviewId
+                  ? ReviewEntity(
+                      id: review.id,
+                      bookId: review.bookId,
+                      userId: review.userId,
+                      content: review.content,
+                      createdAt: review.createdAt,
+                      likes: review.likes + 1,
+                      userRating: review.userRating,
+                      isFavorite: review.isFavorite,
+                    )
+                  : review,
+            )
+            .toList(),
+      );
+    }
+    try {
+      await ref.read(bookDetailRepositoryProvider).likeReview(reviewId);
+      state = AsyncData(
+        await ref.read(bookDetailRepositoryProvider).getReviews(_bookId),
+      );
+    } catch (e) {
+      if (current != null) state = AsyncData(current);
+      rethrow;
+    }
   }
 
   Future<void> remove(ReviewEntity review) async {
@@ -245,11 +285,34 @@ class QuoteNotifier extends FamilyAsyncNotifier<List<QuoteEntity>, String> {
   }
 
   Future<void> like(String quoteId) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    final current = state.valueOrNull;
+    if (current != null) {
+      state = AsyncData(
+        current
+            .map(
+              (quote) => quote.id == quoteId
+                  ? QuoteEntity(
+                      id: quote.id,
+                      bookId: quote.bookId,
+                      userId: quote.userId,
+                      content: quote.content,
+                      likes: quote.likes + 1,
+                      createdAt: quote.createdAt,
+                    )
+                  : quote,
+            )
+            .toList(),
+      );
+    }
+    try {
       await ref.read(bookDetailRepositoryProvider).likeQuote(quoteId);
-      return ref.read(bookDetailRepositoryProvider).getQuotes(_bookId);
-    });
+      state = AsyncData(
+        await ref.read(bookDetailRepositoryProvider).getQuotes(_bookId),
+      );
+    } catch (e) {
+      if (current != null) state = AsyncData(current);
+      rethrow;
+    }
   }
 }
 

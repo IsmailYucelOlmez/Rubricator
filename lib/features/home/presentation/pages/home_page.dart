@@ -42,11 +42,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         centerTitle: false,
         titleSpacing: _appBarPad,
         automaticallyImplyLeading: false,
-        actionsPadding: const EdgeInsets.only(
-          top: _appBarPad,
-          right: _appBarPad,
-          bottom: _appBarPad,
-        ),
         title: Padding(
           padding: const EdgeInsets.fromLTRB(
             _appBarPad,
@@ -67,12 +62,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(

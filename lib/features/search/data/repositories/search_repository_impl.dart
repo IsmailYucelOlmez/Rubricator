@@ -23,12 +23,12 @@ class SearchRepositoryImpl implements SearchRepository {
 
   @override
   Future<List<String>> getPopularSearches() async {
-    return _remote.fetchPopularQueries(limit: 10);
+    return _remote.fetchPopularQueries(limit: 6);
   }
 
   @override
   Future<List<Book>> getPopularBooks() async {
-    final topIds = await _remote.fetchPopularBookIds(limit: 10);
+    final topIds = await _remote.fetchPopularBookIds(limit: 6);
     if (topIds.isEmpty) return <Book>[];
     final books = await Future.wait<Book?>(
       topIds.map((id) async {

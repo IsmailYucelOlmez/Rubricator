@@ -806,6 +806,18 @@ abstract class AppLocalizations {
   /// **'No user reviews yet.'**
   String get noUserReviewsYet;
 
+  /// No description provided for @reviewUserRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: {rating}/10'**
+  String reviewUserRating(int rating);
+
+  /// No description provided for @reviewInFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'In favorites'**
+  String get reviewInFavorites;
+
   /// No description provided for @couldNotLoadReviews.
   ///
   /// In en, this message translates to:

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../services/api_service.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../core/network/supabase_service.dart';
+import '../../../books/data/services/api_service.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';

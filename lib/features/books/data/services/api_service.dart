@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../core/logging/app_logger.dart';
-import 'supabase_service.dart';
+import '../../../../core/logging/app_logger.dart';
+import '../../../../core/network/supabase_service.dart';
 
 /// Google Books traffic goes through the `google-books` edge function so
 /// [GOOGLE_BOOKS_API_KEY] stays a Supabase secret, not a client bundle value.

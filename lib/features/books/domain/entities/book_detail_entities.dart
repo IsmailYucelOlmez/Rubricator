@@ -25,6 +25,9 @@ class ReviewEntity {
     required this.userId,
     required this.content,
     required this.createdAt,
+    this.likes = 0,
+    this.userRating,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -32,6 +35,9 @@ class ReviewEntity {
   final String userId;
   final String content;
   final DateTime createdAt;
+  final int likes;
+  final int? userRating;
+  final bool isFavorite;
 }
 
 class ExternalReviewEntity {

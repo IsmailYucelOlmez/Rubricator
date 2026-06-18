@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../services/supabase_service.dart';
+import '../../../core/network/supabase_service.dart';
 
 class FavoritesException implements Exception {
   FavoritesException(this.message);

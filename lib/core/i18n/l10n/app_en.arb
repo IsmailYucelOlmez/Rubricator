@@ -187,6 +187,15 @@
   "writeReviewHint": "Write your review (min 10 chars)",
   "addReview": "Add review",
   "noUserReviewsYet": "No user reviews yet.",
+  "reviewUserRating": "Rating: {rating}/10",
+  "@reviewUserRating": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewInFavorites": "In favorites",
   "couldNotLoadReviews": "Could not load reviews.",
   "reviewTitle": "Review title",
   "reviewUrlHint": "https://example.com/review",

@@ -35,6 +35,14 @@ final _getSearchHistoryUseCaseProvider = Provider<GetSearchHistoryUseCase>(
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
+List<Book> _deduplicateBooks(List<Book> books) {
+  final seen = <String>{};
+  return books.where((book) {
+    final key = '${book.title.toLowerCase()}|${book.author.toLowerCase()}';
+    return seen.add(key);
+  }).toList();
+}
+
 class SearchPaginationState {
   const SearchPaginationState({
     required this.books,
@@ -73,7 +81,7 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
         .read(bookRepositoryProvider)
         .searchBooks(query: query, page: 1);
     return SearchPaginationState(
-      books: result.books,
+      books: _deduplicateBooks(result.books),
       hasMore: result.hasMore,
       isLoadingMore: false,
       query: query,
@@ -104,7 +112,7 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
           .read(bookRepositoryProvider)
           .searchBooks(query: current.query, page: nextPage);
       _page = nextPage;
-      final merged = <Book>[...current.books, ...result.books];
+      final merged = _deduplicateBooks(<Book>[...current.books, ...result.books]);
       state = AsyncData(
         SearchPaginationState(
           books: merged,

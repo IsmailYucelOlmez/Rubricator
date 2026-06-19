@@ -1,0 +1,236 @@
+---
+description: Google Books API kullanılan her yerde otomatik uygula
+globs: **/*.dart
+alwaysApply: true
+---
+
+# Google Books API — Flutter kuralları
+
+## 1. Arama sorguları
+
+Alan operatörü olmadan genel `q=` kullanma. Her aramada uygun önek kullan:
+
+```dart
+// ❌ YANLIŞ
+final query = bookTitle;
+
+// ✅ DOĞRU
+final query = 'intitle:$bookTitle';
+final query = 'inauthor:$authorName';
+final query = 'isbn:$isbn13';
+final query = 'intitle:$title+inauthor:$author';
+```
+
+Zorunlu parametreler her istekte bulunmalı:
+
+```dart
+final params = {
+  'q': query,
+  'printType': 'books',        // dergi/makale karışmasın
+  'langRestrict': langCode,    // 'tr', 'en' vb.
+  'maxResults': '40',
+  'key': apiKey,
+};
+```
+
+---
+
+## 2. Null-safe model
+
+`volumeInfo` alanlarına hiçbir zaman doğrudan erişme. Tüm alanlar opsiyonel olarak tanımlanmalı:
+
+```dart
+class BookModel {
+  final String id;
+  final String title;
+  final String? subtitle;
+  final List<String> authors;
+  final String? publishedYear;
+  final int? pageCount;
+  final String? coverUrl;
+  final String? isbn13;
+  final String? language;
+  final double? averageRating;
+  final String? description;
+
+  const BookModel({
+    required this.id,
+    required this.title,
+    this.subtitle,
+    required this.authors,
+    this.publishedYear,
+    this.pageCount,
+    this.coverUrl,
+    this.isbn13,
+    this.language,
+    this.averageRating,
+    this.description,
+  });
+
+  factory BookModel.fromJson(Map<String, dynamic> json) {
+    final v = (json['volumeInfo'] as Map<String, dynamic>?) ?? {};
+
+    // ISBN-13'ü industryIdentifiers listesinden güvenli çek
+    final identifiers = v['industryIdentifiers'] as List<dynamic>? ?? [];
+    final isbn13 = identifiers
+        .cast<Map<String, dynamic>>()
+        .firstWhere(
+          (id) => id['type'] == 'ISBN_13',
+          orElse: () => {},
+        )['identifier'] as String?;
+
+    // Kapak URL'sini https'e zorla
+    final rawCover = (v['imageLinks'] as Map<String, dynamic>?)?['thumbnail'] as String?;
+    final coverUrl = rawCover?.replaceFirst('http://', 'https://');
+
+    // Yayın yılını tam tarihten ayır
+    final rawDate = v['publishedDate'] as String?;
+    final year = rawDate != null && rawDate.length >= 4 ? rawDate.substring(0, 4) : null;
+
+    return BookModel(
+      id: json['id'] as String? ?? '',
+      title: v['title'] as String? ?? 'Başlık yok',
+      subtitle: v['subtitle'] as String?,
+      authors: (v['authors'] as List<dynamic>?)?.cast<String>() ?? [],
+      publishedYear: year,
+      pageCount: v['pageCount'] as int?,
+      coverUrl: coverUrl,
+      isbn13: isbn13,
+      language: v['language'] as String?,
+      averageRating: (v['averageRating'] as num?)?.toDouble(),
+      description: v['description'] as String?,
+    );
+  }
+}
+```
+
+---
+
+## 3. Deduplication (versiyon birleştirme)
+
+API aynı kitabın her baskısını ayrı sonuç olarak döndürür. Listeyi göstermeden önce tekrarları kaldır:
+
+```dart
+List<BookModel> deduplicate(List<BookModel> books) {
+  final seen = <String>{};
+  return books.where((book) {
+    // ISBN-13 varsa onu kullan, yoksa başlık+ilk yazar
+    final key = book.isbn13 ??
+        '${book.title.toLowerCase()}|${book.authors.firstOrNull?.toLowerCase() ?? ''}';
+    return seen.add(key); // Set.add false döner zaten varsa
+  }).toList();
+}
+```
+
+---
+
+## 4. Repository — cache + retry + exponential backoff
+
+```dart
+class BooksRepository {
+  final http.Client _client;
+  final String _apiKey;
+  final _cache = <String, List<BookModel>>{};
+
+  BooksRepository({required http.Client client, required String apiKey})
+      : _client = client,
+        _apiKey = apiKey;
+
+  Future<List<BookModel>> search(
+    String query, {
+    String lang = 'tr',
+    int maxResults = 40,
+    String orderBy = 'relevance', // 'relevance' | 'newest'
+  }) async {
+    final cacheKey = '$query|$lang|$maxResults|$orderBy';
+    if (_cache.containsKey(cacheKey)) return _cache[cacheKey]!;
+
+    final uri = Uri.https('www.googleapis.com', '/books/v1/volumes', {
+      'q': query,
+      'printType': 'books',
+      'langRestrict': lang,
+      'maxResults': '$maxResults',
+      'orderBy': orderBy,
+      'key': _apiKey,
+    });
+
+    final raw = await _fetchWithRetry(uri);
+    final items = (raw['items'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>()
+        .map(BookModel.fromJson)
+        .toList();
+
+    final result = deduplicate(items);
+    _cache[cacheKey] = result;
+    return result;
+  }
+
+  Future<Map<String, dynamic>> _fetchWithRetry(Uri uri) async {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      final response = await _client.get(uri);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+
+      if (response.statusCode == 429 || response.statusCode >= 500) {
+        // Exponential backoff: 1s, 2s, 4s
+        await Future.delayed(Duration(seconds: 1 << attempt));
+        continue;
+      }
+
+      throw BooksApiException(
+        statusCode: response.statusCode,
+        message: 'API hatası: ${response.statusCode}',
+      );
+    }
+    throw const BooksApiException(message: 'Maksimum deneme sayısına ulaşıldı');
+  }
+}
+
+class BooksApiException implements Exception {
+  final int? statusCode;
+  final String message;
+  const BooksApiException({this.statusCode, required this.message});
+}
+```
+
+---
+
+## 5. Baskı seçimi — en iyi versiyonu öne al
+
+Birden fazla baskı gösterilecekse kullanıcıya en nitelikli olanı sıralamanın üstünde göster:
+
+```dart
+int qualityScore(BookModel book) {
+  var score = 0;
+  if (book.isbn13 != null)        score += 3;
+  if (book.coverUrl != null)      score += 2;
+  if (book.pageCount != null)     score += 1;
+  if (book.averageRating != null) score += 1;
+  if (book.publishedYear != null) score += 1;
+  return score;
+}
+
+List<BookModel> sortByQuality(List<BookModel> books) =>
+    [...books]..sort((a, b) => qualityScore(b).compareTo(qualityScore(a)));
+```
+
+---
+
+## 6. Yasaklar
+
+- `volumeInfo['herhangiAlan']` şeklinde doğrudan Map erişimi yapma → her zaman `BookModel.fromJson` kullan.
+- `http:` kapak URL'lerini doğrudan `Image.network`'e verme → `replaceFirst` dönüşümü zorunlu.
+- `totalItems` alanına güvenme → gerçek sonuç sayısı her zaman daha azdır.
+- API anahtarını kaynak koduna gömme → `--dart-define` veya `.env` kullan.
+- Arama kutusunda her tuş basışında istek atma → en az 400 ms debounce uygula.
+
+```dart
+// Debounce örneği (Riverpod ile)
+final searchProvider = FutureProvider.family<List<BookModel>, String>((ref, query) async {
+  await Future.delayed(const Duration(milliseconds: 400));
+  if (ref.state.isLoading) return []; // iptal edildi
+  return ref.read(booksRepositoryProvider).search('intitle:$query');
+});
+```

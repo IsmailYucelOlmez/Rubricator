@@ -4,6 +4,8 @@ import '../../../profile_stats/presentation/providers/profile_stats_revision.dar
 
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../../core/i18n/locale_provider.dart';
+import '../../../../core/network/supabase_service.dart';
+import '../../data/datasources/google_books_cache_datasource.dart';
 import '../../data/services/ai_service.dart';
 import '../../data/services/api_service.dart';
 import '../../data/repositories/book_detail_repository_impl.dart';
@@ -15,9 +17,14 @@ import '../../domain/repositories/book_detail_repository.dart';
 
 final _apiProvider = Provider<ApiService>((ref) => ApiService());
 
+final _googleBooksCacheProvider = Provider<GoogleBooksCacheDataSource>(
+  (ref) => GoogleBooksCacheDataSource(SupabaseService.client),
+);
+
 final bookRepositoryProvider = Provider<BookRepository>(
   (ref) => BookRepository(
     ref.watch(_apiProvider),
+    cache: ref.watch(_googleBooksCacheProvider),
     preferredLanguageCode: ref.watch(localeProvider).languageCode,
   ),
 );

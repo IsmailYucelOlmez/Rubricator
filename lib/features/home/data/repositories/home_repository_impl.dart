@@ -1,3 +1,4 @@
+import '../../../books/data/repositories/book_repository.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/entities/home_genre_section.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -6,10 +7,15 @@ import '../datasources/home_remote_datasource.dart';
 import '../models/home_book_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-  HomeRepositoryImpl(this._remoteDataSource, this._cacheDataSource);
+  HomeRepositoryImpl(
+    this._remoteDataSource,
+    this._cacheDataSource,
+    this._bookRepository,
+  );
 
   final HomeRemoteDataSource _remoteDataSource;
   final HomeCacheDataSource _cacheDataSource;
+  final BookRepository _bookRepository;
 
   static const int _maxBooksPerHomeSection = 10;
   static const int _maxHomeGoogleBooksFetchSize = 15;
@@ -348,9 +354,17 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<List<HomeBookEntity>> searchBooks(String query) async {
-    final models = await _remoteDataSource.searchBooks(query);
-    final prioritized = _prioritizeModels(models);
-    return prioritized.map((item) => item.toEntity()).toList();
+    final result = await _bookRepository.searchBooks(query: query, page: 1);
+    return result.books
+        .map(
+          (book) => HomeBookEntity(
+            id: book.id,
+            title: book.title,
+            coverImageUrl: book.coverImageUrl,
+            authorNames: book.author,
+          ),
+        )
+        .toList();
   }
 }
 

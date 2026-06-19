@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../../books/data/services/api_service.dart';
+import '../../../books/presentation/providers/books_providers.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
@@ -12,7 +14,10 @@ import '../../domain/repositories/home_repository.dart';
 final _homeApiProvider = Provider<ApiService>((ref) => ApiService());
 
 final _homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>(
-  (ref) => HomeRemoteDataSource(ref.watch(_homeApiProvider)),
+  (ref) => HomeRemoteDataSource(
+    ref.watch(_homeApiProvider),
+    lang: ref.watch(localeProvider).languageCode,
+  ),
 );
 
 final _homeCacheDataSourceProvider = Provider<HomeCacheDataSource>(
@@ -23,6 +28,7 @@ final homeRepositoryProvider = Provider<HomeRepository>(
   (ref) => HomeRepositoryImpl(
     ref.watch(_homeRemoteDataSourceProvider),
     ref.watch(_homeCacheDataSourceProvider),
+    ref.watch(bookRepositoryProvider),
   ),
 );
 

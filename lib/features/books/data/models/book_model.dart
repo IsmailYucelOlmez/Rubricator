@@ -11,6 +11,10 @@ class BookModel {
     this.coverImageUrl,
     required this.description,
     required this.subjects,
+    this.isbn13,
+    this.publishedYear,
+    this.pageCount,
+    this.averageRating,
   });
 
   final String workId;
@@ -24,6 +28,10 @@ class BookModel {
 
   final String description;
   final List<String> subjects;
+  final String? isbn13;
+  final String? publishedYear;
+  final int? pageCount;
+  final double? averageRating;
 
   Book toEntity() {
     return Book(
@@ -46,6 +54,10 @@ class BookModel {
     String? coverImageUrl,
     String? description,
     List<String>? subjects,
+    String? isbn13,
+    String? publishedYear,
+    int? pageCount,
+    double? averageRating,
   }) {
     return BookModel(
       workId: workId ?? this.workId,
@@ -56,6 +68,60 @@ class BookModel {
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
       description: description ?? this.description,
       subjects: subjects ?? this.subjects,
+      isbn13: isbn13 ?? this.isbn13,
+      publishedYear: publishedYear ?? this.publishedYear,
+      pageCount: pageCount ?? this.pageCount,
+      averageRating: averageRating ?? this.averageRating,
+    );
+  }
+
+  Map<String, dynamic> toCacheJson() {
+    return <String, dynamic>{
+      'work_id': workId,
+      'title': title,
+      'primary_author_name': primaryAuthorName,
+      'author_keys': authorKeys,
+      'languages': languages,
+      'cover_image_url': coverImageUrl,
+      'description': description,
+      'subjects': subjects,
+      'isbn13': isbn13,
+      'published_year': publishedYear,
+      'page_count': pageCount,
+      'average_rating': averageRating,
+    };
+  }
+
+  factory BookModel.fromCacheJson(Map<String, dynamic> json) {
+    final authorKeysRaw = json['author_keys'];
+    final languagesRaw = json['languages'];
+    final subjectsRaw = json['subjects'];
+    return BookModel(
+      workId: (json['work_id'] as String?)?.trim().isNotEmpty == true
+          ? (json['work_id'] as String).trim()
+          : 'unknown',
+      title: (json['title'] as String?)?.trim().isNotEmpty == true
+          ? (json['title'] as String).trim()
+          : 'Unknown title',
+      primaryAuthorName:
+          (json['primary_author_name'] as String?)?.trim().isNotEmpty == true
+          ? (json['primary_author_name'] as String).trim()
+          : 'Unknown author',
+      authorKeys: authorKeysRaw is List
+          ? authorKeysRaw.whereType<String>().toList()
+          : const <String>[],
+      languages: languagesRaw is List
+          ? languagesRaw.whereType<String>().toList()
+          : null,
+      coverImageUrl: (json['cover_image_url'] as String?)?.trim(),
+      description: (json['description'] as String?) ?? '',
+      subjects: subjectsRaw is List
+          ? subjectsRaw.whereType<String>().toList()
+          : const <String>[],
+      isbn13: (json['isbn13'] as String?)?.trim(),
+      publishedYear: (json['published_year'] as String?)?.trim(),
+      pageCount: (json['page_count'] as num?)?.toInt(),
+      averageRating: (json['average_rating'] as num?)?.toDouble(),
     );
   }
 
@@ -87,6 +153,25 @@ class BookModel {
     final code = lang.trim().toLowerCase();
     if (code.isEmpty) return null;
     return <String>[code];
+  }
+
+  static String? _isbn13FromVolume(Map<String, dynamic> volumeInfo) {
+    final identifiers = volumeInfo['industryIdentifiers'];
+    if (identifiers is! List) return null;
+    for (final raw in identifiers) {
+      if (raw is! Map<String, dynamic>) continue;
+      if (raw['type'] == 'ISBN_13') {
+        final id = (raw['identifier'] as String?)?.trim();
+        if (id != null && id.isNotEmpty) return id;
+      }
+    }
+    return null;
+  }
+
+  static String? _publishedYearFromVolume(Map<String, dynamic> volumeInfo) {
+    final rawDate = volumeInfo['publishedDate'];
+    if (rawDate is! String || rawDate.length < 4) return null;
+    return rawDate.substring(0, 4);
   }
 
   static List<String> _subjectsFromVolume(Map<String, dynamic> volumeInfo) {
@@ -143,6 +228,10 @@ class BookModel {
     final thumb = _httpsThumbnail(
       volumeInfo['imageLinks'] as Map<String, dynamic>?,
     );
+    final isbn13 = _isbn13FromVolume(volumeInfo);
+    final publishedYear = _publishedYearFromVolume(volumeInfo);
+    final pageCount = (volumeInfo['pageCount'] as num?)?.toInt();
+    final averageRating = (volumeInfo['averageRating'] as num?)?.toDouble();
 
     return BookModel(
       workId: id.isNotEmpty ? id : (mergeFrom?.workId ?? 'unknown'),
@@ -162,6 +251,10 @@ class BookModel {
       subjects: subjects.isNotEmpty
           ? subjects
           : (mergeFrom?.subjects ?? const []),
+      isbn13: isbn13 ?? mergeFrom?.isbn13,
+      publishedYear: publishedYear ?? mergeFrom?.publishedYear,
+      pageCount: pageCount ?? mergeFrom?.pageCount,
+      averageRating: averageRating ?? mergeFrom?.averageRating,
     );
   }
 }

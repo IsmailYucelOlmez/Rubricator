@@ -1,23 +1,28 @@
+import '../datasources/google_books_cache_datasource.dart';
+import '../datasources/google_books_remote_datasource.dart';
 import '../services/api_service.dart';
+import '../utils/google_books_utils.dart';
 import '../../domain/entities/author.dart';
 import '../../domain/entities/book.dart';
-import '../datasources/google_books_remote_datasource.dart';
 import '../models/book_model.dart';
 
 class BookRepository {
-  BookRepository(ApiService api, {String preferredLanguageCode = 'en'})
-    : _ds = GoogleBooksRemoteDataSource(api),
-      _preferredLanguageCode = preferredLanguageCode;
+  BookRepository(
+    ApiService api, {
+    required GoogleBooksCacheDataSource cache,
+    String preferredLanguageCode = 'en',
+  }) : _cache = cache,
+       _preferredLanguageCode = preferredLanguageCode,
+       _ds = GoogleBooksRemoteDataSource(
+         api,
+         lang: preferredLanguageCode,
+       );
 
   final GoogleBooksRemoteDataSource _ds;
+  final GoogleBooksCacheDataSource _cache;
   final String _preferredLanguageCode;
 
-  /// In-memory cache for [getBooksByAuthorId] to avoid repeat API calls when
-  /// revisiting an author or when the UI rebuilds with the same logical author.
-  final Map<String, _AuthorBooksCacheEntry> _authorBooksCache =
-      <String, _AuthorBooksCacheEntry>{};
-
-  static const Duration _authorBooksCacheTtl = Duration(days: 7);
+  static const int _searchPageSize = 20;
 
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
@@ -46,10 +51,6 @@ class BookRepository {
     return 1;
   }
 
-  /// Sort + (optional) filter based on [xdocs/bookapiopt.md].
-  ///
-  /// - Score >= 2 items are preferred when present.
-  /// - If nothing matches >= 2, we fall back to the full sorted list.
   List<BookModel> _prioritizeModels(List<BookModel> models) {
     if (models.isEmpty) return const <BookModel>[];
     if (models.length == 1) return models;
@@ -66,7 +67,6 @@ class BookRepository {
     scored.sort((a, b) {
       final byScore = b.score.compareTo(a.score);
       if (byScore != 0) return byScore;
-      // Keep original order for ties.
       return a.index.compareTo(b.index);
     });
 
@@ -94,15 +94,42 @@ class BookRepository {
         totalFound: 0,
       );
     }
-    final raw = await _ds.searchBooks(query: trimmed, page: page);
+
+    final cacheKey = GoogleBooksUtils.searchCacheKey(
+      query: trimmed,
+      lang: _preferredLanguageCode,
+      page: page,
+      limit: _searchPageSize,
+    );
+    final cached = await _cache.getCachedBooks(cacheKey);
+    if (cached != null) {
+      final books = _prioritizeModels(cached).map((m) => m.toEntity()).toList();
+      return BookSearchPageResult(
+        books: books,
+        hasMore: books.length >= _searchPageSize,
+        totalFound: books.length,
+      );
+    }
+
+    final raw = await _ds.searchBooks(
+      query: trimmed,
+      page: page,
+      limit: _searchPageSize,
+    );
     final prioritized = _prioritizeModels(raw.docs);
+    if (prioritized.isNotEmpty) {
+      await _cache.saveBooks(
+        cacheKey: cacheKey,
+        cacheType: 'search',
+        books: prioritized,
+      );
+    }
     final books = prioritized.map((m) => m.toEntity()).toList();
-    final end = raw.start + raw.docs.length;
-    final hasMore = end < raw.numFound && raw.docs.isNotEmpty;
+    final hasMore = raw.hasMore || raw.docs.length >= _searchPageSize;
     return BookSearchPageResult(
       books: books,
       hasMore: hasMore,
-      totalFound: raw.numFound,
+      totalFound: books.length,
     );
   }
 
@@ -132,28 +159,31 @@ class BookRepository {
     final normalizedAuthorName = authorName.trim();
     if (normalizedAuthorName.isEmpty) return const <Book>[];
 
-    final cacheKey = _authorBooksCacheKey(normalizedAuthorName);
-    final cached = _authorBooksCache[cacheKey];
-    if (cached != null &&
-        DateTime.now().difference(cached.fetchedAt) < _authorBooksCacheTtl) {
-      return List<Book>.from(cached.books);
+    const limit = 20;
+    final cacheKey = GoogleBooksUtils.authorCacheKey(
+      authorName: normalizedAuthorName,
+      lang: _preferredLanguageCode,
+      limit: limit,
+    );
+    final cached = await _cache.getCachedBooks(cacheKey);
+    if (cached != null) {
+      return _prioritizeModels(cached).map((m) => m.toEntity()).toList();
     }
 
-    final models = await _ds.fetchBooksByAuthor(author: normalizedAuthorName);
+    final models = await _ds.fetchBooksByAuthor(
+      author: normalizedAuthorName,
+      limit: limit,
+    );
     final prioritized = _prioritizeModels(models);
-    final books = prioritized.map((m) => m.toEntity()).toList();
-    // Avoid caching empty states so temporary API misses can recover on retry.
-    if (books.isNotEmpty) {
-      _authorBooksCache[cacheKey] = _AuthorBooksCacheEntry(
-        books: books,
-        fetchedAt: DateTime.now(),
+    if (prioritized.isNotEmpty) {
+      await _cache.saveBooks(
+        cacheKey: cacheKey,
+        cacheType: 'author',
+        books: prioritized,
       );
     }
-    return List<Book>.from(books);
+    return prioritized.map((m) => m.toEntity()).toList();
   }
-
-  String _authorBooksCacheKey(String authorName) =>
-      authorName.toLowerCase().trim();
 
   String _authorNameFromId(String authorId) {
     final raw = authorId.trim();
@@ -185,16 +215,6 @@ class BookRepository {
     final prioritized = _prioritizeModels(models);
     return prioritized.map((m) => m.toEntity()).toList();
   }
-}
-
-class _AuthorBooksCacheEntry {
-  const _AuthorBooksCacheEntry({
-    required this.books,
-    required this.fetchedAt,
-  });
-
-  final List<Book> books;
-  final DateTime fetchedAt;
 }
 
 class _ScoredBookModel {

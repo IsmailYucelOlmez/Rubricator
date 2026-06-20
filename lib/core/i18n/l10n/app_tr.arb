@@ -221,6 +221,8 @@
   ,"booksError":"Kitaplar: {error}"
   ,"@booksError":{"placeholders":{"error":{}}}
   ,"saveLog":"Kaydi kaydet"
+  ,"selectReadingBook":"Okuyorum listenizden bir kitap secin"
+  ,"noReadingBooksForLog":"Belirli bir kitap icin ilerleme kaydetmek icin Okuyorum listenize kitap ekleyin."
   ,"calendarError":"Takvim hatasi: {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Aktivite"

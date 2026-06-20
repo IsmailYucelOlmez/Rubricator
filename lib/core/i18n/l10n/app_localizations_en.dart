@@ -505,6 +505,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveLog => 'Save log';
 
   @override
+  String get selectReadingBook => 'Select a book from your Reading list';
+
+  @override
+  String get noReadingBooksForLog =>
+      'Add books to your Reading list to log progress for a specific title.';
+
+  @override
   String calendarError(Object error) {
     return 'Calendar error: $error';
   }

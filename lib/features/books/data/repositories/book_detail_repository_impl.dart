@@ -63,10 +63,12 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   }
 
   @override
-  Future<void> likeQuote(String quoteId) => _remote.likeQuote(quoteId);
+  Future<LikeToggleResult> toggleQuoteLike(String quoteId) =>
+      _remote.toggleQuoteLike(quoteId);
 
   @override
-  Future<void> likeReview(String reviewId) => _remote.likeReview(reviewId);
+  Future<LikeToggleResult> toggleReviewLike(String reviewId) =>
+      _remote.toggleReviewLike(reviewId);
 
   @override
   Future<List<QuoteEntity>> getQuotes(String bookId) async {

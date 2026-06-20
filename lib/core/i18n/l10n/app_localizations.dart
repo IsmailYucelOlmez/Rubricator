@@ -998,6 +998,18 @@ abstract class AppLocalizations {
   /// **'Save log'**
   String get saveLog;
 
+  /// No description provided for @selectReadingBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a book from your Reading list'**
+  String get selectReadingBook;
+
+  /// No description provided for @noReadingBooksForLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add books to your Reading list to log progress for a specific title.'**
+  String get noReadingBooksForLog;
+
   /// No description provided for @calendarError.
   ///
   /// In en, this message translates to:

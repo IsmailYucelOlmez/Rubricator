@@ -8,6 +8,7 @@ class ReviewModel {
     required this.content,
     required this.createdAt,
     this.likes = 0,
+    this.likedByCurrentUser = false,
     this.userRating,
     this.isFavorite = false,
   });
@@ -18,6 +19,7 @@ class ReviewModel {
   final String content;
   final DateTime createdAt;
   final int likes;
+  final bool likedByCurrentUser;
   final int? userRating;
   final bool isFavorite;
 
@@ -50,6 +52,7 @@ class ReviewModel {
     content: content,
     createdAt: createdAt,
     likes: likes,
+    likedByCurrentUser: likedByCurrentUser,
     userRating: userRating,
     isFavorite: isFavorite,
   );
@@ -61,6 +64,7 @@ class ReviewModel {
     content: entity.content,
     createdAt: entity.createdAt,
     likes: entity.likes,
+    likedByCurrentUser: entity.likedByCurrentUser,
     userRating: entity.userRating,
     isFavorite: entity.isFavorite,
   );
@@ -133,6 +137,7 @@ class QuoteModel {
     required this.content,
     required this.likes,
     required this.createdAt,
+    this.likedByCurrentUser = false,
   });
 
   final String id;
@@ -141,6 +146,7 @@ class QuoteModel {
   final String content;
   final int likes;
   final DateTime createdAt;
+  final bool likedByCurrentUser;
 
   factory QuoteModel.fromJson(Map<String, dynamic> json) {
     return QuoteModel(
@@ -171,6 +177,7 @@ class QuoteModel {
     content: content,
     likes: likes,
     createdAt: createdAt,
+    likedByCurrentUser: likedByCurrentUser,
   );
 
   factory QuoteModel.fromEntity(QuoteEntity entity) => QuoteModel(
@@ -180,5 +187,6 @@ class QuoteModel {
     content: entity.content,
     likes: entity.likes,
     createdAt: entity.createdAt,
+    likedByCurrentUser: entity.likedByCurrentUser,
   );
 }

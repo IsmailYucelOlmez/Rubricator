@@ -228,6 +228,8 @@
   ,"booksError":"Books: {error}"
   ,"@booksError":{"placeholders":{"error":{}}}
   ,"saveLog":"Save log"
+  ,"selectReadingBook":"Select a book from your Reading list"
+  ,"noReadingBooksForLog":"Add books to your Reading list to log progress for a specific title."
   ,"calendarError":"Calendar error: {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Activity"

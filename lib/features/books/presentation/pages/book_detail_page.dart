@@ -615,7 +615,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   try {
                     await ref
                         .read(quoteProvider(detailedBook.id).notifier)
-                        .like(quoteId);
+                        .toggleLike(quoteId);
                   } catch (e) {
                     if (!mounted) return;
                     _feedbackError(e);
@@ -625,7 +625,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   try {
                     await ref
                         .read(reviewListProvider(detailedBook.id).notifier)
-                        .like(reviewId);
+                        .toggleLike(reviewId);
                   } catch (e) {
                     if (!mounted) return;
                     _feedbackError(e);
@@ -981,25 +981,19 @@ class _RatingSection extends StatelessWidget {
                         minHeight: 36,
                       ),
                     ),
-                ],
+                ] else
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                    ),
+                    onPressed: selectedRating == 0 ? null : onSubmit,
+                    child: Text(AppLocalizations.of(context)!.submitRating),
+                  ),
               ],
             ),
-            if (!hasUserRated) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                  ),
-                  onPressed: selectedRating == 0 ? null : onSubmit,
-                  child: Text(AppLocalizations.of(context)!.submitRating),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -1230,10 +1224,10 @@ class _ReviewSectionState extends State<_ReviewSection> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  TextButton.icon(
+                                  _ContentLikeButton(
+                                    liked: item.likedByCurrentUser,
+                                    likes: item.likes,
                                     onPressed: () => widget.onLikeReview(item.id),
-                                    icon: const Icon(Icons.thumb_up_outlined),
-                                    label: Text(item.likes.toString()),
                                   ),
                                   if (own)
                                     Wrap(
@@ -1300,10 +1294,10 @@ class _QuoteSection extends StatelessWidget {
                     item.content,
                     style: _bookDetailBodyStyle(context),
                   ),
-                  trailing: TextButton.icon(
+                  trailing: _ContentLikeButton(
+                    liked: item.likedByCurrentUser,
+                    likes: item.likes,
                     onPressed: () => onLikeQuote(item.id),
-                    icon: const Icon(Icons.thumb_up_outlined),
-                    label: Text(item.likes.toString()),
                   ),
                 );
               },
@@ -1314,6 +1308,31 @@ class _QuoteSection extends StatelessWidget {
             compact: true,
             onRetry: onRetryQuotes,
           ),
+    );
+  }
+}
+
+class _ContentLikeButton extends StatelessWidget {
+  const _ContentLikeButton({
+    required this.liked,
+    required this.likes,
+    required this.onPressed,
+  });
+
+  final bool liked;
+  final int likes;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return TextButton.icon(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: liked ? cs.primary : null,
+      ),
+      icon: Icon(liked ? Icons.thumb_up : Icons.thumb_up_outlined),
+      label: Text(likes.toString()),
     );
   }
 }

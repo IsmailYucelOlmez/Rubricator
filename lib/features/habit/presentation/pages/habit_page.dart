@@ -7,8 +7,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../widgets/habit_calendar_section.dart';
 import '../widgets/habit_chart_section.dart';
+import '../widgets/habit_add_log_sheet.dart';
 import '../widgets/habit_logs_list.dart';
-import '../widgets/habit_quick_add_sheet.dart';
 import '../widgets/habit_stats_section.dart';
 import '../widgets/habit_streak_widget.dart';
 
@@ -37,18 +37,9 @@ class HabitPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-          title: Text(l10n.readingHabit),
-          actions: [
-            IconButton(
-              tooltip: l10n.quickLog,
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => showHabitQuickAddBottomSheet(context),
-            ),
-          ],
-        ),
+      appBar: AppBar(title: Text(l10n.readingHabit)),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => showHabitQuickAddBottomSheet(context),
+          onPressed: () => showHabitAddLogBottomSheet(context),
           icon: const Icon(Icons.timer_outlined),
           label: Text(l10n.log),
         ),

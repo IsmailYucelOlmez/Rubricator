@@ -77,6 +77,29 @@ final todayReadingProvider = FutureProvider<bool>((ref) async {
   return ref.read(hasReadTodayUseCaseProvider).call();
 });
 
+final habitReadingBookChoicesProvider =
+    FutureProvider<List<({String id, String label})>>((ref) async {
+  ref.watch(authStateProvider);
+  final userId = ref.watch(authStateProvider).valueOrNull?.id;
+  if (userId == null) return const <({String id, String label})>[];
+
+  final userBooksRepo = ref.watch(userBooksRepositoryProvider);
+  final reading = await userBooksRepo.getUserBooksByStatus(ReadingStatus.reading);
+  if (reading.isEmpty) return const <({String id, String label})>[];
+
+  final bookRepo = ref.watch(bookRepositoryProvider);
+  final out = <({String id, String label})>[];
+  for (final ub in reading.take(24)) {
+    try {
+      final book = await bookRepo.getBookByWorkId(ub.bookId);
+      out.add((id: ub.bookId, label: book.title));
+    } catch (_) {
+      out.add((id: ub.bookId, label: ub.bookId));
+    }
+  }
+  return out;
+});
+
 final habitBookChoicesProvider =
     FutureProvider<List<({String id, String label})>>((ref) async {
   ref.watch(authStateProvider);

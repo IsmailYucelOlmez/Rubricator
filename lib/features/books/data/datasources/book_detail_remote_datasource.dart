@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/network/supabase_service.dart';
 import '../services/api_service.dart';
+import '../../domain/entities/book_detail_entities.dart';
 import '../models/book_detail_models.dart';
 import '../models/book_model.dart';
 import 'google_books_remote_datasource.dart';
@@ -82,6 +83,10 @@ class BookDetailRemoteDataSource {
         .toList();
     if (reviews.isEmpty) return reviews;
 
+    final userId = _client.auth.currentUser?.id;
+    final reviewIds = reviews.map((r) => r.id).toList();
+    final likedReviewIds = await _likedReviewIds(reviewIds, userId);
+
     final userIds = reviews.map((r) => r.userId).toSet().toList();
     final ratingRows = await _client
         .from('ratings')
@@ -121,11 +126,56 @@ class BookDetailRemoteDataSource {
             content: review.content,
             createdAt: review.createdAt,
             likes: review.likes,
+            likedByCurrentUser: likedReviewIds.contains(review.id),
             userRating: ratingsByUser[review.userId],
             isFavorite: favoritesByUser[review.userId] ?? false,
           ),
         )
         .toList();
+  }
+
+  Future<Set<String>> _likedReviewIds(
+    List<String> reviewIds,
+    String? userId,
+  ) async {
+    if (userId == null || reviewIds.isEmpty) return const {};
+    final rows = await _client
+        .from('review_likes')
+        .select('review_id')
+        .eq('user_id', userId)
+        .inFilter('review_id', reviewIds);
+    return (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map((row) => (row['review_id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  Future<Set<String>> _likedQuoteIds(
+    List<String> quoteIds,
+    String? userId,
+  ) async {
+    if (userId == null || quoteIds.isEmpty) return const {};
+    final rows = await _client
+        .from('quote_likes')
+        .select('quote_id')
+        .eq('user_id', userId)
+        .inFilter('quote_id', quoteIds);
+    return (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map((row) => (row['quote_id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  LikeToggleResult _parseLikeToggleResult(dynamic row) {
+    if (row is! Map<String, dynamic>) {
+      throw Exception('Invalid like toggle response.');
+    }
+    return LikeToggleResult(
+      liked: row['liked'] as bool? ?? false,
+      likes: (row['likes_count'] as num?)?.toInt() ?? 0,
+    );
   }
 
   Future<void> addExternalReview(ExternalReviewModel review) async {
@@ -159,20 +209,28 @@ class BookDetailRemoteDataSource {
     });
   }
 
-  Future<void> likeQuote(String quoteId) async {
+  Future<LikeToggleResult> toggleQuoteLike(String quoteId) async {
     _requiredUserId();
-    await _client.rpc<void>(
-      'increment_quote_likes',
-      params: <String, dynamic>{'quote_id': quoteId},
+    final row = await _client.rpc<dynamic>(
+      'toggle_quote_like',
+      params: <String, dynamic>{'p_quote_id': quoteId},
     );
+    if (row is List && row.isNotEmpty) {
+      return _parseLikeToggleResult(row.first);
+    }
+    return _parseLikeToggleResult(row);
   }
 
-  Future<void> likeReview(String reviewId) async {
+  Future<LikeToggleResult> toggleReviewLike(String reviewId) async {
     _requiredUserId();
-    await _client.rpc<void>(
-      'increment_review_likes',
-      params: <String, dynamic>{'review_id': reviewId},
+    final row = await _client.rpc<dynamic>(
+      'toggle_review_like',
+      params: <String, dynamic>{'p_review_id': reviewId},
     );
+    if (row is List && row.isNotEmpty) {
+      return _parseLikeToggleResult(row.first);
+    }
+    return _parseLikeToggleResult(row);
   }
 
   Future<List<QuoteModel>> getQuotes(String bookId) async {
@@ -182,9 +240,30 @@ class BookDetailRemoteDataSource {
         .eq('book_id', bookId)
         .order('likes', ascending: false)
         .order('created_at', ascending: false);
-    return (rows as List<dynamic>)
+    final quotes = (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
         .map(QuoteModel.fromJson)
+        .toList();
+    if (quotes.isEmpty) return quotes;
+
+    final userId = _client.auth.currentUser?.id;
+    final likedQuoteIds = await _likedQuoteIds(
+      quotes.map((q) => q.id).toList(),
+      userId,
+    );
+
+    return quotes
+        .map(
+          (quote) => QuoteModel(
+            id: quote.id,
+            bookId: quote.bookId,
+            userId: quote.userId,
+            content: quote.content,
+            likes: quote.likes,
+            createdAt: quote.createdAt,
+            likedByCurrentUser: likedQuoteIds.contains(quote.id),
+          ),
+        )
         .toList();
   }
 

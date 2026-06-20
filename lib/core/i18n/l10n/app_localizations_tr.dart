@@ -505,6 +505,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveLog => 'Kaydi kaydet';
 
   @override
+  String get selectReadingBook => 'Okuyorum listenizden bir kitap secin';
+
+  @override
+  String get noReadingBooksForLog =>
+      'Belirli bir kitap icin ilerleme kaydetmek icin Okuyorum listenize kitap ekleyin.';
+
+  @override
   String calendarError(Object error) {
     return 'Takvim hatasi: $error';
   }

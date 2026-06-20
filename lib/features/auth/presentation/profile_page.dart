@@ -166,7 +166,10 @@ class _ProfileReadingListsSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.readingStatsListsTitle, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.readingStatsListsTitle,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             const SizedBox(height: AppSpacing.sm),
             _buttonRow(
               context,
@@ -240,6 +243,7 @@ class _ProfileReadingListsSection extends StatelessWidget {
   }
 
   Widget _fixedListButton(BuildContext context, _ReadingListButtonSpec spec) {
+    final labelStyle = Theme.of(context).textTheme.labelSmall;
     return SizedBox(
       height: _buttonHeight,
       width: double.infinity,
@@ -249,6 +253,7 @@ class _ProfileReadingListsSection extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: const Size(0, _buttonHeight),
           fixedSize: const Size.fromHeight(_buttonHeight),
+          textStyle: labelStyle,
         ),
         onPressed: spec.onPressed,
         icon: Icon(spec.icon, size: _iconSize),
@@ -256,6 +261,7 @@ class _ProfileReadingListsSection extends StatelessWidget {
           spec.label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          style: labelStyle,
         ),
       ),
     );

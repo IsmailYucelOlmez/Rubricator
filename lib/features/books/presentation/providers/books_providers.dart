@@ -159,6 +159,7 @@ class ReviewListNotifier
               content: content.trim(),
               createdAt: review.createdAt,
               likes: review.likes,
+              likedByCurrentUser: review.likedByCurrentUser,
               userRating: review.userRating,
               isFavorite: review.isFavorite,
             ),
@@ -167,33 +168,60 @@ class ReviewListNotifier
     });
   }
 
-  Future<void> like(String reviewId) async {
+  Future<void> toggleLike(String reviewId) async {
     final current = state.valueOrNull;
     if (current != null) {
       state = AsyncData(
         current
             .map(
-              (review) => review.id == reviewId
-                  ? ReviewEntity(
-                      id: review.id,
-                      bookId: review.bookId,
-                      userId: review.userId,
-                      content: review.content,
-                      createdAt: review.createdAt,
-                      likes: review.likes + 1,
-                      userRating: review.userRating,
-                      isFavorite: review.isFavorite,
-                    )
-                  : review,
+              (review) {
+                if (review.id != reviewId) return review;
+                final liked = !review.likedByCurrentUser;
+                return ReviewEntity(
+                  id: review.id,
+                  bookId: review.bookId,
+                  userId: review.userId,
+                  content: review.content,
+                  createdAt: review.createdAt,
+                  likes: review.likes + (liked ? 1 : -1),
+                  likedByCurrentUser: liked,
+                  userRating: review.userRating,
+                  isFavorite: review.isFavorite,
+                );
+              },
             )
             .toList(),
       );
     }
     try {
-      await ref.read(bookDetailRepositoryProvider).likeReview(reviewId);
-      state = AsyncData(
-        await ref.read(bookDetailRepositoryProvider).getReviews(_bookId),
-      );
+      final result = await ref
+          .read(bookDetailRepositoryProvider)
+          .toggleReviewLike(reviewId);
+      if (current != null) {
+        state = AsyncData(
+          current
+              .map(
+                (review) => review.id == reviewId
+                    ? ReviewEntity(
+                        id: review.id,
+                        bookId: review.bookId,
+                        userId: review.userId,
+                        content: review.content,
+                        createdAt: review.createdAt,
+                        likes: result.likes,
+                        likedByCurrentUser: result.liked,
+                        userRating: review.userRating,
+                        isFavorite: review.isFavorite,
+                      )
+                    : review,
+              )
+              .toList(),
+        );
+      } else {
+        state = AsyncData(
+          await ref.read(bookDetailRepositoryProvider).getReviews(_bookId),
+        );
+      }
     } catch (e) {
       if (current != null) state = AsyncData(current);
       rethrow;
@@ -291,31 +319,56 @@ class QuoteNotifier extends FamilyAsyncNotifier<List<QuoteEntity>, String> {
     });
   }
 
-  Future<void> like(String quoteId) async {
+  Future<void> toggleLike(String quoteId) async {
     final current = state.valueOrNull;
     if (current != null) {
       state = AsyncData(
         current
             .map(
-              (quote) => quote.id == quoteId
-                  ? QuoteEntity(
-                      id: quote.id,
-                      bookId: quote.bookId,
-                      userId: quote.userId,
-                      content: quote.content,
-                      likes: quote.likes + 1,
-                      createdAt: quote.createdAt,
-                    )
-                  : quote,
+              (quote) {
+                if (quote.id != quoteId) return quote;
+                final liked = !quote.likedByCurrentUser;
+                return QuoteEntity(
+                  id: quote.id,
+                  bookId: quote.bookId,
+                  userId: quote.userId,
+                  content: quote.content,
+                  likes: quote.likes + (liked ? 1 : -1),
+                  createdAt: quote.createdAt,
+                  likedByCurrentUser: liked,
+                );
+              },
             )
             .toList(),
       );
     }
     try {
-      await ref.read(bookDetailRepositoryProvider).likeQuote(quoteId);
-      state = AsyncData(
-        await ref.read(bookDetailRepositoryProvider).getQuotes(_bookId),
-      );
+      final result = await ref
+          .read(bookDetailRepositoryProvider)
+          .toggleQuoteLike(quoteId);
+      if (current != null) {
+        state = AsyncData(
+          current
+              .map(
+                (quote) => quote.id == quoteId
+                    ? QuoteEntity(
+                        id: quote.id,
+                        bookId: quote.bookId,
+                        userId: quote.userId,
+                        content: quote.content,
+                        likes: result.likes,
+                        createdAt: quote.createdAt,
+                        likedByCurrentUser: result.liked,
+                      )
+                    : quote,
+              )
+              .toList(),
+        );
+      } else {
+        state = AsyncData(
+          await ref.read(bookDetailRepositoryProvider).getQuotes(_bookId),
+        );
+      }
     } catch (e) {
       if (current != null) state = AsyncData(current);
       rethrow;

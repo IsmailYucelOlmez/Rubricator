@@ -1,4 +1,4 @@
-/// Book metadata captured when the user marks a volume completed.
+/// Book metadata stored on [user_books] for fast list display.
 class UserBookSnapshot {
   const UserBookSnapshot({
     required this.title,

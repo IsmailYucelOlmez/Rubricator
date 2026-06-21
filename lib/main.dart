@@ -7,6 +7,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'core/notification/reading_reminder_scheduler.dart';
 import 'core/logging/app_logger.dart';
+import 'core/ux/global_error_handler.dart';
+import 'core/widgets/app_root_restarter.dart';
 
 import 'core/notification/notification_service.dart';
 
@@ -16,8 +18,14 @@ import 'core/env.dart';
 
 import 'core/network/supabase_service.dart';
 
+final _rootRestarterKey = GlobalKey<AppRootRestarterState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  AppGlobalErrorHandler.install(
+    restartApp: () => _rootRestarterKey.currentState?.restart(),
+  );
 
   await SentryFlutter.init((options) {
     options.dsn = Env.sentryDsn;
@@ -51,7 +59,12 @@ Future<void> main() async {
     _bindSentryUserContext();
 
     AppLogger.info('startup', 'Bootstrap complete');
-    runApp(const ProviderScope(child: BookApp()));
+    runApp(
+      AppRootRestarter(
+        key: _rootRestarterKey,
+        child: const ProviderScope(child: BookApp()),
+      ),
+    );
   } catch (error, stackTrace) {
     await AppLogger.error('startup', 'Bootstrap failed', error, stackTrace);
     FlutterError.reportError(

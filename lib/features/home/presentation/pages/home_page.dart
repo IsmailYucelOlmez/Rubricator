@@ -17,6 +17,7 @@ import 'genre_books_page.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/entities/home_genre_section.dart';
 import '../providers/home_providers.dart';
+import '../../../user_books/presentation/providers/user_books_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -32,6 +33,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final snapshotAsync = ref.watch(homePageSnapshotProvider);
+    final favoriteIds = ref.watch(favoriteBookIdsProvider).valueOrNull ??
+        const <String>{};
 
     return Scaffold(
       appBar: AppBar(
@@ -66,100 +70,120 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(
           onRefresh: () async {
-            final repo = ref.read(homeRepositoryProvider);
-            await Future.wait([
-              repo.refreshPopularBooks(),
-              ...kHomePageGenreKeys.map(repo.refreshHomeGenreSection),
-            ]);
-            ref.invalidate(popularBooksProvider);
-            for (final genre in kHomePageGenreKeys) {
-              ref.invalidate(homeGenreSectionProvider(genre));
-            }
+            ref.invalidate(homePageSnapshotProvider);
+            ref.invalidate(favoriteBookIdsProvider);
+            await ref.read(homePageSnapshotProvider.future);
           },
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-            SliverToBoxAdapter(child: _PopularSection(l10n: l10n)),
-            for (final genre in kHomePageGenreKeys)
-              SliverToBoxAdapter(
-                child: _GenreSectionLoader(genre: genre, l10n: l10n),
-              ),
-            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
-          ],
-        ),
+          child: snapshotAsync.when(
+            data: (snapshot) => _HomeScrollContent(
+              l10n: l10n,
+              popularBooks: snapshot.popularBooks,
+              genreSections: snapshot.genreSections,
+              favoriteIds: favoriteIds,
+              onRetry: () => ref.invalidate(homePageSnapshotProvider),
+            ),
+            loading: () => _HomeScrollContent.loading(l10n: l10n),
+            error: (error, stackTrace) => CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: AsyncErrorView(
+                    error: error,
+                    onRetry: () => ref.invalidate(homePageSnapshotProvider),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _PopularSection extends ConsumerWidget {
-  const _PopularSection({required this.l10n});
+class _HomeScrollContent extends StatelessWidget {
+  const _HomeScrollContent({
+    required this.l10n,
+    required this.popularBooks,
+    required this.genreSections,
+    required this.favoriteIds,
+    required this.onRetry,
+  });
+
+  const _HomeScrollContent.loading({required this.l10n})
+      : popularBooks = null,
+        genreSections = null,
+        favoriteIds = const <String>{},
+        onRetry = _noop;
+
+  static void _noop() {}
+
   final AppLocalizations l10n;
+  final List<HomeBookEntity>? popularBooks;
+  final Map<String, HomeGenreSection>? genreSections;
+  final Set<String> favoriteIds;
+  final VoidCallback onRetry;
+
+  bool get _isLoading => popularBooks == null || genreSections == null;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(popularBooksProvider);
-    return _Section(
-      title: l10n.popular,
-      child: state.when(
-        data: (books) => _HorizontalBookList(books: books),
-        loading: () => const _HorizontalSkeleton(),
-        error: (error, stackTrace) => AsyncErrorView(
-          error: error,
-          compact: true,
-          onRetry: () => ref.invalidate(popularBooksProvider),
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+        SliverToBoxAdapter(
+          child: _Section(
+            title: l10n.popular,
+            child: _isLoading
+                ? const _HorizontalSkeleton()
+                : popularBooks!.isEmpty
+                    ? const _HorizontalSkeleton()
+                    : _HorizontalBookList(
+                        books: popularBooks!,
+                        favoriteIds: favoriteIds,
+                      ),
+          ),
         ),
-      ),
+        for (final genre in kHomePageGenreKeys)
+          SliverToBoxAdapter(
+            child: _isLoading
+                ? _Section(
+                    title: _genreLabel(genre, l10n),
+                    child: const _HorizontalSkeleton(),
+                  )
+                : _GenreSection(
+                    genre: genre,
+                    section: genreSections![genre]!,
+                    l10n: l10n,
+                    favoriteIds: favoriteIds,
+                    onRetry: onRetry,
+                  ),
+          ),
+        const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
+      ],
     );
   }
 }
 
-class _GenreSectionLoader extends ConsumerWidget {
-  const _GenreSectionLoader({required this.genre, required this.l10n});
-
-  final String genre;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final sectionState = ref.watch(homeGenreSectionProvider(genre));
-    return sectionState.when(
-      data: (section) => _GenreSection(
-        genre: genre,
-        section: section,
-        l10n: l10n,
-      ),
-      loading: () => _Section(
-        title: _genreLabel(genre, l10n),
-        child: const _HorizontalSkeleton(),
-      ),
-      error: (error, stackTrace) => _Section(
-        title: _genreLabel(genre, l10n),
-        child: AsyncErrorView(
-          error: error,
-          compact: true,
-          onRetry: () => ref.invalidate(homeGenreSectionProvider(genre)),
-        ),
-      ),
-    );
-  }
-}
-
-class _GenreSection extends ConsumerWidget {
+class _GenreSection extends StatelessWidget {
   const _GenreSection({
     required this.genre,
     required this.section,
     required this.l10n,
+    required this.favoriteIds,
+    required this.onRetry,
   });
 
   final String genre;
   final HomeGenreSection section;
   final AppLocalizations l10n;
+  final Set<String> favoriteIds;
+  final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final genreLabel = _genreLabel(genre, l10n);
     final theme = Theme.of(context);
     final softEmpty = SizedBox(
@@ -181,14 +205,16 @@ class _GenreSection extends ConsumerWidget {
     late final Widget body;
     switch (section.loadState) {
       case HomeGenreSectionLoadState.ready:
-        body = section.books.isEmpty ? softEmpty : _HorizontalBookList(books: section.books);
+        body = section.books.isEmpty
+            ? softEmpty
+            : _HorizontalBookList(books: section.books, favoriteIds: favoriteIds);
       case HomeGenreSectionLoadState.emptyUnavailable:
         body = softEmpty;
       case HomeGenreSectionLoadState.error:
         body = AsyncErrorView(
           error: StateError('home_genre:$genre'),
           compact: true,
-          onRetry: () => ref.invalidate(homeGenreSectionProvider(genre)),
+          onRetry: onRetry,
         );
     }
 
@@ -273,7 +299,7 @@ class _Section extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: titleStyle?.copyWith(fontSize: titleFontSize*1.10),
+                  style: titleStyle?.copyWith(fontSize: titleFontSize * 1.10),
                 ),
               ),
               trailing ?? const SizedBox.shrink(),
@@ -288,9 +314,13 @@ class _Section extends StatelessWidget {
 }
 
 class _HorizontalBookList extends StatelessWidget {
-  const _HorizontalBookList({required this.books});
+  const _HorizontalBookList({
+    required this.books,
+    required this.favoriteIds,
+  });
 
   final List<HomeBookEntity> books;
+  final Set<String> favoriteIds;
 
   @override
   Widget build(BuildContext context) {
@@ -299,17 +329,25 @@ class _HorizontalBookList extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: books.length,
-        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-        itemBuilder: (context, index) => _BookCard(book: books[index]),
+        separatorBuilder: (_, index) =>
+            const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
+        itemBuilder: (context, index) => _BookCard(
+          book: books[index],
+          isFavorite: favoriteIds.contains(books[index].id),
+        ),
       ),
     );
   }
 }
 
 class _BookCard extends StatelessWidget {
-  const _BookCard({required this.book});
+  const _BookCard({
+    required this.book,
+    required this.isFavorite,
+  });
 
   final HomeBookEntity book;
+  final bool isFavorite;
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +359,9 @@ class _BookCard extends StatelessWidget {
       width: context.isTabletLayout ? 158 : 145,
       child: InkWell(
         onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: book.toBook())),
+          MaterialPageRoute<void>(
+            builder: (_) => BookDetailPage(book: book.toBook()),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,6 +369,9 @@ class _BookCard extends StatelessWidget {
             Expanded(
               child: BookCoverWithFavoriteButton(
                 bookId: book.id,
+                title: book.title,
+                author: book.authorNames,
+                isFavorite: isFavorite,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   child: _CoverImage(coverImageUrl: book.coverImageUrl),
@@ -371,7 +414,9 @@ class _CoverImage extends StatelessWidget {
     if (url == null) {
       return ColoredBox(
         color: cs.surfaceContainerHighest,
-        child: Center(child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant)),
+        child: Center(
+          child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant),
+        ),
       );
     }
     return Image.network(
@@ -380,7 +425,9 @@ class _CoverImage extends StatelessWidget {
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => ColoredBox(
         color: cs.surfaceContainerHighest,
-        child: Center(child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant)),
+        child: Center(
+          child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
+        ),
       ),
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
@@ -390,7 +437,11 @@ class _CoverImage extends StatelessWidget {
             child: SizedBox(
               width: 20,
               height: 20,
-              child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
+              child: AppLoadingIndicator(
+                size: 20,
+                strokeWidth: 2,
+                centered: false,
+              ),
             ),
           ),
         );
@@ -410,7 +461,8 @@ class _HorizontalSkeleton extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 4,
-        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
+        separatorBuilder: (_, index) =>
+            const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         itemBuilder: (_, index) => Container(
           width: context.isTabletLayout ? 158 : 145,
           decoration: BoxDecoration(
@@ -422,4 +474,3 @@ class _HorizontalSkeleton extends StatelessWidget {
     );
   }
 }
-

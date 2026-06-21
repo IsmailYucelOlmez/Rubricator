@@ -95,13 +95,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
     await ref.read(userBookProvider(widget.book.id).notifier).upsert(
           status: selected,
           isFavorite: isFavorite,
-          snapshot: selected == ReadingStatus.completed
-              ? _snapshotFor(
-                  title: title,
-                  author: author,
-                  categories: categories,
-                )
-              : null,
+          snapshot: _snapshotFor(
+            title: title,
+            author: author,
+            categories: categories,
+          ),
         );
   }
 
@@ -243,7 +241,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               try {
                 await ref
                     .read(userBookProvider(widget.book.id).notifier)
-                    .toggleFavorite();
+                    .toggleFavorite(
+                      snapshot: _snapshotFor(
+                        title: widget.book.title,
+                        author: widget.book.author,
+                        categories: widget.book.subjectKeys,
+                      ),
+                    );
               } catch (e) {
                 if (!mounted) return;
                 _feedbackError(e);
@@ -366,13 +370,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                           status: status,
                           isFavorite: isFavorite,
                           progress: completed ? null : value,
-                          snapshot: completed
-                              ? _snapshotFor(
-                                  title: detailedBook.title,
-                                  author: detailedBook.author,
-                                  categories: detailedBook.subjectKeys,
-                                )
-                              : null,
+                          snapshot: _snapshotFor(
+                            title: detailedBook.title,
+                            author: detailedBook.author,
+                            categories: detailedBook.subjectKeys,
+                          ),
                         );
                   } catch (e) {
                     if (!mounted) return;
@@ -469,6 +471,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                 Expanded(
                                   child: BookCoverWithFavoriteButton(
                                     bookId: b.id,
+                                    title: b.title,
+                                    author: b.author,
+                                    categories: b.subjectKeys,
                                     compact: true,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(

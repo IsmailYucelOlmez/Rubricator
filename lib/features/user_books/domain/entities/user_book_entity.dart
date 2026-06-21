@@ -69,6 +69,7 @@ class UserBookEntity {
   final List<String> bookCategories;
   final DateTime? completedAt;
 
+  /// Stored title/author on `user_books` — avoids Google Books fetch in lists.
   bool get hasCompletedSnapshot =>
       bookTitle != null &&
       bookTitle!.isNotEmpty &&

@@ -302,6 +302,9 @@ class _DiscoveryView extends ConsumerWidget {
                       Expanded(
                         child: BookCoverWithFavoriteButton(
                           bookId: book.id,
+                          title: book.title,
+                          author: book.author,
+                          categories: book.subjectKeys,
                           child: BookCoverLeading(
                             coverImageUrl: book.coverImageUrl,
                           ),

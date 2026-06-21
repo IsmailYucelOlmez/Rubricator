@@ -338,6 +338,7 @@
   ,"uxErrorNetwork":"Check your internet connection."
   ,"uxErrorTimeout":"The request timed out."
   ,"uxErrorUnknown":"Something went wrong. Please try again."
+  ,"uxErrorBoundaryTitle":"Unexpected error"
   ,"uxRetry":"Try again"
   ,"uxOfflineBanner":"No internet connection"
   ,"uxEmailRequired":"Email is required"

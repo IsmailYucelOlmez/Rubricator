@@ -814,6 +814,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get uxErrorUnknown => 'Bir hata olustu, lutfen tekrar deneyin.';
 
   @override
+  String get uxErrorBoundaryTitle => 'Beklenmeyen hata';
+
+  @override
   String get uxRetry => 'Tekrar dene';
 
   @override

@@ -32,6 +32,9 @@ class VerticalBookCard extends ConsumerWidget {
             Expanded(
               child: BookCoverWithFavoriteButton(
                 bookId: book.id,
+                title: book.title,
+                author: book.author,
+                categories: book.subjectKeys,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   child: _BookCoverFillImage(coverImageUrl: book.coverImageUrl),

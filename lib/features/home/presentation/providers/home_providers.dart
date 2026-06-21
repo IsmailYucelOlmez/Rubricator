@@ -7,8 +7,8 @@ import '../../../books/presentation/providers/books_providers.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
+import '../../domain/entities/home_page_snapshot.dart';
 import '../../domain/entities/home_book_entity.dart';
-import '../../domain/entities/home_genre_section.dart';
 import '../../domain/repositories/home_repository.dart';
 
 final _homeApiProvider = Provider<ApiService>((ref) => ApiService());
@@ -32,10 +32,6 @@ final homeRepositoryProvider = Provider<HomeRepository>(
   ),
 );
 
-final popularBooksProvider = StreamProvider<List<HomeBookEntity>>((ref) {
-  return ref.watch(homeRepositoryProvider).streamPopularBooks();
-});
-
 /// Google Books `subject:` keys for home genre rows (underscore → space in API).
 const kHomePageGenreKeys = <String>[
   'fantasy',
@@ -46,12 +42,12 @@ const kHomePageGenreKeys = <String>[
   'horror',
 ];
 
-final homeGenreSectionProvider =
-    StreamProvider.family<HomeGenreSection, String>((ref, genreKey) {
-      return ref
-          .watch(homeRepositoryProvider)
-          .streamHomeGenreSection(genreKey);
-    });
+final homePageSnapshotProvider = FutureProvider<HomePageSnapshot>((ref) {
+  ref.keepAlive();
+  return ref
+      .watch(homeRepositoryProvider)
+      .loadHomePage(kHomePageGenreKeys);
+});
 
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
   ref,

@@ -111,6 +111,8 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                               height: coverHeight,
                               child: BookCoverWithFavoriteButton(
                                 bookId: item.bookId,
+                                title: item.bookTitle,
+                                author: item.bookAuthor,
                                 compact: true,
                                 child: _Cover(coverImageUrl: item.coverImageUrl),
                               ),

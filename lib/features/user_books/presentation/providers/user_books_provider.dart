@@ -27,6 +27,13 @@ final favoriteUserBooksProvider = FutureProvider<List<UserBookEntity>>((ref) {
   return ref.read(userBooksRepositoryProvider).getFavoriteUserBooks();
 });
 
+/// One query for all favorite book ids (home page cards).
+final favoriteBookIdsProvider = FutureProvider<Set<String>>((ref) async {
+  ref.watch(authStateProvider);
+  final ids = await ref.read(userBooksRepositoryProvider).getFavoriteBookIds();
+  return ids.toSet();
+});
+
 class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
   late final String _bookId;
 
@@ -82,7 +89,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
             status: status,
             isFavorite: isFavorite,
             progress: progress,
-            snapshot: status == ReadingStatus.completed ? snapshot : null,
+            snapshot: snapshot,
           );
       if (previousStatus != null && previousStatus != status) {
         ref.invalidate(userBooksByStatusProvider(previousStatus));
@@ -108,10 +115,11 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
     }
   }
 
-  Future<void> toggleFavorite() async {
+  Future<void> toggleFavorite({UserBookSnapshot? snapshot}) async {
     final previous = state.valueOrNull;
     final now = DateTime.now();
     final userId = ref.read(authStateProvider).valueOrNull?.id ?? '';
+    final toggledFavorite = !(previous?.isFavorite ?? false);
     final optimistic = (previous ??
             UserBookEntity(
               id: '',
@@ -123,17 +131,26 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
               createdAt: now,
               updatedAt: now,
             ))
-        .copyWith(isFavorite: !(previous?.isFavorite ?? false), updatedAt: now);
+        .copyWith(
+          isFavorite: toggledFavorite,
+          updatedAt: now,
+          bookTitle: snapshot?.title ?? previous?.bookTitle,
+          bookAuthor: snapshot?.author ?? previous?.bookAuthor,
+          bookCategories: snapshot?.categories ?? previous?.bookCategories ?? const [],
+        );
     state = AsyncData(optimistic);
 
     state = await AsyncValue.guard(() async {
-      await ref.read(userBooksRepositoryProvider).toggleFavorite(_bookId);
+      await ref
+          .read(userBooksRepositoryProvider)
+          .toggleFavorite(_bookId, snapshot: snapshot);
       if (previous != null) {
         ref.invalidate(userBooksByStatusProvider(previous.status));
       } else {
         ref.invalidate(userBooksByStatusProvider(ReadingStatus.toRead));
       }
       ref.invalidate(favoriteUserBooksProvider);
+      ref.invalidate(favoriteBookIdsProvider);
       return ref.read(userBooksRepositoryProvider).getUserBook(_bookId);
     });
   }

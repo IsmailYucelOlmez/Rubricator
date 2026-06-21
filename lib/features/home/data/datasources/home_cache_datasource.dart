@@ -8,19 +8,39 @@ class HomeCacheDataSource {
   final SupabaseClient _client;
 
   static const String _table = 'genre_books_cache';
+  static const String popularCacheKey = 'popular_fiction';
   static const List<int> _defaultAllowedWeekdays = <int>[1, 3, 5];
   static const int _maxRetryAttempts = 2;
   static const Duration staleAfter = Duration(hours: 192);
 
+  static const _cacheSelectColumns =
+      'genre_key, books_json, allowed_weekdays, fetch_completed, is_active, last_fetch_at, last_fetch_status';
+
   Future<GenreCacheSnapshot?> getGenreCache(String genreKey) async {
+    final map = await getGenreCaches(<String>[genreKey]);
+    return map[genreKey];
+  }
+
+  /// Single round-trip read for all home sections.
+  Future<Map<String, GenreCacheSnapshot>> getGenreCaches(
+    List<String> genreKeys,
+  ) async {
+    if (genreKeys.isEmpty) return const <String, GenreCacheSnapshot>{};
+
     final rows = await _client
         .from(_table)
-        .select()
-        .eq('genre_key', genreKey)
-        .limit(1);
-    if (rows.isEmpty) return null;
-    final row = rows.first;
-    return GenreCacheSnapshot.fromJson(row);
+        .select(_cacheSelectColumns)
+        .inFilter('genre_key', genreKeys);
+
+    final map = <String, GenreCacheSnapshot>{};
+    for (final row in rows as List<dynamic>) {
+      if (row is! Map) continue;
+      final json = Map<String, dynamic>.from(row);
+      final key = json['genre_key'];
+      if (key is! String || key.isEmpty) continue;
+      map[key] = GenreCacheSnapshot.fromJson(json);
+    }
+    return map;
   }
 
   bool isStale(GenreCacheSnapshot? row, {DateTime? now}) {
@@ -124,6 +144,7 @@ class GenreCacheSnapshot {
     required this.fetchCompleted,
     required this.isActive,
     required this.lastFetchAt,
+    this.lastFetchStatus,
   });
 
   final List<dynamic> booksJson;
@@ -131,6 +152,7 @@ class GenreCacheSnapshot {
   final bool fetchCompleted;
   final bool isActive;
   final DateTime? lastFetchAt;
+  final String? lastFetchStatus;
 
   factory GenreCacheSnapshot.fromJson(Map<String, dynamic> json) {
     final allowedRaw = json['allowed_weekdays'];
@@ -139,6 +161,7 @@ class GenreCacheSnapshot {
     if (lastFetchRaw is String && lastFetchRaw.isNotEmpty) {
       lastFetchAt = DateTime.tryParse(lastFetchRaw);
     }
+    final statusRaw = json['last_fetch_status'];
     return GenreCacheSnapshot(
       booksJson: (json['books_json'] as List<dynamic>?) ?? const <dynamic>[],
       allowedWeekdays: allowedRaw is List
@@ -150,6 +173,9 @@ class GenreCacheSnapshot {
       fetchCompleted: json['fetch_completed'] == true,
       isActive: json['is_active'] != false,
       lastFetchAt: lastFetchAt,
+      lastFetchStatus: statusRaw is String && statusRaw.isNotEmpty
+          ? statusRaw
+          : null,
     );
   }
 }

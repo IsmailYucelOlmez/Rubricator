@@ -813,6 +813,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uxErrorUnknown => 'Something went wrong. Please try again.';
 
   @override
+  String get uxErrorBoundaryTitle => 'Unexpected error';
+
+  @override
   String get uxRetry => 'Try again';
 
   @override

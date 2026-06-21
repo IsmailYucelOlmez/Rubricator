@@ -61,6 +61,9 @@ class BookSearchResultTile extends StatelessWidget {
               child: showFavorite
                   ? BookCoverWithFavoriteButton(
                       bookId: book.id,
+                      title: book.title,
+                      author: book.author,
+                      categories: book.subjectKeys,
                       compact: true,
                       child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
                     )

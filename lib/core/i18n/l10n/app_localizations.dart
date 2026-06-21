@@ -1502,6 +1502,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get uxErrorUnknown;
 
+  /// No description provided for @uxErrorBoundaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error'**
+  String get uxErrorBoundaryTitle;
+
   /// No description provided for @uxRetry.
   ///
   /// In en, this message translates to:

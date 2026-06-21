@@ -331,6 +331,7 @@
   ,"uxErrorNetwork":"Internet baglantinizi kontrol edin."
   ,"uxErrorTimeout":"Istek zaman asimina ugradi."
   ,"uxErrorUnknown":"Bir hata olustu, lutfen tekrar deneyin."
+  ,"uxErrorBoundaryTitle":"Beklenmeyen hata"
   ,"uxRetry":"Tekrar dene"
   ,"uxOfflineBanner":"Internet baglantisi yok"
   ,"uxEmailRequired":"E-posta gerekli"

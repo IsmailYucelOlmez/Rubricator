@@ -1,14 +1,10 @@
 import '../entities/home_book_entity.dart';
-import '../entities/home_genre_section.dart';
+import '../entities/home_page_snapshot.dart';
 
 abstract class HomeRepository {
-  Stream<List<HomeBookEntity>> streamPopularBooks();
-  Future<List<HomeBookEntity>> refreshPopularBooks();
+  Future<HomePageSnapshot> loadHomePage(List<String> genreKeys);
 
   Future<List<HomeBookEntity>> getBooksByGenre(String genre);
-
-  Stream<HomeGenreSection> streamHomeGenreSection(String genreKey);
-  Future<HomeGenreSection> refreshHomeGenreSection(String genreKey);
 
   Future<List<HomeBookEntity>> searchBooks(String query);
 }

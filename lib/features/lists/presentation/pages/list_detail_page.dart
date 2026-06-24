@@ -43,10 +43,19 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     final isOwner = user?.id == list.userId;
     final itemsAsync = ref.watch(listItemsProvider(list.id));
     final commentsAsync = ref.watch(commentsProvider(list.id));
+    final theme = Theme.of(context);
+    final sectionStyle = theme.textTheme.titleSmall?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(list.title),
+        title: Text(
+          list.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           if (isOwner)
             IconButton(
@@ -73,149 +82,180 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             ),
         ],
       ),
-      body: ResponsiveScaffoldBody(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-          Text(list.description),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.byUser(list.userName),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(l10n.books, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.sm),
-          itemsAsync.when(
-            data: (items) => Column(
-              children: [
-                for (final item in items)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                    child: Builder(
-                      builder: (context) {
-                        final layoutW = MediaQuery.sizeOf(context).width;
-                        final basis = context.isTabletLayout ? AppBreakpoints.contentMaxWidth : layoutW;
-                        final coverWidth = (basis * 0.20).clamp(72.0, 120.0);
-                        final coverHeight = coverWidth * 1.4;
-                        final baseAuthorStyle = DefaultTextStyle.of(context).style;
-                        final baseAuthorSize = baseAuthorStyle.fontSize ?? 14;
-                        final authorStyle = baseAuthorStyle.copyWith(
-                          fontSize: baseAuthorSize * 1.2,
-                        );
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: coverWidth,
-                              height: coverHeight,
-                              child: BookCoverWithFavoriteButton(
-                                bookId: item.bookId,
-                                title: item.bookTitle,
-                                author: item.bookAuthor,
-                                compact: true,
-                                child: _Cover(coverImageUrl: item.coverImageUrl),
+      body: SafeArea(
+        child: ResponsiveScaffoldBody(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                  ),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: [
+                    if (list.description.isNotEmpty) ...[
+                      Text(
+                        list.description,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                    ],
+                    Text(
+                      l10n.byUser(list.userName),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(l10n.books, style: sectionStyle),
+                    const SizedBox(height: AppSpacing.xs),
+                    itemsAsync.when(
+                      data: (items) => items.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: AppSpacing.xs,
                               ),
+                              child: Text(
+                                l10n.noBooksSelectedYet,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                for (final item in items)
+                                  _BookListItem(item: item),
+                              ],
                             ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.bookTitle,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontFamily: 'LTSoul',
+                      loading: () => Column(
+                        children: List.generate(
+                          3,
+                          (_) => const Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs,
+                            ),
+                            child: AppListTileSkeleton(),
+                          ),
+                        ),
+                      ),
+                      error: (e, _) => AsyncErrorView(
+                        error: e,
+                        compact: true,
+                        onRetry: () =>
+                            ref.invalidate(listItemsProvider(list.id)),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(l10n.comments, style: sectionStyle),
+                    const SizedBox(height: AppSpacing.xs),
+                    commentsAsync.when(
+                      data: (comments) => comments.isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: AppSpacing.xs,
+                              ),
+                              child: Text(
+                                l10n.addCommentHint,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                for (final comment in comments)
+                                  ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    dense: true,
+                                    visualDensity: VisualDensity.compact,
+                                    title: Text(
+                                      comment.userName,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      comment.content,
+                                      style: theme.textTheme.bodySmall,
                                     ),
                                   ),
-                                  Text(
-                                    item.note?.isNotEmpty == true
-                                        ? '${item.bookAuthor}\n${item.note}'
-                                        : item.bookAuthor,
-                                    style: authorStyle,
-                                  ),
-                                ],
-                              ),
+                              ],
                             ),
-                          ],
-                        );
-                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, _) => AsyncErrorView(
+                        error: e,
+                        compact: true,
+                        onRetry: () =>
+                            ref.invalidate(commentsProvider(list.id)),
+                      ),
                     ),
-                  ),
-              ],
-            ),
-            loading: () => Column(
-              children: List.generate(
-                4,
-                (_) => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  child: AppListTileSkeleton(),
+                  ],
                 ),
               ),
-            ),
-            error: (e, _) => AsyncErrorView(
-                  error: e,
-                  compact: true,
-                  onRetry: () => ref.invalidate(listItemsProvider(list.id)),
-                ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(l10n.comments, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.sm),
-          commentsAsync.when(
-            data: (comments) => Column(
-              children: [
-                for (final comment in comments)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(comment.userName),
-                    subtitle: Text(comment.content),
-                  ),
-              ],
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (e, _) => AsyncErrorView(
-                  error: e,
-                  compact: true,
-                  onRetry: () => ref.invalidate(commentsProvider(list.id)),
-                ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          if (user != null)
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentCtrl,
-                    decoration: InputDecoration(
-                      hintText: l10n.addCommentHint,
-                      isDense: true,
+              if (user != null)
+                Material(
+                  elevation: 2,
+                  color: theme.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.sm,
+                      AppSpacing.md,
+                      AppSpacing.sm,
                     ),
-                    minLines: 1,
-                    maxLines: 3,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _commentCtrl,
+                            decoration: InputDecoration(
+                              hintText: l10n.addCommentHint,
+                              isDense: true,
+                            ),
+                            style: theme.textTheme.bodyMedium,
+                            minLines: 1,
+                            maxLines: 3,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        FilledButton(
+                          onPressed: _commenting
+                              ? null
+                              : () => _addComment(
+                                    userId: user.id,
+                                    userName: displayName,
+                                    listId: list.id,
+                                  ),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          child: _commenting
+                              ? const AppLoadingIndicator(
+                                  size: 18,
+                                  strokeWidth: 2,
+                                  centered: false,
+                                )
+                              : Text(l10n.send),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(
-                  onPressed: _commenting
-                      ? null
-                      : () => _addComment(
-                            userId: user.id,
-                            userName: displayName,
-                            listId: list.id,
-                          ),
-                  child: _commenting
-                      ? const AppLoadingIndicator(
-                          size: 18,
-                          strokeWidth: 2,
-                          centered: false,
-                        )
-                      : Text(l10n.send),
-                ),
-              ],
-            ),
-        ],
-      ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -276,6 +316,78 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     ref.invalidate(topListsProvider);
     ref.invalidate(userListsProvider);
     ref.invalidate(savedListsProvider);
+  }
+}
+
+class _BookListItem extends StatelessWidget {
+  const _BookListItem({required this.item});
+
+  final ListItemEntity item;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final layoutW = MediaQuery.sizeOf(context).width;
+    final basis =
+        context.isTabletLayout ? AppBreakpoints.contentMaxWidth : layoutW;
+    final coverWidth = (basis * 0.14).clamp(52.0, 80.0);
+    final coverHeight = coverWidth * 1.4;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: coverWidth,
+            height: coverHeight,
+            child: BookCoverWithFavoriteButton(
+              bookId: item.bookId,
+              title: item.bookTitle,
+              author: item.bookAuthor,
+              compact: true,
+              child: _Cover(coverImageUrl: item.coverImageUrl),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.bookTitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'LTSoul',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  item.bookAuthor,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall,
+                ),
+                if (item.note?.isNotEmpty == true) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    item.note!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -148,6 +148,14 @@ class InMemoryListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> getRecommendedLists({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    return const <ListEntity>[];
+  }
+
+  @override
   Future<List<ListEntity>> getPopularLists() async {
     final copy = List<ListEntity>.from(_lists);
     copy.sort((a, b) => b.likeCount.compareTo(a.likeCount));

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../profile_stats/presentation/providers/profile_stats_revision.dart';
-
 import '../../../auth/presentation/auth_provider.dart';
+import '../../../lists/presentation/providers/lists_providers.dart';
+import '../../../profile_stats/presentation/providers/profile_stats_revision.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../data/datasources/google_books_cache_datasource.dart';
@@ -429,6 +429,7 @@ class RatingNotifier extends FamilyAsyncNotifier<RatingState, String> {
             RatingEntity(bookId: _bookId, userId: userId, rating: value),
           );
       ref.read(userRatingsRevisionProvider.notifier).state++;
+      ref.invalidate(forYouListsProvider);
       final avg = await ref
           .read(bookDetailRepositoryProvider)
           .getAverageRating(_bookId);

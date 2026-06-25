@@ -24,6 +24,44 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> getRecommendedLists({
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    final userId = _currentUserId;
+    if (userId == null) return const <ListEntity>[];
+
+    final raw = await _client.rpc(
+      'get_list_recommendations',
+      params: <String, dynamic>{
+        'p_limit': limit,
+        'p_offset': offset,
+      },
+    );
+    final rows = (raw as List<dynamic>?) ?? <dynamic>[];
+    final listIds = rows
+        .whereType<Map<String, dynamic>>()
+        .map((e) => e['list_id']?.toString())
+        .whereType<String>()
+        .toList();
+    if (listIds.isEmpty) return const <ListEntity>[];
+
+    final listRows = await _client.from('lists').select('*').inFilter('id', listIds);
+    final byId = <String, Map<String, dynamic>>{
+      for (final row in (listRows as List<dynamic>).whereType<Map<String, dynamic>>())
+        row['id'].toString(): row,
+    };
+    final ordered = <ListEntity>[];
+    for (final id in listIds) {
+      final row = byId[id];
+      if (row != null) {
+        ordered.add(await _enrichList(row, userId));
+      }
+    }
+    return ordered;
+  }
+
+  @override
   Future<List<ListEntity>> getPopularLists() async {
     final lists = await getFeedLists();
     lists.sort((a, b) {

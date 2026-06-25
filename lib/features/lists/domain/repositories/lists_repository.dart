@@ -3,6 +3,7 @@ import '../entities/list_entities.dart';
 abstract class ListsRepository {
   Future<List<ListEntity>> getFeedLists();
   Future<List<ListEntity>> getPopularLists();
+  Future<List<ListEntity>> getRecommendedLists({int limit = 50, int offset = 0});
   Future<List<ListEntity>> getTopListsByEngagement({int limit = 20});
   Future<List<ListEntity>> getFollowingLists();
   Future<List<ListEntity>> getUserLists(String userId);
@@ -21,7 +22,7 @@ abstract class ListsRepository {
   Future<void> removeBookFromList(String listItemId);
   Future<List<ListItemEntity>> getListItems(String listId);
 
-  /// Batch-fetch items for recommendation scoring (first [maxItemsPerList] per list).
+  /// Batch-fetch items for a set of lists (first [maxItemsPerList] per list).
   Future<Map<String, List<ListItemEntity>>> getListItemsByListIds(
     List<String> listIds, {
     int maxItemsPerList = 10,

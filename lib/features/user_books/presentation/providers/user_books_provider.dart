@@ -97,6 +97,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
       ref.invalidate(userBooksByStatusProvider(status));
       ref.invalidate(favoriteUserBooksProvider);
       _invalidateProfileStatsIfNeeded(previousStatus, status);
+      _invalidateForYouListsIfNeeded(previousStatus, status, isFavorite);
       return ref.read(userBooksRepositoryProvider).getUserBook(_bookId);
     });
   }
@@ -111,6 +112,17 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
       ref.invalidate(genreStatsProvider);
       ref.invalidate(authorStatsProvider);
       ref.invalidate(libraryStatsProvider);
+    }
+  }
+
+  void _invalidateForYouListsIfNeeded(
+    ReadingStatus? previous,
+    ReadingStatus next,
+    bool? isFavorite,
+  ) {
+    if (previous == ReadingStatus.completed ||
+        next == ReadingStatus.completed ||
+        isFavorite != null) {
       ref.invalidate(forYouListsProvider);
     }
   }
@@ -151,6 +163,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
       }
       ref.invalidate(favoriteUserBooksProvider);
       ref.invalidate(favoriteBookIdsProvider);
+      ref.invalidate(forYouListsProvider);
       return ref.read(userBooksRepositoryProvider).getUserBook(_bookId);
     });
   }

@@ -30,6 +30,7 @@ class ListsPage extends ConsumerWidget {
     );
     void invalidateAll() {
       ref.invalidate(listsFeedProvider);
+      ref.invalidate(forYouListsProvider);
       ref.invalidate(popularListsProvider);
       ref.invalidate(topListsProvider);
       ref.invalidate(userListsProvider);

@@ -11,8 +11,10 @@ import '../../../../core/notification/reading_reminder_scheduler.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ux/l10n_app_error.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../domain/entities/habit_reading_book_choice.dart';
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
+import 'habit_reading_book_log_tile.dart';
 
 Future<void> showHabitAddLogBottomSheet(BuildContext context) async {
   await showModalBottomSheet<void>(
@@ -36,16 +38,18 @@ class _HabitAddLogBody extends ConsumerStatefulWidget {
 }
 
 class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
-  final _minutes = TextEditingController();
-  final _pages = TextEditingController();
-  String? _bookId;
+  final _generalMinutes = TextEditingController();
+  final _generalPages = TextEditingController();
+  final _bookDrafts = <String, HabitReadingBookLogDraft>{};
+  bool _generalSelected = false;
   bool _submitting = false;
   String? _formError;
+  List<HabitReadingBookChoice>? _loadedChoices;
 
   @override
   void initState() {
     super.initState();
-    for (final controller in [_minutes, _pages]) {
+    for (final controller in [_generalMinutes, _generalPages]) {
       controller.addListener(_clearFormError);
     }
   }
@@ -55,12 +59,44 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     setState(() => _formError = null);
   }
 
+  void _syncBookDrafts(List<HabitReadingBookChoice> choices) {
+    if (_loadedChoices != null &&
+        _choicesEqual(_loadedChoices!, choices)) {
+      return;
+    }
+    for (final draft in _bookDrafts.values) {
+      draft.dispose();
+    }
+    _bookDrafts
+      ..clear()
+      ..addEntries(
+        choices.map(
+          (choice) => MapEntry(choice.bookId, HabitReadingBookLogDraft()),
+        ),
+      );
+    _loadedChoices = choices;
+  }
+
+  bool _choicesEqual(
+    List<HabitReadingBookChoice> a,
+    List<HabitReadingBookChoice> b,
+  ) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].bookId != b[i].bookId) return false;
+    }
+    return true;
+  }
+
   @override
   void dispose() {
-    for (final controller in [_minutes, _pages]) {
+    for (final controller in [_generalMinutes, _generalPages]) {
       controller
         ..removeListener(_clearFormError)
         ..dispose();
+    }
+    for (final draft in _bookDrafts.values) {
+      draft.dispose();
     }
     super.dispose();
   }
@@ -70,18 +106,52 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     return v ?? 0;
   }
 
-  String? _normalizedBookId() {
-    final raw = _bookId?.trim();
-    if (raw == null || raw.isEmpty) return null;
-    return raw;
+  List<({String? bookId, int minutesRead, int pagesRead})> _collectEntries() {
+    final entries = <({String? bookId, int minutesRead, int pagesRead})>[];
+
+    for (final entry in _bookDrafts.entries) {
+      final draft = entry.value;
+      if (!draft.selected) continue;
+      final minutes = draft.parseMinutes();
+      final pages = draft.parsePages();
+      if (minutes <= 0 && pages <= 0) continue;
+      entries.add((
+        bookId: entry.key,
+        minutesRead: minutes,
+        pagesRead: pages,
+      ));
+    }
+
+    if (_generalSelected) {
+      final minutes = _parseInt(_generalMinutes);
+      final pages = _parseInt(_generalPages);
+      if (minutes > 0 || pages > 0) {
+        entries.add((
+          bookId: null,
+          minutesRead: minutes,
+          pagesRead: pages,
+        ));
+      }
+    } else if (_bookDrafts.isEmpty) {
+      final minutes = _parseInt(_generalMinutes);
+      final pages = _parseInt(_generalPages);
+      if (minutes > 0 || pages > 0) {
+        entries.add((
+          bookId: null,
+          minutesRead: minutes,
+          pagesRead: pages,
+        ));
+      }
+    }
+
+    return entries;
   }
 
   Future<void> _submit() async {
-    final minutes = _parseInt(_minutes);
-    final pages = _parseInt(_pages);
     final l10n = AppLocalizations.of(context)!;
+    final entries = _collectEntries();
 
-    if (minutes <= 0 && pages <= 0) {
+    if (entries.isEmpty) {
       setState(() => _formError = l10n.addMinutesOrPagesPrompt);
       return;
     }
@@ -95,19 +165,19 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     final navigator = Navigator.of(context);
 
     try {
-      final bookId = _normalizedBookId();
-      final result = await ref.read(habitLogControllerProvider).addLog(
-            bookId: bookId,
-            minutesRead: minutes,
-            pagesRead: pages,
-          );
+      final result =
+          await ref.read(habitLogControllerProvider).addLogs(entries);
       if (!mounted) return;
 
       navigator.pop();
       messenger.showSnackBar(
         SnackBar(
           content: Text(
-            result.savedOffline ? l10n.readingLoggedOffline : l10n.readingLogged,
+            result.savedOffline
+                ? l10n.readingLoggedOffline
+                : entries.length > 1
+                    ? l10n.readingLoggedCount(entries.length)
+                    : l10n.readingLogged,
           ),
         ),
       );
@@ -144,6 +214,134 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     }
   }
 
+  Widget _buildGeneralLogSection(
+    AppLocalizations l10n, {
+    required bool optional,
+  }) {
+    if (!optional) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _generalMinutes,
+            decoration: InputDecoration(labelText: l10n.minutes),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            children: [
+              TextButton(
+                onPressed: () {
+                  final n = _parseInt(_generalMinutes);
+                  _generalMinutes.text = '${n + 10}';
+                },
+                child: Text(l10n.plusTenMin),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+          TextField(
+            controller: _generalPages,
+            decoration: InputDecoration(labelText: l10n.pages),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            children: [
+              TextButton(
+                onPressed: () {
+                  final n = _parseInt(_generalPages);
+                  _generalPages.text = '${n + 5}';
+                },
+                child: Text(l10n.plusFivePages),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xs,
+          AppSpacing.sm,
+          AppSpacing.sm,
+          AppSpacing.sm,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _generalSelected,
+              onChanged: (value) {
+                setState(() => _generalSelected = value ?? false);
+              },
+              title: Text(l10n.generalReadingLog),
+              subtitle: Text(l10n.generalReadingLogHint),
+            ),
+            if (_generalSelected) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _generalMinutes,
+                      decoration: InputDecoration(
+                        labelText: l10n.minutes,
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      final n = _parseInt(_generalMinutes);
+                      _generalMinutes.text = '${n + 10}';
+                    },
+                    child: Text(l10n.plusTenMin),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _generalPages,
+                      decoration: InputDecoration(
+                        labelText: l10n.pages,
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      final n = _parseInt(_generalPages);
+                      _generalPages.text = '${n + 5}';
+                    },
+                    child: Text(l10n.plusFivePages),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -164,105 +362,65 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
             Text(l10n.log, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              l10n.addMinutesOrPagesPrompt,
+              l10n.selectBooksToLog,
               style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: AppSpacing.md + AppSpacing.xs),
-            TextField(
-              controller: _minutes,
-              decoration: InputDecoration(
-                labelText: l10n.minutes,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.sm,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    final n = _parseInt(_minutes);
-                    _minutes.text = '${n + 10}';
-                  },
-                  child: Text(l10n.plusTenMin),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-            TextField(
-              controller: _pages,
-              decoration: InputDecoration(
-                labelText: l10n.pages,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.sm,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    final n = _parseInt(_pages);
-                    _pages.text = '${n + 5}';
-                  },
-                  child: Text(l10n.plusFivePages),
-                ),
-              ],
             ),
             const SizedBox(height: AppSpacing.md),
             booksAsync.when(
               data: (choices) {
+                _syncBookDrafts(choices);
                 if (choices.isEmpty) {
-                  return Text(
-                    l10n.noReadingBooksForLog,
-                    style: Theme.of(context).textTheme.bodySmall,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n.noReadingBooksForLog,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      _buildGeneralLogSection(l10n, optional: false),
+                    ],
                   );
                 }
+
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      l10n.selectReadingBook,
+                      l10n.currentlyReadingBooks,
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    ...choices.map(
-                      (choice) {
-                        final selected = _bookId == choice.id;
-                        return ListTile(
-                          title: Text(choice.label),
-                          leading: Icon(
-                            selected
-                                ? Icons.radio_button_checked
-                                : Icons.radio_button_off,
-                          ),
-                          selected: selected,
-                          onTap: () => setState(() => _bookId = choice.id),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text(l10n.none),
-                      leading: Icon(
-                        _bookId == null
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_off,
-                      ),
-                      selected: _bookId == null,
-                      onTap: () => setState(() => _bookId = null),
-                    ),
+                    ...choices.map((choice) {
+                      final draft = _bookDrafts[choice.bookId]!;
+                      return HabitReadingBookLogTile(
+                        choice: choice,
+                        draft: draft,
+                        onSelectedChanged: (selected) {
+                          setState(() => draft.selected = selected);
+                        },
+                        onChanged: _clearFormError,
+                      );
+                    }),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildGeneralLogSection(l10n, optional: true),
                   ],
                 );
               },
-              loading: () => Text(
-                l10n.selectReadingBook,
-                style: Theme.of(context).textTheme.bodySmall,
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                child: AppLoadingIndicator(),
               ),
-              error: (error, _) => Text(
-                l10n.noReadingBooksForLog,
-                style: Theme.of(context).textTheme.bodySmall,
+              error: (error, _) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.noReadingBooksForLog,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  _buildGeneralLogSection(l10n, optional: false),
+                ],
               ),
             ),
             const SizedBox(height: 24),

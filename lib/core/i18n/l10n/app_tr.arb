@@ -223,6 +223,12 @@
   ,"saveLog":"Kaydi kaydet"
   ,"selectReadingBook":"Okuyorum listenizden bir kitap secin"
   ,"noReadingBooksForLog":"Belirli bir kitap icin ilerleme kaydetmek icin Okuyorum listenize kitap ekleyin."
+  ,"selectBooksToLog":"Bugun okudugunuz kitaplari secin ve her biri icin dakika ve/veya sayfa girin."
+  ,"currentlyReadingBooks":"Okumaya devam edilen kitaplar"
+  ,"generalReadingLog":"Genel okuma"
+  ,"generalReadingLogHint":"Kitap secmeden okuma suresi kaydedin."
+  ,"readingLoggedCount":"{count} okuma kaydi eklendi"
+  ,"@readingLoggedCount":{"placeholders":{"count":{"type":"int"}}}
   ,"calendarError":"Takvim hatasi: {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Aktivite"

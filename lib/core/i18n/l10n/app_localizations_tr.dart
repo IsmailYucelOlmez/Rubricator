@@ -512,6 +512,24 @@ class AppLocalizationsTr extends AppLocalizations {
       'Belirli bir kitap icin ilerleme kaydetmek icin Okuyorum listenize kitap ekleyin.';
 
   @override
+  String get selectBooksToLog =>
+      'Bugun okudugunuz kitaplari secin ve her biri icin dakika ve/veya sayfa girin.';
+
+  @override
+  String get currentlyReadingBooks => 'Okumaya devam edilen kitaplar';
+
+  @override
+  String get generalReadingLog => 'Genel okuma';
+
+  @override
+  String get generalReadingLogHint => 'Kitap secmeden okuma suresi kaydedin.';
+
+  @override
+  String readingLoggedCount(int count) {
+    return '$count okuma kaydi eklendi';
+  }
+
+  @override
   String calendarError(Object error) {
     return 'Takvim hatasi: $error';
   }

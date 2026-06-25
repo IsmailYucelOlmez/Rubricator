@@ -11,7 +11,9 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 
+import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
+import '../../../habit/presentation/widgets/habit_quick_add_sheet.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import 'genre_books_page.dart';
 import '../../domain/entities/home_book_entity.dart';
@@ -33,6 +35,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final user = ref.watch(authStateProvider).valueOrNull;
     final snapshotAsync = ref.watch(homePageSnapshotProvider);
     final favoriteIds = ref.watch(favoriteBookIdsProvider).valueOrNull ??
         const <String>{};
@@ -66,6 +69,14 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
         ),
+        actions: [
+          if (user != null)
+            IconButton(
+              onPressed: () => showHabitQuickAddBottomSheet(context),
+              tooltip: l10n.quickLog,
+              icon: const Icon(Icons.add),
+            ),
+        ],
       ),
       body: ResponsiveScaffoldBody(
         child: RefreshIndicator(

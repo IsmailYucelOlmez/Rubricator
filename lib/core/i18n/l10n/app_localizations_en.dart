@@ -512,6 +512,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add books to your Reading list to log progress for a specific title.';
 
   @override
+  String get selectBooksToLog =>
+      'Select the books you read today and enter minutes and/or pages for each.';
+
+  @override
+  String get currentlyReadingBooks => 'Currently reading';
+
+  @override
+  String get generalReadingLog => 'General reading';
+
+  @override
+  String get generalReadingLogHint =>
+      'Log reading time without linking to a book.';
+
+  @override
+  String readingLoggedCount(int count) {
+    return '$count reading logs saved';
+  }
+
+  @override
   String calendarError(Object error) {
     return 'Calendar error: $error';
   }

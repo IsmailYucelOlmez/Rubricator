@@ -8,10 +8,9 @@ import '../../../../core/widgets/async_error_view.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../pages/habit_page.dart';
 import '../providers/habit_providers.dart';
-import 'habit_quick_add_sheet.dart';
 import 'habit_streak_widget.dart';
 
-/// Profile strip: streak, today prompt, quick log + link to full habit page.
+/// Profile strip: streak, today prompt, and link to full habit page.
 class HabitProfileSummary extends ConsumerWidget {
   const HabitProfileSummary({super.key});
 
@@ -58,29 +57,18 @@ class HabitProfileSummary extends ConsumerWidget {
                   ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () => showHabitQuickAddBottomSheet(context),
-                    icon: const Icon(Icons.add, size: 20),
-                    label: Text(l10n.quickLog),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const HabitPage(),
-                        ),
-                      );
-                    },
-                    child: Text(l10n.details),
-                  ),
-                ),
-              ],
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const HabitPage(),
+                    ),
+                  );
+                },
+                child: Text(l10n.details),
+              ),
             ),
           ],
         ),

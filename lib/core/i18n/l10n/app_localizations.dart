@@ -1010,6 +1010,36 @@ abstract class AppLocalizations {
   /// **'Add books to your Reading list to log progress for a specific title.'**
   String get noReadingBooksForLog;
 
+  /// No description provided for @selectBooksToLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the books you read today and enter minutes and/or pages for each.'**
+  String get selectBooksToLog;
+
+  /// No description provided for @currentlyReadingBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently reading'**
+  String get currentlyReadingBooks;
+
+  /// No description provided for @generalReadingLog.
+  ///
+  /// In en, this message translates to:
+  /// **'General reading'**
+  String get generalReadingLog;
+
+  /// No description provided for @generalReadingLogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Log reading time without linking to a book.'**
+  String get generalReadingLogHint;
+
+  /// No description provided for @readingLoggedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reading logs saved'**
+  String readingLoggedCount(int count);
+
   /// No description provided for @calendarError.
   ///
   /// In en, this message translates to:

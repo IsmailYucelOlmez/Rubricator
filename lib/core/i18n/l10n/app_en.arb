@@ -230,6 +230,12 @@
   ,"saveLog":"Save log"
   ,"selectReadingBook":"Select a book from your Reading list"
   ,"noReadingBooksForLog":"Add books to your Reading list to log progress for a specific title."
+  ,"selectBooksToLog":"Select the books you read today and enter minutes and/or pages for each."
+  ,"currentlyReadingBooks":"Currently reading"
+  ,"generalReadingLog":"General reading"
+  ,"generalReadingLogHint":"Log reading time without linking to a book."
+  ,"readingLoggedCount":"{count} reading logs saved"
+  ,"@readingLoggedCount":{"placeholders":{"count":{"type":"int"}}}
   ,"calendarError":"Calendar error: {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Activity"

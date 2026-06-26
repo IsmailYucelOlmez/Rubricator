@@ -30,32 +30,33 @@ class AppLocalizationsTr extends AppLocalizations {
   String get readingStatsListsTitle => 'Duruma gore okuma listeleri';
 
   @override
-  String get homeShowAll => 'Tumunu gor';
+  String get homeShowAll => 'Tümünü gör';
 
   @override
-  String get editProfile => 'Profili duzenle';
+  String get editProfile => 'Profili düzenle';
 
   @override
-  String get pickPhotoFromGallery => 'Galeriden foto sec';
+  String get pickPhotoFromGallery => 'Galeriden fotoğraf seç';
 
   @override
-  String get pickProfilePhotoFromGallery => 'Profil fotografi galeriden sec';
+  String get pickProfilePhotoFromGallery => 'Profil fotoğrafını galeriden seç';
 
   @override
-  String get changeProfilePhoto => 'Profil fotosunu degistir';
+  String get changeProfilePhoto => 'Profil fotoğrafını değiştir';
 
   @override
-  String get removeProfilePhotoTooltip => 'Fotografi kaldir';
+  String get removeProfilePhotoTooltip => 'Fotoğrafı kaldır';
 
   @override
   String get privacyPolicyCheckbox =>
-      'Gizlilik politikasini okudum ve kabul ediyorum.';
+      'Gizlilik politikasını okudum ve kabul ediyorum.';
 
   @override
-  String get displayNameLabel => 'Gorunen ad';
+  String get displayNameLabel => 'İsim';
 
   @override
-  String get profilePhotoUrlOptional => 'Profil foto URL (istege bagli)';
+  String get profilePhotoUrlOptional =>
+      'Profil fotoğrafı URL\'si (isteğe bağlı)';
 
   @override
   String get profile => 'Profil';
@@ -64,10 +65,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get language => 'Dil';
 
   @override
-  String get themeAppearance => 'Gorunum';
+  String get themeAppearance => 'Görünüm';
 
   @override
-  String get themeLight => 'Acik';
+  String get themeLight => 'Açık';
 
   @override
   String get themeDark => 'Koyu';
@@ -76,37 +77,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notifications => 'Bildirimler';
 
   @override
-  String get selectLanguage => 'Dil Sec';
+  String get selectLanguage => 'Dil Seç';
 
   @override
-  String get english => 'Ingilizce';
+  String get english => 'İngilizce';
 
   @override
-  String get turkish => 'Turkce';
+  String get turkish => 'Türkçe';
 
   @override
   String get signInPrompt =>
-      'Favorileri cihazlar arasinda esitlemek icin giris yapin.';
+      'Kütüphanenizi, listelerinizi ve okuma ilerlemenizi tüm cihazlarınızda senkronize etmek için giriş yapın.';
 
   @override
-  String get signIn => 'Giris yap';
+  String get signIn => 'Giriş yap';
 
   @override
-  String get createAccount => 'Hesap olustur';
+  String get createAccount => 'Hesap oluştur';
 
   @override
-  String get signedInFallback => 'Giris yapildi';
+  String get signedInFallback => 'Giriş yaptınız';
 
   @override
-  String get signOut => 'Cikis yap';
+  String get signOut => 'Çıkış yap';
 
   @override
   String loadSessionError(Object error) {
-    return 'Oturum yuklenemedi: $error';
+    return 'Oturum yüklenemedi. $error';
   }
 
   @override
-  String get invalidEmailOrPassword => 'E-posta veya sifre hatali.';
+  String get invalidEmailOrPassword => 'E-posta veya şifre hatalı.';
 
   @override
   String get accountAlreadyExists => 'Bu e-posta ile bir hesap zaten var.';
@@ -115,38 +116,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get email => 'E-posta';
 
   @override
-  String get password => 'Sifre';
+  String get password => 'Şifre';
 
   @override
-  String get passwordMin6 =>
-      'Sifre (en az 6 karakter, buyuk/kucuk harf, noktalama)';
+  String get passwordMin6 => 'En az 6 karakter, büyük/küçük harf ve noktalama';
 
   @override
-  String get cancel => 'Iptal';
+  String get cancel => 'İptal';
 
   @override
-  String get signUp => 'Kayit ol';
+  String get signUp => 'Kayıt ol';
 
   @override
   String get confirmAccountEmailNotice =>
-      'Gerekliyse hesabinizi onaylamak icin e-postanizi kontrol edin.';
+      'Gerekirse hesabınızı doğrulamak için e-postanızı kontrol edin.';
 
   @override
-  String get readingHabit => 'Okuma aliskanligi';
+  String get readingHabit => 'Okuma alışkanlığı';
 
   @override
-  String get readingLoggedToday => 'Bugun okuma kaydi girdiniz. Harika.';
+  String get readingLoggedToday => 'Harika! Bugün okuma kaydınızı girdiniz.';
 
   @override
-  String get didYouReadToday => 'Bugun okudunuz mu?';
+  String get didYouReadToday => 'Bugün okudunuz mu?';
 
   @override
   String todayStatusError(Object error) {
-    return 'Bugun durumu: $error';
+    return 'Bugünün durumu yüklenemedi. $error';
   }
 
   @override
-  String get quickLog => 'Hizli kayit';
+  String get quickLog => 'Okumayı kaydet';
 
   @override
   String get details => 'Detaylar';
@@ -165,73 +165,77 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get noRatingsYet => 'Henuz puan yok';
+  String get noRatingsYet => 'Henüz puan yok';
 
   @override
   String topGenre(Object genre) {
-    return 'En iyi: $genre';
+    return 'En çok: $genre';
   }
 
   @override
-  String get viewAllStats => 'Tum istatistikleri gor';
+  String get viewAllStats => 'Tüm istatistikleri gör';
 
   @override
   String loadStatsError(Object error) {
-    return 'Istatistikler yuklenemedi: $error';
+    return 'İstatistikler yüklenemedi. $error';
   }
 
   @override
-  String get searchBooksTitle => 'Kitap Ara';
+  String get searchBooksTitle => 'Kitap ara';
 
   @override
-  String get searchByTitleOrAuthorHint =>
-      'Baslik veya yazara gore ara (en az 2 karakter)';
+  String get searchByTitleOrAuthorHint => 'Başlık veya yazara göre ara…';
 
   @override
   String noBooksFoundFor(Object query) {
-    return '\"$query\" icin kitap bulunamadi.';
+    return '\"$query\" için sonuç bulunamadı. Farklı bir başlık veya yazar deneyin.';
   }
 
   @override
   String get recentSearches => 'Son Aramalar';
 
   @override
-  String get loadRecentSearchesError => 'Son aramalar yuklenemedi.';
+  String get loadRecentSearchesError => 'Son aramalar yüklenemedi.';
 
   @override
-  String get noRecentSearchesYet => 'Henuz son arama yok.';
+  String get noRecentSearchesYet => 'Son aramalarınız burada görünecek.';
 
   @override
-  String get recentSearchedBooks => 'Son Aranan Kitaplar';
+  String get recentSearchedBooks => 'Son görüntülenen kitaplar';
 
   @override
-  String get loadRecentSearchedBooksError => 'Son aranan kitaplar yuklenemedi.';
+  String get loadRecentSearchedBooksError =>
+      'Son görüntülenen kitaplar yüklenemedi.';
 
   @override
-  String get noRecentSearchedBooksYet => 'Henuz son aranan kitap yok.';
+  String get noRecentSearchedBooksYet =>
+      'Aradığınız kitaplar burada görünecek.';
 
   @override
-  String get searchBooksMin2Hint => 'Kitap ara (en az 2 karakter)';
+  String get searchBooksMin2Hint => 'Aramak için en az 2 karakter yazın';
 
   @override
-  String get discover => 'Kesfet';
+  String get discover => 'Keşfet';
 
   @override
-  String get noBooksFound => 'Kitap bulunamadi';
+  String get noBooksFound => 'Kitap bulunamadı';
 
   @override
   String get searchCouldNotComplete =>
-      'Arama tamamlanamadi. Lutfen tekrar deneyin.';
+      'Arama tamamlanamadı. Lütfen tekrar deneyin.';
 
   @override
-  String get popular => 'Populer';
+  String get continueReading => 'Okumaya Devam Et';
 
   @override
-  String get loadPopularBooksError => 'Populer kitaplar yuklenemedi.';
+  String get popular => 'Popüler';
+
+  @override
+  String get loadPopularBooksError => 'Popüler kitaplar yüklenemedi.';
 
   @override
   String loadGenreBooksError(Object genre) {
-    return '$genre kitaplari yuklenemedi.';
+    return '$genre kitapları yüklenemedi.';
   }
 
   @override
@@ -254,11 +258,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get loadHomeGenresError =>
-      'Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.';
+      'Tür bölümleri yüklenemedi. Lütfen tekrar deneyin.';
 
   @override
   String homeGenreEmptySoft(Object genre) {
-    return '$genre icin henuz oneri yok. Yenilemek icin asagi cekin veya sonra deneyin.';
+    return '$genre için henüz öneri yok. Yenilemek için aşağı çekin veya daha sonra tekrar deneyin.';
   }
 
   @override
@@ -271,53 +275,55 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reReading => 'Tekrar Okunuyor';
 
   @override
-  String get completed => 'Tamamlandi';
+  String get completed => 'Tamamlandı';
 
   @override
-  String get dropped => 'Birakildi';
+  String get dropped => 'Bırakıldı';
 
   @override
   String get addToFavorites => 'Favorilere ekle';
 
   @override
-  String get removeFromFavorites => 'Favorilerden cikar';
+  String get removeFromFavorites => 'Favorilerden çıkar';
 
   @override
   String get favorites => 'Favoriler';
 
   @override
-  String get signInToSeeLists => 'Listeleri gormek icin Profilden giris yapin.';
+  String get signInToSeeLists =>
+      'Okuma listelerinizi görüntülemek ve yönetmek için giriş yapın.';
 
   @override
   String noBooksInStatus(Object status) {
-    return '$status durumunda kitap yok.';
+    return '$status olarak işaretlenmiş kitap yok.';
   }
 
   @override
-  String get noFavoritesYet => 'Henuz favori yok.';
+  String get noFavoritesYet =>
+      'Favorilere eklediğiniz kitaplar burada görünecek.';
 
   @override
   String couldNotLoadList(Object error) {
-    return 'Liste yuklenemedi: $error';
+    return 'Liste yüklenemedi. $error';
   }
 
   @override
-  String get bookDetails => 'Kitap Detayi';
+  String get bookDetails => 'Kitap Detayı';
 
   @override
   String get authorProfile => 'Yazar profili';
 
   @override
-  String get ratingSubmitted => 'Puan gonderildi.';
+  String get ratingSubmitted => 'Puan gönderildi.';
 
   @override
-  String get noDescriptionAvailable => 'Aciklama bulunamadi.';
+  String get noDescriptionAvailable => 'Henüz açıklama yok.';
 
   @override
   String get reviewAdded => 'Yorum eklendi.';
 
   @override
-  String get reviewUpdated => 'Yorum guncellendi.';
+  String get reviewUpdated => 'Yorum güncellendi.';
 
   @override
   String get reviewDeleted => 'Yorum silindi.';
@@ -326,44 +332,44 @@ class AppLocalizationsTr extends AppLocalizations {
   String get externalReviewAdded => 'Harici yorum eklendi.';
 
   @override
-  String get invalidUrl => 'Gecersiz URL';
+  String get invalidUrl => 'Geçersiz URL';
 
   @override
-  String get couldNotOpenBrowser => 'Tarayici acilamadi.';
+  String get couldNotOpenBrowser => 'Tarayıcı açılamadı.';
 
   @override
-  String get quoteAdded => 'Alinti eklendi.';
+  String get quoteAdded => 'Alıntı eklendi.';
 
   @override
   String get relatedBooks => 'Benzer kitaplar';
 
   @override
-  String get noRelatedTitlesFound =>
-      'Benzer baslik bulunamadi (konular eksik veya sonuc yok).';
+  String get noRelatedTitlesFound => 'Bu kitap için benzer başlık bulunamadı.';
 
   @override
-  String get couldNotLoadRelatedBooks => 'Benzer kitaplar yuklenemedi.';
+  String get couldNotLoadRelatedBooks => 'Benzer kitaplar yüklenemedi.';
 
   @override
-  String get aiSummary => 'YZ Ozeti';
+  String get aiSummary => 'YZ Özeti';
 
   @override
-  String get aiSummaryFailed => 'YZ ozeti basarisiz';
+  String get aiSummaryFailed =>
+      'Özet oluşturulamadı. Daha sonra tekrar deneyin.';
 
   @override
   String couldNotLoadThisBook(Object error) {
-    return 'Bu kitap yuklenemedi. $error';
+    return 'Bu kitap yüklenemedi. $error';
   }
 
   @override
   String get addToList => 'Listeye Ekle';
 
   @override
-  String get change => 'Degistir';
+  String get change => 'Değiştir';
 
   @override
   String progressPercent(Object progress) {
-    return 'Ilerleme: %$progress';
+    return 'İlerleme: %$progress';
   }
 
   @override
@@ -375,28 +381,28 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get couldNotLoadRating => 'Puan yuklenemedi.';
+  String get couldNotLoadRating => 'Puan yüklenemedi.';
 
   @override
-  String get submitRating => 'Puani gonder';
+  String get submitRating => 'Puanı gönder';
 
   @override
   String get reviews => 'Yorumlar';
 
   @override
-  String get userReviews => 'Kullanici Yorumlari';
+  String get userReviews => 'Kullanıcı Yorumları';
 
   @override
   String get externalReviews => 'Harici Yorumlar';
 
   @override
-  String get writeReviewHint => 'Yorumunuzu yazin (en az 10 karakter)';
+  String get writeReviewHint => 'Düşüncelerinizi paylaşın (en az 10 karakter)';
 
   @override
   String get addReview => 'Yorum ekle';
 
   @override
-  String get noUserReviewsYet => 'Henuz kullanici yorumu yok.';
+  String get noUserReviewsYet => 'Bu kitap hakkında ilk yorumu siz yazın.';
 
   @override
   String reviewUserRating(int rating) {
@@ -407,10 +413,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reviewInFavorites => 'Favorilerde';
 
   @override
-  String get couldNotLoadReviews => 'Yorumlar yuklenemedi.';
+  String get couldNotLoadReviews => 'Yorumlar yüklenemedi.';
 
   @override
-  String get reviewTitle => 'Yorum basligi';
+  String get reviewTitle => 'Yorum başlığı';
 
   @override
   String get reviewUrlHint => 'https://example.com/review';
@@ -419,57 +425,58 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addExternalReview => 'Harici yorum ekle';
 
   @override
-  String get noExternalReviewsYet => 'Henuz harici yorum yok.';
+  String get noExternalReviewsYet => 'Henüz harici yorum yok.';
 
   @override
-  String get couldNotLoadExternalReviews => 'Harici yorumlar yuklenemedi.';
+  String get couldNotLoadExternalReviews => 'Harici yorumlar yüklenemedi.';
 
   @override
-  String get quotes => 'Alintilar';
+  String get quotes => 'Alıntılar';
 
   @override
-  String get addMemorableQuote => 'Akliniza kalan bir alinti ekleyin';
+  String get addMemorableQuote => 'Hatırlamak istediğiniz bir alıntı ekleyin';
 
   @override
-  String get addQuote => 'Alinti ekle';
+  String get addQuote => 'Alıntı ekle';
 
   @override
-  String get noQuotesYet => 'Henuz alinti yok.';
+  String get noQuotesYet =>
+      'Bu kitaptan kaydettiğiniz alıntılar burada görünecek.';
 
   @override
-  String get couldNotLoadQuotes => 'Alintilar yuklenemedi.';
+  String get couldNotLoadQuotes => 'Alıntılar yüklenemedi.';
 
   @override
-  String get editReview => 'Yorumu duzenle';
+  String get editReview => 'Yorumu düzenle';
 
   @override
   String get save => 'Kaydet';
 
   @override
-  String get log => 'Kayit';
+  String get log => 'Kaydet';
 
   @override
   String get signInForHabit =>
-      'Okumayi kaydetmek, serileri gormek ve aktivite takvimi icin giris yapin.';
+      'Okumanızı takip etmek, seriler oluşturmak ve aktivite takviminizi görmek için giriş yapın.';
 
   @override
-  String get readingLogged => 'Okuma kaydedildi';
+  String get readingLogged => 'Okuma kaydedildi!';
 
   @override
   String get readingLoggedOffline =>
-      'Okuma cevrimdisi kaydedildi. Baglanti gelince senkronize edilecek.';
+      'Çevrimdışı kaydedildi—bağlantı gelince senkronize edilecek.';
 
   @override
-  String get readingLogsSynced => 'Bekleyen okuma kayitlari senkronize edildi';
+  String get readingLogsSynced => 'Bekleyen okuma kayıtları senkronize edildi';
 
   @override
   String couldNotSave(Object error) {
-    return 'Kaydedilemedi: $error';
+    return 'Kaydedilemedi. $error';
   }
 
   @override
   String get addMinutesOrPagesPrompt =>
-      'Bugunden en az dakika veya sayfa ekleyin.';
+      'Bugün okuduğunuz dakika veya sayfa sayısını girin.';
 
   @override
   String get minutes => 'Dakika';
@@ -485,10 +492,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get optionalAddBooksPrompt =>
-      'Istege bagli: Buradan secmek icin okuma listenize kitap ekleyin.';
+      'İpucu: burada bağlamak için Okuyorum listenize kitap ekleyin.';
 
   @override
-  String get bookOptional => 'Kitap (istege bagli)';
+  String get bookOptional => 'Kitap (isteğe bağlı)';
 
   @override
   String get book => 'Kitap';
@@ -498,31 +505,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String booksError(Object error) {
-    return 'Kitaplar: $error';
+    return 'Kitaplar yüklenemedi. $error';
   }
 
   @override
-  String get saveLog => 'Kaydi kaydet';
+  String get saveLog => 'Kaydet';
 
   @override
-  String get selectReadingBook => 'Okuyorum listenizden bir kitap secin';
+  String get selectReadingBook => 'Okuyorum listenizden bir kitap seçin';
 
   @override
   String get noReadingBooksForLog =>
-      'Belirli bir kitap icin ilerleme kaydetmek icin Okuyorum listenize kitap ekleyin.';
+      'Belirli bir kitap için ilerleme kaydetmek üzere Okuyorum listenize kitap ekleyin.';
 
   @override
   String get selectBooksToLog =>
-      'Bugun okudugunuz kitaplari secin ve her biri icin dakika ve/veya sayfa girin.';
+      'Bugün okuduklarınızı seçin ve her biri için dakika ve/veya sayfa girin.';
 
   @override
-  String get currentlyReadingBooks => 'Okumaya devam edilen kitaplar';
+  String get currentlyReadingBooks => 'Şu an okunanlar';
 
   @override
   String get generalReadingLog => 'Genel okuma';
 
   @override
-  String get generalReadingLogHint => 'Kitap secmeden okuma suresi kaydedin.';
+  String get generalReadingLogHint =>
+      'Belirli bir kitaba bağlamadan okuma süresi kaydedin.';
 
   @override
   String readingLoggedCount(int count) {
@@ -531,7 +539,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String calendarError(Object error) {
-    return 'Takvim hatasi: $error';
+    return 'Takvim yüklenemedi. $error';
   }
 
   @override
@@ -544,10 +552,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noLogsYetTapQuickLog =>
-      'Henuz kayit yok - baslamak icin Hizli kayit\'a dokunun.';
+      'Henüz kayıt yok. Başlamak için Okumayı kaydet\'e dokunun.';
 
   @override
-  String get recentLogs => 'Son kayitlar';
+  String get recentLogs => 'Son kayıtlar';
 
   @override
   String minutesShort(int count) {
@@ -566,22 +574,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String logsError(Object error) {
-    return 'Kayit hatasi: $error';
+    return 'Kayıtlar yüklenemedi. $error';
   }
 
   @override
   String chartError(Object error) {
-    return 'Grafik hatasi: $error';
+    return 'Grafik yüklenemedi. $error';
   }
 
   @override
-  String get dailyMinutes14Days => 'Gunluk dakika (14 gun)';
+  String get dailyMinutes14Days => 'Günlük dakika (14 gün)';
 
   @override
-  String get weeklyMinutes => 'Haftalik dakika';
+  String get weeklyMinutes => 'Haftalık dakika';
 
   @override
-  String get thisWeekShort => 'Bu hf';
+  String get thisWeekShort => 'Bu hafta';
 
   @override
   String weeksAgoShort(int weeks) {
@@ -593,12 +601,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String statsError(Object error) {
-    return 'Istatistik hatasi: $error';
+    return 'İstatistikler yüklenemedi. $error';
   }
 
   @override
   String dayStreak(int days) {
-    return '$days gun seri';
+    return '$days günlük seri';
   }
 
   @override
@@ -606,116 +614,117 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String daysCount(int days) {
-    return '$days gun';
+    return '$days gün';
   }
 
   @override
   String longestDays(int days) {
-    return 'En uzun: $days gun';
+    return 'En uzun: $days gün';
   }
 
   @override
   String couldNotLoadStreak(Object error) {
-    return 'Seri yuklenemedi: $error';
+    return 'Seri yüklenemedi. $error';
   }
 
   @override
-  String get readingReminderTitle => 'Okuma Hatirlatmasi';
+  String get readingReminderTitle => 'Okuma Hatırlatması';
 
   @override
   String get readingReminderBodyNoStreak =>
-      'Bugun henuz okuma kaydi eklemedin. Hizlica bir kayit ekleyerek okuma aliskanligina basla.';
+      'Bugün henüz okuma kaydı eklemediniz. Alışkanlık oluşturmak için hızlıca bir kayıt ekleyin.';
 
   @override
   String readingReminderBodyWithStreak(int streak) {
-    return 'Bugun henuz okuma kaydi eklemedin. $streak gunluk serini korumak icin gece yarisi oncesi kayit ekle.';
+    return '$streak günlük serinizi kaybetmeyin—gece yarısından önce okumanızı kaydedin.';
   }
 
   @override
-  String get readingReminderChannelName => 'Okuma hatirlatmalari';
+  String get readingReminderChannelName => 'Okuma hatırlatmaları';
 
   @override
-  String get readingReminderChannelDescription => 'Gunluk okuma hatirlatmalari';
+  String get readingReminderChannelDescription => 'Günlük okuma hatırlatmaları';
 
   @override
   String get signInToSeeStats =>
-      'Kutuphane analizlerini ve okuma kimliginizi gormek icin giris yapin.';
+      'Okuma istatistiklerinizi keşfetmek ve okuma kimliğinizi görmek için giriş yapın.';
 
   @override
-  String get contentYouAdded => 'Eklediginiz icerik';
+  String get contentYouAdded => 'Eklediğiniz içerik';
 
   @override
-  String get reviewsAndQuotes => 'Yorumlar ve alintilar';
+  String get reviewsAndQuotes => 'Yorumlar ve alıntılar';
 
   @override
-  String get noDataYet => 'Henuz veri yok';
+  String get noDataYet =>
+      'İstatistikleri görmek için okumaya ve içerik eklemeye başlayın.';
 
   @override
   String couldNotLoadContentStats(Object error) {
-    return 'Icerik istatistikleri yuklenemedi: $error';
+    return 'İçerik istatistikleri yüklenemedi. $error';
   }
 
   @override
   String get yourRatings => 'Puanlariniz';
 
   @override
-  String get starsGivenToBooks => 'Kitaplara verdiginiz yildizlar';
+  String get starsGivenToBooks => 'Verdiğiniz yıldız puanları';
 
   @override
   String couldNotLoadRatings(Object error) {
-    return 'Puanlar yuklenemedi: $error';
+    return 'Puanlar yüklenemedi. $error';
   }
 
   @override
-  String get library => 'Kutuphane';
+  String get library => 'Kütüphane';
 
   @override
-  String get countsFromShelves => 'Raf sayilari';
+  String get countsFromShelves => 'Raflarınızdaki kitaplar';
 
   @override
   String couldNotLoadLibraryStats(Object error) {
-    return 'Kutuphane istatistikleri yuklenemedi: $error';
+    return 'Kütüphane istatistikleri yüklenemedi. $error';
   }
 
   @override
-  String get readingIdentity => 'Okuma kimligi';
+  String get readingIdentity => 'Okuma kimliği';
 
   @override
   String get genresAndAuthorsFromCompleted =>
-      'Tamamlanan kitaplardan turler ve yazarlar';
+      'Tamamlanan kitaplardan türler ve yazarlar';
 
   @override
-  String get topGenres => 'En iyi turler';
+  String get topGenres => 'Favori türler';
 
   @override
   String couldNotLoadGenres(Object error) {
-    return 'Turler yuklenemedi: $error';
+    return 'Türler yüklenemedi. $error';
   }
 
   @override
-  String get topAuthors => 'En iyi yazarlar';
+  String get topAuthors => 'Favori yazarlar';
 
   @override
   String couldNotLoadAuthors(Object error) {
-    return 'Yazarlar yuklenemedi: $error';
+    return 'Yazarlar yüklenemedi. $error';
   }
 
   @override
   String get author => 'Yazar';
 
   @override
-  String get noBiographyAvailable => 'Biyografi yok.';
+  String get noBiographyAvailable => 'Bu yazar için biyografi bulunmuyor.';
 
   @override
   String couldNotLoadAuthor(Object error) {
-    return 'Yazar yuklenemedi. $error';
+    return 'Yazar yüklenemedi. $error';
   }
 
   @override
-  String get listsForYou => 'Sana Ozel';
+  String get listsForYou => 'Sana özel';
 
   @override
-  String get listsTopTwenty => 'Timeless';
+  String get listsTopTwenty => 'Zamansız seçkiler';
 
   @override
   String get listsFollowing => 'Takip Edilenler';
@@ -727,22 +736,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get savedLists => 'Kaydedilen Listeler';
 
   @override
-  String get createList => 'Liste olustur';
+  String get createList => 'Liste oluştur';
 
   @override
-  String get editList => 'Listeyi duzenle';
+  String get editList => 'Listeyi düzenle';
 
   @override
-  String get title => 'Baslik';
+  String get title => 'Başlık';
 
   @override
-  String get description => 'Aciklama';
+  String get description => 'Açıklama';
 
   @override
-  String get public => 'Herkese acik';
+  String get public => 'Herkese açık';
 
   @override
-  String get bookSelector => 'Kitap secici';
+  String get bookSelector => 'Kitap ekle';
 
   @override
   String get searchViaGoogleBooks => 'Google Books ile ara';
@@ -751,22 +760,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get search => 'Ara';
 
   @override
-  String get selectedBooks => 'Secilen kitaplar';
+  String get selectedBooks => 'Seçilen kitaplar';
 
   @override
-  String get noBooksSelectedYet => 'Henuz kitap secilmedi.';
+  String get noBooksSelectedYet => 'Listenize kitap arayın ve ekleyin.';
 
   @override
-  String get noListsYet => 'Henuz liste yok.';
+  String get noListsYet =>
+      'Henüz liste oluşturmadınız. İlk listenizi oluşturun!';
 
   @override
   String couldNotLoadLists(Object error) {
-    return 'Listeler yuklenemedi: $error';
+    return 'Listeler yüklenemedi. $error';
   }
 
   @override
   String byUser(Object userName) {
-    return '$userName tarafindan';
+    return '$userName tarafından';
   }
 
   @override
@@ -777,32 +787,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String couldNotLoadListItems(Object error) {
-    return 'Liste ogeleri yuklenemedi: $error';
+    return 'Liste öğeleri yüklenemedi. $error';
   }
 
   @override
   String couldNotLoadComments(Object error) {
-    return 'Yorumlar yuklenemedi: $error';
+    return 'Yorumlar yüklenemedi. $error';
   }
 
   @override
-  String get addCommentHint => 'Yorum ekle...';
+  String get addCommentHint => 'Yorum yazın…';
 
   @override
-  String get send => 'Gonder';
+  String get send => 'Gönder';
 
   @override
   String get deleteListTitle => 'Liste silinsin mi?';
 
   @override
-  String get deleteListConfirm => 'Bu islem geri alinamaz.';
+  String get deleteListConfirm => 'Bu liste kalıcı olarak silinecek.';
 
   @override
   String get delete => 'Sil';
 
   @override
   String couldNotSaveList(Object error) {
-    return 'Liste kaydedilemedi: $error';
+    return 'Liste kaydedilemedi. $error';
   }
 
   @override
@@ -811,25 +821,25 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get stats => 'Istatistikler';
+  String get stats => 'İstatistikler';
 
   @override
   String get myListsTooltip => 'Listelerim';
 
   @override
-  String get editListTooltip => 'Listeyi duzenle';
+  String get editListTooltip => 'Listeyi düzenle';
 
   @override
   String get deleteListTooltip => 'Listeyi sil';
 
   @override
-  String get uxErrorNetwork => 'Internet baglantinizi kontrol edin.';
+  String get uxErrorNetwork => 'İnternet bağlantınızı kontrol edin.';
 
   @override
-  String get uxErrorTimeout => 'Istek zaman asimina ugradi.';
+  String get uxErrorTimeout => 'İstek zaman aşımına uğradı.';
 
   @override
-  String get uxErrorUnknown => 'Bir hata olustu, lutfen tekrar deneyin.';
+  String get uxErrorUnknown => 'Bir hata oluştu, lütfen tekrar deneyin.';
 
   @override
   String get uxErrorBoundaryTitle => 'Beklenmeyen hata';
@@ -838,168 +848,169 @@ class AppLocalizationsTr extends AppLocalizations {
   String get uxRetry => 'Tekrar dene';
 
   @override
-  String get uxOfflineBanner => 'Internet baglantisi yok';
+  String get uxOfflineBanner => 'İnternet bağlantısı yok';
 
   @override
   String get uxEmailRequired => 'E-posta gerekli';
 
   @override
-  String get uxEmailInvalid => 'Gecerli bir e-posta girin';
+  String get uxEmailInvalid => 'Geçerli bir e-posta girin';
 
   @override
-  String get uxPasswordRequired => 'Sifre gerekli';
+  String get uxPasswordRequired => 'Şifre gerekli';
 
   @override
-  String get uxUserNameRequired => 'Gorunen ad gerekli';
+  String get uxUserNameRequired => 'Görünen ad gerekli';
 
   @override
-  String get uxTitleRequired => 'Baslik gerekli';
+  String get uxTitleRequired => 'Başlık gerekli';
 
   @override
   String get uxAcceptPrivacyRequired =>
-      'Devam etmek icin gizlilik politikasini kabul edin';
+      'Devam etmek için gizlilik politikasını kabul edin';
 
   @override
-  String get uxListCreatedSuccess => 'Liste basariyla olusturuldu';
+  String get uxListCreatedSuccess => 'Liste oluşturuldu';
 
   @override
-  String get uxListUpdatedSuccess => 'Liste guncellendi';
+  String get uxListUpdatedSuccess => 'Liste kaydedildi';
 
   @override
-  String get uxRemoveBookFromListTitle => 'Bu kitap kaldirilsin mi?';
+  String get uxRemoveBookFromListTitle => 'Bu kitap kaldırılsın mı?';
 
   @override
-  String get uxRemoveBookFromListMessage => 'Kitap listeden cikarilacak.';
+  String get uxRemoveBookFromListMessage =>
+      'Kitap yalnızca bu listeden kaldırılacak.';
 
   @override
-  String get uxRemove => 'Kaldir';
+  String get uxRemove => 'Kaldır';
 
   @override
-  String get uxDeleteReviewTitle => 'Inceleme silinsin mi?';
+  String get uxDeleteReviewTitle => 'İnceleme silinsin mi?';
 
   @override
-  String get uxDeleteReviewMessage => 'Bu islem geri alinamaz.';
+  String get uxDeleteReviewMessage => 'Bu inceleme kalıcı olarak silinecek.';
 
   @override
   String get uxGalleryPluginError =>
-      'Galeri acilamadi. Uygulamayi tam kapatip yeniden deneyin.';
+      'Galeri açılamadı. Uygulamayı tamamen kapatıp yeniden deneyin.';
 
   @override
   String get uxProfilePhotoStorageNotReady =>
-      'Profil fotografi alani hazir degil. Veritabani migrationlarini calistirin.';
+      'Profil fotoğrafları henüz kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
 
   @override
   String get uxProfilePhotoPermissionDenied =>
-      'Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin.';
+      'Profil fotoğrafı yükleme geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
 
   @override
-  String get forgotPassword => 'Sifremi unuttum?';
+  String get forgotPassword => 'Şifremi unuttum?';
 
   @override
-  String get forgotPasswordTitle => 'Sifremi unuttum';
+  String get forgotPasswordTitle => 'Şifremi unuttum';
 
   @override
   String get forgotPasswordPrompt =>
-      'E-posta adresinizi girin. Sifrenizi sifirlamak icin 8 haneli bir kod (baglanti degil) gonderilecektir.';
+      'E-posta adresinizi girin, şifrenizi sıfırlamak için 8 haneli bir kod göndereceğiz.';
 
   @override
-  String get sendResetCode => 'Kod gonder';
+  String get sendResetCode => 'Kod gönder';
 
   @override
-  String get resetCodeSent => '8 haneli kod e-posta adresinize gonderildi.';
+  String get resetCodeSent => '8 haneli kod için e-postanızı kontrol edin.';
 
   @override
-  String get resetPasswordTitle => 'Sifreyi yenile';
+  String get resetPasswordTitle => 'Şifreyi yenile';
 
   @override
   String resetPasswordPrompt(String email) {
-    return '$email adresine gonderilen kodu girin.';
+    return '$email adresine gönderilen kodu girin.';
   }
 
   @override
-  String get otpCodeLabel => '8 haneli dogrulama kodu';
+  String get otpCodeLabel => '8 haneli doğrulama kodu';
 
   @override
-  String get confirmPassword => 'Sifreyi onayla';
+  String get confirmPassword => 'Şifreyi onayla';
 
   @override
-  String get updatePassword => 'Sifreyi guncelle';
+  String get updatePassword => 'Şifreyi güncelle';
 
   @override
-  String get resendCode => 'Kodu tekrar gonder';
+  String get resendCode => 'Kodu tekrar gönder';
 
   @override
-  String get uxOtpIncomplete => 'Lutfen 8 haneli kodu eksiksiz girin.';
+  String get uxOtpIncomplete => 'Lütfen 8 haneli kodu eksiksiz girin.';
 
   @override
-  String get uxPasswordMismatch => 'Sifreler eslesmiyor.';
+  String get uxPasswordMismatch => 'Şifreler eşleşmiyor.';
 
   @override
-  String get passwordResetSuccess => 'Sifreniz basariyla guncellendi.';
+  String get passwordResetSuccess => 'Şifreniz başarıyla güncellendi.';
 
   @override
   String get invalidOrExpiredOtp =>
-      'Gecersiz veya suresi dolmus dogrulama kodu.';
+      'Geçersiz veya süresi dolmuş doğrulama kodu.';
 
   @override
-  String get uxPasswordTooShort => 'Sifre en az 6 karakter olmalidir.';
+  String get uxPasswordTooShort => 'Şifre en az 6 karakter olmalıdır.';
 
   @override
   String get uxPasswordMissingUppercase =>
-      'Sifre en az bir buyuk harf icermelidir.';
+      'Şifre en az bir büyük harf içermelidir.';
 
   @override
   String get uxPasswordMissingLowercase =>
-      'Sifre en az bir kucuk harf icermelidir.';
+      'Şifre en az bir küçük harf içermelidir.';
 
   @override
   String get uxPasswordMissingPunctuation =>
-      'Sifre en az bir noktalama isareti icermelidir.';
+      'Şifre en az bir noktalama işareti içermelidir.';
 
   @override
-  String get uxMustSignIn => 'Devam etmek icin giris yapin.';
+  String get uxMustSignIn => 'Devam etmek için giriş yapın.';
 
   @override
-  String get uxReviewMinLength => 'Inceleme en az 10 karakter olmalidir.';
+  String get uxReviewMinLength => 'İnceleme en az 10 karakter olmalıdır.';
 
   @override
-  String get privacyPolicyAppBar => 'Gizlilik Politikasi';
+  String get privacyPolicyAppBar => 'Gizlilik Politikası';
 
   @override
-  String get privacyPolicyTitle => 'Rubricator Gizlilik Politikasi';
+  String get privacyPolicyTitle => 'Rubricator Gizlilik Politikası';
 
   @override
-  String get privacyPolicyLastUpdated => 'Son guncelleme: 19.04.2026';
+  String get privacyPolicyLastUpdated => 'Son güncelleme: 19.04.2026';
 
   @override
-  String get privacyPolicySection1Title => '1. Giris';
+  String get privacyPolicySection1Title => '1. Giriş';
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Rubricator\'a hos geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanicilarin kitap kesfedebildigi, liste olusturabildigi, okuma aliskanliklarini takip edebildigi ve icerik paylasabildigi sosyal bir okuma platformudur.';
+      'Rubricator\'a hoş geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanıcıların kitap keşfedebildiği, liste oluşturabildiği, okuma alışkanlıklarını takip edebildiği ve içerik paylaşabildiği sosyal bir okuma platformudur.';
 
   @override
   String get privacyPolicySection1Body2 =>
-      'Bu Gizlilik Politikasi, mobil uygulamamizi kullanirken bilgilerinizi nasil topladigimizi, kullandigimizi, paylastigimizi ve korudugumuzu aciklar.';
+      'Bu Gizlilik Politikası, mobil uygulamamızı kullanırken bilgilerinizi nasıl topladığımızı, kullandığımızı, paylaştığımızı ve koruduğumuzu açıklar.';
 
   @override
-  String get privacyPolicySection2Title => '2. Topladigimiz Bilgiler';
+  String get privacyPolicySection2Title => '2. Topladığımız Bilgiler';
 
   @override
-  String get privacyPolicySection21Title => '2.1 Kisisel Bilgiler';
+  String get privacyPolicySection21Title => '2.1 Kişisel Bilgiler';
 
   @override
   String get privacyPolicySection21Item1 => '- E-posta adresi';
 
   @override
-  String get privacyPolicySection21Item2 => '- Kullanici adi';
+  String get privacyPolicySection21Item2 => '- Kullanıcı adı';
 
   @override
-  String get privacyPolicySection21Item3 => '- Profil bilgileri (istege bagli)';
+  String get privacyPolicySection21Item3 => '- Profil bilgileri (isteğe bağlı)';
 
   @override
   String get privacyPolicySection22Title =>
-      '2.2 Kullanici Tarafindan Uretilen Icerik';
+      '2.2 Kullanıcı Tarafından Üretilen İçerik';
 
   @override
   String get privacyPolicySection22Item1 => '- Kitap incelemeleri';
@@ -1011,27 +1022,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyPolicySection22Item3 => '- Alintilar';
 
   @override
-  String get privacyPolicySection22Item4 => '- Olusturdugunuz listeler';
+  String get privacyPolicySection22Item4 => '- Oluşturduğunuz listeler';
 
   @override
   String get privacyPolicySection22Item5 => '- Yorumlar';
 
   @override
-  String get privacyPolicySection23Title => '2.3 Kullanim Verileri';
+  String get privacyPolicySection23Title => '2.3 Kullanım Verileri';
 
   @override
-  String get privacyPolicySection23Item1 => '- Uygulama kullanim etkilesimleri';
+  String get privacyPolicySection23Item1 => '- Uygulama kullanım etkileşimleri';
 
   @override
   String get privacyPolicySection23Item2 =>
-      '- Ozellik kullanimi (ornegin listeler, istatistikler, arama)';
+      '- Özellik kullanımı (örneğin listeler, istatistikler, arama)';
 
   @override
   String get privacyPolicySection23Item3 =>
-      '- Cihaz bilgileri (isletim sistemi surumu, cihaz tipi)';
+      '- Cihaz bilgileri (işletim sistemi sürümü, cihaz tipi)';
 
   @override
-  String get privacyPolicySection24Title => '2.4 Kimlik Dogrulama Verileri';
+  String get privacyPolicySection24Title => '2.4 Kimlik Doğrulama Verileri';
 
   @override
   String get privacyPolicySection24Item1 => '- Temel profil bilgileri';
@@ -1041,64 +1052,64 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection3Title =>
-      '3. Bilgilerinizi Nasil Kullaniyoruz';
+      '3. Bilgilerinizi Nasıl Kullanıyoruz';
 
   @override
-  String get privacyPolicySection3Item1 => '- Uygulamayi sunmak ve surdurmek';
+  String get privacyPolicySection3Item1 => '- Uygulamayı sunmak ve sürdürmek';
 
   @override
   String get privacyPolicySection3Item2 =>
-      '- Sosyal ozellikleri etkinlestirmek (listeler, yorumlar, begeniler)';
+      '- Sosyal özellikleri etkinleştirmek (listeler, yorumlar, beğeniler)';
 
   @override
   String get privacyPolicySection3Item3 =>
-      '- Icerigi ve onerileri kisisellestirmek';
+      '- İçeriği ve önerileri kişiselleştirmek';
 
   @override
   String get privacyPolicySection3Item4 =>
-      '- Uygulama performansini ve ozellikleri iyilestirmek';
+      '- Uygulama performansını ve özellikleri iyileştirmek';
 
   @override
-  String get privacyPolicySection3Item5 => '- Onemli guncellemeleri iletmek';
+  String get privacyPolicySection3Item5 => '- Önemli güncellemeleri iletmek';
 
   @override
-  String get privacyPolicySection4Title => '4. Veri Saklama ve Guvenlik';
+  String get privacyPolicySection4Title => '4. Veri Saklama ve Güvenlik';
 
   @override
   String get privacyPolicySection4Body =>
-      'Verileriniz, Supabase gibi ucuncu taraf altyapilar kullanilarak guvenli sekilde saklanir.';
+      'Verileriniz, Supabase gibi üçüncü taraf altyapılar kullanılarak güvenli şekilde saklanır.';
 
   @override
-  String get privacyPolicySection4Item1 => '- Guvenli kimlik dogrulama';
+  String get privacyPolicySection4Item1 => '- Güvenli kimlik doğrulama';
 
   @override
-  String get privacyPolicySection4Item2 => '- Sifreli baglantilar (HTTPS)';
+  String get privacyPolicySection4Item2 => '- Şifreli bağlantılar (HTTPS)';
 
   @override
-  String get privacyPolicySection4Item3 => '- Erisim kontrol mekanizmalari';
+  String get privacyPolicySection4Item3 => '- Erişim kontrol mekanizmaları';
 
   @override
-  String get privacyPolicySection5Title => '5. Veri Paylasimi';
+  String get privacyPolicySection5Title => '5. Veri Paylaşımı';
 
   @override
-  String get privacyPolicySection5Body => 'Kisisel verilerinizi SATMAYIZ.';
+  String get privacyPolicySection5Body => 'Kişisel verilerinizi SATMAYIZ.';
 
   @override
   String get privacyPolicySection5Item1 =>
-      '- Hizmet saglayicilarla (ornegin backend barindirma)';
+      '- Hizmet sağlayıcılarla (örneğin backend barındırma)';
 
   @override
-  String get privacyPolicySection5Item2 => '- Yasal yukumluluklere uymak icin';
+  String get privacyPolicySection5Item2 => '- Yasal yükümlülüklere uymak için';
 
   @override
   String get privacyPolicySection5Item3 =>
-      '- Kullanici guvenligini ve haklarini korumak icin';
+      '- Kullanıcı güvenliğini ve haklarını korumak için';
 
   @override
-  String get privacyPolicySection6Title => '6. Herkese Acik Icerik';
+  String get privacyPolicySection6Title => '6. Herkese Açık İçerik';
 
   @override
-  String get privacyPolicySection6Item1 => '- Herkese acik listeler';
+  String get privacyPolicySection6Item1 => '- Herkese açık listeler';
 
   @override
   String get privacyPolicySection6Item2 => '- Incelemeler';
@@ -1108,91 +1119,91 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection6Body =>
-      'Herkese acik paylastiginiz icerikler diger kullanicilar tarafindan gorulebilir.';
+      'Herkese açık paylaştığınız içerikler diğer kullanıcılar tarafından görülebilir.';
 
   @override
-  String get privacyPolicySection7Title => '7. Veri Saklama Suresi';
+  String get privacyPolicySection7Title => '7. Veri Saklama Süresi';
 
   @override
-  String get privacyPolicySection7Item1 => '- Hesabiniz aktif oldugu surece';
+  String get privacyPolicySection7Item1 => '- Hesabınız aktif olduğu sürece';
 
   @override
   String get privacyPolicySection7Item2 =>
-      '- Veya hizmetleri sunmak icin gerektigi surece';
+      '- Veya hizmetleri sunmak için gerektiği sürece';
 
   @override
   String get privacyPolicySection7Body =>
-      'Verilerinizin silinmesini istediginiz zaman talep edebilirsiniz.';
+      'Verilerinizin silinmesini istediğiniz zaman talep edebilirsiniz.';
 
   @override
-  String get privacyPolicySection8Title => '8. Haklariniz';
+  String get privacyPolicySection8Title => '8. Haklarınız';
 
   @override
-  String get privacyPolicySection8Item1 => '- Verilerinize erisme';
+  String get privacyPolicySection8Item1 => '- Verilerinize erişme';
 
   @override
-  String get privacyPolicySection8Item2 => '- Bilgilerinizi guncelleme';
+  String get privacyPolicySection8Item2 => '- Bilgilerinizi güncelleme';
 
   @override
   String get privacyPolicySection8Item3 =>
-      '- Hesabinizin silinmesini talep etme';
+      '- Hesabınızın silinmesini talep etme';
 
   @override
-  String get privacyPolicySection8Item4 => '- Onayi geri cekme';
+  String get privacyPolicySection8Item4 => '- Onayı geri çekme';
 
   @override
   String get privacyPolicySection8Body =>
-      'Bu haklari kullanmak icin bize ulasin:';
+      'Bu hakları kullanmak için bize ulaşın:';
 
   @override
   String get privacyPolicySection8Email => 'E-posta: [YOUR EMAIL]';
 
   @override
-  String get privacyPolicySection9Title => '9. Cocuklarin Gizliligi';
+  String get privacyPolicySection9Title => '9. Çocukların Gizliliği';
 
   @override
   String get privacyPolicySection9Body1 =>
-      'Rubricator, 13 yas altindaki kullanicilar icin tasarlanmamistir.';
+      'Rubricator, 13 yaş altındaki kullanıcılar için tasarlanmamıştır.';
 
   @override
   String get privacyPolicySection9Body2 =>
-      'Cocuklardan bilerek veri toplamayiz.';
+      'Çocuklardan bilerek veri toplamayız.';
 
   @override
-  String get privacyPolicySection10Title => '10. Ucuncu Taraf Hizmetler';
+  String get privacyPolicySection10Title => '10. Üçüncü Taraf Hizmetler';
 
   @override
   String get privacyPolicySection10Item1 =>
-      '- Google (kimlik dogrulama, analiz)';
+      '- Google (kimlik doğrulama, analiz)';
 
   @override
   String get privacyPolicySection10Item2 => '- Supabase (veri depolama)';
 
   @override
   String get privacyPolicySection10Body =>
-      'Bu hizmetlerin kendi gizlilik politikalari vardir.';
+      'Bu hizmetlerin kendi gizlilik politikaları vardır.';
 
   @override
-  String get privacyPolicySection11Title => '11. Uluslararasi Veri Aktarimlari';
+  String get privacyPolicySection11Title => '11. Uluslararası Veri Aktarımları';
 
   @override
   String get privacyPolicySection11Body =>
-      'Bilgileriniz, hizmet saglayicilarimizin faaliyet gosterdigi farkli ulkelerde islenebilir.';
+      'Bilgileriniz, hizmet sağlayıcılarımızın faaliyet gösterdiği farklı ülkelerde işlenebilir.';
 
   @override
   String get privacyPolicySection12Title =>
-      '12. Bu Gizlilik Politikasindaki Degisiklikler';
+      '12. Bu Gizlilik Politikasındaki Değişiklikler';
 
   @override
   String get privacyPolicySection12Body =>
-      'Bu politikayi zaman zaman guncelleyebiliriz. Degisiklikler \"Son guncelleme\" tarihi guncellenerek yansitilir.';
+      'Bu politikayı zaman zaman güncelleyebiliriz. Değişiklikler \"Son güncelleme\" tarihi güncellenerek yansıtılır.';
 
   @override
-  String get privacyPolicySection13Title => '13. Bize Ulasin';
+  String get privacyPolicySection13Title => '13. Bize Ulaşın';
 
   @override
   String get privacyPolicySection13Body =>
-      'Bu Gizlilik Politikasi hakkinda sorunuz varsa bize ulasin:';
+      'Bu Gizlilik Politikası hakkında sorunuz varsa bize ulaşın:';
 
   @override
   String get privacyPolicySection13Email =>
@@ -1200,5 +1211,5 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicyFooter =>
-      'Rubricator\'u kullanarak bu Gizlilik Politikasi\'ni kabul etmis olursunuz.';
+      'Rubricator\'u kullanarak bu Gizlilik Politikası\'nı kabul etmiş olursunuz.';
 }

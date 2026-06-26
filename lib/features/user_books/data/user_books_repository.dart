@@ -59,8 +59,18 @@ class UserBooksRepository {
       ...?(isFavorite != null
           ? <String, dynamic>{'is_favorite': isFavorite}
           : null),
-      'progress': status == ReadingStatus.reading ? progress : null,
     };
+
+    if (status == ReadingStatus.reading) {
+      if (progress != null) {
+        payload['progress'] = progress;
+      } else {
+        final existing = await getUserBook(bookId);
+        payload['progress'] = existing?.progress ?? 0;
+      }
+    } else {
+      payload['progress'] = null;
+    }
 
     if (snapshot != null) {
       payload['book_title'] = snapshot.title;

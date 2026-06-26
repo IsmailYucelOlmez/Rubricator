@@ -55,8 +55,12 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
     }
   }
 
-  final needFetch =
-      userBooks.where((userBook) => !bookById.containsKey(userBook.bookId)).toList();
+  final needFetch = userBooks.where((userBook) {
+    final existing = bookById[userBook.bookId];
+    if (existing == null) return true;
+    final cover = existing.coverImageUrl;
+    return cover == null || cover.isEmpty;
+  }).toList();
   for (var i = 0; i < needFetch.length; i += _fetchConcurrency) {
     final end = (i + _fetchConcurrency > needFetch.length)
         ? needFetch.length
@@ -65,8 +69,19 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
     await Future.wait(
       chunk.map((userBook) async {
         try {
-          bookById[userBook.bookId] =
+          final fetched =
               await bookRepo.getBookByWorkId(userBook.bookId);
+          final existing = bookById[userBook.bookId];
+          if (existing != null) {
+            bookById[userBook.bookId] = existing.copyWith(
+              coverImageUrl: fetched.coverImageUrl ?? existing.coverImageUrl,
+              description: existing.description.isEmpty
+                  ? fetched.description
+                  : existing.description,
+            );
+          } else {
+            bookById[userBook.bookId] = fetched;
+          }
         } catch (_) {
           // Skip missing or network failures for a single id.
         }

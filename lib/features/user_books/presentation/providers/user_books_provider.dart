@@ -58,6 +58,9 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
     final previous = state.valueOrNull;
     final previousStatus = previous?.status;
     final now = DateTime.now();
+    final effectiveProgress = status == ReadingStatus.reading
+        ? (progress ?? previous?.progress ?? 0)
+        : null;
     final optimistic = (previous ??
             UserBookEntity(
               id: '',
@@ -72,7 +75,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
         .copyWith(
           status: status,
           isFavorite: isFavorite ?? previous?.isFavorite ?? false,
-          progress: status == ReadingStatus.reading ? progress : null,
+          progress: status == ReadingStatus.reading ? effectiveProgress : null,
           updatedAt: now,
           completedAt: status == ReadingStatus.completed ? now : null,
           bookTitle: snapshot?.title ?? previous?.bookTitle,
@@ -88,7 +91,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
             bookId: _bookId,
             status: status,
             isFavorite: isFavorite,
-            progress: progress,
+            progress: progress ?? effectiveProgress,
             snapshot: snapshot,
           );
       if (previousStatus != null && previousStatus != status) {

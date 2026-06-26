@@ -11,16 +11,7 @@ class SupabaseListsRepository implements ListsRepository {
 
   @override
   Future<List<ListEntity>> getFeedLists() async {
-    final userId = _currentUserId;
-    var q = _client.from('lists').select('*');
-    if (userId == null) {
-      q = q.eq('is_public', true);
-    } else {
-      q = q.or('is_public.eq.true,user_id.eq.$userId');
-    }
-    final rows = await q.order('created_at', ascending: false).limit(50);
-    final list = (rows as List<dynamic>).whereType<Map<String, dynamic>>().toList();
-    return Future.wait(list.map((row) => _enrichList(row, userId)));
+    return _fetchFeedListsEnriched();
   }
 
   @override
@@ -44,21 +35,7 @@ class SupabaseListsRepository implements ListsRepository {
         .map((e) => e['list_id']?.toString())
         .whereType<String>()
         .toList();
-    if (listIds.isEmpty) return const <ListEntity>[];
-
-    final listRows = await _client.from('lists').select('*').inFilter('id', listIds);
-    final byId = <String, Map<String, dynamic>>{
-      for (final row in (listRows as List<dynamic>).whereType<Map<String, dynamic>>())
-        row['id'].toString(): row,
-    };
-    final ordered = <ListEntity>[];
-    for (final id in listIds) {
-      final row = byId[id];
-      if (row != null) {
-        ordered.add(await _enrichList(row, userId));
-      }
-    }
-    return ordered;
+    return _fetchEnrichedByIds(listIds);
   }
 
   @override
@@ -74,7 +51,6 @@ class SupabaseListsRepository implements ListsRepository {
 
   @override
   Future<List<ListEntity>> getTopListsByEngagement({int limit = 20}) async {
-    final userId = _currentUserId;
     final raw = await _client.rpc(
       'list_top_by_engagement',
       params: <String, dynamic>{'p_limit': limit},
@@ -85,21 +61,7 @@ class SupabaseListsRepository implements ListsRepository {
         .map((e) => e['list_id']?.toString())
         .whereType<String>()
         .toList();
-    if (ids.isEmpty) return const <ListEntity>[];
-
-    final listRows = await _client.from('lists').select('*').inFilter('id', ids);
-    final byId = <String, Map<String, dynamic>>{
-      for (final row in (listRows as List<dynamic>).whereType<Map<String, dynamic>>())
-        row['id'].toString(): row,
-    };
-    final ordered = <ListEntity>[];
-    for (final id in ids) {
-      final row = byId[id];
-      if (row != null) {
-        ordered.add(await _enrichList(row, userId));
-      }
-    }
-    return ordered;
+    return _fetchEnrichedByIds(ids);
   }
 
   @override
@@ -129,25 +91,32 @@ class SupabaseListsRepository implements ListsRepository {
 
     final rows = await _client
         .from('lists')
-        .select('*')
+        .select('id')
         .inFilter('user_id', creatorIds)
         .eq('is_public', true)
         .order('created_at', ascending: false)
         .limit(50);
-    final list = (rows as List<dynamic>).whereType<Map<String, dynamic>>().toList();
-    return Future.wait(list.map((row) => _enrichList(row, userId)));
+    final listIds = (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map((e) => e['id']?.toString())
+        .whereType<String>()
+        .toList();
+    return _fetchEnrichedByIds(listIds);
   }
 
   @override
   Future<List<ListEntity>> getUserLists(String userId) async {
     final rows = await _client
         .from('lists')
-        .select('*')
+        .select('id')
         .eq('user_id', userId)
         .order('created_at', ascending: false);
-    final list = (rows as List<dynamic>).whereType<Map<String, dynamic>>().toList();
-    final currentUserId = _currentUserId;
-    return Future.wait(list.map((row) => _enrichList(row, currentUserId)));
+    final listIds = (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map((e) => e['id']?.toString())
+        .whereType<String>()
+        .toList();
+    return _fetchEnrichedByIds(listIds);
   }
 
   @override
@@ -164,10 +133,7 @@ class SupabaseListsRepository implements ListsRepository {
         .toList();
     if (savedIds.isEmpty) return const <ListEntity>[];
 
-    final listRows = await _client.from('lists').select('*').inFilter('id', savedIds);
-    final list = (listRows as List<dynamic>).whereType<Map<String, dynamic>>().toList();
-    final currentUserId = _currentUserId;
-    final out = await Future.wait(list.map((row) => _enrichList(row, currentUserId)));
+    final out = await _fetchEnrichedByIds(savedIds);
     out.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return out;
   }
@@ -310,9 +276,17 @@ class SupabaseListsRepository implements ListsRepository {
           'description': description,
           'is_public': isPublic,
         })
-        .select('*')
+        .select('id')
         .single();
-    return _enrichList(inserted, _currentUserId);
+    final listId = inserted['id']?.toString();
+    if (listId == null) {
+      throw StateError('createList: missing list id');
+    }
+    final enriched = await _fetchEnrichedByIds([listId]);
+    if (enriched.isEmpty) {
+      throw StateError('createList: enriched list not found');
+    }
+    return enriched.first;
   }
 
   @override
@@ -407,64 +381,50 @@ class SupabaseListsRepository implements ListsRepository {
     });
   }
 
-  Future<ListEntity> _enrichList(Map<String, dynamic> row, String? viewerUserId) async {
-    final listId = row['id'].toString();
-    final userId = row['user_id'].toString();
+  Future<List<ListEntity>> _fetchFeedListsEnriched({int limit = 50}) async {
+    final raw = await _client.rpc(
+      'get_feed_lists_enriched',
+      params: <String, dynamic>{'p_limit': limit},
+    );
+    return _mapEnrichedRows(raw);
+  }
 
-    final likeCountRes = await _client
-        .from('list_likes')
-        .select('id')
-        .eq('list_id', listId)
-        .count(CountOption.exact);
-    final commentCountRes = await _client
-        .from('list_comments')
-        .select('id')
-        .eq('list_id', listId)
-        .count(CountOption.exact);
+  Future<List<ListEntity>> _fetchEnrichedByIds(List<String> listIds) async {
+    if (listIds.isEmpty) return const <ListEntity>[];
+    final raw = await _client.rpc(
+      'get_lists_enriched',
+      params: <String, dynamic>{'p_list_ids': listIds},
+    );
+    return _mapEnrichedRows(raw);
+  }
 
-    final previewRows = await _client
-        .from('list_items')
-        .select('*')
-        .eq('list_id', listId)
-        .order('order_index', ascending: true)
-        .limit(4);
-    final preview = (previewRows as List<dynamic>)
+  List<ListEntity> _mapEnrichedRows(dynamic raw) {
+    final rows = (raw as List<dynamic>?) ?? <dynamic>[];
+    return rows
         .whereType<Map<String, dynamic>>()
-        .map((e) => e['cover_image_url'] as String?)
+        .map(_mapEnrichedRow)
         .toList();
+  }
 
-    bool likedByMe = false;
-    bool savedByMe = false;
-    if (viewerUserId != null) {
-      final likeRow = await _client
-          .from('list_likes')
-          .select('id')
-          .eq('list_id', listId)
-          .eq('user_id', viewerUserId)
-          .maybeSingle();
-      likedByMe = likeRow != null;
-      final savedRow = await _client
-          .from('saved_lists')
-          .select('id')
-          .eq('list_id', listId)
-          .eq('user_id', viewerUserId)
-          .maybeSingle();
-      savedByMe = savedRow != null;
-    }
+  ListEntity _mapEnrichedRow(Map<String, dynamic> row) {
+    final previewsRaw = row['preview_cover_image_urls'];
+    final previewCoverImageUrls = previewsRaw is List
+        ? previewsRaw.map((e) => e?.toString()).toList()
+        : const <String?>[];
 
     return ListEntity(
-      id: listId,
-      userId: userId,
-      userName: (row['user_name'] as String?) ?? _fallbackUserName(userId),
+      id: row['list_id']?.toString() ?? '',
+      userId: row['user_id']?.toString() ?? '',
+      userName: (row['user_name'] as String?) ?? _fallbackUserName(row['user_id']?.toString()),
       title: (row['title'] as String?) ?? 'Untitled list',
       description: (row['description'] as String?) ?? '',
       isPublic: (row['is_public'] as bool?) ?? true,
-      likeCount: likeCountRes.count,
-      commentCount: commentCountRes.count,
+      likeCount: (row['like_count'] as num?)?.toInt() ?? 0,
+      commentCount: (row['comment_count'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.tryParse(row['created_at']?.toString() ?? '') ?? DateTime.now(),
-      previewCoverImageUrls: preview,
-      isLikedByMe: likedByMe,
-      isSavedByMe: savedByMe,
+      previewCoverImageUrls: previewCoverImageUrls,
+      isLikedByMe: row['is_liked_by_me'] as bool? ?? false,
+      isSavedByMe: row['is_saved_by_me'] as bool? ?? false,
     );
   }
 

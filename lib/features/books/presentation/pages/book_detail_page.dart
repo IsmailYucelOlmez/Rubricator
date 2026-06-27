@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -737,7 +739,7 @@ class _BookDetailCoverState extends State<_BookDetailCover> {
   }
 }
 
-class _ReadingStatusCard extends StatelessWidget {
+class _ReadingStatusCard extends StatefulWidget {
   const _ReadingStatusCard({
     required this.userBook,
     required this.onTapSelectStatus,
@@ -749,10 +751,59 @@ class _ReadingStatusCard extends StatelessWidget {
   final Future<void> Function(int value) onProgressChanged;
 
   @override
+  State<_ReadingStatusCard> createState() => _ReadingStatusCardState();
+}
+
+class _ReadingStatusCardState extends State<_ReadingStatusCard> {
+  static const _progressDebounceDuration = Duration(milliseconds: 400);
+
+  Timer? _progressDebounce;
+  late int _localProgress;
+
+  @override
+  void initState() {
+    super.initState();
+    _localProgress = widget.userBook?.progress ?? 0;
+  }
+
+  @override
+  void didUpdateWidget(_ReadingStatusCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_progressDebounce != null) return;
+    final next = widget.userBook?.progress ?? 0;
+    if (next != _localProgress) {
+      _localProgress = next;
+    }
+  }
+
+  @override
+  void dispose() {
+    _progressDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _persistProgress(int value) {
+    _progressDebounce?.cancel();
+    _progressDebounce = null;
+    unawaited(widget.onProgressChanged(value));
+  }
+
+  void _onProgressChanged(int value) {
+    setState(() => _localProgress = value);
+    _progressDebounce?.cancel();
+    _progressDebounce = Timer(_progressDebounceDuration, () {
+      _persistProgress(value);
+    });
+  }
+
+  void _onProgressChangeEnd(int value) {
+    _persistProgress(value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final status = userBook?.status;
-    final progress = userBook?.progress ?? 0;
+    final status = widget.userBook?.status;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
@@ -767,7 +818,7 @@ class _ReadingStatusCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 TextButton(
-                  onPressed: onTapSelectStatus,
+                  onPressed: widget.onTapSelectStatus,
                   child: Text(l10n.change),
                 ),
               ],
@@ -775,16 +826,17 @@ class _ReadingStatusCard extends StatelessWidget {
             if (status == ReadingStatus.reading) ...[
               const SizedBox(height: 8),
               Text(
-                l10n.progressPercent(progress),
+                l10n.progressPercent(_localProgress),
                 style: _bookDetailBodyStyle(context),
               ),
               Slider(
-                value: progress.toDouble(),
+                value: _localProgress.toDouble(),
                 min: 0,
                 max: 100,
                 divisions: 20,
-                label: '$progress%',
-                onChanged: (value) => onProgressChanged(value.round()),
+                label: '$_localProgress%',
+                onChanged: (value) => _onProgressChanged(value.round()),
+                onChangeEnd: (value) => _onProgressChangeEnd(value.round()),
               ),
             ],
           ],

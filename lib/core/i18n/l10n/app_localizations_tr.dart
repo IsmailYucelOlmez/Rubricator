@@ -724,7 +724,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get listsForYou => 'Sana özel';
 
   @override
-  String get listsTopTwenty => 'Zamansız seçkiler';
+  String get listsTopTwenty => 'Zamansız';
 
   @override
   String get listsFollowing => 'Takip Edilenler';

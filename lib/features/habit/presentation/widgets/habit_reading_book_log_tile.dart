@@ -3,16 +3,21 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../domain/entities/habit_reading_book_choice.dart';
 
 class HabitReadingBookLogDraft {
-  HabitReadingBookLogDraft()
+  HabitReadingBookLogDraft({int initialProgress = 0})
       : minutes = TextEditingController(),
-        pages = TextEditingController();
+        pages = TextEditingController(),
+        progress = initialProgress,
+        _initialProgress = initialProgress;
 
   bool selected = false;
   final TextEditingController minutes;
   final TextEditingController pages;
+  int progress;
+  final int _initialProgress;
 
   void dispose() {
     minutes.dispose();
@@ -22,6 +27,8 @@ class HabitReadingBookLogDraft {
   int parseMinutes() => int.tryParse(minutes.text.trim()) ?? 0;
 
   int parsePages() => int.tryParse(pages.text.trim()) ?? 0;
+
+  bool get progressChanged => progress != _initialProgress;
 }
 
 class HabitReadingBookLogTile extends StatelessWidget {
@@ -30,12 +37,14 @@ class HabitReadingBookLogTile extends StatelessWidget {
     required this.choice,
     required this.draft,
     required this.onSelectedChanged,
+    required this.onProgressChanged,
     required this.onChanged,
   });
 
   final HabitReadingBookChoice choice;
   final HabitReadingBookLogDraft draft;
   final ValueChanged<bool> onSelectedChanged;
+  final ValueChanged<int> onProgressChanged;
   final VoidCallback onChanged;
 
   @override
@@ -137,6 +146,23 @@ class HabitReadingBookLogTile extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (choice.status == ReadingStatus.reading) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.progressPercent(draft.progress),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    Slider(
+                      value: draft.progress.toDouble(),
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      label: '${draft.progress}%',
+                      onChanged: draft.selected
+                          ? (value) => onProgressChanged(value.round())
+                          : null,
+                    ),
+                  ],
                 ],
               ),
               secondChild: const SizedBox.shrink(),

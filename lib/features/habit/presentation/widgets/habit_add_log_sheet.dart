@@ -71,7 +71,10 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
       ..clear()
       ..addEntries(
         choices.map(
-          (choice) => MapEntry(choice.bookId, HabitReadingBookLogDraft()),
+          (choice) => MapEntry(
+            choice.bookId,
+            HabitReadingBookLogDraft(initialProgress: choice.progress ?? 0),
+          ),
         ),
       );
     _loadedChoices = choices;
@@ -106,8 +109,19 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     return v ?? 0;
   }
 
-  List<({String? bookId, int minutesRead, int pagesRead})> _collectEntries() {
-    final entries = <({String? bookId, int minutesRead, int pagesRead})>[];
+  List<({
+    String? bookId,
+    int minutesRead,
+    int pagesRead,
+    int? progress,
+  })> _collectEntries() {
+    final entries = <
+        ({
+          String? bookId,
+          int minutesRead,
+          int pagesRead,
+          int? progress,
+        })>[];
 
     for (final entry in _bookDrafts.entries) {
       final draft = entry.value;
@@ -119,6 +133,7 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
         bookId: entry.key,
         minutesRead: minutes,
         pagesRead: pages,
+        progress: draft.progressChanged ? draft.progress : null,
       ));
     }
 
@@ -130,6 +145,7 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
           bookId: null,
           minutesRead: minutes,
           pagesRead: pages,
+          progress: null,
         ));
       }
     } else if (_bookDrafts.isEmpty) {
@@ -140,6 +156,7 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
           bookId: null,
           minutesRead: minutes,
           pagesRead: pages,
+          progress: null,
         ));
       }
     }
@@ -398,6 +415,10 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
                         draft: draft,
                         onSelectedChanged: (selected) {
                           setState(() => draft.selected = selected);
+                        },
+                        onProgressChanged: (progress) {
+                          setState(() => draft.progress = progress);
+                          _clearFormError();
                         },
                         onChanged: _clearFormError,
                       );

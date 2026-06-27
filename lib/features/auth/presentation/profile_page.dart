@@ -243,7 +243,10 @@ class _ProfileReadingListsSection extends StatelessWidget {
   }
 
   Widget _fixedListButton(BuildContext context, _ReadingListButtonSpec spec) {
-    final labelStyle = Theme.of(context).textTheme.labelSmall;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final labelStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: isLight ? Colors.white : null,
+    );
     return SizedBox(
       height: _buttonHeight,
       width: double.infinity,
@@ -253,10 +256,11 @@ class _ProfileReadingListsSection extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: const Size(0, _buttonHeight),
           fixedSize: const Size.fromHeight(_buttonHeight),
+          foregroundColor: isLight ? Colors.white : null,
           textStyle: labelStyle,
         ),
         onPressed: spec.onPressed,
-        icon: Icon(spec.icon, size: _iconSize),
+        icon: Icon(spec.icon, size: _iconSize, color: isLight ? Colors.white : null),
         label: Text(
           spec.label,
           maxLines: 1,

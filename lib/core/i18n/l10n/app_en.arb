@@ -304,7 +304,7 @@
   ,"couldNotLoadAuthor":"Could not load author. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
   ,"listsForYou":"For you"
-  ,"listsTopTwenty":"Timeless picks"
+  ,"listsTopTwenty":"Timeless"
   ,"listsFollowing":"Following"
   ,"myLists":"My Lists"
   ,"savedLists":"Saved Lists"

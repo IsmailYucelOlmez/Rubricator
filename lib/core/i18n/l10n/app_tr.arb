@@ -298,7 +298,7 @@
   ,"couldNotLoadAuthor":"Yazar yüklenemedi. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
   ,"listsForYou":"Sana özel"
-  ,"listsTopTwenty":"Zamansız seçkiler"
+  ,"listsTopTwenty":"Zamansız"
   ,"listsFollowing":"Takip Edilenler"
   ,"myLists":"Listelerim"
   ,"savedLists":"Kaydedilen Listeler"

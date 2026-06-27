@@ -1331,7 +1331,7 @@ abstract class AppLocalizations {
   /// No description provided for @listsTopTwenty.
   ///
   /// In en, this message translates to:
-  /// **'Timeless picks'**
+  /// **'Timeless'**
   String get listsTopTwenty;
 
   /// No description provided for @listsFollowing.

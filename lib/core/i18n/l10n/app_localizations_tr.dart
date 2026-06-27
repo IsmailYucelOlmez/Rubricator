@@ -447,6 +447,83 @@ class AppLocalizationsTr extends AppLocalizations {
   String get couldNotLoadQuotes => 'Alıntılar yüklenemedi.';
 
   @override
+  String get notes => 'Notlar';
+
+  @override
+  String get myNotes => 'Notlarım';
+
+  @override
+  String get myNotesDescription =>
+      'Okuma notlarınızı arayın, filtreleyin ve yönetin.';
+
+  @override
+  String get signInToSeeNotes =>
+      'Notlarınızı görüntülemek ve yönetmek için giriş yapın.';
+
+  @override
+  String get addNote => 'Not ekle';
+
+  @override
+  String get editNote => 'Notu düzenle';
+
+  @override
+  String get noteTitleHint => 'Not başlığı';
+
+  @override
+  String get noteContentHint => 'Notunuzu yazın…';
+
+  @override
+  String get notePageHint => 'Sayfa (isteğe bağlı)';
+
+  @override
+  String get noteChapterHint => 'Bölüm (isteğe bağlı)';
+
+  @override
+  String get noteTagsHint => 'Etiketler (virgülle ayırın)';
+
+  @override
+  String get publicNote => 'Herkese açık not';
+
+  @override
+  String get publicNoteDescription =>
+      'Herkese açık notlar kitabın Notlar sekmesinde herkese görünür.';
+
+  @override
+  String get privateNote => 'Özel';
+
+  @override
+  String get searchNotesHint => 'Notlarda ara…';
+
+  @override
+  String get noPublicNotesYet => 'Henüz herkese açık not yok.';
+
+  @override
+  String get noMyNotesYet => 'Henüz not eklemediniz.';
+
+  @override
+  String get noteAdded => 'Not eklendi.';
+
+  @override
+  String get noteUpdated => 'Not güncellendi.';
+
+  @override
+  String get noteDeleted => 'Not silindi.';
+
+  @override
+  String get deleteNoteTitle => 'Not silinsin mi?';
+
+  @override
+  String get deleteNoteMessage => 'Bu not kalıcı olarak silinecek.';
+
+  @override
+  String get allTags => 'Tümü';
+
+  @override
+  String notePageLabel(int page) {
+    return 'Sayfa $page';
+  }
+
+  @override
   String get editReview => 'Yorumu düzenle';
 
   @override

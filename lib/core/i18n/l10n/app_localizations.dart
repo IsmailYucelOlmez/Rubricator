@@ -890,6 +890,150 @@ abstract class AppLocalizations {
   /// **'Could not load quotes.'**
   String get couldNotLoadQuotes;
 
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @myNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'My Notes'**
+  String get myNotes;
+
+  /// No description provided for @myNotesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Search, filter, and manage your reading notes.'**
+  String get myNotesDescription;
+
+  /// No description provided for @signInToSeeNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view and manage your notes.'**
+  String get signInToSeeNotes;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNote;
+
+  /// No description provided for @editNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editNote;
+
+  /// No description provided for @noteTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Note title'**
+  String get noteTitleHint;
+
+  /// No description provided for @noteContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your note…'**
+  String get noteContentHint;
+
+  /// No description provided for @notePageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Page (optional)'**
+  String get notePageHint;
+
+  /// No description provided for @noteChapterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter (optional)'**
+  String get noteChapterHint;
+
+  /// No description provided for @noteTagsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags (comma separated)'**
+  String get noteTagsHint;
+
+  /// No description provided for @publicNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Public note'**
+  String get publicNote;
+
+  /// No description provided for @publicNoteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Public notes appear on the book\'s Notes tab for everyone.'**
+  String get publicNoteDescription;
+
+  /// No description provided for @privateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateNote;
+
+  /// No description provided for @searchNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search notes…'**
+  String get searchNotesHint;
+
+  /// No description provided for @noPublicNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No public notes yet.'**
+  String get noPublicNotesYet;
+
+  /// No description provided for @noMyNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t added any notes yet.'**
+  String get noMyNotesYet;
+
+  /// No description provided for @noteAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Note added.'**
+  String get noteAdded;
+
+  /// No description provided for @noteUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Note updated.'**
+  String get noteUpdated;
+
+  /// No description provided for @noteDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Note deleted.'**
+  String get noteDeleted;
+
+  /// No description provided for @deleteNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete note?'**
+  String get deleteNoteTitle;
+
+  /// No description provided for @deleteNoteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This note will be permanently deleted.'**
+  String get deleteNoteMessage;
+
+  /// No description provided for @allTags.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allTags;
+
+  /// No description provided for @notePageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page}'**
+  String notePageLabel(int page);
+
   /// No description provided for @editReview.
   ///
   /// In en, this message translates to:

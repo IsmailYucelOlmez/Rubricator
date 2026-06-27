@@ -449,6 +449,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotLoadQuotes => 'Could not load quotes.';
 
   @override
+  String get notes => 'Notes';
+
+  @override
+  String get myNotes => 'My Notes';
+
+  @override
+  String get myNotesDescription =>
+      'Search, filter, and manage your reading notes.';
+
+  @override
+  String get signInToSeeNotes => 'Sign in to view and manage your notes.';
+
+  @override
+  String get addNote => 'Add note';
+
+  @override
+  String get editNote => 'Edit note';
+
+  @override
+  String get noteTitleHint => 'Note title';
+
+  @override
+  String get noteContentHint => 'Write your note…';
+
+  @override
+  String get notePageHint => 'Page (optional)';
+
+  @override
+  String get noteChapterHint => 'Chapter (optional)';
+
+  @override
+  String get noteTagsHint => 'Tags (comma separated)';
+
+  @override
+  String get publicNote => 'Public note';
+
+  @override
+  String get publicNoteDescription =>
+      'Public notes appear on the book\'s Notes tab for everyone.';
+
+  @override
+  String get privateNote => 'Private';
+
+  @override
+  String get searchNotesHint => 'Search notes…';
+
+  @override
+  String get noPublicNotesYet => 'No public notes yet.';
+
+  @override
+  String get noMyNotesYet => 'You haven\'t added any notes yet.';
+
+  @override
+  String get noteAdded => 'Note added.';
+
+  @override
+  String get noteUpdated => 'Note updated.';
+
+  @override
+  String get noteDeleted => 'Note deleted.';
+
+  @override
+  String get deleteNoteTitle => 'Delete note?';
+
+  @override
+  String get deleteNoteMessage => 'This note will be permanently deleted.';
+
+  @override
+  String get allTags => 'All';
+
+  @override
+  String notePageLabel(int page) {
+    return 'Page $page';
+  }
+
+  @override
   String get editReview => 'Edit review';
 
   @override

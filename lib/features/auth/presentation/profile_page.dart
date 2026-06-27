@@ -11,6 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
+import '../../book_notes/presentation/widgets/my_notes_entry_card.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
@@ -103,6 +104,7 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ] else ...[
                 const HabitProfileSummary(),
+                const MyNotesEntryCard(),
                 const StatsPreviewCard(),
               ],
               ],

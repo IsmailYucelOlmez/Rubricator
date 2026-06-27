@@ -14,6 +14,8 @@ class HabitLogsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final logsAsync = ref.watch(readingLogsProvider);
+    final bookTitlesAsync = ref.watch(readingLogBookTitlesProvider);
+    final bookTitles = bookTitlesAsync.valueOrNull ?? const {};
     return logsAsync.when(
       data: (logs) {
         if (logs.isEmpty) {
@@ -74,8 +76,8 @@ class HabitLogsList extends ConsumerWidget {
                               if (e.pagesRead > 0) AppLocalizations.of(context)!.pagesShort(e.pagesRead),
                             ].join(' · '),
                           ),
-                          subtitle: e.bookId != null && e.bookId!.isNotEmpty
-                              ? Text(AppLocalizations.of(context)!.bookIdLabel(e.bookId!))
+                          subtitle: _bookTitle(e.bookId, bookTitles) != null
+                              ? Text(_bookTitle(e.bookId, bookTitles)!)
                               : null,
                         ),
                       ),
@@ -95,6 +97,13 @@ class HabitLogsList extends ConsumerWidget {
             onRetry: () => ref.invalidate(readingLogsProvider),
           ),
     );
+  }
+
+  static String? _bookTitle(String? bookId, Map<String, String> titles) {
+    if (bookId == null || bookId.isEmpty) return null;
+    final title = titles[bookId]?.trim();
+    if (title == null || title.isEmpty) return null;
+    return title;
   }
 
   static String _formatDay(DateTime d) {

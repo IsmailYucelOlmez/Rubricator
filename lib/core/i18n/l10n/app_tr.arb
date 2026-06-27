@@ -3,56 +3,57 @@
   "navHome": "Ana Sayfa",
   "navSearch": "Ara",
   "navLists": "Listeler",
+  "listsFeedHeading": "Listeleri Keşfet",
   "listsFeedHeading": "Listbox",
   "profileZoneTitle": "Zone",
   "readingStatsListsTitle": "Duruma gore okuma listeleri",
-  "homeShowAll": "Tumunu gor",
-  "editProfile": "Profili duzenle",
-  "pickPhotoFromGallery": "Galeriden foto sec",
-  "pickProfilePhotoFromGallery": "Profil fotografi galeriden sec",
-  "changeProfilePhoto": "Profil fotosunu degistir",
-  "removeProfilePhotoTooltip": "Fotografi kaldir",
-  "privacyPolicyCheckbox": "Gizlilik politikasini okudum ve kabul ediyorum.",
-  "displayNameLabel": "Gorunen ad",
-  "profilePhotoUrlOptional": "Profil foto URL (istege bagli)",
+  "homeShowAll": "Tümünü gör",
+  "editProfile": "Profili düzenle",
+  "pickPhotoFromGallery": "Galeriden fotoğraf seç",
+  "pickProfilePhotoFromGallery": "Profil fotoğrafını galeriden seç",
+  "changeProfilePhoto": "Profil fotoğrafını değiştir",
+  "removeProfilePhotoTooltip": "Fotoğrafı kaldır",
+  "privacyPolicyCheckbox": "Gizlilik politikasını okudum ve kabul ediyorum.",
+  "displayNameLabel": "İsim",
+  "profilePhotoUrlOptional": "Profil fotoğrafı URL'si (isteğe bağlı)",
   "profile": "Profil",
   "language": "Dil",
-  "themeAppearance": "Gorunum",
-  "themeLight": "Acik",
+  "themeAppearance": "Görünüm",
+  "themeLight": "Açık",
   "themeDark": "Koyu",
   "notifications": "Bildirimler",
-  "selectLanguage": "Dil Sec",
-  "english": "Ingilizce",
-  "turkish": "Turkce",
-  "signInPrompt": "Favorileri cihazlar arasinda esitlemek icin giris yapin.",
-  "signIn": "Giris yap",
-  "createAccount": "Hesap olustur",
-  "signedInFallback": "Giris yapildi",
-  "signOut": "Cikis yap",
-  "loadSessionError": "Oturum yuklenemedi: {error}",
+  "selectLanguage": "Dil Seç",
+  "english": "İngilizce",
+  "turkish": "Türkçe",
+  "signInPrompt": "Kütüphanenizi, listelerinizi ve okuma ilerlemenizi tüm cihazlarınızda senkronize etmek için giriş yapın.",
+  "signIn": "Giriş yap",
+  "createAccount": "Hesap oluştur",
+  "signedInFallback": "Giriş yaptınız",
+  "signOut": "Çıkış yap",
+  "loadSessionError": "Oturum yüklenemedi. {error}",
   "@loadSessionError": {
     "placeholders": {
       "error": {}
     }
   },
-  "invalidEmailOrPassword": "E-posta veya sifre hatali.",
+  "invalidEmailOrPassword": "E-posta veya şifre hatalı.",
   "accountAlreadyExists": "Bu e-posta ile bir hesap zaten var.",
   "email": "E-posta",
-  "password": "Sifre",
-  "passwordMin6": "Sifre (en az 6 karakter, buyuk/kucuk harf, noktalama)",
-  "cancel": "Iptal",
-  "signUp": "Kayit ol",
-  "confirmAccountEmailNotice": "Gerekliyse hesabinizi onaylamak icin e-postanizi kontrol edin.",
-  "readingHabit": "Okuma aliskanligi",
-  "readingLoggedToday": "Bugun okuma kaydi girdiniz. Harika.",
-  "didYouReadToday": "Bugun okudunuz mu?",
-  "todayStatusError": "Bugun durumu: {error}",
+  "password": "Şifre",
+  "passwordMin6": "En az 6 karakter, büyük/küçük harf ve noktalama",
+  "cancel": "İptal",
+  "signUp": "Kayıt ol",
+  "confirmAccountEmailNotice": "Gerekirse hesabınızı doğrulamak için e-postanızı kontrol edin.",
+  "readingHabit": "Okuma alışkanlığı",
+  "readingLoggedToday": "Harika! Bugün okuma kaydınızı girdiniz.",
+  "didYouReadToday": "Bugün okudunuz mu?",
+  "todayStatusError": "Bugünün durumu yüklenemedi. {error}",
   "@todayStatusError": {
     "placeholders": {
       "error": {}
     }
   },
-  "quickLog": "Hizli kayit",
+  "quickLog": "Okumayı kaydet",
   "details": "Detaylar",
   "readingStats": "Okuma istatistikleri",
   "booksCount": "{count} kitap",
@@ -67,41 +68,42 @@
       "avg": {}
     }
   },
-  "noRatingsYet": "Henuz puan yok",
-  "topGenre": "En iyi: {genre}",
+  "noRatingsYet": "Henüz puan yok",
+  "topGenre": "En çok: {genre}",
   "@topGenre": {
     "placeholders": {
       "genre": {}
     }
   },
-  "viewAllStats": "Tum istatistikleri gor",
-  "loadStatsError": "Istatistikler yuklenemedi: {error}",
+  "viewAllStats": "Tüm istatistikleri gör",
+  "loadStatsError": "İstatistikler yüklenemedi. {error}",
   "@loadStatsError": {
     "placeholders": {
       "error": {}
     }
   },
-  "searchBooksTitle": "Kitap Ara",
-  "searchByTitleOrAuthorHint": "Baslik veya yazara gore ara (en az 2 karakter)",
-  "noBooksFoundFor": "\"{query}\" icin kitap bulunamadi.",
+  "searchBooksTitle": "Kitap ara",
+  "searchByTitleOrAuthorHint": "Başlık veya yazara göre ara…",
+  "noBooksFoundFor": "\"{query}\" için sonuç bulunamadı. Farklı bir başlık veya yazar deneyin.",
   "@noBooksFoundFor": {
     "placeholders": {
       "query": {}
     }
   },
   "recentSearches": "Son Aramalar",
-  "loadRecentSearchesError": "Son aramalar yuklenemedi.",
-  "noRecentSearchesYet": "Henuz son arama yok.",
-  "recentSearchedBooks": "Son Aranan Kitaplar",
-  "loadRecentSearchedBooksError": "Son aranan kitaplar yuklenemedi.",
-  "noRecentSearchedBooksYet": "Henuz son aranan kitap yok.",
-  "searchBooksMin2Hint": "Kitap ara (en az 2 karakter)",
-  "discover": "Kesfet",
-  "noBooksFound": "Kitap bulunamadi",
-  "searchCouldNotComplete": "Arama tamamlanamadi. Lutfen tekrar deneyin.",
-  "popular": "Populer",
-  "loadPopularBooksError": "Populer kitaplar yuklenemedi.",
-  "loadGenreBooksError": "{genre} kitaplari yuklenemedi.",
+  "loadRecentSearchesError": "Son aramalar yüklenemedi.",
+  "noRecentSearchesYet": "Son aramalarınız burada görünecek.",
+  "recentSearchedBooks": "Son görüntülenen kitaplar",
+  "loadRecentSearchedBooksError": "Son görüntülenen kitaplar yüklenemedi.",
+  "noRecentSearchedBooksYet": "Aradığınız kitaplar burada görünecek.",
+  "searchBooksMin2Hint": "Aramak için en az 2 karakter yazın",
+  "discover": "Keşfet",
+  "noBooksFound": "Kitap bulunamadı",
+  "searchCouldNotComplete": "Arama tamamlanamadı. Lütfen tekrar deneyin.",
+  "continueReading": "Okumaya Devam Et",
+  "popular": "Popüler",
+  "loadPopularBooksError": "Popüler kitaplar yüklenemedi.",
+  "loadGenreBooksError": "{genre} kitapları yüklenemedi.",
   "@loadGenreBooksError": {
     "placeholders": {
       "genre": {}
@@ -113,8 +115,8 @@
   "genreMystery": "Gizem",
   "genreThriller": "Gerilim",
   "genreHorror": "Korku",
-  "loadHomeGenresError": "Tur bolumleri yuklenemedi. Lutfen tekrar deneyin.",
-  "homeGenreEmptySoft": "{genre} icin henuz oneri yok. Yenilemek icin asagi cekin veya sonra deneyin.",
+  "loadHomeGenresError": "Tür bölümleri yüklenemedi. Lütfen tekrar deneyin.",
+  "homeGenreEmptySoft": "{genre} için henüz öneri yok. Yenilemek için aşağı çekin veya daha sonra tekrar deneyin.",
   "@homeGenreEmptySoft": {
     "placeholders": {
       "genre": {}
@@ -123,50 +125,50 @@
   "toRead": "Okunacak",
   "reading": "Okunuyor",
   "reReading": "Tekrar Okunuyor",
-  "completed": "Tamamlandi",
-  "dropped": "Birakildi",
+  "completed": "Tamamlandı",
+  "dropped": "Bırakıldı",
   "addToFavorites": "Favorilere ekle",
-  "removeFromFavorites": "Favorilerden cikar",
+  "removeFromFavorites": "Favorilerden çıkar",
   "favorites": "Favoriler",
-  "signInToSeeLists": "Listeleri gormek icin Profilden giris yapin.",
-  "noBooksInStatus": "{status} durumunda kitap yok.",
+  "signInToSeeLists": "Okuma listelerinizi görüntülemek ve yönetmek için giriş yapın.",
+  "noBooksInStatus": "{status} olarak işaretlenmiş kitap yok.",
   "@noBooksInStatus": {
     "placeholders": {
       "status": {}
     }
   },
-  "noFavoritesYet": "Henuz favori yok.",
-  "couldNotLoadList": "Liste yuklenemedi: {error}",
+  "noFavoritesYet": "Favorilere eklediğiniz kitaplar burada görünecek.",
+  "couldNotLoadList": "Liste yüklenemedi. {error}",
   "@couldNotLoadList": {
     "placeholders": {
       "error": {}
     }
   },
-  "bookDetails": "Kitap Detayi",
+  "bookDetails": "Kitap Detayı",
   "authorProfile": "Yazar profili",
-  "ratingSubmitted": "Puan gonderildi.",
-  "noDescriptionAvailable": "Aciklama bulunamadi.",
+  "ratingSubmitted": "Puan gönderildi.",
+  "noDescriptionAvailable": "Henüz açıklama yok.",
   "reviewAdded": "Yorum eklendi.",
-  "reviewUpdated": "Yorum guncellendi.",
+  "reviewUpdated": "Yorum güncellendi.",
   "reviewDeleted": "Yorum silindi.",
   "externalReviewAdded": "Harici yorum eklendi.",
-  "invalidUrl": "Gecersiz URL",
-  "couldNotOpenBrowser": "Tarayici acilamadi.",
-  "quoteAdded": "Alinti eklendi.",
+  "invalidUrl": "Geçersiz URL",
+  "couldNotOpenBrowser": "Tarayıcı açılamadı.",
+  "quoteAdded": "Alıntı eklendi.",
   "relatedBooks": "Benzer kitaplar",
-  "noRelatedTitlesFound": "Benzer baslik bulunamadi (konular eksik veya sonuc yok).",
-  "couldNotLoadRelatedBooks": "Benzer kitaplar yuklenemedi.",
-  "aiSummary": "YZ Ozeti",
-  "aiSummaryFailed": "YZ ozeti basarisiz",
-  "couldNotLoadThisBook": "Bu kitap yuklenemedi. {error}",
+  "noRelatedTitlesFound": "Bu kitap için benzer başlık bulunamadı.",
+  "couldNotLoadRelatedBooks": "Benzer kitaplar yüklenemedi.",
+  "aiSummary": "YZ Özeti",
+  "aiSummaryFailed": "Özet oluşturulamadı. Daha sonra tekrar deneyin.",
+  "couldNotLoadThisBook": "Bu kitap yüklenemedi. {error}",
   "@couldNotLoadThisBook": {
     "placeholders": {
       "error": {}
     }
   },
   "addToList": "Listeye Ekle",
-  "change": "Degistir",
-  "progressPercent": "Ilerleme: %{progress}",
+  "change": "Değiştir",
+  "progressPercent": "İlerleme: %{progress}",
   "@progressPercent": {
     "placeholders": {
       "progress": {}
@@ -179,263 +181,274 @@
       "avg": {}
     }
   },
-  "couldNotLoadRating": "Puan yuklenemedi.",
-  "submitRating": "Puani gonder",
+  "couldNotLoadRating": "Puan yüklenemedi.",
+  "submitRating": "Puanı gönder",
   "reviews": "Yorumlar",
-  "userReviews": "Kullanici Yorumlari",
+  "userReviews": "Kullanıcı Yorumları",
   "externalReviews": "Harici Yorumlar",
-  "writeReviewHint": "Yorumunuzu yazin (en az 10 karakter)",
+  "writeReviewHint": "Düşüncelerinizi paylaşın (en az 10 karakter)",
   "addReview": "Yorum ekle",
-  "noUserReviewsYet": "Henuz kullanici yorumu yok.",
-  "couldNotLoadReviews": "Yorumlar yuklenemedi.",
-  "reviewTitle": "Yorum basligi",
+  "noUserReviewsYet": "Bu kitap hakkında ilk yorumu siz yazın.",
+  "reviewUserRating": "Puan: {rating}/10",
+  "reviewInFavorites": "Favorilerde",
+  "couldNotLoadReviews": "Yorumlar yüklenemedi.",
+  "reviewTitle": "Yorum başlığı",
   "reviewUrlHint": "https://example.com/review",
   "addExternalReview": "Harici yorum ekle",
-  "noExternalReviewsYet": "Henuz harici yorum yok.",
-  "couldNotLoadExternalReviews": "Harici yorumlar yuklenemedi.",
-  "quotes": "Alintilar",
-  "addMemorableQuote": "Akliniza kalan bir alinti ekleyin",
-  "addQuote": "Alinti ekle",
-  "noQuotesYet": "Henuz alinti yok.",
-  "couldNotLoadQuotes": "Alintilar yuklenemedi.",
-  "editReview": "Yorumu duzenle",
+  "noExternalReviewsYet": "Henüz harici yorum yok.",
+  "couldNotLoadExternalReviews": "Harici yorumlar yüklenemedi.",
+  "quotes": "Alıntılar",
+  "addMemorableQuote": "Hatırlamak istediğiniz bir alıntı ekleyin",
+  "addQuote": "Alıntı ekle",
+  "noQuotesYet": "Bu kitaptan kaydettiğiniz alıntılar burada görünecek.",
+  "couldNotLoadQuotes": "Alıntılar yüklenemedi.",
+  "editReview": "Yorumu düzenle",
   "save": "Kaydet"
-  ,"log":"Kayit"
-  ,"signInForHabit":"Okumayi kaydetmek, serileri gormek ve aktivite takvimi icin giris yapin."
-  ,"readingLogged":"Okuma kaydedildi"
-  ,"readingLoggedOffline":"Okuma cevrimdisi kaydedildi. Baglanti gelince senkronize edilecek."
-  ,"readingLogsSynced":"Bekleyen okuma kayitlari senkronize edildi"
-  ,"couldNotSave":"Kaydedilemedi: {error}"
+  ,"log":"Kaydet"
+  ,"signInForHabit":"Okumanızı takip etmek, seriler oluşturmak ve aktivite takviminizi görmek için giriş yapın."
+  ,"readingLogged":"Okuma kaydedildi!"
+  ,"readingLoggedOffline":"Çevrimdışı kaydedildi—bağlantı gelince senkronize edilecek."
+  ,"readingLogsSynced":"Bekleyen okuma kayıtları senkronize edildi"
+  ,"couldNotSave":"Kaydedilemedi. {error}"
   ,"@couldNotSave":{"placeholders":{"error":{}}}
-  ,"addMinutesOrPagesPrompt":"Bugunden en az dakika veya sayfa ekleyin."
+  ,"addMinutesOrPagesPrompt":"Bugün okuduğunuz dakika veya sayfa sayısını girin."
   ,"minutes":"Dakika"
   ,"plusTenMin":"+10 dk"
   ,"pages":"Sayfa"
   ,"plusFivePages":"+5 sayfa"
-  ,"optionalAddBooksPrompt":"Istege bagli: Buradan secmek icin okuma listenize kitap ekleyin."
-  ,"bookOptional":"Kitap (istege bagli)"
+  ,"optionalAddBooksPrompt":"İpucu: burada bağlamak için Okuyorum listenize kitap ekleyin."
+  ,"bookOptional":"Kitap (isteğe bağlı)"
   ,"book":"Kitap"
   ,"none":"Yok"
-  ,"booksError":"Kitaplar: {error}"
+  ,"booksError":"Kitaplar yüklenemedi. {error}"
   ,"@booksError":{"placeholders":{"error":{}}}
-  ,"saveLog":"Kaydi kaydet"
-  ,"calendarError":"Takvim hatasi: {error}"
+  ,"saveLog":"Kaydet"
+  ,"selectReadingBook":"Okuyorum listenizden bir kitap seçin"
+  ,"noReadingBooksForLog":"Belirli bir kitap için ilerleme kaydetmek üzere Okuyorum listenize kitap ekleyin."
+  ,"selectBooksToLog":"Bugün okuduklarınızı seçin ve her biri için dakika ve/veya sayfa girin."
+  ,"currentlyReadingBooks":"Şu an okunanlar"
+  ,"generalReadingLog":"Genel okuma"
+  ,"generalReadingLogHint":"Belirli bir kitaba bağlamadan okuma süresi kaydedin."
+  ,"readingLoggedCount":"{count} okuma kaydi eklendi"
+  ,"@readingLoggedCount":{"placeholders":{"count":{"type":"int"}}}
+  ,"calendarError":"Takvim yüklenemedi. {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Aktivite"
   ,"lastWeeksMoreReading":"Son {weeks} hafta (daha koyu = daha fazla okuma)"
   ,"@lastWeeksMoreReading":{"placeholders":{"weeks":{"type":"int"}}}
-  ,"noLogsYetTapQuickLog":"Henuz kayit yok - baslamak icin Hizli kayit'a dokunun."
-  ,"recentLogs":"Son kayitlar"
+  ,"noLogsYetTapQuickLog":"Henüz kayıt yok. Başlamak için Okumayı kaydet'e dokunun."
+  ,"recentLogs":"Son kayıtlar"
   ,"minutesShort":"{count} dk"
   ,"@minutesShort":{"placeholders":{"count":{"type":"int"}}}
   ,"pagesShort":"{count} sayfa"
   ,"@pagesShort":{"placeholders":{"count":{"type":"int"}}}
   ,"bookIdLabel":"Kitap: {bookId}"
   ,"@bookIdLabel":{"placeholders":{"bookId":{}}}
-  ,"logsError":"Kayit hatasi: {error}"
+  ,"logsError":"Kayıtlar yüklenemedi. {error}"
   ,"@logsError":{"placeholders":{"error":{}}}
-  ,"chartError":"Grafik hatasi: {error}"
+  ,"chartError":"Grafik yüklenemedi. {error}"
   ,"@chartError":{"placeholders":{"error":{}}}
-  ,"dailyMinutes14Days":"Gunluk dakika (14 gun)"
-  ,"weeklyMinutes":"Haftalik dakika"
-  ,"thisWeekShort":"Bu hf"
+  ,"dailyMinutes14Days":"Günlük dakika (14 gün)"
+  ,"weeklyMinutes":"Haftalık dakika"
+  ,"thisWeekShort":"Bu hafta"
   ,"weeksAgoShort":"-{weeks}h"
   ,"@weeksAgoShort":{"placeholders":{"weeks":{"type":"int"}}}
   ,"totals":"Toplamlar"
-  ,"statsError":"Istatistik hatasi: {error}"
+  ,"statsError":"İstatistikler yüklenemedi. {error}"
   ,"@statsError":{"placeholders":{"error":{}}}
-  ,"dayStreak":"{days} gun seri"
+  ,"dayStreak":"{days} günlük seri"
   ,"@dayStreak":{"placeholders":{"days":{"type":"int"}}}
   ,"currentStreak":"Mevcut seri"
-  ,"daysCount":"{days} gun"
+  ,"daysCount":"{days} gün"
   ,"@daysCount":{"placeholders":{"days":{"type":"int"}}}
-  ,"longestDays":"En uzun: {days} gun"
+  ,"longestDays":"En uzun: {days} gün"
   ,"@longestDays":{"placeholders":{"days":{"type":"int"}}}
-  ,"couldNotLoadStreak":"Seri yuklenemedi: {error}"
+  ,"couldNotLoadStreak":"Seri yüklenemedi. {error}"
   ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
-  ,"readingReminderTitle":"Okuma Hatirlatmasi"
-  ,"readingReminderBodyNoStreak":"Bugun henuz okuma kaydi eklemedin. Hizlica bir kayit ekleyerek okuma aliskanligina basla."
-  ,"readingReminderBodyWithStreak":"Bugun henuz okuma kaydi eklemedin. {streak} gunluk serini korumak icin gece yarisi oncesi kayit ekle."
+  ,"readingReminderTitle":"Okuma Hatırlatması"
+  ,"readingReminderBodyNoStreak":"Bugün henüz okuma kaydı eklemediniz. Alışkanlık oluşturmak için hızlıca bir kayıt ekleyin."
+  ,"readingReminderBodyWithStreak":"{streak} günlük serinizi kaybetmeyin—gece yarısından önce okumanızı kaydedin."
   ,"@readingReminderBodyWithStreak":{"placeholders":{"streak":{"type":"int"}}}
-  ,"readingReminderChannelName":"Okuma hatirlatmalari"
-  ,"readingReminderChannelDescription":"Gunluk okuma hatirlatmalari"
-  ,"signInToSeeStats":"Kutuphane analizlerini ve okuma kimliginizi gormek icin giris yapin."
-  ,"contentYouAdded":"Eklediginiz icerik"
-  ,"reviewsAndQuotes":"Yorumlar ve alintilar"
-  ,"noDataYet":"Henuz veri yok"
-  ,"couldNotLoadContentStats":"Icerik istatistikleri yuklenemedi: {error}"
+  ,"readingReminderChannelName":"Okuma hatırlatmaları"
+  ,"readingReminderChannelDescription":"Günlük okuma hatırlatmaları"
+  ,"signInToSeeStats":"Okuma istatistiklerinizi keşfetmek ve okuma kimliğinizi görmek için giriş yapın."
+  ,"contentYouAdded":"Eklediğiniz içerik"
+  ,"reviewsAndQuotes":"Yorumlar ve alıntılar"
+  ,"noDataYet":"İstatistikleri görmek için okumaya ve içerik eklemeye başlayın."
+  ,"couldNotLoadContentStats":"İçerik istatistikleri yüklenemedi. {error}"
   ,"@couldNotLoadContentStats":{"placeholders":{"error":{}}}
   ,"yourRatings":"Puanlariniz"
-  ,"starsGivenToBooks":"Kitaplara verdiginiz yildizlar"
-  ,"couldNotLoadRatings":"Puanlar yuklenemedi: {error}"
+  ,"starsGivenToBooks":"Verdiğiniz yıldız puanları"
+  ,"couldNotLoadRatings":"Puanlar yüklenemedi. {error}"
   ,"@couldNotLoadRatings":{"placeholders":{"error":{}}}
-  ,"library":"Kutuphane"
-  ,"countsFromShelves":"Raf sayilari"
-  ,"couldNotLoadLibraryStats":"Kutuphane istatistikleri yuklenemedi: {error}"
+  ,"library":"Kütüphane"
+  ,"countsFromShelves":"Raflarınızdaki kitaplar"
+  ,"couldNotLoadLibraryStats":"Kütüphane istatistikleri yüklenemedi. {error}"
   ,"@couldNotLoadLibraryStats":{"placeholders":{"error":{}}}
-  ,"readingIdentity":"Okuma kimligi"
-  ,"genresAndAuthorsFromCompleted":"Tamamlanan kitaplardan turler ve yazarlar"
-  ,"topGenres":"En iyi turler"
-  ,"couldNotLoadGenres":"Turler yuklenemedi: {error}"
+  ,"readingIdentity":"Okuma kimliği"
+  ,"genresAndAuthorsFromCompleted":"Tamamlanan kitaplardan türler ve yazarlar"
+  ,"topGenres":"Favori türler"
+  ,"couldNotLoadGenres":"Türler yüklenemedi. {error}"
   ,"@couldNotLoadGenres":{"placeholders":{"error":{}}}
-  ,"topAuthors":"En iyi yazarlar"
-  ,"couldNotLoadAuthors":"Yazarlar yuklenemedi: {error}"
+  ,"topAuthors":"Favori yazarlar"
+  ,"couldNotLoadAuthors":"Yazarlar yüklenemedi. {error}"
   ,"@couldNotLoadAuthors":{"placeholders":{"error":{}}}
   ,"author":"Yazar"
-  ,"noBiographyAvailable":"Biyografi yok."
-  ,"couldNotLoadAuthor":"Yazar yuklenemedi. {error}"
+  ,"noBiographyAvailable":"Bu yazar için biyografi bulunmuyor."
+  ,"couldNotLoadAuthor":"Yazar yüklenemedi. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
-  ,"listsForYou":"Sana Ozel"
-  ,"listsTopTwenty":"Timeless"
+  ,"listsForYou":"Sana özel"
+  ,"listsTopTwenty":"Zamansız seçkiler"
   ,"listsFollowing":"Takip Edilenler"
   ,"myLists":"Listelerim"
   ,"savedLists":"Kaydedilen Listeler"
-  ,"createList":"Liste olustur"
-  ,"editList":"Listeyi duzenle"
-  ,"title":"Baslik"
-  ,"description":"Aciklama"
-  ,"public":"Herkese acik"
-  ,"bookSelector":"Kitap secici"
+  ,"createList":"Liste oluştur"
+  ,"editList":"Listeyi düzenle"
+  ,"title":"Başlık"
+  ,"description":"Açıklama"
+  ,"public":"Herkese açık"
+  ,"bookSelector":"Kitap ekle"
   ,"searchViaGoogleBooks":"Google Books ile ara"
   ,"search":"Ara"
-  ,"selectedBooks":"Secilen kitaplar"
-  ,"noBooksSelectedYet":"Henuz kitap secilmedi."
-  ,"noListsYet":"Henuz liste yok."
-  ,"couldNotLoadLists":"Listeler yuklenemedi: {error}"
+  ,"selectedBooks":"Seçilen kitaplar"
+  ,"noBooksSelectedYet":"Listenize kitap arayın ve ekleyin."
+  ,"noListsYet":"Henüz liste oluşturmadınız. İlk listenizi oluşturun!"
+  ,"couldNotLoadLists":"Listeler yüklenemedi. {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
-  ,"byUser":"{userName} tarafindan"
+  ,"byUser":"{userName} tarafından"
   ,"@byUser":{"placeholders":{"userName":{}}}
   ,"books":"Kitaplar"
   ,"comments":"Yorumlar"
-  ,"couldNotLoadListItems":"Liste ogeleri yuklenemedi: {error}"
+  ,"couldNotLoadListItems":"Liste öğeleri yüklenemedi. {error}"
   ,"@couldNotLoadListItems":{"placeholders":{"error":{}}}
-  ,"couldNotLoadComments":"Yorumlar yuklenemedi: {error}"
+  ,"couldNotLoadComments":"Yorumlar yüklenemedi. {error}"
   ,"@couldNotLoadComments":{"placeholders":{"error":{}}}
-  ,"addCommentHint":"Yorum ekle..."
-  ,"send":"Gonder"
+  ,"addCommentHint":"Yorum yazın…"
+  ,"send":"Gönder"
   ,"deleteListTitle":"Liste silinsin mi?"
-  ,"deleteListConfirm":"Bu islem geri alinamaz."
+  ,"deleteListConfirm":"Bu liste kalıcı olarak silinecek."
   ,"delete":"Sil"
-  ,"couldNotSaveList":"Liste kaydedilemedi: {error}"
+  ,"couldNotSaveList":"Liste kaydedilemedi. {error}"
   ,"@couldNotSaveList":{"placeholders":{"error":{}}}
   ,"commentsCount":"{count} yorum"
   ,"@commentsCount":{"placeholders":{"count":{"type":"int"}}}
-  ,"stats":"Istatistikler"
+  ,"stats":"İstatistikler"
   ,"myListsTooltip":"Listelerim"
-  ,"editListTooltip":"Listeyi duzenle"
+  ,"editListTooltip":"Listeyi düzenle"
   ,"deleteListTooltip":"Listeyi sil"
-  ,"uxErrorNetwork":"Internet baglantinizi kontrol edin."
-  ,"uxErrorTimeout":"Istek zaman asimina ugradi."
-  ,"uxErrorUnknown":"Bir hata olustu, lutfen tekrar deneyin."
+  ,"uxErrorNetwork":"İnternet bağlantınızı kontrol edin."
+  ,"uxErrorTimeout":"İstek zaman aşımına uğradı."
+  ,"uxErrorUnknown":"Bir hata oluştu, lütfen tekrar deneyin."
+  ,"uxErrorBoundaryTitle":"Beklenmeyen hata"
   ,"uxRetry":"Tekrar dene"
-  ,"uxOfflineBanner":"Internet baglantisi yok"
+  ,"uxOfflineBanner":"İnternet bağlantısı yok"
   ,"uxEmailRequired":"E-posta gerekli"
-  ,"uxEmailInvalid":"Gecerli bir e-posta girin"
-  ,"uxPasswordRequired":"Sifre gerekli"
-  ,"uxUserNameRequired":"Gorunen ad gerekli"
-  ,"uxTitleRequired":"Baslik gerekli"
-  ,"uxAcceptPrivacyRequired":"Devam etmek icin gizlilik politikasini kabul edin"
-  ,"uxListCreatedSuccess":"Liste basariyla olusturuldu"
-  ,"uxListUpdatedSuccess":"Liste guncellendi"
-  ,"uxRemoveBookFromListTitle":"Bu kitap kaldirilsin mi?"
-  ,"uxRemoveBookFromListMessage":"Kitap listeden cikarilacak."
-  ,"uxRemove":"Kaldir"
-  ,"uxDeleteReviewTitle":"Inceleme silinsin mi?"
-  ,"uxDeleteReviewMessage":"Bu islem geri alinamaz."
-  ,"uxGalleryPluginError":"Galeri acilamadi. Uygulamayi tam kapatip yeniden deneyin."
-  ,"uxProfilePhotoStorageNotReady":"Profil fotografi alani hazir degil. Veritabani migrationlarini calistirin."
-  ,"uxProfilePhotoPermissionDenied":"Profil fotografi icin depolama izinleri eksik. Supabase Storage politika migrationini uygulayin."
-  ,"forgotPassword":"Sifremi unuttum?"
-  ,"forgotPasswordTitle":"Sifremi unuttum"
-  ,"forgotPasswordPrompt":"E-posta adresinizi girin. Sifrenizi sifirlamak icin 8 haneli bir kod (baglanti degil) gonderilecektir."
-  ,"sendResetCode":"Kod gonder"
-  ,"resetCodeSent":"8 haneli kod e-posta adresinize gonderildi."
-  ,"resetPasswordTitle":"Sifreyi yenile"
-  ,"resetPasswordPrompt":"{email} adresine gonderilen kodu girin."
+  ,"uxEmailInvalid":"Geçerli bir e-posta girin"
+  ,"uxPasswordRequired":"Şifre gerekli"
+  ,"uxUserNameRequired":"Görünen ad gerekli"
+  ,"uxTitleRequired":"Başlık gerekli"
+  ,"uxAcceptPrivacyRequired":"Devam etmek için gizlilik politikasını kabul edin"
+  ,"uxListCreatedSuccess":"Liste oluşturuldu"
+  ,"uxListUpdatedSuccess":"Liste kaydedildi"
+  ,"uxRemoveBookFromListTitle":"Bu kitap kaldırılsın mı?"
+  ,"uxRemoveBookFromListMessage":"Kitap yalnızca bu listeden kaldırılacak."
+  ,"uxRemove":"Kaldır"
+  ,"uxDeleteReviewTitle":"İnceleme silinsin mi?"
+  ,"uxDeleteReviewMessage":"Bu inceleme kalıcı olarak silinecek."
+  ,"uxGalleryPluginError":"Galeri açılamadı. Uygulamayı tamamen kapatıp yeniden deneyin."
+  ,"uxProfilePhotoStorageNotReady":"Profil fotoğrafları henüz kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+  ,"uxProfilePhotoPermissionDenied":"Profil fotoğrafı yükleme geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+  ,"forgotPassword":"Şifremi unuttum?"
+  ,"forgotPasswordTitle":"Şifremi unuttum"
+  ,"forgotPasswordPrompt":"E-posta adresinizi girin, şifrenizi sıfırlamak için 8 haneli bir kod göndereceğiz."
+  ,"sendResetCode":"Kod gönder"
+  ,"resetCodeSent":"8 haneli kod için e-postanızı kontrol edin."
+  ,"resetPasswordTitle":"Şifreyi yenile"
+  ,"resetPasswordPrompt":"{email} adresine gönderilen kodu girin."
   ,"@resetPasswordPrompt":{"placeholders":{"email":{"type":"String"}}}
-  ,"otpCodeLabel":"8 haneli dogrulama kodu"
-  ,"confirmPassword":"Sifreyi onayla"
-  ,"updatePassword":"Sifreyi guncelle"
-  ,"resendCode":"Kodu tekrar gonder"
-  ,"uxOtpIncomplete":"Lutfen 8 haneli kodu eksiksiz girin."
-  ,"uxPasswordMismatch":"Sifreler eslesmiyor."
-  ,"passwordResetSuccess":"Sifreniz basariyla guncellendi."
-  ,"invalidOrExpiredOtp":"Gecersiz veya suresi dolmus dogrulama kodu."
-  ,"uxPasswordTooShort":"Sifre en az 6 karakter olmalidir."
-  ,"uxPasswordMissingUppercase":"Sifre en az bir buyuk harf icermelidir."
-  ,"uxPasswordMissingLowercase":"Sifre en az bir kucuk harf icermelidir."
-  ,"uxPasswordMissingPunctuation":"Sifre en az bir noktalama isareti icermelidir."
-  ,"uxMustSignIn":"Devam etmek icin giris yapin."
-  ,"uxReviewMinLength":"Inceleme en az 10 karakter olmalidir."
-  ,"privacyPolicyAppBar":"Gizlilik Politikasi"
-  ,"privacyPolicyTitle":"Rubricator Gizlilik Politikasi"
-  ,"privacyPolicyLastUpdated":"Son guncelleme: 19.04.2026"
-  ,"privacyPolicySection1Title":"1. Giris"
-  ,"privacyPolicySection1Body1":"Rubricator'a hos geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanicilarin kitap kesfedebildigi, liste olusturabildigi, okuma aliskanliklarini takip edebildigi ve icerik paylasabildigi sosyal bir okuma platformudur."
-  ,"privacyPolicySection1Body2":"Bu Gizlilik Politikasi, mobil uygulamamizi kullanirken bilgilerinizi nasil topladigimizi, kullandigimizi, paylastigimizi ve korudugumuzu aciklar."
-  ,"privacyPolicySection2Title":"2. Topladigimiz Bilgiler"
-  ,"privacyPolicySection21Title":"2.1 Kisisel Bilgiler"
+  ,"otpCodeLabel":"8 haneli doğrulama kodu"
+  ,"confirmPassword":"Şifreyi onayla"
+  ,"updatePassword":"Şifreyi güncelle"
+  ,"resendCode":"Kodu tekrar gönder"
+  ,"uxOtpIncomplete":"Lütfen 8 haneli kodu eksiksiz girin."
+  ,"uxPasswordMismatch":"Şifreler eşleşmiyor."
+  ,"passwordResetSuccess":"Şifreniz başarıyla güncellendi."
+  ,"invalidOrExpiredOtp":"Geçersiz veya süresi dolmuş doğrulama kodu."
+  ,"uxPasswordTooShort":"Şifre en az 6 karakter olmalıdır."
+  ,"uxPasswordMissingUppercase":"Şifre en az bir büyük harf içermelidir."
+  ,"uxPasswordMissingLowercase":"Şifre en az bir küçük harf içermelidir."
+  ,"uxPasswordMissingPunctuation":"Şifre en az bir noktalama işareti içermelidir."
+  ,"uxMustSignIn":"Devam etmek için giriş yapın."
+  ,"uxReviewMinLength":"İnceleme en az 10 karakter olmalıdır."
+  ,"privacyPolicyAppBar":"Gizlilik Politikası"
+  ,"privacyPolicyTitle":"Rubricator Gizlilik Politikası"
+  ,"privacyPolicyLastUpdated":"Son güncelleme: 19.04.2026"
+  ,"privacyPolicySection1Title":"1. Giriş"
+  ,"privacyPolicySection1Body1":"Rubricator'a hoş geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanıcıların kitap keşfedebildiği, liste oluşturabildiği, okuma alışkanlıklarını takip edebildiği ve içerik paylaşabildiği sosyal bir okuma platformudur."
+  ,"privacyPolicySection1Body2":"Bu Gizlilik Politikası, mobil uygulamamızı kullanırken bilgilerinizi nasıl topladığımızı, kullandığımızı, paylaştığımızı ve koruduğumuzu açıklar."
+  ,"privacyPolicySection2Title":"2. Topladığımız Bilgiler"
+  ,"privacyPolicySection21Title":"2.1 Kişisel Bilgiler"
   ,"privacyPolicySection21Item1":"- E-posta adresi"
-  ,"privacyPolicySection21Item2":"- Kullanici adi"
-  ,"privacyPolicySection21Item3":"- Profil bilgileri (istege bagli)"
-  ,"privacyPolicySection22Title":"2.2 Kullanici Tarafindan Uretilen Icerik"
+  ,"privacyPolicySection21Item2":"- Kullanıcı adı"
+  ,"privacyPolicySection21Item3":"- Profil bilgileri (isteğe bağlı)"
+  ,"privacyPolicySection22Title":"2.2 Kullanıcı Tarafından Üretilen İçerik"
   ,"privacyPolicySection22Item1":"- Kitap incelemeleri"
   ,"privacyPolicySection22Item2":"- Puanlamalar"
   ,"privacyPolicySection22Item3":"- Alintilar"
-  ,"privacyPolicySection22Item4":"- Olusturdugunuz listeler"
+  ,"privacyPolicySection22Item4":"- Oluşturduğunuz listeler"
   ,"privacyPolicySection22Item5":"- Yorumlar"
-  ,"privacyPolicySection23Title":"2.3 Kullanim Verileri"
-  ,"privacyPolicySection23Item1":"- Uygulama kullanim etkilesimleri"
-  ,"privacyPolicySection23Item2":"- Ozellik kullanimi (ornegin listeler, istatistikler, arama)"
-  ,"privacyPolicySection23Item3":"- Cihaz bilgileri (isletim sistemi surumu, cihaz tipi)"
-  ,"privacyPolicySection24Title":"2.4 Kimlik Dogrulama Verileri"
+  ,"privacyPolicySection23Title":"2.3 Kullanım Verileri"
+  ,"privacyPolicySection23Item1":"- Uygulama kullanım etkileşimleri"
+  ,"privacyPolicySection23Item2":"- Özellik kullanımı (örneğin listeler, istatistikler, arama)"
+  ,"privacyPolicySection23Item3":"- Cihaz bilgileri (işletim sistemi sürümü, cihaz tipi)"
+  ,"privacyPolicySection24Title":"2.4 Kimlik Doğrulama Verileri"
   ,"privacyPolicySection24Item1":"- Temel profil bilgileri"
   ,"privacyPolicySection24Item2":"- E-posta adresi"
-  ,"privacyPolicySection3Title":"3. Bilgilerinizi Nasil Kullaniyoruz"
-  ,"privacyPolicySection3Item1":"- Uygulamayi sunmak ve surdurmek"
-  ,"privacyPolicySection3Item2":"- Sosyal ozellikleri etkinlestirmek (listeler, yorumlar, begeniler)"
-  ,"privacyPolicySection3Item3":"- Icerigi ve onerileri kisisellestirmek"
-  ,"privacyPolicySection3Item4":"- Uygulama performansini ve ozellikleri iyilestirmek"
-  ,"privacyPolicySection3Item5":"- Onemli guncellemeleri iletmek"
-  ,"privacyPolicySection4Title":"4. Veri Saklama ve Guvenlik"
-  ,"privacyPolicySection4Body":"Verileriniz, Supabase gibi ucuncu taraf altyapilar kullanilarak guvenli sekilde saklanir."
-  ,"privacyPolicySection4Item1":"- Guvenli kimlik dogrulama"
-  ,"privacyPolicySection4Item2":"- Sifreli baglantilar (HTTPS)"
-  ,"privacyPolicySection4Item3":"- Erisim kontrol mekanizmalari"
-  ,"privacyPolicySection5Title":"5. Veri Paylasimi"
-  ,"privacyPolicySection5Body":"Kisisel verilerinizi SATMAYIZ."
-  ,"privacyPolicySection5Item1":"- Hizmet saglayicilarla (ornegin backend barindirma)"
-  ,"privacyPolicySection5Item2":"- Yasal yukumluluklere uymak icin"
-  ,"privacyPolicySection5Item3":"- Kullanici guvenligini ve haklarini korumak icin"
-  ,"privacyPolicySection6Title":"6. Herkese Acik Icerik"
-  ,"privacyPolicySection6Item1":"- Herkese acik listeler"
+  ,"privacyPolicySection3Title":"3. Bilgilerinizi Nasıl Kullanıyoruz"
+  ,"privacyPolicySection3Item1":"- Uygulamayı sunmak ve sürdürmek"
+  ,"privacyPolicySection3Item2":"- Sosyal özellikleri etkinleştirmek (listeler, yorumlar, beğeniler)"
+  ,"privacyPolicySection3Item3":"- İçeriği ve önerileri kişiselleştirmek"
+  ,"privacyPolicySection3Item4":"- Uygulama performansını ve özellikleri iyileştirmek"
+  ,"privacyPolicySection3Item5":"- Önemli güncellemeleri iletmek"
+  ,"privacyPolicySection4Title":"4. Veri Saklama ve Güvenlik"
+  ,"privacyPolicySection4Body":"Verileriniz, Supabase gibi üçüncü taraf altyapılar kullanılarak güvenli şekilde saklanır."
+  ,"privacyPolicySection4Item1":"- Güvenli kimlik doğrulama"
+  ,"privacyPolicySection4Item2":"- Şifreli bağlantılar (HTTPS)"
+  ,"privacyPolicySection4Item3":"- Erişim kontrol mekanizmaları"
+  ,"privacyPolicySection5Title":"5. Veri Paylaşımı"
+  ,"privacyPolicySection5Body":"Kişisel verilerinizi SATMAYIZ."
+  ,"privacyPolicySection5Item1":"- Hizmet sağlayıcılarla (örneğin backend barındırma)"
+  ,"privacyPolicySection5Item2":"- Yasal yükümlülüklere uymak için"
+  ,"privacyPolicySection5Item3":"- Kullanıcı güvenliğini ve haklarını korumak için"
+  ,"privacyPolicySection6Title":"6. Herkese Açık İçerik"
+  ,"privacyPolicySection6Item1":"- Herkese açık listeler"
   ,"privacyPolicySection6Item2":"- Incelemeler"
   ,"privacyPolicySection6Item3":"- Yorumlar"
-  ,"privacyPolicySection6Body":"Herkese acik paylastiginiz icerikler diger kullanicilar tarafindan gorulebilir."
-  ,"privacyPolicySection7Title":"7. Veri Saklama Suresi"
-  ,"privacyPolicySection7Item1":"- Hesabiniz aktif oldugu surece"
-  ,"privacyPolicySection7Item2":"- Veya hizmetleri sunmak icin gerektigi surece"
-  ,"privacyPolicySection7Body":"Verilerinizin silinmesini istediginiz zaman talep edebilirsiniz."
-  ,"privacyPolicySection8Title":"8. Haklariniz"
-  ,"privacyPolicySection8Item1":"- Verilerinize erisme"
-  ,"privacyPolicySection8Item2":"- Bilgilerinizi guncelleme"
-  ,"privacyPolicySection8Item3":"- Hesabinizin silinmesini talep etme"
-  ,"privacyPolicySection8Item4":"- Onayi geri cekme"
-  ,"privacyPolicySection8Body":"Bu haklari kullanmak icin bize ulasin:"
+  ,"privacyPolicySection6Body":"Herkese açık paylaştığınız içerikler diğer kullanıcılar tarafından görülebilir."
+  ,"privacyPolicySection7Title":"7. Veri Saklama Süresi"
+  ,"privacyPolicySection7Item1":"- Hesabınız aktif olduğu sürece"
+  ,"privacyPolicySection7Item2":"- Veya hizmetleri sunmak için gerektiği sürece"
+  ,"privacyPolicySection7Body":"Verilerinizin silinmesini istediğiniz zaman talep edebilirsiniz."
+  ,"privacyPolicySection8Title":"8. Haklarınız"
+  ,"privacyPolicySection8Item1":"- Verilerinize erişme"
+  ,"privacyPolicySection8Item2":"- Bilgilerinizi güncelleme"
+  ,"privacyPolicySection8Item3":"- Hesabınızın silinmesini talep etme"
+  ,"privacyPolicySection8Item4":"- Onayı geri çekme"
+  ,"privacyPolicySection8Body":"Bu hakları kullanmak için bize ulaşın:"
   ,"privacyPolicySection8Email":"E-posta: [YOUR EMAIL]"
-  ,"privacyPolicySection9Title":"9. Cocuklarin Gizliligi"
-  ,"privacyPolicySection9Body1":"Rubricator, 13 yas altindaki kullanicilar icin tasarlanmamistir."
-  ,"privacyPolicySection9Body2":"Cocuklardan bilerek veri toplamayiz."
-  ,"privacyPolicySection10Title":"10. Ucuncu Taraf Hizmetler"
-  ,"privacyPolicySection10Item1":"- Google (kimlik dogrulama, analiz)"
+  ,"privacyPolicySection9Title":"9. Çocukların Gizliliği"
+  ,"privacyPolicySection9Body1":"Rubricator, 13 yaş altındaki kullanıcılar için tasarlanmamıştır."
+  ,"privacyPolicySection9Body2":"Çocuklardan bilerek veri toplamayız."
+  ,"privacyPolicySection10Title":"10. Üçüncü Taraf Hizmetler"
+  ,"privacyPolicySection10Item1":"- Google (kimlik doğrulama, analiz)"
   ,"privacyPolicySection10Item2":"- Supabase (veri depolama)"
-  ,"privacyPolicySection10Body":"Bu hizmetlerin kendi gizlilik politikalari vardir."
-  ,"privacyPolicySection11Title":"11. Uluslararasi Veri Aktarimlari"
-  ,"privacyPolicySection11Body":"Bilgileriniz, hizmet saglayicilarimizin faaliyet gosterdigi farkli ulkelerde islenebilir."
-  ,"privacyPolicySection12Title":"12. Bu Gizlilik Politikasindaki Degisiklikler"
-  ,"privacyPolicySection12Body":"Bu politikayi zaman zaman guncelleyebiliriz. Degisiklikler \"Son guncelleme\" tarihi guncellenerek yansitilir."
-  ,"privacyPolicySection13Title":"13. Bize Ulasin"
-  ,"privacyPolicySection13Body":"Bu Gizlilik Politikasi hakkinda sorunuz varsa bize ulasin:"
+  ,"privacyPolicySection10Body":"Bu hizmetlerin kendi gizlilik politikaları vardır."
+  ,"privacyPolicySection11Title":"11. Uluslararası Veri Aktarımları"
+  ,"privacyPolicySection11Body":"Bilgileriniz, hizmet sağlayıcılarımızın faaliyet gösterdiği farklı ülkelerde işlenebilir."
+  ,"privacyPolicySection12Title":"12. Bu Gizlilik Politikasındaki Değişiklikler"
+  ,"privacyPolicySection12Body":"Bu politikayı zaman zaman güncelleyebiliriz. Değişiklikler \"Son güncelleme\" tarihi güncellenerek yansıtılır."
+  ,"privacyPolicySection13Title":"13. Bize Ulaşın"
+  ,"privacyPolicySection13Body":"Bu Gizlilik Politikası hakkında sorunuz varsa bize ulaşın:"
   ,"privacyPolicySection13Email":"E-posta: ismailyucelolmez514@gmail.com"
-  ,"privacyPolicyFooter":"Rubricator'u kullanarak bu Gizlilik Politikasi'ni kabul etmis olursunuz."
+  ,"privacyPolicyFooter":"Rubricator'u kullanarak bu Gizlilik Politikası'nı kabul etmiş olursunuz."
 }

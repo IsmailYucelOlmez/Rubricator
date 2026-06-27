@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../auth/presentation/login_page.dart';
 import '../../../auth/presentation/profile_page.dart';
+import '../../../user_books/domain/entities/user_book_snapshot.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 
 /// Puts a favorite control on the top-right of [child] (book cover).
@@ -15,18 +16,46 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
     required this.bookId,
     required this.child,
     this.compact = false,
+    this.title,
+    this.author,
+    this.categories = const [],
+    this.isFavorite,
   });
 
   final String bookId;
   final Widget child;
   final bool compact;
+  final String? title;
+  final String? author;
+  final List<String> categories;
+  /// When set, skips per-card [userBookProvider] read (home page bulk favorites).
+  final bool? isFavorite;
+
+  UserBookSnapshot? get _bookSnapshot {
+    final resolvedTitle = title?.trim();
+    final resolvedAuthor = author?.trim();
+    if (resolvedTitle == null ||
+        resolvedTitle.isEmpty ||
+        resolvedAuthor == null ||
+        resolvedAuthor.isEmpty) {
+      return null;
+    }
+    return UserBookSnapshot(
+      title: resolvedTitle,
+      author: resolvedAuthor,
+      categories: categories,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
-    final userBookAsync = ref.watch(userBookProvider(bookId));
-    final isFavorite = userBookAsync.valueOrNull?.isFavorite ?? false;
+    final userBookAsync = isFavorite == null
+        ? ref.watch(userBookProvider(bookId))
+        : null;
+    final resolvedFavorite =
+        isFavorite ?? userBookAsync?.valueOrNull?.isFavorite ?? false;
 
     // Tight circle around the glyph (small padding for tap + ink).
     final iconSize = compact ? 16.0 : 20.0;
@@ -43,7 +72,7 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
           top: top,
           right: right,
           child: Tooltip(
-            message: isFavorite ? l10n.removeFromFavorites : l10n.addToFavorites,
+            message: resolvedFavorite ? l10n.removeFromFavorites : l10n.addToFavorites,
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
@@ -56,7 +85,9 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
                     return;
                   }
                   try {
-                    await ref.read(userBookProvider(bookId).notifier).toggleFavorite();
+                    await ref
+                        .read(userBookProvider(bookId).notifier)
+                        .toggleFavorite(snapshot: _bookSnapshot);
                   } catch (e) {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -77,9 +108,9 @@ class BookCoverWithFavoriteButton extends ConsumerWidget {
                           color: AppColors.textPrimary,
                         ),
                         Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          resolvedFavorite ? Icons.favorite : Icons.favorite_border,
                           size: iconSize,
-                          color: isFavorite
+                          color: resolvedFavorite
                               ? AppColors.primary
                               : Theme.of(context).colorScheme.onSurface,
                         ),

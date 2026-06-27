@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../services/supabase_service.dart';
+import '../../../core/network/supabase_service.dart';
 import '../domain/entities/user_book_entity.dart';
 import '../domain/entities/user_book_snapshot.dart';
 
@@ -59,16 +59,27 @@ class UserBooksRepository {
       ...?(isFavorite != null
           ? <String, dynamic>{'is_favorite': isFavorite}
           : null),
-      'progress': status == ReadingStatus.reading ? progress : null,
     };
+
+    if (status == ReadingStatus.reading) {
+      if (progress != null) {
+        payload['progress'] = progress;
+      } else {
+        final existing = await getUserBook(bookId);
+        payload['progress'] = existing?.progress ?? 0;
+      }
+    } else {
+      payload['progress'] = null;
+    }
+
+    if (snapshot != null) {
+      payload['book_title'] = snapshot.title;
+      payload['book_author'] = snapshot.author;
+      payload['book_categories'] = snapshot.categories;
+    }
 
     if (status == ReadingStatus.completed) {
       payload['completed_at'] = DateTime.now().toUtc().toIso8601String();
-      if (snapshot != null) {
-        payload['book_title'] = snapshot.title;
-        payload['book_author'] = snapshot.author;
-        payload['book_categories'] = snapshot.categories;
-      }
     } else {
       payload['completed_at'] = null;
     }
@@ -79,22 +90,37 @@ class UserBooksRepository {
     );
   }
 
-  Future<void> toggleFavorite(String bookId) async {
+  Future<void> toggleFavorite(
+    String bookId, {
+    UserBookSnapshot? snapshot,
+  }) async {
     final userId = _requireUserId();
     final existing = await getUserBook(bookId);
     if (existing == null) {
-      await _client.from('user_books').insert(<String, dynamic>{
+      final payload = <String, dynamic>{
         'user_id': userId,
         'book_id': bookId,
         'status': readingStatusToDb(ReadingStatus.toRead),
         'is_favorite': true,
-      });
+      };
+      if (snapshot != null) {
+        payload['book_title'] = snapshot.title;
+        payload['book_author'] = snapshot.author;
+        payload['book_categories'] = snapshot.categories;
+      }
+      await _client.from('user_books').insert(payload);
       return;
     }
 
+    final update = <String, dynamic>{'is_favorite': !existing.isFavorite};
+    if (snapshot != null && !existing.hasCompletedSnapshot) {
+      update['book_title'] = snapshot.title;
+      update['book_author'] = snapshot.author;
+      update['book_categories'] = snapshot.categories;
+    }
     await _client
         .from('user_books')
-        .update(<String, dynamic>{'is_favorite': !existing.isFavorite})
+        .update(update)
         .eq('id', existing.id);
   }
 
@@ -127,6 +153,23 @@ class UserBooksRepository {
     final list = rows as List<dynamic>;
     return list
         .map((e) => UserBookEntity.fromMap(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<String>> getFavoriteBookIds() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return const <String>[];
+
+    final rows = await _client
+        .from('user_books')
+        .select('book_id')
+        .eq('user_id', userId)
+        .eq('is_favorite', true);
+    final list = rows as List<dynamic>;
+    return list
+        .map((e) => (e as Map<String, dynamic>)['book_id'])
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
         .toList();
   }
 }

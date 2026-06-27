@@ -25,6 +25,10 @@ class ReviewEntity {
     required this.userId,
     required this.content,
     required this.createdAt,
+    this.likes = 0,
+    this.likedByCurrentUser = false,
+    this.userRating,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -32,6 +36,10 @@ class ReviewEntity {
   final String userId;
   final String content;
   final DateTime createdAt;
+  final int likes;
+  final bool likedByCurrentUser;
+  final int? userRating;
+  final bool isFavorite;
 }
 
 class ExternalReviewEntity {
@@ -60,6 +68,7 @@ class QuoteEntity {
     required this.content,
     required this.likes,
     required this.createdAt,
+    this.likedByCurrentUser = false,
   });
 
   final String id;
@@ -68,6 +77,14 @@ class QuoteEntity {
   final String content;
   final int likes;
   final DateTime createdAt;
+  final bool likedByCurrentUser;
+}
+
+class LikeToggleResult {
+  const LikeToggleResult({required this.liked, required this.likes});
+
+  final bool liked;
+  final int likes;
 }
 
 class RatingEntity {

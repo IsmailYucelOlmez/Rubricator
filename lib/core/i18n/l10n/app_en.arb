@@ -24,10 +24,10 @@
   "selectLanguage": "Select Language",
   "english": "English",
   "turkish": "Turkish",
-  "signInPrompt": "Sign in to sync favorites across devices.",
+  "signInPrompt": "Sign in to sync your library, lists, and reading progress across devices.",
   "signIn": "Sign in",
   "createAccount": "Create account",
-  "signedInFallback": "Signed in",
+  "signedInFallback": "You're signed in",
   "signOut": "Sign out",
   "loadSessionError": "Could not load session: {error}",
   "@loadSessionError": {
@@ -39,20 +39,20 @@
   "accountAlreadyExists": "An account with this email already exists.",
   "email": "Email",
   "password": "Password",
-  "passwordMin6": "Password (min 6, upper, lower, punctuation)",
+  "passwordMin6": "At least 6 characters with upper, lower, and punctuation",
   "cancel": "Cancel",
   "signUp": "Sign up",
-  "confirmAccountEmailNotice": "Check your email to confirm your account if required.",
+  "confirmAccountEmailNotice": "If prompted, check your email to verify your account.",
   "readingHabit": "Reading habit",
-  "readingLoggedToday": "You logged reading today. Nice work.",
+  "readingLoggedToday": "You've logged reading today—nice work!",
   "didYouReadToday": "Did you read today?",
-  "todayStatusError": "Today status: {error}",
+  "todayStatusError": "Couldn't load today's status. {error}",
   "@todayStatusError": {
     "placeholders": {
       "error": {}
     }
   },
-  "quickLog": "Quick log",
+  "quickLog": "Log reading",
   "details": "Details",
   "readingStats": "Reading stats",
   "booksCount": "{count} books",
@@ -81,9 +81,9 @@
       "error": {}
     }
   },
-  "searchBooksTitle": "Search Books",
-  "searchByTitleOrAuthorHint": "Search by title or author (min. 2 characters)",
-  "noBooksFoundFor": "No books found for \"{query}\".",
+  "searchBooksTitle": "Search books",
+  "searchByTitleOrAuthorHint": "Search by title or author…",
+  "noBooksFoundFor": "No results for \"{query}\". Try a different title or author.",
   "@noBooksFoundFor": {
     "placeholders": {
       "query": {}
@@ -91,14 +91,15 @@
   },
   "recentSearches": "Recent Searches",
   "loadRecentSearchesError": "Could not load recent searches.",
-  "noRecentSearchesYet": "No recent searches yet.",
-  "recentSearchedBooks": "Recent Searched Books",
-  "loadRecentSearchedBooksError": "Could not load recent searched books.",
-  "noRecentSearchedBooksYet": "No recent searched books yet.",
-  "searchBooksMin2Hint": "Search books (min. 2 characters)",
+  "noRecentSearchesYet": "Your recent searches will appear here.",
+  "recentSearchedBooks": "Recently viewed books",
+  "loadRecentSearchedBooksError": "Couldn't load recently viewed books.",
+  "noRecentSearchedBooksYet": "Books you've searched for will show up here.",
+  "searchBooksMin2Hint": "Type at least 2 characters to search",
   "discover": "Discover",
   "noBooksFound": "No books found",
-  "searchCouldNotComplete": "Could not complete the search. Please try again.",
+  "searchCouldNotComplete": "Search didn't complete. Please try again.",
+  "continueReading": "Continue Reading",
   "popular": "Popular",
   "loadPopularBooksError": "Could not load popular books.",
   "loadGenreBooksError": "Could not load {genre} books.",
@@ -114,7 +115,7 @@
   "genreThriller": "Thriller",
   "genreHorror": "Horror",
   "loadHomeGenresError": "Could not load genre sections. Please try again.",
-  "homeGenreEmptySoft": "No picks for {genre} yet. Pull to refresh or try later.",
+  "homeGenreEmptySoft": "Nothing in {genre} yet. Pull down to refresh or check back soon.",
   "@homeGenreEmptySoft": {
     "placeholders": {
       "genre": {}
@@ -128,14 +129,14 @@
   "addToFavorites": "Add to favorites",
   "removeFromFavorites": "Remove from favorites",
   "favorites": "Favorites",
-  "signInToSeeLists": "Sign in from Profile to see your lists.",
-  "noBooksInStatus": "No books in {status}.",
+  "signInToSeeLists": "Sign in to view and manage your reading lists.",
+  "noBooksInStatus": "No books marked as {status} yet.",
   "@noBooksInStatus": {
     "placeholders": {
       "status": {}
     }
   },
-  "noFavoritesYet": "No favorites yet.",
+  "noFavoritesYet": "Save books to your favorites and they'll show up here.",
   "couldNotLoadList": "Could not load list: {error}",
   "@couldNotLoadList": {
     "placeholders": {
@@ -145,7 +146,7 @@
   "bookDetails": "Book Details",
   "authorProfile": "Author profile",
   "ratingSubmitted": "Rating submitted.",
-  "noDescriptionAvailable": "No description available.",
+  "noDescriptionAvailable": "No description yet.",
   "reviewAdded": "Review added.",
   "reviewUpdated": "Review updated.",
   "reviewDeleted": "Review deleted.",
@@ -154,10 +155,10 @@
   "couldNotOpenBrowser": "Could not open browser.",
   "quoteAdded": "Quote added.",
   "relatedBooks": "Related books",
-  "noRelatedTitlesFound": "No related titles found (subjects missing or empty results).",
-  "couldNotLoadRelatedBooks": "Could not load related books.",
+  "noRelatedTitlesFound": "We couldn't find similar books for this title.",
+  "couldNotLoadRelatedBooks": "Couldn't load related books.",
   "aiSummary": "AI Summary",
-  "aiSummaryFailed": "AI summary failed",
+  "aiSummaryFailed": "Summary couldn't be generated. Try again later.",
   "couldNotLoadThisBook": "Could not load this book. {error}",
   "@couldNotLoadThisBook": {
     "placeholders": {
@@ -184,9 +185,18 @@
   "reviews": "Reviews",
   "userReviews": "User Reviews",
   "externalReviews": "External Reviews",
-  "writeReviewHint": "Write your review (min 10 chars)",
+  "writeReviewHint": "Share your thoughts (at least 10 characters)",
   "addReview": "Add review",
-  "noUserReviewsYet": "No user reviews yet.",
+  "noUserReviewsYet": "Be the first to share your thoughts on this book.",
+  "reviewUserRating": "Rating: {rating}/10",
+  "@reviewUserRating": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewInFavorites": "In favorites",
   "couldNotLoadReviews": "Could not load reviews.",
   "reviewTitle": "Review title",
   "reviewUrlHint": "https://example.com/review",
@@ -194,55 +204,63 @@
   "noExternalReviewsYet": "No external reviews yet.",
   "couldNotLoadExternalReviews": "Could not load external reviews.",
   "quotes": "Quotes",
-  "addMemorableQuote": "Add a memorable quote",
+  "addMemorableQuote": "Add a quote you want to remember",
   "addQuote": "Add quote",
-  "noQuotesYet": "No quotes yet.",
+  "noQuotesYet": "Saved quotes from this book will appear here.",
   "couldNotLoadQuotes": "Could not load quotes.",
   "editReview": "Edit review",
   "save": "Save"
-  ,"log":"Log"
-  ,"signInForHabit":"Sign in to log reading, see streaks, and view your activity calendar."
-  ,"readingLogged":"Reading logged"
-  ,"readingLoggedOffline":"Reading saved offline. It will sync when you're back online."
+  ,"log":"Record"
+  ,"signInForHabit":"Sign in to track reading, build streaks, and see your activity calendar."
+  ,"readingLogged":"Reading logged!"
+  ,"readingLoggedOffline":"Saved offline—it'll sync when you're back online."
   ,"readingLogsSynced":"Pending reading logs synced"
-  ,"couldNotSave":"Could not save: {error}"
+  ,"couldNotSave":"Couldn't save. {error}"
   ,"@couldNotSave":{"placeholders":{"error":{}}}
-  ,"addMinutesOrPagesPrompt":"Add at least minutes or pages from today."
+  ,"addMinutesOrPagesPrompt":"Enter minutes read or pages finished today."
   ,"minutes":"Minutes"
   ,"plusTenMin":"+10 min"
   ,"pages":"Pages"
   ,"plusFivePages":"+5 pages"
-  ,"optionalAddBooksPrompt":"Optional: add books to your reading list to pick one here."
+  ,"optionalAddBooksPrompt":"Tip: add books to your Reading list to link them here."
   ,"bookOptional":"Book (optional)"
   ,"book":"Book"
   ,"none":"None"
-  ,"booksError":"Books: {error}"
+  ,"booksError":"Couldn't load books. {error}"
   ,"@booksError":{"placeholders":{"error":{}}}
-  ,"saveLog":"Save log"
-  ,"calendarError":"Calendar error: {error}"
+  ,"saveLog":"Save entry"
+  ,"selectReadingBook":"Choose a book from your Reading list"
+  ,"noReadingBooksForLog":"Add books to your Reading list to log progress for a specific title."
+  ,"selectBooksToLog":"Select what you read today and add minutes and/or pages for each."
+  ,"currentlyReadingBooks":"Currently reading"
+  ,"generalReadingLog":"General reading"
+  ,"generalReadingLogHint":"Track reading time without linking to a specific book."
+  ,"readingLoggedCount":"{count} reading logs saved"
+  ,"@readingLoggedCount":{"placeholders":{"count":{"type":"int"}}}
+  ,"calendarError":"Couldn't load calendar. {error}"
   ,"@calendarError":{"placeholders":{"error":{}}}
   ,"activity":"Activity"
   ,"lastWeeksMoreReading":"Last {weeks} weeks (darker = more reading)"
   ,"@lastWeeksMoreReading":{"placeholders":{"weeks":{"type":"int"}}}
-  ,"noLogsYetTapQuickLog":"No logs yet - tap Quick log to start."
-  ,"recentLogs":"Recent logs"
+  ,"noLogsYetTapQuickLog":"No entries yet. Tap Log reading to get started."
+  ,"recentLogs":"Recent entries"
   ,"minutesShort":"{count} min"
   ,"@minutesShort":{"placeholders":{"count":{"type":"int"}}}
   ,"pagesShort":"{count} pages"
   ,"@pagesShort":{"placeholders":{"count":{"type":"int"}}}
   ,"bookIdLabel":"Book: {bookId}"
   ,"@bookIdLabel":{"placeholders":{"bookId":{}}}
-  ,"logsError":"Logs error: {error}"
+  ,"logsError":"Couldn't load entries. {error}"
   ,"@logsError":{"placeholders":{"error":{}}}
-  ,"chartError":"Chart error: {error}"
+  ,"chartError":"Couldn't load chart. {error}"
   ,"@chartError":{"placeholders":{"error":{}}}
   ,"dailyMinutes14Days":"Daily minutes (14 days)"
   ,"weeklyMinutes":"Weekly minutes"
-  ,"thisWeekShort":"This wk"
+  ,"thisWeekShort":"This week"
   ,"weeksAgoShort":"-{weeks}w"
   ,"@weeksAgoShort":{"placeholders":{"weeks":{"type":"int"}}}
   ,"totals":"Totals"
-  ,"statsError":"Stats error: {error}"
+  ,"statsError":"Couldn't load stats. {error}"
   ,"@statsError":{"placeholders":{"error":{}}}
   ,"dayStreak":"{days} day streak"
   ,"@dayStreak":{"placeholders":{"days":{"type":"int"}}}
@@ -254,53 +272,53 @@
   ,"couldNotLoadStreak":"Could not load streak: {error}"
   ,"@couldNotLoadStreak":{"placeholders":{"error":{}}}
   ,"readingReminderTitle":"Reading reminder"
-  ,"readingReminderBodyNoStreak":"You have not logged reading today. Add a quick log to start your habit."
-  ,"readingReminderBodyWithStreak":"You have not logged reading today. Log before midnight to keep your {streak}-day streak."
+  ,"readingReminderBodyNoStreak":"You haven't logged reading today. Add a quick entry to build your habit."
+  ,"readingReminderBodyWithStreak":"Don't lose your {streak}-day streak—log your reading before midnight."
   ,"@readingReminderBodyWithStreak":{"placeholders":{"streak":{"type":"int"}}}
   ,"readingReminderChannelName":"Reading reminders"
   ,"readingReminderChannelDescription":"Daily reading reminders"
-  ,"signInToSeeStats":"Sign in to see your library analytics and reading identity."
-  ,"contentYouAdded":"Content you added"
+  ,"signInToSeeStats":"Sign in to explore your reading stats and discover your reading identity."
+  ,"contentYouAdded":"Content you've added"
   ,"reviewsAndQuotes":"Reviews and quotes"
-  ,"noDataYet":"No data yet"
+  ,"noDataYet":"Start reading and adding content to see stats here."
   ,"couldNotLoadContentStats":"Could not load content stats: {error}"
   ,"@couldNotLoadContentStats":{"placeholders":{"error":{}}}
   ,"yourRatings":"Your ratings"
-  ,"starsGivenToBooks":"Stars you gave to books"
+  ,"starsGivenToBooks":"Your star ratings"
   ,"couldNotLoadRatings":"Could not load ratings: {error}"
   ,"@couldNotLoadRatings":{"placeholders":{"error":{}}}
   ,"library":"Library"
-  ,"countsFromShelves":"Counts from your shelves"
+  ,"countsFromShelves":"Books on your shelves"
   ,"couldNotLoadLibraryStats":"Could not load library stats: {error}"
   ,"@couldNotLoadLibraryStats":{"placeholders":{"error":{}}}
   ,"readingIdentity":"Reading identity"
   ,"genresAndAuthorsFromCompleted":"Genres and authors from completed books"
-  ,"topGenres":"Top genres"
+  ,"topGenres":"Favorite genres"
   ,"couldNotLoadGenres":"Could not load genres: {error}"
   ,"@couldNotLoadGenres":{"placeholders":{"error":{}}}
-  ,"topAuthors":"Top authors"
+  ,"topAuthors":"Favorite authors"
   ,"couldNotLoadAuthors":"Could not load authors: {error}"
   ,"@couldNotLoadAuthors":{"placeholders":{"error":{}}}
   ,"author":"Author"
-  ,"noBiographyAvailable":"No biography available."
+  ,"noBiographyAvailable":"No biography available for this author."
   ,"couldNotLoadAuthor":"Could not load author. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
-  ,"listsForYou":"For You"
-  ,"listsTopTwenty":"Timeless"
+  ,"listsForYou":"For you"
+  ,"listsTopTwenty":"Timeless picks"
   ,"listsFollowing":"Following"
   ,"myLists":"My Lists"
   ,"savedLists":"Saved Lists"
-  ,"createList":"Create list"
+  ,"createList":"Create a list"
   ,"editList":"Edit list"
   ,"title":"Title"
   ,"description":"Description"
   ,"public":"Public"
-  ,"bookSelector":"Book selector"
+  ,"bookSelector":"Add books"
   ,"searchViaGoogleBooks":"Search via Google Books"
   ,"search":"Search"
   ,"selectedBooks":"Selected books"
-  ,"noBooksSelectedYet":"No books selected yet."
-  ,"noListsYet":"No lists yet."
+  ,"noBooksSelectedYet":"Search and add books to your list."
+  ,"noListsYet":"You haven't created any lists yet. Start your first one!"
   ,"couldNotLoadLists":"Could not load lists: {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
   ,"byUser":"by {userName}"
@@ -311,10 +329,10 @@
   ,"@couldNotLoadListItems":{"placeholders":{"error":{}}}
   ,"couldNotLoadComments":"Could not load comments: {error}"
   ,"@couldNotLoadComments":{"placeholders":{"error":{}}}
-  ,"addCommentHint":"Add a comment..."
+  ,"addCommentHint":"Write a comment…"
   ,"send":"Send"
   ,"deleteListTitle":"Delete list?"
-  ,"deleteListConfirm":"This action cannot be undone."
+  ,"deleteListConfirm":"This list will be permanently deleted."
   ,"delete":"Delete"
   ,"couldNotSaveList":"Could not save list: {error}"
   ,"@couldNotSaveList":{"placeholders":{"error":{}}}
@@ -327,6 +345,7 @@
   ,"uxErrorNetwork":"Check your internet connection."
   ,"uxErrorTimeout":"The request timed out."
   ,"uxErrorUnknown":"Something went wrong. Please try again."
+  ,"uxErrorBoundaryTitle":"Unexpected error"
   ,"uxRetry":"Try again"
   ,"uxOfflineBanner":"No internet connection"
   ,"uxEmailRequired":"Email is required"
@@ -335,21 +354,21 @@
   ,"uxUserNameRequired":"Display name is required"
   ,"uxTitleRequired":"Title is required"
   ,"uxAcceptPrivacyRequired":"Please accept the privacy policy to continue"
-  ,"uxListCreatedSuccess":"List created successfully"
-  ,"uxListUpdatedSuccess":"List updated successfully"
+  ,"uxListCreatedSuccess":"List created"
+  ,"uxListUpdatedSuccess":"List saved"
   ,"uxRemoveBookFromListTitle":"Remove this book?"
-  ,"uxRemoveBookFromListMessage":"It will be removed from this list."
+  ,"uxRemoveBookFromListMessage":"It will be removed from this list only."
   ,"uxRemove":"Remove"
   ,"uxDeleteReviewTitle":"Delete review?"
-  ,"uxDeleteReviewMessage":"This cannot be undone."
+  ,"uxDeleteReviewMessage":"This review will be permanently deleted."
   ,"uxGalleryPluginError":"Gallery could not be opened. Close the app completely and try again."
-  ,"uxProfilePhotoStorageNotReady":"Profile photo storage is not ready yet. Ask the admin to run database migrations."
-  ,"uxProfilePhotoPermissionDenied":"Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration."
+  ,"uxProfilePhotoStorageNotReady":"Profile photos aren't available yet. Please try again later."
+  ,"uxProfilePhotoPermissionDenied":"Profile photo upload is temporarily unavailable. Please try again later."
   ,"forgotPassword":"Forgot password?"
   ,"forgotPasswordTitle":"Forgot password"
-  ,"forgotPasswordPrompt":"Enter your email. We will send an 8-digit code (not a link) to reset your password."
+  ,"forgotPasswordPrompt":"Enter your email and we'll send an 8-digit code to reset your password."
   ,"sendResetCode":"Send code"
-  ,"resetCodeSent":"An 8-digit code was sent to your email."
+  ,"resetCodeSent":"Check your email for your 8-digit code."
   ,"resetPasswordTitle":"Reset password"
   ,"resetPasswordPrompt":"Enter the code sent to {email}."
   ,"@resetPasswordPrompt":{"placeholders":{"email":{"type":"String"}}}

@@ -7,6 +7,10 @@ class ReviewModel {
     required this.userId,
     required this.content,
     required this.createdAt,
+    this.likes = 0,
+    this.likedByCurrentUser = false,
+    this.userRating,
+    this.isFavorite = false,
   });
 
   final String id;
@@ -14,6 +18,10 @@ class ReviewModel {
   final String userId;
   final String content;
   final DateTime createdAt;
+  final int likes;
+  final bool likedByCurrentUser;
+  final int? userRating;
+  final bool isFavorite;
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
@@ -24,6 +32,7 @@ class ReviewModel {
       createdAt:
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      likes: (json['likes'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -33,6 +42,7 @@ class ReviewModel {
     'user_id': userId,
     'content': content,
     'created_at': createdAt.toUtc().toIso8601String(),
+    'likes': likes,
   };
 
   ReviewEntity toEntity() => ReviewEntity(
@@ -41,6 +51,10 @@ class ReviewModel {
     userId: userId,
     content: content,
     createdAt: createdAt,
+    likes: likes,
+    likedByCurrentUser: likedByCurrentUser,
+    userRating: userRating,
+    isFavorite: isFavorite,
   );
 
   factory ReviewModel.fromEntity(ReviewEntity entity) => ReviewModel(
@@ -49,6 +63,10 @@ class ReviewModel {
     userId: entity.userId,
     content: entity.content,
     createdAt: entity.createdAt,
+    likes: entity.likes,
+    likedByCurrentUser: entity.likedByCurrentUser,
+    userRating: entity.userRating,
+    isFavorite: entity.isFavorite,
   );
 }
 
@@ -119,6 +137,7 @@ class QuoteModel {
     required this.content,
     required this.likes,
     required this.createdAt,
+    this.likedByCurrentUser = false,
   });
 
   final String id;
@@ -127,6 +146,7 @@ class QuoteModel {
   final String content;
   final int likes;
   final DateTime createdAt;
+  final bool likedByCurrentUser;
 
   factory QuoteModel.fromJson(Map<String, dynamic> json) {
     return QuoteModel(
@@ -157,6 +177,7 @@ class QuoteModel {
     content: content,
     likes: likes,
     createdAt: createdAt,
+    likedByCurrentUser: likedByCurrentUser,
   );
 
   factory QuoteModel.fromEntity(QuoteEntity entity) => QuoteModel(
@@ -166,5 +187,6 @@ class QuoteModel {
     content: entity.content,
     likes: entity.likes,
     createdAt: entity.createdAt,
+    likedByCurrentUser: entity.likedByCurrentUser,
   );
 }

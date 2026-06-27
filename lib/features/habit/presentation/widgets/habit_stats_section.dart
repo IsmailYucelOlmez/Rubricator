@@ -78,7 +78,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 28, color: AppColors.gold),
+        Icon(icon, size: 28, color: AppColors.accent(context)),
         const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

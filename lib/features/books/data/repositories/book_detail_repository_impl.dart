@@ -1,4 +1,4 @@
-import '../../../../services/api_service.dart';
+import '../services/api_service.dart';
 import '../../domain/entities/book_detail_entities.dart';
 import '../../domain/repositories/book_detail_repository.dart';
 import '../datasources/book_detail_remote_datasource.dart';
@@ -63,7 +63,12 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   }
 
   @override
-  Future<void> likeQuote(String quoteId) => _remote.likeQuote(quoteId);
+  Future<LikeToggleResult> toggleQuoteLike(String quoteId) =>
+      _remote.toggleQuoteLike(quoteId);
+
+  @override
+  Future<LikeToggleResult> toggleReviewLike(String reviewId) =>
+      _remote.toggleReviewLike(reviewId);
 
   @override
   Future<List<QuoteEntity>> getQuotes(String bookId) async {

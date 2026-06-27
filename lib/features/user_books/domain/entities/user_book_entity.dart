@@ -40,6 +40,13 @@ List<String> _categoriesFromMap(Map<String, dynamic> map) {
   return const [];
 }
 
+int? _progressFromMap(dynamic raw) {
+  if (raw == null) return null;
+  if (raw is int) return raw;
+  if (raw is num) return raw.round();
+  return int.tryParse(raw.toString());
+}
+
 class UserBookEntity {
   const UserBookEntity({
     required this.id,
@@ -69,6 +76,7 @@ class UserBookEntity {
   final List<String> bookCategories;
   final DateTime? completedAt;
 
+  /// Stored title/author on `user_books` — avoids Google Books fetch in lists.
   bool get hasCompletedSnapshot =>
       bookTitle != null &&
       bookTitle!.isNotEmpty &&
@@ -112,7 +120,7 @@ class UserBookEntity {
       bookId: map['book_id'] as String? ?? '',
       status: readingStatusFromDb((map['status'] as String?) ?? 'to_read'),
       isFavorite: map['is_favorite'] as bool? ?? false,
-      progress: map['progress'] as int?,
+      progress: _progressFromMap(map['progress']),
       createdAt: DateTime.tryParse(map['created_at'] as String? ?? '') ??
           DateTime.now(),
       updatedAt: DateTime.tryParse(map['updated_at'] as String? ?? '') ??

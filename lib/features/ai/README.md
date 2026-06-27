@@ -1,1 +1,1 @@
-AI feature logic lives in `lib/services/ai_service.dart` for MVP.
+AI feature logic lives in `lib/features/books/data/services/ai_service.dart` for MVP.

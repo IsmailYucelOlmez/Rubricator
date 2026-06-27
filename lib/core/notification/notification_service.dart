@@ -3,10 +3,10 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
-import '../core/logging/app_logger.dart';
-import '../core/notification/reading_reminder_localization.dart';
-import '../core/notification/reading_reminder_logic.dart';
-import '../core/notification/reading_reminder_prefs.dart';
+import '../logging/app_logger.dart';
+import 'reading_reminder_localization.dart';
+import 'reading_reminder_logic.dart';
+import 'reading_reminder_prefs.dart';
 
 class NotificationService {
   static final NotificationService instance = NotificationService._();

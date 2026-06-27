@@ -1,6 +1,7 @@
-import '../../../../services/api_service.dart';
 import '../models/author_model.dart';
 import '../models/book_model.dart';
+import '../services/api_service.dart';
+import '../utils/google_books_utils.dart';
 
 /// Raw search page from Google Books `/volumes`.
 class GoogleBooksSearchPage {
@@ -8,30 +9,57 @@ class GoogleBooksSearchPage {
     required this.docs,
     required this.numFound,
     required this.start,
+    this.hasMore = false,
   });
 
   final List<BookModel> docs;
   final int numFound;
   final int start;
+  final bool hasMore;
 }
 
 /// Remote calls to Google Books API (no domain types).
 class GoogleBooksRemoteDataSource {
-  GoogleBooksRemoteDataSource(this._api);
+  GoogleBooksRemoteDataSource(this._api, {this.lang = 'tr'});
 
   final ApiService _api;
+  final String lang;
 
   static const int _defaultLimit = 20;
   static const int _maxPageSize = 40;
-  static const List<Duration> _authorRequestRetryDelays = <Duration>[
-    Duration.zero,
-    Duration(milliseconds: 300),
-    Duration(milliseconds: 900),
-  ];
 
   int _clampedLimit(int limit) {
     if (limit < 1) return 1;
     return limit > _maxPageSize ? _maxPageSize : limit;
+  }
+
+  Map<String, dynamic> _listParams({
+    required String q,
+    required int maxResults,
+    String? orderBy,
+    int? startIndex,
+  }) {
+    return <String, dynamic>{
+      'q': q,
+      ...GoogleBooksUtils.baseListParams(
+        lang: lang,
+        maxResults: maxResults,
+        orderBy: orderBy,
+        startIndex: startIndex,
+      ),
+    };
+  }
+
+  List<BookModel> _parseItemsRaw(Map<String, dynamic> json) {
+    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
+    return itemsRaw
+        .whereType<Map<String, dynamic>>()
+        .map(BookModel.fromGoogleBooksVolume)
+        .toList();
+  }
+
+  List<BookModel> _parseItems(Map<String, dynamic> json) {
+    return GoogleBooksUtils.postProcess(_parseItemsRaw(json));
   }
 
   Future<GoogleBooksSearchPage> searchBooks({
@@ -39,28 +67,41 @@ class GoogleBooksRemoteDataSource {
     int page = 1,
     int limit = _defaultLimit,
   }) async {
-    final q = query.trim();
+    final queries = GoogleBooksUtils.buildUnifiedSearchQueries(query);
+    if (queries.isEmpty) {
+      return const GoogleBooksSearchPage(docs: [], numFound: 0, start: 0);
+    }
     final safePage = page < 1 ? 1 : page;
     final safeLimit = _clampedLimit(limit);
     final startIndex = (safePage - 1) * safeLimit;
-    final json = await _api.getJson(
-      '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': q,
-        'startIndex': startIndex,
-        'maxResults': safeLimit,
-      },
+
+    final responses = await Future.wait<Map<String, dynamic>>(
+      queries.map(
+        (q) => _api.getJsonWithRetry(
+          '/volumes',
+          queryParameters: _listParams(
+            q: q,
+            maxResults: safeLimit,
+            startIndex: startIndex,
+          ),
+        ),
+      ),
     );
-    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
-    final docs = itemsRaw
-        .whereType<Map<String, dynamic>>()
-        .map(BookModel.fromGoogleBooksVolume)
-        .toList();
-    final numFound = (json['totalItems'] as num?)?.toInt() ?? 0;
+
+    final merged = <BookModel>[];
+    var anyFullPage = false;
+    for (final json in responses) {
+      final batch = _parseItemsRaw(json);
+      if (batch.length >= safeLimit) anyFullPage = true;
+      merged.addAll(batch);
+    }
+
+    final docs = GoogleBooksUtils.postProcess(merged);
     return GoogleBooksSearchPage(
       docs: docs,
-      numFound: numFound,
+      numFound: docs.length,
       start: startIndex,
+      hasMore: anyFullPage,
     );
   }
 
@@ -77,7 +118,6 @@ class GoogleBooksRemoteDataSource {
       final json = await _api.getJson('/volumes/$id');
       return BookModel.fromGoogleBooksVolume(json, mergeFrom: seed);
     } catch (_) {
-      // Wrong id space (e.g. Open Library OL…W ids), outages (503), or network.
       return seed;
     }
   }
@@ -110,31 +150,23 @@ class GoogleBooksRemoteDataSource {
   }) async {
     final a = author.trim().replaceAll('"', ' ');
     if (a.isEmpty) return <BookModel>[];
+
     final maxResults = _clampedLimit(limit);
     final variants = _authorSearchVariants(a);
     final queries = <String>[
       for (final name in variants) ...[
         'inauthor:"$name"',
         'inauthor:$name',
-        name,
       ],
     ];
 
     for (final q in queries) {
       try {
-        final json = await _getJsonWithRetry(
+        final json = await _api.getJsonWithRetry(
           '/volumes',
-          queryParameters: <String, dynamic>{
-            'q': q,
-            'maxResults': maxResults,
-          },
-          retryDelays: _authorRequestRetryDelays,
+          queryParameters: _listParams(q: q, maxResults: maxResults),
         );
-        final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
-        final results = itemsRaw
-            .whereType<Map<String, dynamic>>()
-            .map(BookModel.fromGoogleBooksVolume)
-            .toList();
+        final results = _parseItems(json);
         if (results.isNotEmpty) {
           return results;
         }
@@ -146,36 +178,12 @@ class GoogleBooksRemoteDataSource {
     return <BookModel>[];
   }
 
-  Future<Map<String, dynamic>> _getJsonWithRetry(
-    String path, {
-    required Map<String, dynamic> queryParameters,
-    required List<Duration> retryDelays,
-  }) async {
-    Object? lastError;
-    for (var i = 0; i < retryDelays.length; i++) {
-      final delay = retryDelays[i];
-      if (delay > Duration.zero) {
-        await Future<void>.delayed(delay);
-      }
-      try {
-        return await _api.getJson(path, queryParameters: queryParameters);
-      } catch (e) {
-        lastError = e;
-        if (i == retryDelays.length - 1) {
-          rethrow;
-        }
-      }
-    }
-    throw Exception('Request failed after retries: $lastError');
-  }
-
   List<String> _authorSearchVariants(String input) {
     final base = input.trim().replaceAll(RegExp(r'\s+'), ' ');
     if (base.isEmpty) return const <String>[];
 
     final variants = <String>[base];
 
-    // Some sources may provide "Last, First" names.
     if (base.contains(',')) {
       final parts = base
           .split(',')
@@ -202,19 +210,15 @@ class GoogleBooksRemoteDataSource {
 
   Future<List<BookModel>> fetchTrendingWorks({int limit = 20}) async {
     final safeLimit = _clampedLimit(limit);
-    final json = await _api.getJson(
+    final json = await _api.getJsonWithRetry(
       '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': 'subject:fiction',
-        'orderBy': 'newest',
-        'maxResults': safeLimit,
-      },
+      queryParameters: _listParams(
+        q: 'subject:fiction',
+        maxResults: safeLimit,
+        orderBy: 'newest',
+      ),
     );
-    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
-    return itemsRaw
-        .whereType<Map<String, dynamic>>()
-        .map(BookModel.fromGoogleBooksVolume)
-        .toList();
+    return _parseItems(json);
   }
 
   Future<List<BookModel>> fetchRelatedBySubject({
@@ -222,20 +226,18 @@ class GoogleBooksRemoteDataSource {
     required String excludeVolumeId,
     int limit = 12,
   }) async {
-    final s = subject.trim().replaceAll('"', ' ');
-    if (s.isEmpty) return <BookModel>[];
-    final json = await _api.getJson(
+    final q = GoogleBooksUtils.buildSubjectSearchQuery(subject);
+    if (q.isEmpty) return <BookModel>[];
+    final json = await _api.getJsonWithRetry(
       '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': 'subject:"$s"',
-        'maxResults': _clampedLimit(limit + 5),
-      },
+      queryParameters: _listParams(
+        q: q,
+        maxResults: _clampedLimit(limit + 5),
+      ),
     );
-    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
     final exclude = excludeVolumeId.trim();
     final out = <BookModel>[];
-    for (final row in itemsRaw.whereType<Map<String, dynamic>>()) {
-      final m = BookModel.fromGoogleBooksVolume(row);
+    for (final m in _parseItems(json)) {
       if (m.workId == exclude) continue;
       out.add(m);
       if (out.length >= limit) break;
@@ -248,20 +250,18 @@ class GoogleBooksRemoteDataSource {
     required String excludeVolumeId,
     int limit = 12,
   }) async {
-    final a = author.trim().replaceAll('"', ' ');
-    if (a.isEmpty) return <BookModel>[];
-    final json = await _api.getJson(
+    final q = GoogleBooksUtils.buildAuthorSearchQuery(author);
+    if (q.isEmpty) return <BookModel>[];
+    final json = await _api.getJsonWithRetry(
       '/volumes',
-      queryParameters: <String, dynamic>{
-        'q': 'inauthor:"$a"',
-        'maxResults': _clampedLimit(limit + 5),
-      },
+      queryParameters: _listParams(
+        q: q,
+        maxResults: _clampedLimit(limit + 5),
+      ),
     );
-    final itemsRaw = json['items'] as List<dynamic>? ?? <dynamic>[];
     final exclude = excludeVolumeId.trim();
     final out = <BookModel>[];
-    for (final row in itemsRaw.whereType<Map<String, dynamic>>()) {
-      final m = BookModel.fromGoogleBooksVolume(row);
+    for (final m in _parseItems(json)) {
       if (m.workId == exclude) continue;
       out.add(m);
       if (out.length >= limit) break;

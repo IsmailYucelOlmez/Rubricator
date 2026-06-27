@@ -251,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to sync favorites across devices.'**
+  /// **'Sign in to sync your library, lists, and reading progress across devices.'**
   String get signInPrompt;
 
   /// No description provided for @signIn.
@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @signedInFallback.
   ///
   /// In en, this message translates to:
-  /// **'Signed in'**
+  /// **'You\'re signed in'**
   String get signedInFallback;
 
   /// No description provided for @signOut.
@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordMin6.
   ///
   /// In en, this message translates to:
-  /// **'Password (min 6, upper, lower, punctuation)'**
+  /// **'At least 6 characters with upper, lower, and punctuation'**
   String get passwordMin6;
 
   /// No description provided for @cancel.
@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmAccountEmailNotice.
   ///
   /// In en, this message translates to:
-  /// **'Check your email to confirm your account if required.'**
+  /// **'If prompted, check your email to verify your account.'**
   String get confirmAccountEmailNotice;
 
   /// No description provided for @readingHabit.
@@ -341,7 +341,7 @@ abstract class AppLocalizations {
   /// No description provided for @readingLoggedToday.
   ///
   /// In en, this message translates to:
-  /// **'You logged reading today. Nice work.'**
+  /// **'You\'ve logged reading today—nice work!'**
   String get readingLoggedToday;
 
   /// No description provided for @didYouReadToday.
@@ -353,13 +353,13 @@ abstract class AppLocalizations {
   /// No description provided for @todayStatusError.
   ///
   /// In en, this message translates to:
-  /// **'Today status: {error}'**
+  /// **'Couldn\'t load today\'s status. {error}'**
   String todayStatusError(Object error);
 
   /// No description provided for @quickLog.
   ///
   /// In en, this message translates to:
-  /// **'Quick log'**
+  /// **'Log reading'**
   String get quickLog;
 
   /// No description provided for @details.
@@ -413,19 +413,19 @@ abstract class AppLocalizations {
   /// No description provided for @searchBooksTitle.
   ///
   /// In en, this message translates to:
-  /// **'Search Books'**
+  /// **'Search books'**
   String get searchBooksTitle;
 
   /// No description provided for @searchByTitleOrAuthorHint.
   ///
   /// In en, this message translates to:
-  /// **'Search by title or author (min. 2 characters)'**
+  /// **'Search by title or author…'**
   String get searchByTitleOrAuthorHint;
 
   /// No description provided for @noBooksFoundFor.
   ///
   /// In en, this message translates to:
-  /// **'No books found for \"{query}\".'**
+  /// **'No results for \"{query}\". Try a different title or author.'**
   String noBooksFoundFor(Object query);
 
   /// No description provided for @recentSearches.
@@ -443,31 +443,31 @@ abstract class AppLocalizations {
   /// No description provided for @noRecentSearchesYet.
   ///
   /// In en, this message translates to:
-  /// **'No recent searches yet.'**
+  /// **'Your recent searches will appear here.'**
   String get noRecentSearchesYet;
 
   /// No description provided for @recentSearchedBooks.
   ///
   /// In en, this message translates to:
-  /// **'Recent Searched Books'**
+  /// **'Recently viewed books'**
   String get recentSearchedBooks;
 
   /// No description provided for @loadRecentSearchedBooksError.
   ///
   /// In en, this message translates to:
-  /// **'Could not load recent searched books.'**
+  /// **'Couldn\'t load recently viewed books.'**
   String get loadRecentSearchedBooksError;
 
   /// No description provided for @noRecentSearchedBooksYet.
   ///
   /// In en, this message translates to:
-  /// **'No recent searched books yet.'**
+  /// **'Books you\'ve searched for will show up here.'**
   String get noRecentSearchedBooksYet;
 
   /// No description provided for @searchBooksMin2Hint.
   ///
   /// In en, this message translates to:
-  /// **'Search books (min. 2 characters)'**
+  /// **'Type at least 2 characters to search'**
   String get searchBooksMin2Hint;
 
   /// No description provided for @discover.
@@ -485,8 +485,14 @@ abstract class AppLocalizations {
   /// No description provided for @searchCouldNotComplete.
   ///
   /// In en, this message translates to:
-  /// **'Could not complete the search. Please try again.'**
+  /// **'Search didn\'t complete. Please try again.'**
   String get searchCouldNotComplete;
+
+  /// No description provided for @continueReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Reading'**
+  String get continueReading;
 
   /// No description provided for @popular.
   ///
@@ -551,7 +557,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeGenreEmptySoft.
   ///
   /// In en, this message translates to:
-  /// **'No picks for {genre} yet. Pull to refresh or try later.'**
+  /// **'Nothing in {genre} yet. Pull down to refresh or check back soon.'**
   String homeGenreEmptySoft(Object genre);
 
   /// No description provided for @toRead.
@@ -605,19 +611,19 @@ abstract class AppLocalizations {
   /// No description provided for @signInToSeeLists.
   ///
   /// In en, this message translates to:
-  /// **'Sign in from Profile to see your lists.'**
+  /// **'Sign in to view and manage your reading lists.'**
   String get signInToSeeLists;
 
   /// No description provided for @noBooksInStatus.
   ///
   /// In en, this message translates to:
-  /// **'No books in {status}.'**
+  /// **'No books marked as {status} yet.'**
   String noBooksInStatus(Object status);
 
   /// No description provided for @noFavoritesYet.
   ///
   /// In en, this message translates to:
-  /// **'No favorites yet.'**
+  /// **'Save books to your favorites and they\'ll show up here.'**
   String get noFavoritesYet;
 
   /// No description provided for @couldNotLoadList.
@@ -647,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @noDescriptionAvailable.
   ///
   /// In en, this message translates to:
-  /// **'No description available.'**
+  /// **'No description yet.'**
   String get noDescriptionAvailable;
 
   /// No description provided for @reviewAdded.
@@ -701,13 +707,13 @@ abstract class AppLocalizations {
   /// No description provided for @noRelatedTitlesFound.
   ///
   /// In en, this message translates to:
-  /// **'No related titles found (subjects missing or empty results).'**
+  /// **'We couldn\'t find similar books for this title.'**
   String get noRelatedTitlesFound;
 
   /// No description provided for @couldNotLoadRelatedBooks.
   ///
   /// In en, this message translates to:
-  /// **'Could not load related books.'**
+  /// **'Couldn\'t load related books.'**
   String get couldNotLoadRelatedBooks;
 
   /// No description provided for @aiSummary.
@@ -719,7 +725,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiSummaryFailed.
   ///
   /// In en, this message translates to:
-  /// **'AI summary failed'**
+  /// **'Summary couldn\'t be generated. Try again later.'**
   String get aiSummaryFailed;
 
   /// No description provided for @couldNotLoadThisBook.
@@ -791,7 +797,7 @@ abstract class AppLocalizations {
   /// No description provided for @writeReviewHint.
   ///
   /// In en, this message translates to:
-  /// **'Write your review (min 10 chars)'**
+  /// **'Share your thoughts (at least 10 characters)'**
   String get writeReviewHint;
 
   /// No description provided for @addReview.
@@ -803,8 +809,20 @@ abstract class AppLocalizations {
   /// No description provided for @noUserReviewsYet.
   ///
   /// In en, this message translates to:
-  /// **'No user reviews yet.'**
+  /// **'Be the first to share your thoughts on this book.'**
   String get noUserReviewsYet;
+
+  /// No description provided for @reviewUserRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating: {rating}/10'**
+  String reviewUserRating(int rating);
+
+  /// No description provided for @reviewInFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'In favorites'**
+  String get reviewInFavorites;
 
   /// No description provided for @couldNotLoadReviews.
   ///
@@ -851,7 +869,7 @@ abstract class AppLocalizations {
   /// No description provided for @addMemorableQuote.
   ///
   /// In en, this message translates to:
-  /// **'Add a memorable quote'**
+  /// **'Add a quote you want to remember'**
   String get addMemorableQuote;
 
   /// No description provided for @addQuote.
@@ -863,7 +881,7 @@ abstract class AppLocalizations {
   /// No description provided for @noQuotesYet.
   ///
   /// In en, this message translates to:
-  /// **'No quotes yet.'**
+  /// **'Saved quotes from this book will appear here.'**
   String get noQuotesYet;
 
   /// No description provided for @couldNotLoadQuotes.
@@ -887,25 +905,25 @@ abstract class AppLocalizations {
   /// No description provided for @log.
   ///
   /// In en, this message translates to:
-  /// **'Log'**
+  /// **'Record'**
   String get log;
 
   /// No description provided for @signInForHabit.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to log reading, see streaks, and view your activity calendar.'**
+  /// **'Sign in to track reading, build streaks, and see your activity calendar.'**
   String get signInForHabit;
 
   /// No description provided for @readingLogged.
   ///
   /// In en, this message translates to:
-  /// **'Reading logged'**
+  /// **'Reading logged!'**
   String get readingLogged;
 
   /// No description provided for @readingLoggedOffline.
   ///
   /// In en, this message translates to:
-  /// **'Reading saved offline. It will sync when you\'re back online.'**
+  /// **'Saved offline—it\'ll sync when you\'re back online.'**
   String get readingLoggedOffline;
 
   /// No description provided for @readingLogsSynced.
@@ -917,13 +935,13 @@ abstract class AppLocalizations {
   /// No description provided for @couldNotSave.
   ///
   /// In en, this message translates to:
-  /// **'Could not save: {error}'**
+  /// **'Couldn\'t save. {error}'**
   String couldNotSave(Object error);
 
   /// No description provided for @addMinutesOrPagesPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Add at least minutes or pages from today.'**
+  /// **'Enter minutes read or pages finished today.'**
   String get addMinutesOrPagesPrompt;
 
   /// No description provided for @minutes.
@@ -953,7 +971,7 @@ abstract class AppLocalizations {
   /// No description provided for @optionalAddBooksPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Optional: add books to your reading list to pick one here.'**
+  /// **'Tip: add books to your Reading list to link them here.'**
   String get optionalAddBooksPrompt;
 
   /// No description provided for @bookOptional.
@@ -977,19 +995,61 @@ abstract class AppLocalizations {
   /// No description provided for @booksError.
   ///
   /// In en, this message translates to:
-  /// **'Books: {error}'**
+  /// **'Couldn\'t load books. {error}'**
   String booksError(Object error);
 
   /// No description provided for @saveLog.
   ///
   /// In en, this message translates to:
-  /// **'Save log'**
+  /// **'Save entry'**
   String get saveLog;
+
+  /// No description provided for @selectReadingBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a book from your Reading list'**
+  String get selectReadingBook;
+
+  /// No description provided for @noReadingBooksForLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add books to your Reading list to log progress for a specific title.'**
+  String get noReadingBooksForLog;
+
+  /// No description provided for @selectBooksToLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Select what you read today and add minutes and/or pages for each.'**
+  String get selectBooksToLog;
+
+  /// No description provided for @currentlyReadingBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently reading'**
+  String get currentlyReadingBooks;
+
+  /// No description provided for @generalReadingLog.
+  ///
+  /// In en, this message translates to:
+  /// **'General reading'**
+  String get generalReadingLog;
+
+  /// No description provided for @generalReadingLogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Track reading time without linking to a specific book.'**
+  String get generalReadingLogHint;
+
+  /// No description provided for @readingLoggedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reading logs saved'**
+  String readingLoggedCount(int count);
 
   /// No description provided for @calendarError.
   ///
   /// In en, this message translates to:
-  /// **'Calendar error: {error}'**
+  /// **'Couldn\'t load calendar. {error}'**
   String calendarError(Object error);
 
   /// No description provided for @activity.
@@ -1007,13 +1067,13 @@ abstract class AppLocalizations {
   /// No description provided for @noLogsYetTapQuickLog.
   ///
   /// In en, this message translates to:
-  /// **'No logs yet - tap Quick log to start.'**
+  /// **'No entries yet. Tap Log reading to get started.'**
   String get noLogsYetTapQuickLog;
 
   /// No description provided for @recentLogs.
   ///
   /// In en, this message translates to:
-  /// **'Recent logs'**
+  /// **'Recent entries'**
   String get recentLogs;
 
   /// No description provided for @minutesShort.
@@ -1037,13 +1097,13 @@ abstract class AppLocalizations {
   /// No description provided for @logsError.
   ///
   /// In en, this message translates to:
-  /// **'Logs error: {error}'**
+  /// **'Couldn\'t load entries. {error}'**
   String logsError(Object error);
 
   /// No description provided for @chartError.
   ///
   /// In en, this message translates to:
-  /// **'Chart error: {error}'**
+  /// **'Couldn\'t load chart. {error}'**
   String chartError(Object error);
 
   /// No description provided for @dailyMinutes14Days.
@@ -1061,7 +1121,7 @@ abstract class AppLocalizations {
   /// No description provided for @thisWeekShort.
   ///
   /// In en, this message translates to:
-  /// **'This wk'**
+  /// **'This week'**
   String get thisWeekShort;
 
   /// No description provided for @weeksAgoShort.
@@ -1079,7 +1139,7 @@ abstract class AppLocalizations {
   /// No description provided for @statsError.
   ///
   /// In en, this message translates to:
-  /// **'Stats error: {error}'**
+  /// **'Couldn\'t load stats. {error}'**
   String statsError(Object error);
 
   /// No description provided for @dayStreak.
@@ -1121,13 +1181,13 @@ abstract class AppLocalizations {
   /// No description provided for @readingReminderBodyNoStreak.
   ///
   /// In en, this message translates to:
-  /// **'You have not logged reading today. Add a quick log to start your habit.'**
+  /// **'You haven\'t logged reading today. Add a quick entry to build your habit.'**
   String get readingReminderBodyNoStreak;
 
   /// No description provided for @readingReminderBodyWithStreak.
   ///
   /// In en, this message translates to:
-  /// **'You have not logged reading today. Log before midnight to keep your {streak}-day streak.'**
+  /// **'Don\'t lose your {streak}-day streak—log your reading before midnight.'**
   String readingReminderBodyWithStreak(int streak);
 
   /// No description provided for @readingReminderChannelName.
@@ -1145,13 +1205,13 @@ abstract class AppLocalizations {
   /// No description provided for @signInToSeeStats.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to see your library analytics and reading identity.'**
+  /// **'Sign in to explore your reading stats and discover your reading identity.'**
   String get signInToSeeStats;
 
   /// No description provided for @contentYouAdded.
   ///
   /// In en, this message translates to:
-  /// **'Content you added'**
+  /// **'Content you\'ve added'**
   String get contentYouAdded;
 
   /// No description provided for @reviewsAndQuotes.
@@ -1163,7 +1223,7 @@ abstract class AppLocalizations {
   /// No description provided for @noDataYet.
   ///
   /// In en, this message translates to:
-  /// **'No data yet'**
+  /// **'Start reading and adding content to see stats here.'**
   String get noDataYet;
 
   /// No description provided for @couldNotLoadContentStats.
@@ -1181,7 +1241,7 @@ abstract class AppLocalizations {
   /// No description provided for @starsGivenToBooks.
   ///
   /// In en, this message translates to:
-  /// **'Stars you gave to books'**
+  /// **'Your star ratings'**
   String get starsGivenToBooks;
 
   /// No description provided for @couldNotLoadRatings.
@@ -1199,7 +1259,7 @@ abstract class AppLocalizations {
   /// No description provided for @countsFromShelves.
   ///
   /// In en, this message translates to:
-  /// **'Counts from your shelves'**
+  /// **'Books on your shelves'**
   String get countsFromShelves;
 
   /// No description provided for @couldNotLoadLibraryStats.
@@ -1223,7 +1283,7 @@ abstract class AppLocalizations {
   /// No description provided for @topGenres.
   ///
   /// In en, this message translates to:
-  /// **'Top genres'**
+  /// **'Favorite genres'**
   String get topGenres;
 
   /// No description provided for @couldNotLoadGenres.
@@ -1235,7 +1295,7 @@ abstract class AppLocalizations {
   /// No description provided for @topAuthors.
   ///
   /// In en, this message translates to:
-  /// **'Top authors'**
+  /// **'Favorite authors'**
   String get topAuthors;
 
   /// No description provided for @couldNotLoadAuthors.
@@ -1253,7 +1313,7 @@ abstract class AppLocalizations {
   /// No description provided for @noBiographyAvailable.
   ///
   /// In en, this message translates to:
-  /// **'No biography available.'**
+  /// **'No biography available for this author.'**
   String get noBiographyAvailable;
 
   /// No description provided for @couldNotLoadAuthor.
@@ -1265,13 +1325,13 @@ abstract class AppLocalizations {
   /// No description provided for @listsForYou.
   ///
   /// In en, this message translates to:
-  /// **'For You'**
+  /// **'For you'**
   String get listsForYou;
 
   /// No description provided for @listsTopTwenty.
   ///
   /// In en, this message translates to:
-  /// **'Timeless'**
+  /// **'Timeless picks'**
   String get listsTopTwenty;
 
   /// No description provided for @listsFollowing.
@@ -1295,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @createList.
   ///
   /// In en, this message translates to:
-  /// **'Create list'**
+  /// **'Create a list'**
   String get createList;
 
   /// No description provided for @editList.
@@ -1325,7 +1385,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookSelector.
   ///
   /// In en, this message translates to:
-  /// **'Book selector'**
+  /// **'Add books'**
   String get bookSelector;
 
   /// No description provided for @searchViaGoogleBooks.
@@ -1349,13 +1409,13 @@ abstract class AppLocalizations {
   /// No description provided for @noBooksSelectedYet.
   ///
   /// In en, this message translates to:
-  /// **'No books selected yet.'**
+  /// **'Search and add books to your list.'**
   String get noBooksSelectedYet;
 
   /// No description provided for @noListsYet.
   ///
   /// In en, this message translates to:
-  /// **'No lists yet.'**
+  /// **'You haven\'t created any lists yet. Start your first one!'**
   String get noListsYet;
 
   /// No description provided for @couldNotLoadLists.
@@ -1397,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @addCommentHint.
   ///
   /// In en, this message translates to:
-  /// **'Add a comment...'**
+  /// **'Write a comment…'**
   String get addCommentHint;
 
   /// No description provided for @send.
@@ -1415,7 +1475,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteListConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This action cannot be undone.'**
+  /// **'This list will be permanently deleted.'**
   String get deleteListConfirm;
 
   /// No description provided for @delete.
@@ -1478,6 +1538,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get uxErrorUnknown;
 
+  /// No description provided for @uxErrorBoundaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error'**
+  String get uxErrorBoundaryTitle;
+
   /// No description provided for @uxRetry.
   ///
   /// In en, this message translates to:
@@ -1529,13 +1595,13 @@ abstract class AppLocalizations {
   /// No description provided for @uxListCreatedSuccess.
   ///
   /// In en, this message translates to:
-  /// **'List created successfully'**
+  /// **'List created'**
   String get uxListCreatedSuccess;
 
   /// No description provided for @uxListUpdatedSuccess.
   ///
   /// In en, this message translates to:
-  /// **'List updated successfully'**
+  /// **'List saved'**
   String get uxListUpdatedSuccess;
 
   /// No description provided for @uxRemoveBookFromListTitle.
@@ -1547,7 +1613,7 @@ abstract class AppLocalizations {
   /// No description provided for @uxRemoveBookFromListMessage.
   ///
   /// In en, this message translates to:
-  /// **'It will be removed from this list.'**
+  /// **'It will be removed from this list only.'**
   String get uxRemoveBookFromListMessage;
 
   /// No description provided for @uxRemove.
@@ -1565,7 +1631,7 @@ abstract class AppLocalizations {
   /// No description provided for @uxDeleteReviewMessage.
   ///
   /// In en, this message translates to:
-  /// **'This cannot be undone.'**
+  /// **'This review will be permanently deleted.'**
   String get uxDeleteReviewMessage;
 
   /// No description provided for @uxGalleryPluginError.
@@ -1577,13 +1643,13 @@ abstract class AppLocalizations {
   /// No description provided for @uxProfilePhotoStorageNotReady.
   ///
   /// In en, this message translates to:
-  /// **'Profile photo storage is not ready yet. Ask the admin to run database migrations.'**
+  /// **'Profile photos aren\'t available yet. Please try again later.'**
   String get uxProfilePhotoStorageNotReady;
 
   /// No description provided for @uxProfilePhotoPermissionDenied.
   ///
   /// In en, this message translates to:
-  /// **'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.'**
+  /// **'Profile photo upload is temporarily unavailable. Please try again later.'**
   String get uxProfilePhotoPermissionDenied;
 
   /// No description provided for @forgotPassword.
@@ -1601,7 +1667,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPasswordPrompt.
   ///
   /// In en, this message translates to:
-  /// **'Enter your email. We will send an 8-digit code (not a link) to reset your password.'**
+  /// **'Enter your email and we\'ll send an 8-digit code to reset your password.'**
   String get forgotPasswordPrompt;
 
   /// No description provided for @sendResetCode.
@@ -1613,7 +1679,7 @@ abstract class AppLocalizations {
   /// No description provided for @resetCodeSent.
   ///
   /// In en, this message translates to:
-  /// **'An 8-digit code was sent to your email.'**
+  /// **'Check your email for your 8-digit code.'**
   String get resetCodeSent;
 
   /// No description provided for @resetPasswordTitle.

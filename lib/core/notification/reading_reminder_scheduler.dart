@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../services/notification_service.dart';
+import 'notification_service.dart';
 import 'reading_reminder_logic.dart';
 import 'reading_reminder_prefs.dart';
 

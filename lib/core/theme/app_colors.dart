@@ -14,8 +14,12 @@ abstract final class AppColors {
   static const Color textPrimary = Color(0xFFF5F3F4);
   static const Color textSecondary = Color(0xFFF5F3F4);
 
-  /// Neutral accent used where gold was previously used.
+  /// Neutral accent used where gold was previously used (dark theme).
   static const Color gold = Color(0xFFF0EBD8);
+
+  /// Theme-aware accent — gold on dark, black on light.
+  static Color accent(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.light ? lightOnSurface : gold;
 
   /// Light theme surfaces.
   static const Color lightBackground = Color(0xFFF5F3F4);

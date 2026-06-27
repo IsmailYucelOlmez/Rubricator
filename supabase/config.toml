@@ -19,3 +19,7 @@ port = 54323
 [functions.google-books]
 # Anonymous + publishable-key clients send apikey only (see ApiService).
 verify_jwt = false
+
+[functions.warm-genre-cache]
+# Invoked by pg_cron with service role; no end-user JWT.
+verify_jwt = false

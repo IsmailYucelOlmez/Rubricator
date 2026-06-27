@@ -12,7 +12,8 @@ abstract class BookDetailRepository {
   Future<List<ExternalReviewEntity>> getExternalReviews(String bookId);
 
   Future<void> addQuote(QuoteEntity quote);
-  Future<void> likeQuote(String quoteId);
+  Future<LikeToggleResult> toggleQuoteLike(String quoteId);
+  Future<LikeToggleResult> toggleReviewLike(String reviewId);
   Future<List<QuoteEntity>> getQuotes(String bookId);
 
   Future<void> rateBook(RatingEntity rating);

@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../core/logging/app_logger.dart';
-import 'supabase_service.dart';
+import '../../../../core/logging/app_logger.dart';
+import '../../../../core/network/supabase_service.dart';
 
 /// All Supabase Auth calls live here — UI uses [authStateProvider] / this via Riverpod.
 class AuthService {

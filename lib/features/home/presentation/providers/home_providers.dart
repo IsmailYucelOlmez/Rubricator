@@ -1,18 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../services/api_service.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../core/i18n/locale_provider.dart';
+import '../../../../core/network/supabase_service.dart';
+import '../../../books/data/services/api_service.dart';
+import '../../../books/presentation/providers/books_providers.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
+import '../../domain/entities/home_page_snapshot.dart';
 import '../../domain/entities/home_book_entity.dart';
-import '../../domain/entities/home_genre_section.dart';
 import '../../domain/repositories/home_repository.dart';
 
 final _homeApiProvider = Provider<ApiService>((ref) => ApiService());
 
 final _homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>(
-  (ref) => HomeRemoteDataSource(ref.watch(_homeApiProvider)),
+  (ref) => HomeRemoteDataSource(
+    ref.watch(_homeApiProvider),
+    lang: ref.watch(localeProvider).languageCode,
+  ),
 );
 
 final _homeCacheDataSourceProvider = Provider<HomeCacheDataSource>(
@@ -23,12 +28,9 @@ final homeRepositoryProvider = Provider<HomeRepository>(
   (ref) => HomeRepositoryImpl(
     ref.watch(_homeRemoteDataSourceProvider),
     ref.watch(_homeCacheDataSourceProvider),
+    ref.watch(bookRepositoryProvider),
   ),
 );
-
-final popularBooksProvider = FutureProvider<List<HomeBookEntity>>((ref) {
-  return ref.watch(homeRepositoryProvider).getPopularBooks();
-});
 
 /// Google Books `subject:` keys for home genre rows (underscore → space in API).
 const kHomePageGenreKeys = <String>[
@@ -40,12 +42,12 @@ const kHomePageGenreKeys = <String>[
   'horror',
 ];
 
-final homeGenreSectionsProvider =
-    FutureProvider<Map<String, HomeGenreSection>>((ref) {
-      return ref
-          .watch(homeRepositoryProvider)
-          .getHomeGenreSectionBooks(kHomePageGenreKeys);
-    });
+final homePageSnapshotProvider = FutureProvider<HomePageSnapshot>((ref) {
+  ref.keepAlive();
+  return ref
+      .watch(homeRepositoryProvider)
+      .loadHomePage(kHomePageGenreKeys);
+});
 
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
   ref,

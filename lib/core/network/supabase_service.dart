@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../core/env.dart';
-import '../core/logging/app_logger.dart';
+import '../env.dart';
+import '../logging/app_logger.dart';
 
 /// Central Supabase client bootstrap. Keys come from dart-defines — never hardcode.
 class SupabaseService {

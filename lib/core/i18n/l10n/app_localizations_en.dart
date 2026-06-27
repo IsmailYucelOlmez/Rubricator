@@ -85,7 +85,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get turkish => 'Turkish';
 
   @override
-  String get signInPrompt => 'Sign in to sync favorites across devices.';
+  String get signInPrompt =>
+      'Sign in to sync your library, lists, and reading progress across devices.';
 
   @override
   String get signIn => 'Sign in';
@@ -94,7 +95,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create account';
 
   @override
-  String get signedInFallback => 'Signed in';
+  String get signedInFallback => 'You\'re signed in';
 
   @override
   String get signOut => 'Sign out';
@@ -118,7 +119,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get password => 'Password';
 
   @override
-  String get passwordMin6 => 'Password (min 6, upper, lower, punctuation)';
+  String get passwordMin6 =>
+      'At least 6 characters with upper, lower, and punctuation';
 
   @override
   String get cancel => 'Cancel';
@@ -128,24 +130,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmAccountEmailNotice =>
-      'Check your email to confirm your account if required.';
+      'If prompted, check your email to verify your account.';
 
   @override
   String get readingHabit => 'Reading habit';
 
   @override
-  String get readingLoggedToday => 'You logged reading today. Nice work.';
+  String get readingLoggedToday => 'You\'ve logged reading today—nice work!';
 
   @override
   String get didYouReadToday => 'Did you read today?';
 
   @override
   String todayStatusError(Object error) {
-    return 'Today status: $error';
+    return 'Couldn\'t load today\'s status. $error';
   }
 
   @override
-  String get quickLog => 'Quick log';
+  String get quickLog => 'Log reading';
 
   @override
   String get details => 'Details';
@@ -180,15 +182,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get searchBooksTitle => 'Search Books';
+  String get searchBooksTitle => 'Search books';
 
   @override
-  String get searchByTitleOrAuthorHint =>
-      'Search by title or author (min. 2 characters)';
+  String get searchByTitleOrAuthorHint => 'Search by title or author…';
 
   @override
   String noBooksFoundFor(Object query) {
-    return 'No books found for \"$query\".';
+    return 'No results for \"$query\". Try a different title or author.';
   }
 
   @override
@@ -198,20 +199,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadRecentSearchesError => 'Could not load recent searches.';
 
   @override
-  String get noRecentSearchesYet => 'No recent searches yet.';
+  String get noRecentSearchesYet => 'Your recent searches will appear here.';
 
   @override
-  String get recentSearchedBooks => 'Recent Searched Books';
+  String get recentSearchedBooks => 'Recently viewed books';
 
   @override
   String get loadRecentSearchedBooksError =>
-      'Could not load recent searched books.';
+      'Couldn\'t load recently viewed books.';
 
   @override
-  String get noRecentSearchedBooksYet => 'No recent searched books yet.';
+  String get noRecentSearchedBooksYet =>
+      'Books you\'ve searched for will show up here.';
 
   @override
-  String get searchBooksMin2Hint => 'Search books (min. 2 characters)';
+  String get searchBooksMin2Hint => 'Type at least 2 characters to search';
 
   @override
   String get discover => 'Discover';
@@ -221,7 +223,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchCouldNotComplete =>
-      'Could not complete the search. Please try again.';
+      'Search didn\'t complete. Please try again.';
+
+  @override
+  String get continueReading => 'Continue Reading';
 
   @override
   String get popular => 'Popular';
@@ -258,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String homeGenreEmptySoft(Object genre) {
-    return 'No picks for $genre yet. Pull to refresh or try later.';
+    return 'Nothing in $genre yet. Pull down to refresh or check back soon.';
   }
 
   @override
@@ -286,15 +291,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorites => 'Favorites';
 
   @override
-  String get signInToSeeLists => 'Sign in from Profile to see your lists.';
+  String get signInToSeeLists =>
+      'Sign in to view and manage your reading lists.';
 
   @override
   String noBooksInStatus(Object status) {
-    return 'No books in $status.';
+    return 'No books marked as $status yet.';
   }
 
   @override
-  String get noFavoritesYet => 'No favorites yet.';
+  String get noFavoritesYet =>
+      'Save books to your favorites and they\'ll show up here.';
 
   @override
   String couldNotLoadList(Object error) {
@@ -311,7 +318,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratingSubmitted => 'Rating submitted.';
 
   @override
-  String get noDescriptionAvailable => 'No description available.';
+  String get noDescriptionAvailable => 'No description yet.';
 
   @override
   String get reviewAdded => 'Review added.';
@@ -339,16 +346,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRelatedTitlesFound =>
-      'No related titles found (subjects missing or empty results).';
+      'We couldn\'t find similar books for this title.';
 
   @override
-  String get couldNotLoadRelatedBooks => 'Could not load related books.';
+  String get couldNotLoadRelatedBooks => 'Couldn\'t load related books.';
 
   @override
   String get aiSummary => 'AI Summary';
 
   @override
-  String get aiSummaryFailed => 'AI summary failed';
+  String get aiSummaryFailed =>
+      'Summary couldn\'t be generated. Try again later.';
 
   @override
   String couldNotLoadThisBook(Object error) {
@@ -390,13 +398,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get externalReviews => 'External Reviews';
 
   @override
-  String get writeReviewHint => 'Write your review (min 10 chars)';
+  String get writeReviewHint => 'Share your thoughts (at least 10 characters)';
 
   @override
   String get addReview => 'Add review';
 
   @override
-  String get noUserReviewsYet => 'No user reviews yet.';
+  String get noUserReviewsYet =>
+      'Be the first to share your thoughts on this book.';
+
+  @override
+  String reviewUserRating(int rating) {
+    return 'Rating: $rating/10';
+  }
+
+  @override
+  String get reviewInFavorites => 'In favorites';
 
   @override
   String get couldNotLoadReviews => 'Could not load reviews.';
@@ -420,13 +437,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quotes => 'Quotes';
 
   @override
-  String get addMemorableQuote => 'Add a memorable quote';
+  String get addMemorableQuote => 'Add a quote you want to remember';
 
   @override
   String get addQuote => 'Add quote';
 
   @override
-  String get noQuotesYet => 'No quotes yet.';
+  String get noQuotesYet => 'Saved quotes from this book will appear here.';
 
   @override
   String get couldNotLoadQuotes => 'Could not load quotes.';
@@ -438,30 +455,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
-  String get log => 'Log';
+  String get log => 'Record';
 
   @override
   String get signInForHabit =>
-      'Sign in to log reading, see streaks, and view your activity calendar.';
+      'Sign in to track reading, build streaks, and see your activity calendar.';
 
   @override
-  String get readingLogged => 'Reading logged';
+  String get readingLogged => 'Reading logged!';
 
   @override
   String get readingLoggedOffline =>
-      'Reading saved offline. It will sync when you\'re back online.';
+      'Saved offline—it\'ll sync when you\'re back online.';
 
   @override
   String get readingLogsSynced => 'Pending reading logs synced';
 
   @override
   String couldNotSave(Object error) {
-    return 'Could not save: $error';
+    return 'Couldn\'t save. $error';
   }
 
   @override
   String get addMinutesOrPagesPrompt =>
-      'Add at least minutes or pages from today.';
+      'Enter minutes read or pages finished today.';
 
   @override
   String get minutes => 'Minutes';
@@ -477,7 +494,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get optionalAddBooksPrompt =>
-      'Optional: add books to your reading list to pick one here.';
+      'Tip: add books to your Reading list to link them here.';
 
   @override
   String get bookOptional => 'Book (optional)';
@@ -490,15 +507,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String booksError(Object error) {
-    return 'Books: $error';
+    return 'Couldn\'t load books. $error';
   }
 
   @override
-  String get saveLog => 'Save log';
+  String get saveLog => 'Save entry';
+
+  @override
+  String get selectReadingBook => 'Choose a book from your Reading list';
+
+  @override
+  String get noReadingBooksForLog =>
+      'Add books to your Reading list to log progress for a specific title.';
+
+  @override
+  String get selectBooksToLog =>
+      'Select what you read today and add minutes and/or pages for each.';
+
+  @override
+  String get currentlyReadingBooks => 'Currently reading';
+
+  @override
+  String get generalReadingLog => 'General reading';
+
+  @override
+  String get generalReadingLogHint =>
+      'Track reading time without linking to a specific book.';
+
+  @override
+  String readingLoggedCount(int count) {
+    return '$count reading logs saved';
+  }
 
   @override
   String calendarError(Object error) {
-    return 'Calendar error: $error';
+    return 'Couldn\'t load calendar. $error';
   }
 
   @override
@@ -510,10 +553,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get noLogsYetTapQuickLog => 'No logs yet - tap Quick log to start.';
+  String get noLogsYetTapQuickLog =>
+      'No entries yet. Tap Log reading to get started.';
 
   @override
-  String get recentLogs => 'Recent logs';
+  String get recentLogs => 'Recent entries';
 
   @override
   String minutesShort(int count) {
@@ -532,12 +576,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String logsError(Object error) {
-    return 'Logs error: $error';
+    return 'Couldn\'t load entries. $error';
   }
 
   @override
   String chartError(Object error) {
-    return 'Chart error: $error';
+    return 'Couldn\'t load chart. $error';
   }
 
   @override
@@ -547,7 +591,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyMinutes => 'Weekly minutes';
 
   @override
-  String get thisWeekShort => 'This wk';
+  String get thisWeekShort => 'This week';
 
   @override
   String weeksAgoShort(int weeks) {
@@ -559,7 +603,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String statsError(Object error) {
-    return 'Stats error: $error';
+    return 'Couldn\'t load stats. $error';
   }
 
   @override
@@ -590,11 +634,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get readingReminderBodyNoStreak =>
-      'You have not logged reading today. Add a quick log to start your habit.';
+      'You haven\'t logged reading today. Add a quick entry to build your habit.';
 
   @override
   String readingReminderBodyWithStreak(int streak) {
-    return 'You have not logged reading today. Log before midnight to keep your $streak-day streak.';
+    return 'Don\'t lose your $streak-day streak—log your reading before midnight.';
   }
 
   @override
@@ -605,16 +649,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToSeeStats =>
-      'Sign in to see your library analytics and reading identity.';
+      'Sign in to explore your reading stats and discover your reading identity.';
 
   @override
-  String get contentYouAdded => 'Content you added';
+  String get contentYouAdded => 'Content you\'ve added';
 
   @override
   String get reviewsAndQuotes => 'Reviews and quotes';
 
   @override
-  String get noDataYet => 'No data yet';
+  String get noDataYet => 'Start reading and adding content to see stats here.';
 
   @override
   String couldNotLoadContentStats(Object error) {
@@ -625,7 +669,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourRatings => 'Your ratings';
 
   @override
-  String get starsGivenToBooks => 'Stars you gave to books';
+  String get starsGivenToBooks => 'Your star ratings';
 
   @override
   String couldNotLoadRatings(Object error) {
@@ -636,7 +680,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get library => 'Library';
 
   @override
-  String get countsFromShelves => 'Counts from your shelves';
+  String get countsFromShelves => 'Books on your shelves';
 
   @override
   String couldNotLoadLibraryStats(Object error) {
@@ -651,7 +695,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Genres and authors from completed books';
 
   @override
-  String get topGenres => 'Top genres';
+  String get topGenres => 'Favorite genres';
 
   @override
   String couldNotLoadGenres(Object error) {
@@ -659,7 +703,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get topAuthors => 'Top authors';
+  String get topAuthors => 'Favorite authors';
 
   @override
   String couldNotLoadAuthors(Object error) {
@@ -670,7 +714,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get author => 'Author';
 
   @override
-  String get noBiographyAvailable => 'No biography available.';
+  String get noBiographyAvailable => 'No biography available for this author.';
 
   @override
   String couldNotLoadAuthor(Object error) {
@@ -678,10 +722,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get listsForYou => 'For You';
+  String get listsForYou => 'For you';
 
   @override
-  String get listsTopTwenty => 'Timeless';
+  String get listsTopTwenty => 'Timeless picks';
 
   @override
   String get listsFollowing => 'Following';
@@ -693,7 +737,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get savedLists => 'Saved Lists';
 
   @override
-  String get createList => 'Create list';
+  String get createList => 'Create a list';
 
   @override
   String get editList => 'Edit list';
@@ -708,7 +752,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get public => 'Public';
 
   @override
-  String get bookSelector => 'Book selector';
+  String get bookSelector => 'Add books';
 
   @override
   String get searchViaGoogleBooks => 'Search via Google Books';
@@ -720,10 +764,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectedBooks => 'Selected books';
 
   @override
-  String get noBooksSelectedYet => 'No books selected yet.';
+  String get noBooksSelectedYet => 'Search and add books to your list.';
 
   @override
-  String get noListsYet => 'No lists yet.';
+  String get noListsYet =>
+      'You haven\'t created any lists yet. Start your first one!';
 
   @override
   String couldNotLoadLists(Object error) {
@@ -752,7 +797,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get addCommentHint => 'Add a comment...';
+  String get addCommentHint => 'Write a comment…';
 
   @override
   String get send => 'Send';
@@ -761,7 +806,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteListTitle => 'Delete list?';
 
   @override
-  String get deleteListConfirm => 'This action cannot be undone.';
+  String get deleteListConfirm => 'This list will be permanently deleted.';
 
   @override
   String get delete => 'Delete';
@@ -798,6 +843,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uxErrorUnknown => 'Something went wrong. Please try again.';
 
   @override
+  String get uxErrorBoundaryTitle => 'Unexpected error';
+
+  @override
   String get uxRetry => 'Try again';
 
   @override
@@ -823,17 +871,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please accept the privacy policy to continue';
 
   @override
-  String get uxListCreatedSuccess => 'List created successfully';
+  String get uxListCreatedSuccess => 'List created';
 
   @override
-  String get uxListUpdatedSuccess => 'List updated successfully';
+  String get uxListUpdatedSuccess => 'List saved';
 
   @override
   String get uxRemoveBookFromListTitle => 'Remove this book?';
 
   @override
   String get uxRemoveBookFromListMessage =>
-      'It will be removed from this list.';
+      'It will be removed from this list only.';
 
   @override
   String get uxRemove => 'Remove';
@@ -842,7 +890,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uxDeleteReviewTitle => 'Delete review?';
 
   @override
-  String get uxDeleteReviewMessage => 'This cannot be undone.';
+  String get uxDeleteReviewMessage =>
+      'This review will be permanently deleted.';
 
   @override
   String get uxGalleryPluginError =>
@@ -850,11 +899,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uxProfilePhotoStorageNotReady =>
-      'Profile photo storage is not ready yet. Ask the admin to run database migrations.';
+      'Profile photos aren\'t available yet. Please try again later.';
 
   @override
   String get uxProfilePhotoPermissionDenied =>
-      'Profile photo upload is blocked by permissions. Apply the Supabase storage policy migration.';
+      'Profile photo upload is temporarily unavailable. Please try again later.';
 
   @override
   String get forgotPassword => 'Forgot password?';
@@ -864,13 +913,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgotPasswordPrompt =>
-      'Enter your email. We will send an 8-digit code (not a link) to reset your password.';
+      'Enter your email and we\'ll send an 8-digit code to reset your password.';
 
   @override
   String get sendResetCode => 'Send code';
 
   @override
-  String get resetCodeSent => 'An 8-digit code was sent to your email.';
+  String get resetCodeSent => 'Check your email for your 8-digit code.';
 
   @override
   String get resetPasswordTitle => 'Reset password';

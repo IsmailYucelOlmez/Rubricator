@@ -35,9 +35,7 @@ Color _bookDetailBorderColor(BuildContext context) {
 
 Color _bookDetailStarColor(BuildContext context, {required bool filled}) {
   if (filled) {
-    return Theme.of(context).brightness == Brightness.light
-        ? AppColors.primary
-        : AppColors.gold;
+    return AppColors.accent(context);
   }
   return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
 }
@@ -97,13 +95,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
     await ref.read(userBookProvider(widget.book.id).notifier).upsert(
           status: selected,
           isFavorite: isFavorite,
-          snapshot: selected == ReadingStatus.completed
-              ? _snapshotFor(
-                  title: title,
-                  author: author,
-                  categories: categories,
-                )
-              : null,
+          snapshot: _snapshotFor(
+            title: title,
+            author: author,
+            categories: categories,
+          ),
         );
   }
 
@@ -245,7 +241,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
               try {
                 await ref
                     .read(userBookProvider(widget.book.id).notifier)
-                    .toggleFavorite();
+                    .toggleFavorite(
+                      snapshot: _snapshotFor(
+                        title: widget.book.title,
+                        author: widget.book.author,
+                        categories: widget.book.subjectKeys,
+                      ),
+                    );
               } catch (e) {
                 if (!mounted) return;
                 _feedbackError(e);
@@ -368,13 +370,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                           status: status,
                           isFavorite: isFavorite,
                           progress: completed ? null : value,
-                          snapshot: completed
-                              ? _snapshotFor(
-                                  title: detailedBook.title,
-                                  author: detailedBook.author,
-                                  categories: detailedBook.subjectKeys,
-                                )
-                              : null,
+                          snapshot: _snapshotFor(
+                            title: detailedBook.title,
+                            author: detailedBook.author,
+                            categories: detailedBook.subjectKeys,
+                          ),
                         );
                   } catch (e) {
                     if (!mounted) return;
@@ -471,6 +471,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                                 Expanded(
                                   child: BookCoverWithFavoriteButton(
                                     bookId: b.id,
+                                    title: b.title,
+                                    author: b.author,
+                                    categories: b.subjectKeys,
                                     compact: true,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(
@@ -617,7 +620,17 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage> {
                   try {
                     await ref
                         .read(quoteProvider(detailedBook.id).notifier)
-                        .like(quoteId);
+                        .toggleLike(quoteId);
+                  } catch (e) {
+                    if (!mounted) return;
+                    _feedbackError(e);
+                  }
+                },
+                onLikeReview: (reviewId) async {
+                  try {
+                    await ref
+                        .read(reviewListProvider(detailedBook.id).notifier)
+                        .toggleLike(reviewId);
                   } catch (e) {
                     if (!mounted) return;
                     _feedbackError(e);
@@ -973,25 +986,19 @@ class _RatingSection extends StatelessWidget {
                         minHeight: 36,
                       ),
                     ),
-                ],
+                ] else
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                    ),
+                    onPressed: selectedRating == 0 ? null : onSubmit,
+                    child: Text(AppLocalizations.of(context)!.submitRating),
+                  ),
               ],
             ),
-            if (!hasUserRated) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                  ),
-                  onPressed: selectedRating == 0 ? null : onSubmit,
-                  child: Text(AppLocalizations.of(context)!.submitRating),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -1019,6 +1026,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
     required this.quotes,
     required this.onRetryQuotes,
     required this.onLikeQuote,
+    required this.onLikeReview,
   });
 
   final AsyncValue<List<ReviewEntity>> reviews;
@@ -1032,6 +1040,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
   final AsyncValue<List<QuoteEntity>> quotes;
   final VoidCallback onRetryQuotes;
   final Future<void> Function(String quoteId) onLikeQuote;
+  final Future<void> Function(String reviewId) onLikeReview;
 
   static const _tabPanelHeight = 400.0;
 
@@ -1062,6 +1071,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
                   onEditReview: onEditReview,
                   onDeleteReview: onDeleteReview,
                   onOpenExternalReview: onOpenExternalReview,
+                  onLikeReview: onLikeReview,
                 ),
                 _QuoteSection(
                   quotes: quotes,
@@ -1087,6 +1097,7 @@ class _ReviewSection extends StatefulWidget {
     required this.onEditReview,
     required this.onDeleteReview,
     required this.onOpenExternalReview,
+    required this.onLikeReview,
   });
 
   final AsyncValue<List<ReviewEntity>> reviews;
@@ -1097,6 +1108,7 @@ class _ReviewSection extends StatefulWidget {
   final Future<void> Function(ReviewEntity review) onEditReview;
   final Future<void> Function(ReviewEntity review) onDeleteReview;
   final Future<void> Function(String url) onOpenExternalReview;
+  final Future<void> Function(String reviewId) onLikeReview;
 
   @override
   State<_ReviewSection> createState() => _ReviewSectionState();
@@ -1199,17 +1211,31 @@ class _ReviewSectionState extends State<_ReviewSection> {
                           itemBuilder: (context, index) {
                             final item = list[index];
                             final own = item.userId == widget.currentUserId;
+                            final meta = <String>[
+                              if (item.userRating != null)
+                                l10n.reviewUserRating(item.userRating!),
+                              if (item.isFavorite) l10n.reviewInFavorites,
+                              item.createdAt.toLocal().toString(),
+                            ].join(' · ');
                             return ListTile(
                               title: Text(
                                 item.content,
                                 style: _bookDetailBodyStyle(context),
                               ),
                               subtitle: Text(
-                                item.createdAt.toLocal().toString(),
+                                meta,
                                 style: _bookDetailBodyStyle(context),
                               ),
-                              trailing: own
-                                  ? Wrap(
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _ContentLikeButton(
+                                    liked: item.likedByCurrentUser,
+                                    likes: item.likes,
+                                    onPressed: () => widget.onLikeReview(item.id),
+                                  ),
+                                  if (own)
+                                    Wrap(
                                       spacing: 4,
                                       children: [
                                         IconButton(
@@ -1224,8 +1250,9 @@ class _ReviewSectionState extends State<_ReviewSection> {
                                               const Icon(Icons.delete_outline),
                                         ),
                                       ],
-                                    )
-                                  : null,
+                                    ),
+                                ],
+                              ),
                             );
                           },
                         ),
@@ -1272,10 +1299,10 @@ class _QuoteSection extends StatelessWidget {
                     item.content,
                     style: _bookDetailBodyStyle(context),
                   ),
-                  trailing: TextButton.icon(
+                  trailing: _ContentLikeButton(
+                    liked: item.likedByCurrentUser,
+                    likes: item.likes,
                     onPressed: () => onLikeQuote(item.id),
-                    icon: const Icon(Icons.thumb_up_outlined),
-                    label: Text(item.likes.toString()),
                   ),
                 );
               },
@@ -1286,6 +1313,31 @@ class _QuoteSection extends StatelessWidget {
             compact: true,
             onRetry: onRetryQuotes,
           ),
+    );
+  }
+}
+
+class _ContentLikeButton extends StatelessWidget {
+  const _ContentLikeButton({
+    required this.liked,
+    required this.likes,
+    required this.onPressed,
+  });
+
+  final bool liked;
+  final int likes;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return TextButton.icon(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: liked ? cs.primary : null,
+      ),
+      icon: Icon(liked ? Icons.thumb_up : Icons.thumb_up_outlined),
+      label: Text(likes.toString()),
     );
   }
 }

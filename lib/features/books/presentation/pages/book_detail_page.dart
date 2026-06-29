@@ -11,10 +11,12 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/book_cover_utils.dart';
+import '../../../../core/utils/relative_time_utils.dart';
 import '../../../../core/utils/text_utils.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
+import '../../../auth/presentation/auth_provider.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../user_books/domain/entities/user_book_snapshot.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
@@ -636,6 +638,9 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   reviews: reviews,
                   externalReviews: externalReviews,
                   currentUserId: ref.watch(currentUserIdProvider),
+                  currentUserDisplayName: ref.watch(
+                    currentUserDisplayNameProvider,
+                  ),
                   onRetryReviews: () =>
                       ref.invalidate(reviewListProvider(detailedBook.id)),
                   onRetryExternalReviews: () =>
@@ -1157,6 +1162,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
     required this.reviews,
     required this.externalReviews,
     required this.currentUserId,
+    required this.currentUserDisplayName,
     required this.onRetryReviews,
     required this.onRetryExternalReviews,
     required this.onEditReview,
@@ -1173,6 +1179,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
   final AsyncValue<List<ReviewEntity>> reviews;
   final AsyncValue<List<ExternalReviewEntity>> externalReviews;
   final String? currentUserId;
+  final String currentUserDisplayName;
   final VoidCallback onRetryReviews;
   final VoidCallback onRetryExternalReviews;
   final Future<void> Function(ReviewEntity review) onEditReview;
@@ -1209,6 +1216,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
                 reviews: reviews,
                 externalReviews: externalReviews,
                 currentUserId: currentUserId,
+                currentUserDisplayName: currentUserDisplayName,
                 onRetryReviews: onRetryReviews,
                 onRetryExternalReviews: onRetryExternalReviews,
                 onEditReview: onEditReview,
@@ -1219,6 +1227,8 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
               BookNotesTab(bookId: bookId),
               _QuoteSection(
                 quotes: quotes,
+                currentUserId: currentUserId,
+                currentUserDisplayName: currentUserDisplayName,
                 onRetryQuotes: onRetryQuotes,
                 onLikeQuote: onLikeQuote,
               ),
@@ -1235,6 +1245,7 @@ class _ReviewSection extends StatefulWidget {
     required this.reviews,
     required this.externalReviews,
     required this.currentUserId,
+    required this.currentUserDisplayName,
     required this.onRetryReviews,
     required this.onRetryExternalReviews,
     required this.onEditReview,
@@ -1246,6 +1257,7 @@ class _ReviewSection extends StatefulWidget {
   final AsyncValue<List<ReviewEntity>> reviews;
   final AsyncValue<List<ExternalReviewEntity>> externalReviews;
   final String? currentUserId;
+  final String currentUserDisplayName;
   final VoidCallback onRetryReviews;
   final VoidCallback onRetryExternalReviews;
   final Future<void> Function(ReviewEntity review) onEditReview;
@@ -1362,15 +1374,14 @@ class _ReviewSectionState extends State<_ReviewSection> {
                           itemBuilder: (context, index) {
                             final item = list[index];
                             final own = item.userId == widget.currentUserId;
-                            final meta = <String>[
-                              if (item.userRating != null)
-                                l10n.reviewUserRating(item.userRating!),
-                              if (item.isFavorite) l10n.reviewInFavorites,
-                              _compactDate(item.createdAt),
-                            ].join(' · ');
                             return _ReviewCard(
                               review: item,
-                              meta: [meta],
+                              userName: _reviewDisplayName(
+                                item,
+                                own: own,
+                                currentUserDisplayName:
+                                    widget.currentUserDisplayName,
+                              ),
                               own: own,
                               onLike: () => widget.onLikeReview(item.id),
                               onEdit: () => widget.onEditReview(item),
@@ -1394,11 +1405,15 @@ class _ReviewSectionState extends State<_ReviewSection> {
 class _QuoteSection extends StatelessWidget {
   const _QuoteSection({
     required this.quotes,
+    required this.currentUserId,
+    required this.currentUserDisplayName,
     required this.onRetryQuotes,
     required this.onLikeQuote,
   });
 
   final AsyncValue<List<QuoteEntity>> quotes;
+  final String? currentUserId;
+  final String currentUserDisplayName;
   final VoidCallback onRetryQuotes;
   final Future<void> Function(String quoteId) onLikeQuote;
 
@@ -1415,7 +1430,7 @@ class _QuoteSection extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.sm,
-                AppSpacing.sm,
+                0,
                 AppSpacing.sm,
                 AppSpacing.md,
               ),
@@ -1424,8 +1439,14 @@ class _QuoteSection extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final item = list[index];
+                final own = item.userId == currentUserId;
                 return _QuoteCard(
                   quote: item,
+                  userName: _quoteDisplayName(
+                    item,
+                    own: own,
+                    currentUserDisplayName: currentUserDisplayName,
+                  ),
                   onLike: () => onLikeQuote(item.id),
                 );
               },
@@ -1440,7 +1461,7 @@ class _QuoteSection extends StatelessWidget {
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard({
     required this.review,
-    required this.meta,
+    required this.userName,
     required this.own,
     required this.onLike,
     required this.onEdit,
@@ -1448,7 +1469,7 @@ class _ReviewCard extends StatelessWidget {
   });
 
   final ReviewEntity review;
-  final List<String> meta;
+  final String userName;
   final bool own;
   final VoidCallback onLike;
   final VoidCallback onEdit;
@@ -1457,32 +1478,95 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return _ContentCard(
-      icon: Icons.rate_review_outlined,
-      accentColor: Theme.of(context).colorScheme.primary,
-      body: review.content,
-      meta: meta,
-      footer: Row(
-        children: [
-          _ContentLikeButton(
-            liked: review.likedByCurrentUser,
-            likes: review.likes,
-            onPressed: onLike,
-          ),
-          const Spacer(),
-          if (own) ...[
-            IconButton(
-              tooltip: l10n.editReview,
-              onPressed: onEdit,
-              icon: const Icon(Icons.edit_outlined),
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.7),
+        border: Border(
+          bottom: BorderSide(color: cs.outline.withValues(alpha: 0.28)),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    userName,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (review.userRating != null)
+                  _ReadOnlyStarRating(rating: review.userRating!),
+                if (review.isFavorite) ...[
+                  const SizedBox(width: AppSpacing.xs),
+                  Icon(Icons.favorite, color: cs.primary, size: 16),
+                ],
+              ],
             ),
-            IconButton(
-              tooltip: l10n.delete,
-              onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              review.content,
+              textAlign: TextAlign.start,
+              style: _bookDetailBodyStyle(context).copyWith(height: 1.42),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _ContentLikeButton(
+                  liked: review.likedByCurrentUser,
+                  likes: review.likes,
+                  onPressed: onLike,
+                ),
+                if (own) ...[
+                  IconButton(
+                    tooltip: l10n.editReview,
+                    onPressed: onEdit,
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.delete,
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                Text(
+                  formatRelativeTime(review.createdAt, l10n),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ],
-        ],
+        ),
       ),
     );
   }
@@ -1513,28 +1597,75 @@ class _ExternalReviewCard extends StatelessWidget {
 }
 
 class _QuoteCard extends StatelessWidget {
-  const _QuoteCard({required this.quote, required this.onLike});
+  const _QuoteCard({
+    required this.quote,
+    required this.userName,
+    required this.onLike,
+  });
 
   final QuoteEntity quote;
+  final String userName;
   final VoidCallback onLike;
 
   @override
   Widget build(BuildContext context) {
-    return _ContentCard(
-      icon: Icons.format_quote,
-      accentColor: AppColors.accent(context),
-      body: quote.content,
-      meta: [_compactDate(quote.createdAt)],
-      bodyStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-        height: 1.45,
-        fontStyle: FontStyle.italic,
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.7),
+        border: Border(
+          bottom: BorderSide(color: cs.outline.withValues(alpha: 0.28)),
+        ),
       ),
-      footer: Align(
-        alignment: Alignment.centerLeft,
-        child: _ContentLikeButton(
-          liked: quote.likedByCurrentUser,
-          likes: quote.likes,
-          onPressed: onLike,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              userName,
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              quote.content,
+              textAlign: TextAlign.start,
+              style: _bookDetailBodyStyle(context).copyWith(
+                height: 1.42,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _ContentLikeButton(
+                    liked: quote.likedByCurrentUser,
+                    likes: quote.likes,
+                    onPressed: onLike,
+                  ),
+                  const Spacer(),
+                  Text(
+                    formatRelativeTime(quote.createdAt, l10n),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1664,8 +1795,17 @@ class _ContentLikeButton extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return TextButton.icon(
       onPressed: onPressed,
-      style: TextButton.styleFrom(foregroundColor: liked ? cs.primary : null),
-      icon: Icon(liked ? Icons.thumb_up : Icons.thumb_up_outlined),
+      style: TextButton.styleFrom(
+        foregroundColor: liked ? cs.primary : null,
+        visualDensity: VisualDensity.compact,
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      icon: Icon(
+        liked ? Icons.thumb_up : Icons.thumb_up_outlined,
+        size: 18,
+      ),
       label: Text(likes.toString()),
     );
   }
@@ -1677,6 +1817,52 @@ String _compactDate(DateTime value) {
   final month = local.month.toString().padLeft(2, '0');
   final year = local.year.toString();
   return '$day.$month.$year';
+}
+
+String _quoteDisplayName(
+  QuoteEntity quote, {
+  required bool own,
+  required String currentUserDisplayName,
+}) {
+  final stored = quote.userName?.trim();
+  if (stored != null && stored.isNotEmpty) return stored;
+  if (own) return currentUserDisplayName;
+  return 'user';
+}
+
+String _reviewDisplayName(
+  ReviewEntity review, {
+  required bool own,
+  required String currentUserDisplayName,
+}) {
+  final stored = review.userName?.trim();
+  if (stored != null && stored.isNotEmpty) return stored;
+  if (own) return currentUserDisplayName;
+  return 'user';
+}
+
+class _ReadOnlyStarRating extends StatelessWidget {
+  const _ReadOnlyStarRating({required this.rating});
+
+  final int rating;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List<Widget>.generate(5, (index) {
+        final icon = _starIconFor(rating, index);
+        return Icon(
+          icon,
+          color: _bookDetailStarColor(
+            context,
+            filled: icon != Icons.star_border,
+          ),
+          size: 18,
+        );
+      }),
+    );
+  }
 }
 
 class _AddContentBottomSheet extends StatefulWidget {

@@ -416,6 +416,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewInFavorites => 'In favorites';
 
   @override
+  String get relativeTimeJustNow => 'just now';
+
+  @override
+  String relativeTimeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String relativeTimeHoursAgo(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String relativeTimeDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relativeTimeWeeksAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks ago',
+      one: '1 week ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get couldNotLoadReviews => 'Could not load reviews.';
 
   @override

@@ -157,6 +157,7 @@ class SearchInteractionController {
     await _ref.read(_logSearchUseCaseProvider).call(query: q);
     _lastLoggedKey = dedupeKey;
     _ref.invalidate(popularSearchProvider);
+    _ref.invalidate(searchHistoryProvider);
   }
 
   Future<void> logBookClick({
@@ -172,5 +173,6 @@ class SearchInteractionController {
     _lastLoggedKey = dedupeKey;
     _ref.invalidate(popularBooksProvider);
     _ref.invalidate(popularSearchProvider);
+    _ref.invalidate(searchHistoryProvider);
   }
 }

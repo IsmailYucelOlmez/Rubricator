@@ -23,7 +23,17 @@ class SearchRepositoryImpl implements SearchRepository {
 
   @override
   Future<List<String>> getPopularSearches() async {
-    return _remote.fetchPopularQueries(limit: 6);
+    final rows = await _remote.fetchSearchHistoryForUser(limit: 50);
+    final seen = <String>{};
+    final queries = <String>[];
+    for (final row in rows) {
+      final q = ((row['query'] as String?) ?? '').trim();
+      if (q.isEmpty) continue;
+      if (!seen.add(q.toLowerCase())) continue;
+      queries.add(q);
+      if (queries.length >= 6) break;
+    }
+    return queries;
   }
 
   @override

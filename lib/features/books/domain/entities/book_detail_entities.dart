@@ -29,6 +29,7 @@ class ReviewEntity {
     this.likedByCurrentUser = false,
     this.userRating,
     this.isFavorite = false,
+    this.userName,
   });
 
   final String id;
@@ -40,6 +41,7 @@ class ReviewEntity {
   final bool likedByCurrentUser;
   final int? userRating;
   final bool isFavorite;
+  final String? userName;
 }
 
 class ExternalReviewEntity {
@@ -69,6 +71,7 @@ class QuoteEntity {
     required this.likes,
     required this.createdAt,
     this.likedByCurrentUser = false,
+    this.userName,
   });
 
   final String id;
@@ -78,6 +81,7 @@ class QuoteEntity {
   final int likes;
   final DateTime createdAt;
   final bool likedByCurrentUser;
+  final String? userName;
 }
 
 class LikeToggleResult {

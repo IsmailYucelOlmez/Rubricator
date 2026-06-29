@@ -13,6 +13,7 @@ class BookNoteModel {
     required this.isPublic,
     required this.createdAt,
     required this.updatedAt,
+    this.userName,
   });
 
   factory BookNoteModel.fromRow(Map<String, dynamic> row) {
@@ -32,6 +33,7 @@ class BookNoteModel {
       updatedAt:
           _parseDateTime(row['updated_at']) ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      userName: (row['user_name'] as String?)?.trim(),
     );
   }
 
@@ -46,6 +48,7 @@ class BookNoteModel {
   final bool isPublic;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? userName;
 
   BookNoteEntity toEntity() {
     return BookNoteEntity(
@@ -60,6 +63,7 @@ class BookNoteModel {
       isPublic: isPublic,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      userName: userName,
     );
   }
 

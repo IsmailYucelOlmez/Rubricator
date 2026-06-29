@@ -413,6 +413,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reviewInFavorites => 'Favorilerde';
 
   @override
+  String get relativeTimeJustNow => 'az önce';
+
+  @override
+  String relativeTimeMinutesAgo(int count) {
+    return '$count dk. önce';
+  }
+
+  @override
+  String relativeTimeHoursAgo(int count) {
+    return '$count sa. önce';
+  }
+
+  @override
+  String relativeTimeDaysAgo(int count) {
+    return '$count gün önce';
+  }
+
+  @override
+  String relativeTimeWeeksAgo(int count) {
+    return '$count hf. önce';
+  }
+
+  @override
   String get couldNotLoadReviews => 'Yorumlar yüklenemedi.';
 
   @override

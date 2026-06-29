@@ -129,6 +129,7 @@ class BookDetailRemoteDataSource {
             likedByCurrentUser: likedReviewIds.contains(review.id),
             userRating: ratingsByUser[review.userId],
             isFavorite: favoritesByUser[review.userId] ?? false,
+            userName: review.userName,
           ),
         )
         .toList();
@@ -262,6 +263,7 @@ class BookDetailRemoteDataSource {
             likes: quote.likes,
             createdAt: quote.createdAt,
             likedByCurrentUser: likedQuoteIds.contains(quote.id),
+            userName: quote.userName,
           ),
         )
         .toList();

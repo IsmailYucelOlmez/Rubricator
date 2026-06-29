@@ -11,6 +11,7 @@ class ReviewModel {
     this.likedByCurrentUser = false,
     this.userRating,
     this.isFavorite = false,
+    this.userName,
   });
 
   final String id;
@@ -22,6 +23,7 @@ class ReviewModel {
   final bool likedByCurrentUser;
   final int? userRating;
   final bool isFavorite;
+  final String? userName;
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
@@ -33,6 +35,7 @@ class ReviewModel {
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
       likes: (json['likes'] as num?)?.toInt() ?? 0,
+      userName: (json['user_name'] as String?)?.trim(),
     );
   }
 
@@ -55,6 +58,7 @@ class ReviewModel {
     likedByCurrentUser: likedByCurrentUser,
     userRating: userRating,
     isFavorite: isFavorite,
+    userName: userName,
   );
 
   factory ReviewModel.fromEntity(ReviewEntity entity) => ReviewModel(
@@ -67,6 +71,7 @@ class ReviewModel {
     likedByCurrentUser: entity.likedByCurrentUser,
     userRating: entity.userRating,
     isFavorite: entity.isFavorite,
+    userName: entity.userName,
   );
 }
 
@@ -138,6 +143,7 @@ class QuoteModel {
     required this.likes,
     required this.createdAt,
     this.likedByCurrentUser = false,
+    this.userName,
   });
 
   final String id;
@@ -147,6 +153,7 @@ class QuoteModel {
   final int likes;
   final DateTime createdAt;
   final bool likedByCurrentUser;
+  final String? userName;
 
   factory QuoteModel.fromJson(Map<String, dynamic> json) {
     return QuoteModel(
@@ -158,6 +165,7 @@ class QuoteModel {
       createdAt:
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      userName: (json['user_name'] as String?)?.trim(),
     );
   }
 
@@ -178,6 +186,7 @@ class QuoteModel {
     likes: likes,
     createdAt: createdAt,
     likedByCurrentUser: likedByCurrentUser,
+    userName: userName,
   );
 
   factory QuoteModel.fromEntity(QuoteEntity entity) => QuoteModel(
@@ -188,5 +197,6 @@ class QuoteModel {
     likes: entity.likes,
     createdAt: entity.createdAt,
     likedByCurrentUser: entity.likedByCurrentUser,
+    userName: entity.userName,
   );
 }

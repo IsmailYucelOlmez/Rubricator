@@ -7,6 +7,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
+import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/presentation/providers/books_providers.dart';
 import '../../domain/entities/book_note_entity.dart';
 import '../providers/book_notes_providers.dart';
@@ -121,6 +122,7 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
     final l10n = AppLocalizations.of(context)!;
     final async = ref.watch(publicBookNotesProvider(widget.bookId));
     final currentUserId = ref.watch(currentUserIdProvider);
+    final currentUserDisplayName = ref.watch(currentUserDisplayNameProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -147,9 +149,17 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
                   ),
                 );
               }
-              return ListView.builder(
+              return ListView.separated(
                 controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm,
+                  0,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                ),
                 itemCount: state.notes.length + (state.loadingMore ? 1 : 0),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: AppSpacing.sm),
                 itemBuilder: (context, index) {
                   if (index >= state.notes.length) {
                     return const Padding(
@@ -161,6 +171,7 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
                   return BookNoteCard(
                     note: note,
                     currentUserId: currentUserId,
+                    currentUserDisplayName: currentUserDisplayName,
                     onEdit: note.userId == currentUserId
                         ? () => _showEditSheet(note)
                         : null,

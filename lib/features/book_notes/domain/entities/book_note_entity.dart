@@ -11,6 +11,7 @@ class BookNoteEntity {
     required this.isPublic,
     required this.createdAt,
     required this.updatedAt,
+    this.userName,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class BookNoteEntity {
   final bool isPublic;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? userName;
 
   BookNoteEntity copyWith({
     String? id,
@@ -39,6 +41,7 @@ class BookNoteEntity {
     bool? isPublic,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? userName,
   }) {
     return BookNoteEntity(
       id: id ?? this.id,
@@ -53,6 +56,7 @@ class BookNoteEntity {
       isPublic: isPublic ?? this.isPublic,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      userName: userName ?? this.userName,
     );
   }
 }

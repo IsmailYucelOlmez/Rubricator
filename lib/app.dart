@@ -38,22 +38,23 @@ class _BookAppState extends ConsumerState<BookApp> {
   int _currentIndex = 0;
 
   Widget _tabBody(BuildContext context) {
-    return switch (_currentIndex) {
-      0 => Theme(
+    // IndexedStack keeps tab state (and in-flight document uploads) alive.
+    return IndexedStack(
+      index: _currentIndex,
+      sizing: StackFit.expand,
+      children: [
+        Theme(
           data: _themeWithBodyFontFactor(context, 1.0),
           child: const HomePage(),
         ),
-      1 => Theme(
+        Theme(
           data: _themeWithBodyFontFactor(context, 1.0),
           child: const SearchPage(),
         ),
-      2 => const ListsPage(),
-      3 => const ProfilePage(),
-      _ => Theme(
-          data: _themeWithBodyFontFactor(context, 1.0),
-          child: const HomePage(),
-        ),
-    };
+        const ListsPage(),
+        const ProfilePage(),
+      ],
+    );
   }
 
   @override

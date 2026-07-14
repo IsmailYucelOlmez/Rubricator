@@ -13,7 +13,13 @@ class Env {
 
   static const sentryDsn = String.fromEnvironment('SENTRY_DSN');
 
+  static const semanticApiBaseUrl = String.fromEnvironment('SEMANTIC_API_BASE_URL');
+
+  static const semanticApiKey = String.fromEnvironment('SEMANTIC_API_KEY');
+
   static bool get hasSentryConfig => sentryDsn.trim().isNotEmpty;
+
+  static bool get hasSemanticApiConfig => semanticApiBaseUrl.trim().isNotEmpty;
 
   static bool get hasSupabaseConfig =>
       supabaseUrl.trim().isNotEmpty && supabaseAnonKey.trim().isNotEmpty;

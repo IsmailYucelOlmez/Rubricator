@@ -34,17 +34,18 @@ Future<void> main() async {
     options.debug = kDebugMode;
   });
 
-  if (kReleaseMode) {
-    AppLogger.info(
-      'startup',
-      'Release env check',
-      data: {
-        'apiUrl': Env.apiUrl.isEmpty ? '(empty)' : Env.apiUrl,
-        'supabaseUrl': Env.supabaseUrl.isEmpty ? '(empty)' : Env.supabaseUrl,
-        'sentryEnabled': Env.hasSentryConfig,
-      },
-    );
-  }
+  AppLogger.info(
+    'startup',
+    kReleaseMode ? 'Release env check' : 'Debug env check',
+    data: {
+      'apiUrl': Env.apiUrl.isEmpty ? '(empty)' : Env.apiUrl,
+      'supabaseUrl': Env.supabaseUrl.isEmpty ? '(empty)' : Env.supabaseUrl,
+      'semanticApiBaseUrl':
+          Env.semanticApiBaseUrl.isEmpty ? '(empty)' : Env.semanticApiBaseUrl,
+      'semanticApiConfigured': Env.hasSemanticApiConfig,
+      'sentryEnabled': Env.hasSentryConfig,
+    },
+  );
 
   try {
     AppLogger.info('startup', 'Initializing Supabase');

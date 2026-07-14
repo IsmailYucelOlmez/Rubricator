@@ -216,6 +216,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchBooksMin2Hint => 'Type at least 2 characters to search';
 
   @override
+  String get searchTabKeyword => 'Keyword';
+
+  @override
+  String get searchTabSemantic => 'Semantic';
+
+  @override
+  String get searchTabDocumentChat => 'Ask my book';
+
+  @override
+  String get documentChatPickFile => 'Choose PDF or EPUB';
+
+  @override
+  String get documentChatUploading => 'Uploading…';
+
+  @override
+  String get documentChatProcessing => 'Processing your book…';
+
+  @override
+  String documentChatEmbedProgress(int done, int total) {
+    return 'Embedding $done of $total';
+  }
+
+  @override
+  String get documentChatExtracting => 'Extracting text…';
+
+  @override
+  String get documentChatEmptyHint =>
+      'Upload a book to ask questions about its content.';
+
+  @override
+  String get documentChatSessionExpired =>
+      'Your session has expired. Upload the book again.';
+
+  @override
+  String get documentChatProcessingFailed => 'Could not process this book.';
+
+  @override
+  String get documentChatStillProcessing => 'Still processing — please wait.';
+
+  @override
+  String documentChatQuestionsRemaining(int count) {
+    return '$count questions left';
+  }
+
+  @override
+  String get documentChatTruncatedWarning =>
+      'Only part of the book was processed. Answers may be incomplete.';
+
+  @override
+  String get documentChatUnsupportedFormat =>
+      'Only PDF and EPUB files are supported.';
+
+  @override
+  String documentChatFileTooLarge(int mb) {
+    return 'File exceeds the $mb MB limit.';
+  }
+
+  @override
+  String get documentChatAskPlaceholder => 'Ask about this book…';
+
+  @override
+  String documentChatSourcePage(int page) {
+    return 'Page $page';
+  }
+
+  @override
+  String get documentChatEphemeralNotice =>
+      'Chats are temporary and not saved to your account.';
+
+  @override
+  String get documentChatSupportedFormats =>
+      'Supported: .pdf, .epub (max 20 MB / ~500 PDF pages)';
+
+  @override
+  String get documentChatNewFile => 'New file';
+
+  @override
+  String get documentChatPages => 'pages';
+
+  @override
+  String get documentChatChapters => 'chapters';
+
+  @override
+  String documentChatExpiresIn(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String get semanticSearchHint =>
+      'Describe the kind of book you\'re looking for…';
+
+  @override
+  String get semanticSearchMinHint =>
+      'Describe what you\'re looking for and tap Search';
+
+  @override
+  String get semanticFiltersTitle => 'Filters';
+
+  @override
+  String get semanticCategoryLabel => 'Category';
+
+  @override
+  String get semanticToneLabel => 'Tone';
+
+  @override
+  String get semanticApiNotConfigured =>
+      'Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get semanticModeSimple => 'Quick';
+
+  @override
+  String get semanticModeAdvanced => 'Deep';
+
+  @override
+  String get semanticModeAdvancedHint =>
+      'Rewrites your query and may add new books from Google Books';
+
+  @override
   String get discover => 'Discover';
 
   @override

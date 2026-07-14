@@ -97,6 +97,66 @@
   "loadRecentSearchedBooksError": "Son görüntülenen kitaplar yüklenemedi.",
   "noRecentSearchedBooksYet": "Aradığınız kitaplar burada görünecek.",
   "searchBooksMin2Hint": "Aramak için en az 2 karakter yazın",
+  "searchTabKeyword": "Anahtar kelime",
+  "searchTabSemantic": "Anlamsal",
+  "searchTabDocumentChat": "Kitabımla sor",
+  "documentChatPickFile": "PDF veya EPUB seç",
+  "documentChatUploading": "Yükleniyor…",
+  "documentChatProcessing": "Kitabınız işleniyor…",
+  "documentChatEmbedProgress": "{done} / {total} gömülüyor",
+  "@documentChatEmbedProgress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "documentChatExtracting": "Metin çıkarılıyor…",
+  "documentChatEmptyHint": "İçerik hakkında soru sormak için kitap yükleyin.",
+  "documentChatSessionExpired": "Oturumunuz sona erdi. Kitabı yeniden yükleyin.",
+  "documentChatProcessingFailed": "Bu kitap işlenemedi.",
+  "documentChatStillProcessing": "Hâlâ işleniyor — lütfen bekleyin.",
+  "documentChatQuestionsRemaining": "{count} soru kaldı",
+  "@documentChatQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "documentChatTruncatedWarning": "Kitabın yalnızca bir bölümü işlendi. Yanıtlar eksik olabilir.",
+  "documentChatUnsupportedFormat": "Yalnızca PDF ve EPUB desteklenir.",
+  "documentChatFileTooLarge": "Dosya {mb} MB sınırını aşıyor.",
+  "@documentChatFileTooLarge": {
+    "placeholders": {
+      "mb": {"type": "int"}
+    }
+  },
+  "documentChatAskPlaceholder": "Bu kitap hakkında sorun…",
+  "documentChatSourcePage": "Sayfa {page}",
+  "@documentChatSourcePage": {
+    "placeholders": {
+      "page": {"type": "int"}
+    }
+  },
+  "documentChatEphemeralNotice": "Sohbetler geçicidir; hesabınıza kaydedilmez.",
+  "documentChatSupportedFormats": "Desteklenen: .pdf, .epub (en fazla 20 MB / ~500 PDF sayfası)",
+  "documentChatNewFile": "Yeni dosya",
+  "documentChatPages": "sayfa",
+  "documentChatChapters": "bölüm",
+  "documentChatExpiresIn": "{minutes} dk kaldı",
+  "@documentChatExpiresIn": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "semanticSearchHint": "Aradığınız kitabı tarif edin…",
+  "semanticSearchMinHint": "Aradığınız kitabı tarif edin ve Ara'ya dokunun",
+  "semanticFiltersTitle": "Filtreler",
+  "semanticCategoryLabel": "Kategori",
+  "semanticToneLabel": "Ton",
+  "semanticApiNotConfigured": "Anlamsal keşif yapılandırılmamış. SEMANTIC_API_BASE_URL ayarlayın.",
+  "apply": "Uygula",
+  "semanticModeSimple": "Hızlı",
+  "semanticModeAdvanced": "Derin",
+  "semanticModeAdvancedHint": "Sorgunuzu yeniden yazar ve Google Books'tan yeni kitaplar ekleyebilir",
   "discover": "Keşfet",
   "noBooksFound": "Kitap bulunamadı",
   "searchCouldNotComplete": "Arama tamamlanamadı. Lütfen tekrar deneyin.",

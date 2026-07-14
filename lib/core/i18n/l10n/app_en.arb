@@ -96,6 +96,66 @@
   "loadRecentSearchedBooksError": "Couldn't load recently viewed books.",
   "noRecentSearchedBooksYet": "Books you've searched for will show up here.",
   "searchBooksMin2Hint": "Type at least 2 characters to search",
+  "searchTabKeyword": "Keyword",
+  "searchTabSemantic": "Semantic",
+  "searchTabDocumentChat": "Ask my book",
+  "documentChatPickFile": "Choose PDF or EPUB",
+  "documentChatUploading": "Uploading…",
+  "documentChatProcessing": "Processing your book…",
+  "documentChatEmbedProgress": "Embedding {done} of {total}",
+  "@documentChatEmbedProgress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "documentChatExtracting": "Extracting text…",
+  "documentChatEmptyHint": "Upload a book to ask questions about its content.",
+  "documentChatSessionExpired": "Your session has expired. Upload the book again.",
+  "documentChatProcessingFailed": "Could not process this book.",
+  "documentChatStillProcessing": "Still processing — please wait.",
+  "documentChatQuestionsRemaining": "{count} questions left",
+  "@documentChatQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "documentChatTruncatedWarning": "Only part of the book was processed. Answers may be incomplete.",
+  "documentChatUnsupportedFormat": "Only PDF and EPUB files are supported.",
+  "documentChatFileTooLarge": "File exceeds the {mb} MB limit.",
+  "@documentChatFileTooLarge": {
+    "placeholders": {
+      "mb": {"type": "int"}
+    }
+  },
+  "documentChatAskPlaceholder": "Ask about this book…",
+  "documentChatSourcePage": "Page {page}",
+  "@documentChatSourcePage": {
+    "placeholders": {
+      "page": {"type": "int"}
+    }
+  },
+  "documentChatEphemeralNotice": "Chats are temporary and not saved to your account.",
+  "documentChatSupportedFormats": "Supported: .pdf, .epub (max 20 MB / ~500 PDF pages)",
+  "documentChatNewFile": "New file",
+  "documentChatPages": "pages",
+  "documentChatChapters": "chapters",
+  "documentChatExpiresIn": "{minutes} min left",
+  "@documentChatExpiresIn": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "semanticSearchHint": "Describe the kind of book you're looking for…",
+  "semanticSearchMinHint": "Describe what you're looking for and tap Search",
+  "semanticFiltersTitle": "Filters",
+  "semanticCategoryLabel": "Category",
+  "semanticToneLabel": "Tone",
+  "semanticApiNotConfigured": "Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.",
+  "apply": "Apply",
+  "semanticModeSimple": "Quick",
+  "semanticModeAdvanced": "Deep",
+  "semanticModeAdvancedHint": "Rewrites your query and may add new books from Google Books",
   "discover": "Discover",
   "noBooksFound": "No books found",
   "searchCouldNotComplete": "Search didn't complete. Please try again.",

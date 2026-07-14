@@ -13,6 +13,8 @@ import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
 import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
 import '../../../books/presentation/widgets/book_search_result_tile.dart';
+import '../../../document_chat/presentation/pages/document_chat_view.dart';
+import '../../../semantic_discovery/presentation/pages/semantic_discovery_view.dart';
 import '../providers/search_notifier.dart';
 
 /// Matches home horizontal [HomePage] `_BookCard` author typography.
@@ -30,14 +32,23 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends ConsumerState<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage>
+    with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
   Timer? _debounce;
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
 
   @override
   void dispose() {
     _debounce?.cancel();
     _controller.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -58,66 +69,141 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final raw = _controller.text.trim();
-    final showHint = raw.isEmpty || raw.length < 2;
     return SafeArea(
       child: ResponsiveScaffoldBody(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: l10n.searchByTitleOrAuthorHint,
-                prefixIcon: const Icon(Icons.search),
-              ),
-              textInputAction: TextInputAction.search,
-              onChanged: (value) {
-                setState(() {});
-                _onSearchChanged(value);
-              },
-              onSubmitted: (_) => _submitSearch(),
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              tabs: [
+                Tab(text: l10n.searchTabKeyword),
+                Tab(text: l10n.searchTabSemantic),
+                Tab(text: l10n.searchTabDocumentChat),
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
             Expanded(
-              child: showHint
-                  ? _DiscoveryView(
-                      l10n: l10n,
-                      onOpenBook: (book) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => BookDetailPage(book: book),
-                          ),
-                        );
-                      },
-                      onPickQuery: (query) {
-                        _controller.text = query;
-                        setState(() {});
-                        ref.read(searchQueryProvider.notifier).state = query;
-                        ref.read(searchInteractionProvider).logSubmit(query);
-                      },
-                    )
-                  : _SearchResultsView(
-                      activeQuery: raw,
-                      onOpenBook: (book) async {
-                        await ref
-                            .read(searchInteractionProvider)
-                            .logBookClick(query: raw, bookId: book.id);
-                        if (!context.mounted) return;
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => BookDetailPage(book: book),
-                          ),
-                        );
-                      },
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: _KeywordSearchBody(
+                      controller: _controller,
+                      onSearchChanged: _onSearchChanged,
+                      onSubmitSearch: _submitSearch,
+                      onStateChanged: () => setState(() {}),
                     ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: SemanticDiscoveryView(),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: _KeepAliveDocumentChat(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        ),
       ),
+    );
+  }
+}
+
+/// Keeps the document-chat subtree alive when switching Search tabs so an
+/// in-flight upload/poll is not dropped by [TabBarView].
+class _KeepAliveDocumentChat extends StatefulWidget {
+  const _KeepAliveDocumentChat();
+
+  @override
+  State<_KeepAliveDocumentChat> createState() => _KeepAliveDocumentChatState();
+}
+
+class _KeepAliveDocumentChatState extends State<_KeepAliveDocumentChat>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return const DocumentChatView();
+  }
+}
+
+class _KeywordSearchBody extends ConsumerWidget {
+  const _KeywordSearchBody({
+    required this.controller,
+    required this.onSearchChanged,
+    required this.onSubmitSearch,
+    required this.onStateChanged,
+  });
+
+  final TextEditingController controller;
+  final void Function(String raw) onSearchChanged;
+  final Future<void> Function() onSubmitSearch;
+  final VoidCallback onStateChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final raw = controller.text.trim();
+    final showHint = raw.isEmpty || raw.length < 2;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: l10n.searchByTitleOrAuthorHint,
+            prefixIcon: const Icon(Icons.search),
+          ),
+          textInputAction: TextInputAction.search,
+          onChanged: (value) {
+            onStateChanged();
+            onSearchChanged(value);
+          },
+          onSubmitted: (_) => onSubmitSearch(),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Expanded(
+          child: showHint
+              ? _DiscoveryView(
+                  l10n: l10n,
+                  onOpenBook: (book) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => BookDetailPage(book: book),
+                      ),
+                    );
+                  },
+                  onPickQuery: (query) {
+                    controller.text = query;
+                    onStateChanged();
+                    ref.read(searchQueryProvider.notifier).state = query;
+                    ref.read(searchInteractionProvider).logSubmit(query);
+                  },
+                )
+              : _SearchResultsView(
+                  activeQuery: raw,
+                  onOpenBook: (book) async {
+                    await ref
+                        .read(searchInteractionProvider)
+                        .logBookClick(query: raw, bookId: book.id);
+                    if (!context.mounted) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => BookDetailPage(book: book),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

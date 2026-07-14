@@ -47,6 +47,7 @@ dependencies:
   flutter_timezone: ^5.1.0
   timezone: ^0.10.1
   sentry_flutter: ^8.14.2
+  file_picker: 8.3.7
 
 dev_dependencies:
   flutter_test:

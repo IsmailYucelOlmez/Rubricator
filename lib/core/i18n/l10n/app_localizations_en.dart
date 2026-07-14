@@ -18,7 +18,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSearch => 'Search';
 
   @override
+  String get navVirgil => 'Virgil';
+
+  @override
   String get navLists => 'Lists';
+
+  @override
+  String get virgilTagline => 'Virgil will guide your reading journey';
+
+  @override
+  String get virgilRecommendationHint =>
+      'Find your next favorite read with recommendations.';
+
+  @override
+  String get virgilRecommendationTitle => 'Recommendation';
+
+  @override
+  String get virgilAboutBookTitle => 'About Book';
+
+  @override
+  String get virgilAboutBookHint => 'Upload a book and ask questions about';
+
+  @override
+  String get virgilBetaBadge => 'BETA';
 
   @override
   String get listsFeedHeading => 'Listbox';

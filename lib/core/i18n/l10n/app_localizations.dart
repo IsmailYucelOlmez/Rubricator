@@ -116,11 +116,53 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get navSearch;
 
+  /// No description provided for @navVirgil.
+  ///
+  /// In en, this message translates to:
+  /// **'Virgil'**
+  String get navVirgil;
+
   /// No description provided for @navLists.
   ///
   /// In en, this message translates to:
   /// **'Lists'**
   String get navLists;
+
+  /// No description provided for @virgilTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Virgil will guide your reading journey'**
+  String get virgilTagline;
+
+  /// No description provided for @virgilRecommendationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next favorite read with recommendations.'**
+  String get virgilRecommendationHint;
+
+  /// No description provided for @virgilRecommendationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation'**
+  String get virgilRecommendationTitle;
+
+  /// No description provided for @virgilAboutBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Book'**
+  String get virgilAboutBookTitle;
+
+  /// No description provided for @virgilAboutBookHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a book and ask questions about'**
+  String get virgilAboutBookHint;
+
+  /// No description provided for @virgilBetaBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'BETA'**
+  String get virgilBetaBadge;
 
   /// No description provided for @listsFeedHeading.
   ///

@@ -18,7 +18,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get navSearch => 'Ara';
 
   @override
+  String get navVirgil => 'Virgil';
+
+  @override
   String get navLists => 'Listeler';
+
+  @override
+  String get virgilTagline => 'Virgil okuma yolculuğuna rehberlik eder';
+
+  @override
+  String get virgilRecommendationHint =>
+      'Önerilerle bir sonraki favori kitabını bul.';
+
+  @override
+  String get virgilRecommendationTitle => 'Recommendation';
+
+  @override
+  String get virgilAboutBookTitle => 'About Book';
+
+  @override
+  String get virgilAboutBookHint => 'Bir kitap yükle ve hakkında sorular sor';
+
+  @override
+  String get virgilBetaBadge => 'BETA';
 
   @override
   String get listsFeedHeading => 'Listbox';

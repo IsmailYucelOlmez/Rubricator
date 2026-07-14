@@ -75,6 +75,10 @@ flutter:
 
   assets:
     - assets/RubricatorLogov1pngv2.png
+    - assets/bottomtab/homeicon.svg
+    - assets/bottomtab/Search.svg
+    - assets/bottomtab/Books.svg
+    - assets/bottomtab/user.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -149,6 +153,41 @@ flutter:
       fonts:
         - asset: assets/sinistre-main/fonts/Sinistre-Regular.otf
         - asset: assets/sinistre-main/fonts/Sinistre-Bold.otf
+          weight: 700
+    - family: Megrim
+      fonts:
+        - asset: assets/Virgil/Megrim/Megrim-Regular.ttf
+    - family: Outfit
+      fonts:
+        - asset: assets/Virgil/Outfit/static/Outfit-Thin.ttf
+          weight: 100
+        - asset: assets/Virgil/Outfit/static/Outfit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/Virgil/Outfit/static/Outfit-Light.ttf
+          weight: 300
+        - asset: assets/Virgil/Outfit/static/Outfit-Regular.ttf
+          weight: 400
+        - asset: assets/Virgil/Outfit/static/Outfit-Medium.ttf
+          weight: 500
+        - asset: assets/Virgil/Outfit/static/Outfit-SemiBold.ttf
+          weight: 600
+        - asset: assets/Virgil/Outfit/static/Outfit-Bold.ttf
+          weight: 700
+        - asset: assets/Virgil/Outfit/static/Outfit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/Virgil/Outfit/static/Outfit-Black.ttf
+          weight: 900
+    - family: Quicksand
+      fonts:
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Regular.ttf
+          weight: 400
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Medium.ttf
+          weight: 500
+        - asset: assets/Virgil/Quicksand/static/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Bold.ttf
           weight: 700
 
 flutter_launcher_icons:

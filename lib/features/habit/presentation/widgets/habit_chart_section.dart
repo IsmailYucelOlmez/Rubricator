@@ -4,6 +4,7 @@ import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 
 import '../../domain/entities/reading_log_entity.dart';
@@ -18,7 +19,10 @@ class HabitChartSection extends ConsumerWidget {
     final logsAsync = ref.watch(readingLogsProvider);
     return logsAsync.when(
       data: (logs) => _ChartCard(logs: logs),
-      loading: () => const SizedBox.shrink(),
+      loading: () => const SizedBox(
+        height: AppSpacing.lg * 8,
+        child: AppLoadingIndicator(),
+      ),
       error: (e, _) => AsyncErrorView(
             error: e,
             compact: true,

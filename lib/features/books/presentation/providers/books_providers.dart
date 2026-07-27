@@ -162,6 +162,7 @@ class ReviewListNotifier
               likedByCurrentUser: review.likedByCurrentUser,
               userRating: review.userRating,
               isFavorite: review.isFavorite,
+              userName: review.userName,
             ),
           );
       return ref.read(bookDetailRepositoryProvider).getReviews(_bookId);
@@ -187,6 +188,7 @@ class ReviewListNotifier
                   likedByCurrentUser: liked,
                   userRating: review.userRating,
                   isFavorite: review.isFavorite,
+                  userName: review.userName,
                 );
               },
             )
@@ -212,6 +214,7 @@ class ReviewListNotifier
                         likedByCurrentUser: result.liked,
                         userRating: review.userRating,
                         isFavorite: review.isFavorite,
+                        userName: review.userName,
                       )
                     : review,
               )
@@ -336,6 +339,7 @@ class QuoteNotifier extends FamilyAsyncNotifier<List<QuoteEntity>, String> {
                   likes: quote.likes + (liked ? 1 : -1),
                   createdAt: quote.createdAt,
                   likedByCurrentUser: liked,
+                  userName: quote.userName,
                 );
               },
             )
@@ -359,6 +363,7 @@ class QuoteNotifier extends FamilyAsyncNotifier<List<QuoteEntity>, String> {
                         likes: result.likes,
                         createdAt: quote.createdAt,
                         likedByCurrentUser: result.liked,
+                        userName: quote.userName,
                       )
                     : quote,
               )

@@ -44,9 +44,6 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     final itemsAsync = ref.watch(listItemsProvider(list.id));
     final commentsAsync = ref.watch(commentsProvider(list.id));
     final theme = Theme.of(context);
-    final sectionStyle = theme.textTheme.titleSmall?.copyWith(
-      fontWeight: FontWeight.w600,
-    );
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -103,7 +100,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                         list.description,
                         style: theme.textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.md),
                     ],
                     Text(
                       l10n.byUser(list.userName),
@@ -111,9 +108,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(l10n.books, style: sectionStyle),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.xl),
                     itemsAsync.when(
                       data: (items) => items.isEmpty
                           ? Padding(
@@ -151,8 +146,11 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                             ref.invalidate(listItemsProvider(list.id)),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(l10n.comments, style: sectionStyle),
+                    const SizedBox(height: AppSpacing.xl),
+                    Text(
+                      l10n.comments,
+                      style: theme.textTheme.titleMedium,
+                    ),
                     const SizedBox(height: AppSpacing.xs),
                     commentsAsync.when(
                       data: (comments) => comments.isEmpty
@@ -176,9 +174,10 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                                     visualDensity: VisualDensity.compact,
                                     title: Text(
                                       comment.userName,
-                                      style: theme.textTheme.bodyMedium
+                                      style: theme.textTheme.bodySmall
                                           ?.copyWith(
                                         fontWeight: FontWeight.w600,
+                                        color: theme.colorScheme.onSurface,
                                       ),
                                     ),
                                     subtitle: Text(
@@ -188,7 +187,10 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
                                   ),
                               ],
                             ),
-                      loading: () => const SizedBox.shrink(),
+                      loading: () => const Padding(
+                        padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        child: AppLoadingIndicator(),
+                      ),
                       error: (e, _) => AsyncErrorView(
                         error: e,
                         compact: true,
@@ -359,7 +361,7 @@ class _BookListItem extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontFamily: 'LTSoul',
+                    fontFamily: 'Outfit',
                     fontWeight: FontWeight.w600,
                   ),
                 ),

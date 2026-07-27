@@ -10,13 +10,16 @@ import '../../../../core/notification/reading_reminder_scheduler.dart';
 import '../../../../core/ux/l10n_app_error.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/async_error_view.dart';
 import '../../domain/usecases/habit_usecases.dart';
 import '../providers/habit_providers.dart';
+
 Future<void> showHabitQuickAddBottomSheet(BuildContext context) async {
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
+    useSafeArea: true,
     builder: (ctx) {
       return Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
@@ -148,6 +151,7 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
     final booksAsync = ref.watch(habitBookChoicesProvider);
 
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md + AppSpacing.xs,
@@ -248,13 +252,15 @@ class _HabitQuickAddBodyState extends ConsumerState<_HabitQuickAddBody> {
                   ],
                 );
               },
-              loading: () => Text(
-                l10n.bookOptional,
-                style: Theme.of(context).textTheme.bodySmall,
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: AppLoadingIndicator(size: 22, strokeWidth: 2),
               ),
-              error: (error, _) => Text(
-                l10n.optionalAddBooksPrompt,
-                style: Theme.of(context).textTheme.bodySmall,
+              error: (error, _) => AsyncErrorView(
+                error: error,
+                compact: true,
+                onRetry: () =>
+                    ref.invalidate(habitReadingBookChoicesProvider),
               ),
             ),
             const SizedBox(height: 24),

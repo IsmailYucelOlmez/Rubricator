@@ -18,7 +18,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSearch => 'Search';
 
   @override
+  String get navVirgil => 'Virgil';
+
+  @override
   String get navLists => 'Lists';
+
+  @override
+  String get virgilTagline => 'Virgil will guide your reading journey';
+
+  @override
+  String get virgilRecommendationHint =>
+      'Find your next favorite read with recommendations.';
+
+  @override
+  String get virgilRecommendationTitle => 'Recommendation';
+
+  @override
+  String get virgilAboutBookTitle => 'About Book';
+
+  @override
+  String get virgilAboutBookHint => 'Upload a book and ask questions about';
+
+  @override
+  String get virgilBetaBadge => 'BETA';
+
+  @override
+  String get virgilRecommendationEmptyBody =>
+      'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.';
+
+  @override
+  String get virgilRecommendationInputHint => 'Type something...';
+
+  @override
+  String get virgilQaInputHint => 'ask question';
+
+  @override
+  String get virgilQaUploadTitle => 'Upload PDF or Epub';
+
+  @override
+  String get virgilQaSizeLimit => '20 MB Limit';
+
+  @override
+  String get virgilQaPagesLimit => '500 Pages Limit';
+
+  @override
+  String get virgilQaPrivacyNotice =>
+      'The files you upload and your conversations are not recorded.';
+
+  @override
+  String get virgilQaProcessingTitle => 'File processing...';
+
+  @override
+  String get virgilQaProcessingSubtitle => 'Please wait';
+
+  @override
+  String virgilQaFileMeta(String filename, String format, int pages) {
+    return '$filename | $format | $pages pages';
+  }
+
+  @override
+  String virgilQaFileMetaChapters(
+    String filename,
+    String format,
+    int chapters,
+  ) {
+    return '$filename | $format | $chapters chapters';
+  }
+
+  @override
+  String get virgilGenreLabel => 'Genre';
+
+  @override
+  String get virgilGenreAll => 'All';
+
+  @override
+  String get virgilGenreFiction => 'Fiction';
+
+  @override
+  String get virgilGenreNonfiction => 'Nonfiction';
+
+  @override
+  String get virgilGenreChildrensFiction => 'Children\'s Fiction';
+
+  @override
+  String get virgilGenreChildrensNonfiction => 'Children\'s Nonfiction';
+
+  @override
+  String get signInForVirgil =>
+      'Sign in to use Virgil recommendations and book Q&A.';
+
+  @override
+  String get virgilDailyRecommendationLimit =>
+      'You can request recommendations up to 3 times per day. Try again tomorrow.';
+
+  @override
+  String get virgilDailyUploadLimit =>
+      'You can upload up to 3 books per day. Try again tomorrow.';
+
+  @override
+  String virgilQuestionsRemaining(int count) {
+    return '$count questions left for this book';
+  }
 
   @override
   String get listsFeedHeading => 'Listbox';
@@ -39,10 +139,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickPhotoFromGallery => 'Choose photo from gallery';
 
   @override
-  String get pickProfilePhotoFromGallery => 'Choose profile photo from gallery';
+  String get pickProfilePhotoFromGallery => 'Choose photo';
 
   @override
-  String get changeProfilePhoto => 'Change profile photo';
+  String get changeProfilePhoto => 'Change photo';
 
   @override
   String get removeProfilePhotoTooltip => 'Remove photo';
@@ -120,7 +220,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordMin6 =>
-      'At least 6 characters with upper, lower, and punctuation';
+      'Password (At least 6 characters with upper, lower, and punctuation)';
 
   @override
   String get cancel => 'Cancel';
@@ -216,6 +316,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchBooksMin2Hint => 'Type at least 2 characters to search';
 
   @override
+  String get searchTabKeyword => 'Keyword';
+
+  @override
+  String get searchTabSemantic => 'Semantic';
+
+  @override
+  String get searchTabDocumentChat => 'Ask my book';
+
+  @override
+  String get documentChatPickFile => 'Choose PDF or EPUB';
+
+  @override
+  String get documentChatUploading => 'Uploading…';
+
+  @override
+  String get documentChatProcessing => 'Processing your book…';
+
+  @override
+  String documentChatEmbedProgress(int done, int total) {
+    return 'Embedding $done of $total';
+  }
+
+  @override
+  String get documentChatExtracting => 'Extracting text…';
+
+  @override
+  String get documentChatEmptyHint =>
+      'Upload a book to ask questions about its content.';
+
+  @override
+  String get documentChatSessionExpired =>
+      'Your session has expired. Upload the book again.';
+
+  @override
+  String get documentChatProcessingFailed => 'Could not process this book.';
+
+  @override
+  String get documentChatStillProcessing => 'Still processing — please wait.';
+
+  @override
+  String documentChatQuestionsRemaining(int count) {
+    return '$count questions left';
+  }
+
+  @override
+  String get documentChatTruncatedWarning =>
+      'Only part of the book was processed. Answers may be incomplete.';
+
+  @override
+  String get documentChatUnsupportedFormat =>
+      'Only PDF and EPUB files are supported.';
+
+  @override
+  String documentChatFileTooLarge(int mb) {
+    return 'File exceeds the $mb MB limit.';
+  }
+
+  @override
+  String get documentChatAskPlaceholder => 'Ask about this book…';
+
+  @override
+  String documentChatSourcePage(int page) {
+    return 'Page $page';
+  }
+
+  @override
+  String get documentChatEphemeralNotice =>
+      'Chats are temporary and not saved to your account.';
+
+  @override
+  String get documentChatSupportedFormats =>
+      'Supported: .pdf, .epub (max 20 MB / ~500 PDF pages)';
+
+  @override
+  String get documentChatNewFile => 'New file';
+
+  @override
+  String get documentChatPages => 'pages';
+
+  @override
+  String get documentChatChapters => 'chapters';
+
+  @override
+  String documentChatExpiresIn(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String get semanticSearchHint =>
+      'Describe the kind of book you\'re looking for…';
+
+  @override
+  String get semanticSearchMinHint =>
+      'Describe what you\'re looking for and tap Search';
+
+  @override
+  String get semanticFiltersTitle => 'Filters';
+
+  @override
+  String get semanticCategoryLabel => 'Category';
+
+  @override
+  String get semanticToneLabel => 'Tone';
+
+  @override
+  String get semanticApiNotConfigured =>
+      'Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get semanticModeSimple => 'Quick';
+
+  @override
+  String get semanticModeAdvanced => 'Deep';
+
+  @override
+  String get semanticModeAdvancedHint =>
+      'Rewrites your query and may add new books from Google Books';
+
+  @override
   String get discover => 'Discover';
 
   @override
@@ -226,7 +448,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Search didn\'t complete. Please try again.';
 
   @override
-  String get continueReading => 'Continue Reading';
+  String get continueReading => 'Currently Reading';
 
   @override
   String get popular => 'Popular';
@@ -392,7 +614,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviews => 'Reviews';
 
   @override
-  String get userReviews => 'User Reviews';
+  String get userReviews => 'App Reviews';
 
   @override
   String get externalReviews => 'External Reviews';
@@ -414,6 +636,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reviewInFavorites => 'In favorites';
+
+  @override
+  String get relativeTimeJustNow => 'just now';
+
+  @override
+  String relativeTimeMinutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String relativeTimeHoursAgo(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String relativeTimeDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String relativeTimeWeeksAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks ago',
+      one: '1 week ago',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get couldNotLoadReviews => 'Could not load reviews.';
@@ -447,6 +704,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotLoadQuotes => 'Could not load quotes.';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get myNotes => 'My Notes';
+
+  @override
+  String get myNotesDescription =>
+      'Search, filter, and manage your reading notes.';
+
+  @override
+  String get signInToSeeNotes => 'Sign in to view and manage your notes.';
+
+  @override
+  String get addNote => 'Add note';
+
+  @override
+  String get editNote => 'Edit note';
+
+  @override
+  String get noteTitleHint => 'Note title';
+
+  @override
+  String get noteContentHint => 'Write your note…';
+
+  @override
+  String get notePageHint => 'Page (optional)';
+
+  @override
+  String get noteChapterHint => 'Chapter (optional)';
+
+  @override
+  String get noteTagsHint => 'Tags (comma separated)';
+
+  @override
+  String get publicNote => 'Public note';
+
+  @override
+  String get publicNoteDescription =>
+      'Public notes appear on the book\'s Notes tab for everyone.';
+
+  @override
+  String get privateNote => 'Private';
+
+  @override
+  String get searchNotesHint => 'Search notes…';
+
+  @override
+  String get noPublicNotesYet => 'No public notes yet.';
+
+  @override
+  String get noMyNotesYet => 'You haven\'t added any notes yet.';
+
+  @override
+  String get noteAdded => 'Note added.';
+
+  @override
+  String get noteUpdated => 'Note updated.';
+
+  @override
+  String get noteDeleted => 'Note deleted.';
+
+  @override
+  String get deleteNoteTitle => 'Delete note?';
+
+  @override
+  String get deleteNoteMessage => 'This note will be permanently deleted.';
+
+  @override
+  String get allTags => 'All';
+
+  @override
+  String notePageLabel(int page) {
+    return 'Page $page';
+  }
 
   @override
   String get editReview => 'Edit review';
@@ -725,7 +1058,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listsForYou => 'For you';
 
   @override
-  String get listsTopTwenty => 'Timeless picks';
+  String get listsTopTwenty => 'Timeless';
 
   @override
   String get listsFollowing => 'Following';

@@ -3,17 +3,14 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 /// Display (largest headings): Nouveau.
-/// Headlines & titles: Sansita Swashed.
-/// Body / labels: Sansita Swashed.
-/// Sinistre: bottom nav labels (use [bottomNavLabel]).
+/// Headlines, titles, body, labels, and bottom nav: Outfit.
 abstract final class AppTypography {
   static const String _nouveau = 'Nouveau';
-  static const String _sansitaSwashed = 'SansitaSwashed';
-  static const String _sinistre = 'Sinistre';
+  static const String _outfit = 'Outfit';
 
   static TextStyle bottomNavLabel({required Color color}) {
     return TextStyle(
-      fontFamily: _sinistre,
+      fontFamily: _outfit,
       fontSize: 11 * 1.20,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.4,
@@ -52,7 +49,7 @@ abstract final class AppTypography {
       double? height,
     }) {
       return TextStyle(
-        fontFamily: _sansitaSwashed,
+        fontFamily: _outfit,
         fontSize: fontSize * bodyFontSizeFactor,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -60,14 +57,14 @@ abstract final class AppTypography {
       );
     }
 
-    TextStyle sansitaSwashed({
+    TextStyle outfit({
       double fontSize = 24,
       FontWeight fontWeight = FontWeight.w700,
       Color? color,
       double? height,
     }) {
       return TextStyle(
-        fontFamily: _sansitaSwashed,
+        fontFamily: _outfit,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color ?? onSurface,
@@ -79,12 +76,12 @@ abstract final class AppTypography {
       displayLarge: nouveau(fontSize: 36, fontWeight: FontWeight.w700),
       displayMedium: nouveau(fontSize: 32),
       displaySmall: nouveau(fontSize: 28),
-      headlineLarge: sansitaSwashed(fontSize: 28),
-      headlineMedium: sansitaSwashed(fontSize: 24),
-      headlineSmall: sansitaSwashed(fontSize: 22, fontWeight: FontWeight.w600),
-      titleLarge: sansitaSwashed(fontSize: 22, fontWeight: FontWeight.w600),
-      titleMedium: sansitaSwashed(fontSize: 18, fontWeight: FontWeight.w600),
-      titleSmall: sansitaSwashed(fontSize: 16, fontWeight: FontWeight.w600),
+      headlineLarge: outfit(fontSize: 28),
+      headlineMedium: outfit(fontSize: 24),
+      headlineSmall: outfit(fontSize: 22, fontWeight: FontWeight.w600),
+      titleLarge: outfit(fontSize: 22, fontWeight: FontWeight.w600),
+      titleMedium: outfit(fontSize: 18, fontWeight: FontWeight.w600),
+      titleSmall: outfit(fontSize: 16, fontWeight: FontWeight.w600),
       bodyLarge: body(fontSize: 16),
       bodyMedium: body(fontSize: 14),
       bodySmall: body(fontSize: 12, color: onSurfaceVariant),

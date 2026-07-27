@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 
 import '../providers/habit_providers.dart';
@@ -20,7 +21,13 @@ class HabitStreakWidget extends ConsumerWidget {
         if (compact) {
           return Row(
             children: [
-              Icon(Icons.local_fire_department, color: AppColors.accent(context), size: 22),
+              Icon(
+                Icons.local_fire_department,
+                color: s.currentStreak > 0
+                    ? AppColors.primary
+                    : AppColors.accent(context),
+                size: 22,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 AppLocalizations.of(context)!.dayStreak(s.currentStreak),
@@ -62,7 +69,10 @@ class HabitStreakWidget extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const LinearProgressIndicator(minHeight: 2),
+      loading: () => SizedBox(
+        height: compact ? 28 : 96,
+        child: const AppLoadingIndicator(),
+      ),
       error: (e, _) => AsyncErrorView(
             error: e,
             compact: true,

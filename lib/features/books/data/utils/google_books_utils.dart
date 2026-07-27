@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../models/book_model.dart';
 
 /// Shared Google Books API helpers ([xdocs/google_books_api.mdc]).
@@ -5,6 +7,8 @@ abstract final class GoogleBooksUtils {
   static const int defaultMaxResults = 40;
 
   static final RegExp _isbnDigits = RegExp(r'^\d{10}$|^\d{13}$');
+  static final RegExp _nonAlnum = RegExp(r'[^\p{L}\p{N}\s]+', unicode: true);
+  static final RegExp _multiSpace = RegExp(r'\s+');
 
   /// Base query params required on every `/volumes` list request.
   static Map<String, dynamic> baseListParams({
@@ -73,24 +77,105 @@ abstract final class GoogleBooksUtils {
     }).toList();
   }
 
-  static int qualityScore(BookModel book) {
-    var score = 0;
-    if (book.isbn13 != null) score += 3;
-    if (book.coverImageUrl != null) score += 2;
-    if (book.pageCount != null) score += 1;
-    if (book.averageRating != null) score += 1;
-    if (book.publishedYear != null) score += 1;
+  static String normalizeSearchText(String input) {
+    return input
+        .toLowerCase()
+        .replaceAll(_nonAlnum, ' ')
+        .replaceAll(_multiSpace, ' ')
+        .trim();
+  }
+
+  /// Token Jaccard similarity in `[0, 1]`, with a contains boost.
+  static double textSimilarity(String a, String b) {
+    final left = normalizeSearchText(a);
+    final right = normalizeSearchText(b);
+    if (left.isEmpty || right.isEmpty) return 0;
+    if (left == right) return 1;
+
+    if (left.contains(right) || right.contains(left)) {
+      final shorter = math.min(left.length, right.length);
+      final longer = math.max(left.length, right.length);
+      return 0.7 + 0.3 * (shorter / longer);
+    }
+
+    final leftTokens = left.split(' ').where((t) => t.isNotEmpty).toSet();
+    final rightTokens = right.split(' ').where((t) => t.isNotEmpty).toSet();
+    if (leftTokens.isEmpty || rightTokens.isEmpty) return 0;
+
+    final intersection = leftTokens.intersection(rightTokens).length;
+    final union = leftTokens.union(rightTokens).length;
+    if (union == 0) return 0;
+    return intersection / union;
+  }
+
+  /// Query match score: title/author exact + similarity.
+  static double relevanceScore(BookModel book, String query) {
+    final q = normalizeSearchText(query);
+    if (q.isEmpty) return 0;
+
+    final title = normalizeSearchText(book.title);
+    final author = normalizeSearchText(book.primaryAuthorName);
+
+    var score = 0.0;
+    if (title == q) {
+      score += 20;
+    } else {
+      score += 12 * textSimilarity(title, q);
+    }
+
+    if (author == q) {
+      score += 15;
+    } else {
+      score += 8 * textSimilarity(author, q);
+    }
+
     return score;
   }
 
-  static List<BookModel> sortByQuality(List<BookModel> books) {
+  /// Metadata richness score. Rating contribution is `averageRating * ln(ratingsCount)`.
+  static double qualityScore(BookModel book) {
+    var score = 0.0;
+    if (book.isbn13 != null) score += 3;
+    if (book.coverImageUrl != null) score += 2;
+    if (book.description.trim().isNotEmpty) score += 1;
+    if (book.pageCount != null) score += 1;
+    if (book.publishedYear != null) score += 1;
+
+    final rating = book.averageRating;
+    final count = book.ratingsCount;
+    if (rating != null && count != null && count > 0) {
+      score += rating * math.log(count);
+    }
+    return score;
+  }
+
+  static int compareByRelevanceThenQuality(
+    BookModel a,
+    BookModel b, {
+    String? query,
+  }) {
+    if (query != null && query.trim().isNotEmpty) {
+      final byRelevance = relevanceScore(
+        b,
+        query,
+      ).compareTo(relevanceScore(a, query));
+      if (byRelevance != 0) return byRelevance;
+    }
+    return qualityScore(b).compareTo(qualityScore(a));
+  }
+
+  static List<BookModel> sortByRelevanceThenQuality(
+    List<BookModel> books, {
+    String? query,
+  }) {
     final copy = List<BookModel>.from(books);
-    copy.sort((a, b) => qualityScore(b).compareTo(qualityScore(a)));
+    copy.sort((a, b) => compareByRelevanceThenQuality(a, b, query: query));
     return copy;
   }
 
-  static List<BookModel> postProcess(List<BookModel> books) {
-    return sortByQuality(deduplicate(books));
+  /// Deduplicate, then rank by relevance (when [query] given) and quality.
+  static List<BookModel> postProcess(List<BookModel> books, {String? query}) {
+    return sortByRelevanceThenQuality(deduplicate(books), query: query);
   }
 
   static String searchCacheKey({
@@ -99,7 +184,7 @@ abstract final class GoogleBooksUtils {
     required int page,
     required int limit,
   }) {
-    return 'search|v2|${query.toLowerCase().trim()}|$lang|$page|$limit';
+    return 'search|v3|${query.toLowerCase().trim()}|$lang|$page|$limit';
   }
 
   static String authorCacheKey({
@@ -107,6 +192,6 @@ abstract final class GoogleBooksUtils {
     required String lang,
     required int limit,
   }) {
-    return 'author|${authorName.toLowerCase().trim()}|$lang|$limit';
+    return 'author|v2|${authorName.toLowerCase().trim()}|$lang|$limit';
   }
 }

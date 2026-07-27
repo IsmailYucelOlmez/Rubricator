@@ -76,8 +76,8 @@ class ListsPage extends ConsumerWidget {
                 FilledButton.icon(
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm + AppSpacing.xs,
-                      vertical: AppSpacing.sm + AppSpacing.xs,
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.sm,
                     ),
                     minimumSize: const Size(0, 40),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -139,7 +139,10 @@ class ListsPage extends ConsumerWidget {
       ),
     );
     if (embedded) return body;
-    return SafeArea(child: ResponsiveScaffoldBody(child: body));
+    return SafeArea(
+      bottom: false,
+      child: ResponsiveScaffoldBody(child: body),
+    );
   }
 }
 

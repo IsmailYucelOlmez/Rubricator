@@ -15,6 +15,7 @@ class BookModel {
     this.publishedYear,
     this.pageCount,
     this.averageRating,
+    this.ratingsCount,
   });
 
   final String workId;
@@ -32,6 +33,7 @@ class BookModel {
   final String? publishedYear;
   final int? pageCount;
   final double? averageRating;
+  final int? ratingsCount;
 
   Book toEntity() {
     return Book(
@@ -58,6 +60,7 @@ class BookModel {
     String? publishedYear,
     int? pageCount,
     double? averageRating,
+    int? ratingsCount,
   }) {
     return BookModel(
       workId: workId ?? this.workId,
@@ -72,6 +75,7 @@ class BookModel {
       publishedYear: publishedYear ?? this.publishedYear,
       pageCount: pageCount ?? this.pageCount,
       averageRating: averageRating ?? this.averageRating,
+      ratingsCount: ratingsCount ?? this.ratingsCount,
     );
   }
 
@@ -89,6 +93,7 @@ class BookModel {
       'published_year': publishedYear,
       'page_count': pageCount,
       'average_rating': averageRating,
+      'ratings_count': ratingsCount,
     };
   }
 
@@ -122,6 +127,7 @@ class BookModel {
       publishedYear: (json['published_year'] as String?)?.trim(),
       pageCount: (json['page_count'] as num?)?.toInt(),
       averageRating: (json['average_rating'] as num?)?.toDouble(),
+      ratingsCount: (json['ratings_count'] as num?)?.toInt(),
     );
   }
 
@@ -232,6 +238,7 @@ class BookModel {
     final publishedYear = _publishedYearFromVolume(volumeInfo);
     final pageCount = (volumeInfo['pageCount'] as num?)?.toInt();
     final averageRating = (volumeInfo['averageRating'] as num?)?.toDouble();
+    final ratingsCount = (volumeInfo['ratingsCount'] as num?)?.toInt();
 
     return BookModel(
       workId: id.isNotEmpty ? id : (mergeFrom?.workId ?? 'unknown'),
@@ -255,6 +262,7 @@ class BookModel {
       publishedYear: publishedYear ?? mergeFrom?.publishedYear,
       pageCount: pageCount ?? mergeFrom?.pageCount,
       averageRating: averageRating ?? mergeFrom?.averageRating,
+      ratingsCount: ratingsCount ?? mergeFrom?.ratingsCount,
     );
   }
 }

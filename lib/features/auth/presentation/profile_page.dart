@@ -11,6 +11,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_input.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/async_error_view.dart';
+import '../../book_notes/presentation/widgets/my_notes_entry_card.dart';
 import '../../habit/presentation/widgets/habit_profile_summary.dart';
 import '../../favorites/presentation/pages/reading_status_list_page.dart';
 import '../../profile/presentation/widgets/language_selector.dart';
@@ -30,6 +31,7 @@ class ProfilePage extends ConsumerWidget {
     final authAsync = ref.watch(authStateProvider);
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
+      bottom: false,
       child: ResponsiveScaffoldBody(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -62,11 +64,12 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
-                      child: FilledButton(
+                      child: FilledButton.icon(
                         onPressed: () async {
                           await ref.read(authServiceProvider).signOut();
                         },
-                        child: Text(
+                        icon: const Icon(Icons.logout_outlined),
+                        label: Text(
                           l10n.signOut,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -78,7 +81,7 @@ class ProfilePage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const ThemeSelector(),
-              const NotificationSelector(),
+              if (user != null) const NotificationSelector(),
               if (user != null) const _ProfileReadingListsSection(),
               if (user == null) ...[
                 const SizedBox(height: AppSpacing.md),
@@ -103,6 +106,7 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ] else ...[
                 const HabitProfileSummary(),
+                const MyNotesEntryCard(),
                 const StatsPreviewCard(),
               ],
               ],
@@ -243,7 +247,10 @@ class _ProfileReadingListsSection extends StatelessWidget {
   }
 
   Widget _fixedListButton(BuildContext context, _ReadingListButtonSpec spec) {
-    final labelStyle = Theme.of(context).textTheme.labelSmall;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final labelStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: isLight ? Colors.white : null,
+    );
     return SizedBox(
       height: _buttonHeight,
       width: double.infinity,
@@ -253,10 +260,11 @@ class _ProfileReadingListsSection extends StatelessWidget {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: const Size(0, _buttonHeight),
           fixedSize: const Size.fromHeight(_buttonHeight),
+          foregroundColor: isLight ? Colors.white : null,
           textStyle: labelStyle,
         ),
         onPressed: spec.onPressed,
-        icon: Icon(spec.icon, size: _iconSize),
+        icon: Icon(spec.icon, size: _iconSize, color: isLight ? Colors.white : null),
         label: Text(
           spec.label,
           maxLines: 1,

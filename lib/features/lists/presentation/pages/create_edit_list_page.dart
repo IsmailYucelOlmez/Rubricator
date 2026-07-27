@@ -191,7 +191,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                fontFamily: 'LTSoul',
+                                fontFamily: 'Outfit',
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -320,7 +320,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontFamily: 'LTSoul',
+                      fontFamily: 'Outfit',
                       fontWeight: FontWeight.w600,
                     ),
                   ),

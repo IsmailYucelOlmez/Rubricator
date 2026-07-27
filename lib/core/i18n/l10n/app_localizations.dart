@@ -116,11 +116,179 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get navSearch;
 
+  /// No description provided for @navVirgil.
+  ///
+  /// In en, this message translates to:
+  /// **'Virgil'**
+  String get navVirgil;
+
   /// No description provided for @navLists.
   ///
   /// In en, this message translates to:
   /// **'Lists'**
   String get navLists;
+
+  /// No description provided for @virgilTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Virgil will guide your reading journey'**
+  String get virgilTagline;
+
+  /// No description provided for @virgilRecommendationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next favorite read with recommendations.'**
+  String get virgilRecommendationHint;
+
+  /// No description provided for @virgilRecommendationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation'**
+  String get virgilRecommendationTitle;
+
+  /// No description provided for @virgilAboutBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Book'**
+  String get virgilAboutBookTitle;
+
+  /// No description provided for @virgilAboutBookHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a book and ask questions about'**
+  String get virgilAboutBookHint;
+
+  /// No description provided for @virgilBetaBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'BETA'**
+  String get virgilBetaBadge;
+
+  /// No description provided for @virgilRecommendationEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.'**
+  String get virgilRecommendationEmptyBody;
+
+  /// No description provided for @virgilRecommendationInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type something...'**
+  String get virgilRecommendationInputHint;
+
+  /// No description provided for @virgilQaInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ask question'**
+  String get virgilQaInputHint;
+
+  /// No description provided for @virgilQaUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF or Epub'**
+  String get virgilQaUploadTitle;
+
+  /// No description provided for @virgilQaSizeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'20 MB Limit'**
+  String get virgilQaSizeLimit;
+
+  /// No description provided for @virgilQaPagesLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'500 Pages Limit'**
+  String get virgilQaPagesLimit;
+
+  /// No description provided for @virgilQaPrivacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'The files you upload and your conversations are not recorded.'**
+  String get virgilQaPrivacyNotice;
+
+  /// No description provided for @virgilQaProcessingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File processing...'**
+  String get virgilQaProcessingTitle;
+
+  /// No description provided for @virgilQaProcessingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait'**
+  String get virgilQaProcessingSubtitle;
+
+  /// No description provided for @virgilQaFileMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{filename} | {format} | {pages} pages'**
+  String virgilQaFileMeta(String filename, String format, int pages);
+
+  /// No description provided for @virgilQaFileMetaChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'{filename} | {format} | {chapters} chapters'**
+  String virgilQaFileMetaChapters(String filename, String format, int chapters);
+
+  /// No description provided for @virgilGenreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Genre'**
+  String get virgilGenreLabel;
+
+  /// No description provided for @virgilGenreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get virgilGenreAll;
+
+  /// No description provided for @virgilGenreFiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiction'**
+  String get virgilGenreFiction;
+
+  /// No description provided for @virgilGenreNonfiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Nonfiction'**
+  String get virgilGenreNonfiction;
+
+  /// No description provided for @virgilGenreChildrensFiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s Fiction'**
+  String get virgilGenreChildrensFiction;
+
+  /// No description provided for @virgilGenreChildrensNonfiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s Nonfiction'**
+  String get virgilGenreChildrensNonfiction;
+
+  /// No description provided for @signInForVirgil.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to use Virgil recommendations and book Q&A.'**
+  String get signInForVirgil;
+
+  /// No description provided for @virgilDailyRecommendationLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can request recommendations up to 3 times per day. Try again tomorrow.'**
+  String get virgilDailyRecommendationLimit;
+
+  /// No description provided for @virgilDailyUploadLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can upload up to 3 books per day. Try again tomorrow.'**
+  String get virgilDailyUploadLimit;
+
+  /// No description provided for @virgilQuestionsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} questions left for this book'**
+  String virgilQuestionsRemaining(int count);
 
   /// No description provided for @listsFeedHeading.
   ///
@@ -161,13 +329,13 @@ abstract class AppLocalizations {
   /// No description provided for @pickProfilePhotoFromGallery.
   ///
   /// In en, this message translates to:
-  /// **'Choose profile photo from gallery'**
+  /// **'Choose photo'**
   String get pickProfilePhotoFromGallery;
 
   /// No description provided for @changeProfilePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Change profile photo'**
+  /// **'Change photo'**
   String get changeProfilePhoto;
 
   /// No description provided for @removeProfilePhotoTooltip.
@@ -311,7 +479,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordMin6.
   ///
   /// In en, this message translates to:
-  /// **'At least 6 characters with upper, lower, and punctuation'**
+  /// **'Password (At least 6 characters with upper, lower, and punctuation)'**
   String get passwordMin6;
 
   /// No description provided for @cancel.
@@ -470,6 +638,210 @@ abstract class AppLocalizations {
   /// **'Type at least 2 characters to search'**
   String get searchBooksMin2Hint;
 
+  /// No description provided for @searchTabKeyword.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyword'**
+  String get searchTabKeyword;
+
+  /// No description provided for @searchTabSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Semantic'**
+  String get searchTabSemantic;
+
+  /// No description provided for @searchTabDocumentChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask my book'**
+  String get searchTabDocumentChat;
+
+  /// No description provided for @documentChatPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose PDF or EPUB'**
+  String get documentChatPickFile;
+
+  /// No description provided for @documentChatUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get documentChatUploading;
+
+  /// No description provided for @documentChatProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing your book…'**
+  String get documentChatProcessing;
+
+  /// No description provided for @documentChatEmbedProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedding {done} of {total}'**
+  String documentChatEmbedProgress(int done, int total);
+
+  /// No description provided for @documentChatExtracting.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting text…'**
+  String get documentChatExtracting;
+
+  /// No description provided for @documentChatEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a book to ask questions about its content.'**
+  String get documentChatEmptyHint;
+
+  /// No description provided for @documentChatSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Upload the book again.'**
+  String get documentChatSessionExpired;
+
+  /// No description provided for @documentChatProcessingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not process this book.'**
+  String get documentChatProcessingFailed;
+
+  /// No description provided for @documentChatStillProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Still processing — please wait.'**
+  String get documentChatStillProcessing;
+
+  /// No description provided for @documentChatQuestionsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} questions left'**
+  String documentChatQuestionsRemaining(int count);
+
+  /// No description provided for @documentChatTruncatedWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Only part of the book was processed. Answers may be incomplete.'**
+  String get documentChatTruncatedWarning;
+
+  /// No description provided for @documentChatUnsupportedFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Only PDF and EPUB files are supported.'**
+  String get documentChatUnsupportedFormat;
+
+  /// No description provided for @documentChatFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'File exceeds the {mb} MB limit.'**
+  String documentChatFileTooLarge(int mb);
+
+  /// No description provided for @documentChatAskPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about this book…'**
+  String get documentChatAskPlaceholder;
+
+  /// No description provided for @documentChatSourcePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page}'**
+  String documentChatSourcePage(int page);
+
+  /// No description provided for @documentChatEphemeralNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats are temporary and not saved to your account.'**
+  String get documentChatEphemeralNotice;
+
+  /// No description provided for @documentChatSupportedFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported: .pdf, .epub (max 20 MB / ~500 PDF pages)'**
+  String get documentChatSupportedFormats;
+
+  /// No description provided for @documentChatNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'New file'**
+  String get documentChatNewFile;
+
+  /// No description provided for @documentChatPages.
+  ///
+  /// In en, this message translates to:
+  /// **'pages'**
+  String get documentChatPages;
+
+  /// No description provided for @documentChatChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'chapters'**
+  String get documentChatChapters;
+
+  /// No description provided for @documentChatExpiresIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min left'**
+  String documentChatExpiresIn(int minutes);
+
+  /// No description provided for @semanticSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the kind of book you\'re looking for…'**
+  String get semanticSearchHint;
+
+  /// No description provided for @semanticSearchMinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you\'re looking for and tap Search'**
+  String get semanticSearchMinHint;
+
+  /// No description provided for @semanticFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get semanticFiltersTitle;
+
+  /// No description provided for @semanticCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get semanticCategoryLabel;
+
+  /// No description provided for @semanticToneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tone'**
+  String get semanticToneLabel;
+
+  /// No description provided for @semanticApiNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.'**
+  String get semanticApiNotConfigured;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @semanticModeSimple.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick'**
+  String get semanticModeSimple;
+
+  /// No description provided for @semanticModeAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep'**
+  String get semanticModeAdvanced;
+
+  /// No description provided for @semanticModeAdvancedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewrites your query and may add new books from Google Books'**
+  String get semanticModeAdvancedHint;
+
   /// No description provided for @discover.
   ///
   /// In en, this message translates to:
@@ -491,7 +863,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueReading.
   ///
   /// In en, this message translates to:
-  /// **'Continue Reading'**
+  /// **'Currently Reading'**
   String get continueReading;
 
   /// No description provided for @popular.
@@ -785,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @userReviews.
   ///
   /// In en, this message translates to:
-  /// **'User Reviews'**
+  /// **'App Reviews'**
   String get userReviews;
 
   /// No description provided for @externalReviews.
@@ -823,6 +1195,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In favorites'**
   String get reviewInFavorites;
+
+  /// No description provided for @relativeTimeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get relativeTimeJustNow;
+
+  /// No description provided for @relativeTimeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String relativeTimeMinutesAgo(int count);
+
+  /// No description provided for @relativeTimeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hr ago'**
+  String relativeTimeHoursAgo(int count);
+
+  /// No description provided for @relativeTimeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String relativeTimeDaysAgo(int count);
+
+  /// No description provided for @relativeTimeWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week ago} other{{count} weeks ago}}'**
+  String relativeTimeWeeksAgo(int count);
 
   /// No description provided for @couldNotLoadReviews.
   ///
@@ -889,6 +1291,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load quotes.'**
   String get couldNotLoadQuotes;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @myNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'My Notes'**
+  String get myNotes;
+
+  /// No description provided for @myNotesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Search, filter, and manage your reading notes.'**
+  String get myNotesDescription;
+
+  /// No description provided for @signInToSeeNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view and manage your notes.'**
+  String get signInToSeeNotes;
+
+  /// No description provided for @addNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNote;
+
+  /// No description provided for @editNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editNote;
+
+  /// No description provided for @noteTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Note title'**
+  String get noteTitleHint;
+
+  /// No description provided for @noteContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your note…'**
+  String get noteContentHint;
+
+  /// No description provided for @notePageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Page (optional)'**
+  String get notePageHint;
+
+  /// No description provided for @noteChapterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter (optional)'**
+  String get noteChapterHint;
+
+  /// No description provided for @noteTagsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags (comma separated)'**
+  String get noteTagsHint;
+
+  /// No description provided for @publicNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Public note'**
+  String get publicNote;
+
+  /// No description provided for @publicNoteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Public notes appear on the book\'s Notes tab for everyone.'**
+  String get publicNoteDescription;
+
+  /// No description provided for @privateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateNote;
+
+  /// No description provided for @searchNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search notes…'**
+  String get searchNotesHint;
+
+  /// No description provided for @noPublicNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No public notes yet.'**
+  String get noPublicNotesYet;
+
+  /// No description provided for @noMyNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t added any notes yet.'**
+  String get noMyNotesYet;
+
+  /// No description provided for @noteAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Note added.'**
+  String get noteAdded;
+
+  /// No description provided for @noteUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Note updated.'**
+  String get noteUpdated;
+
+  /// No description provided for @noteDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Note deleted.'**
+  String get noteDeleted;
+
+  /// No description provided for @deleteNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete note?'**
+  String get deleteNoteTitle;
+
+  /// No description provided for @deleteNoteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This note will be permanently deleted.'**
+  String get deleteNoteMessage;
+
+  /// No description provided for @allTags.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allTags;
+
+  /// No description provided for @notePageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page}'**
+  String notePageLabel(int page);
 
   /// No description provided for @editReview.
   ///
@@ -1331,7 +1877,7 @@ abstract class AppLocalizations {
   /// No description provided for @listsTopTwenty.
   ///
   /// In en, this message translates to:
-  /// **'Timeless picks'**
+  /// **'Timeless'**
   String get listsTopTwenty;
 
   /// No description provided for @listsFollowing.

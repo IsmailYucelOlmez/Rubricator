@@ -60,7 +60,7 @@ abstract final class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.35),
+        indicatorColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return AppTypography.bottomNavLabel(
@@ -71,15 +71,15 @@ abstract final class AppTheme {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             color: selected ? AppColors.gold : AppColors.textSecondary,
-            size: 24,
+            size: 28,
           );
         }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.35),
-        selectedIconTheme: const IconThemeData(color: AppColors.gold, size: 24),
-        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary, size: 24),
+        indicatorColor: Colors.transparent,
+        selectedIconTheme: const IconThemeData(color: AppColors.gold, size: 28),
+        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary, size: 28),
         selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.gold),
         unselectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.textSecondary),
       ),
@@ -240,7 +240,7 @@ abstract final class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.lightSurface,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.22),
+        indicatorColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return AppTypography.bottomNavLabel(
@@ -251,16 +251,16 @@ abstract final class AppTheme {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             color: selected ? AppColors.primary : AppColors.lightOnSurfaceVariant,
-            size: 24,
+            size: 28,
           );
         }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.lightSurface,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.22),
-        selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 24),
+        indicatorColor: Colors.transparent,
+        selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 28),
         unselectedIconTheme:
-            IconThemeData(color: AppColors.lightOnSurfaceVariant, size: 24),
+            IconThemeData(color: AppColors.lightOnSurfaceVariant, size: 28),
         selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.primary),
         unselectedLabelTextStyle:
             AppTypography.bottomNavLabel(color: AppColors.lightOnSurfaceVariant),

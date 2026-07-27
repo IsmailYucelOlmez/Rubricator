@@ -2,15 +2,62 @@
   "appTitle": "Rubricator",
   "navHome": "Home",
   "navSearch": "Search",
+  "navVirgil": "Virgil",
   "navLists": "Lists",
+  "virgilTagline": "Virgil will guide your reading journey",
+  "virgilRecommendationHint": "Find your next favorite read with recommendations.",
+  "virgilRecommendationTitle": "Recommendation",
+  "virgilAboutBookTitle": "About Book",
+  "virgilAboutBookHint": "Upload a book and ask questions about",
+  "virgilBetaBadge": "BETA",
+  "virgilRecommendationEmptyBody": "Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.",
+  "virgilRecommendationInputHint": "Type something...",
+  "virgilQaInputHint": "ask question",
+  "virgilQaUploadTitle": "Upload PDF or Epub",
+  "virgilQaSizeLimit": "20 MB Limit",
+  "virgilQaPagesLimit": "500 Pages Limit",
+  "virgilQaPrivacyNotice": "The files you upload and your conversations are not recorded.",
+  "virgilQaProcessingTitle": "File processing...",
+  "virgilQaProcessingSubtitle": "Please wait",
+  "virgilQaFileMeta": "{filename} | {format} | {pages} pages",
+  "@virgilQaFileMeta": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "pages": {"type": "int"}
+    }
+  },
+  "virgilQaFileMetaChapters": "{filename} | {format} | {chapters} chapters",
+  "@virgilQaFileMetaChapters": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "chapters": {"type": "int"}
+    }
+  },
+  "virgilGenreLabel": "Genre",
+  "virgilGenreAll": "All",
+  "virgilGenreFiction": "Fiction",
+  "virgilGenreNonfiction": "Nonfiction",
+  "virgilGenreChildrensFiction": "Children's Fiction",
+  "virgilGenreChildrensNonfiction": "Children's Nonfiction",
+  "signInForVirgil": "Sign in to use Virgil recommendations and book Q&A.",
+  "virgilDailyRecommendationLimit": "You can request recommendations up to 3 times per day. Try again tomorrow.",
+  "virgilDailyUploadLimit": "You can upload up to 3 books per day. Try again tomorrow.",
+  "virgilQuestionsRemaining": "{count} questions left for this book",
+  "@virgilQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "listsFeedHeading": "Listbox",
   "profileZoneTitle": "Zone",
   "readingStatsListsTitle": "Your reading lists by status",
   "homeShowAll": "Show all",
   "editProfile": "Edit profile",
   "pickPhotoFromGallery": "Choose photo from gallery",
-  "pickProfilePhotoFromGallery": "Choose profile photo from gallery",
-  "changeProfilePhoto": "Change profile photo",
+  "pickProfilePhotoFromGallery": "Choose photo",
+  "changeProfilePhoto": "Change photo",
   "removeProfilePhotoTooltip": "Remove photo",
   "privacyPolicyCheckbox": "I have read and accept the privacy policy.",
   "displayNameLabel": "Display name",
@@ -39,7 +86,7 @@
   "accountAlreadyExists": "An account with this email already exists.",
   "email": "Email",
   "password": "Password",
-  "passwordMin6": "At least 6 characters with upper, lower, and punctuation",
+  "passwordMin6": "Password (At least 6 characters with upper, lower, and punctuation)",
   "cancel": "Cancel",
   "signUp": "Sign up",
   "confirmAccountEmailNotice": "If prompted, check your email to verify your account.",
@@ -96,10 +143,70 @@
   "loadRecentSearchedBooksError": "Couldn't load recently viewed books.",
   "noRecentSearchedBooksYet": "Books you've searched for will show up here.",
   "searchBooksMin2Hint": "Type at least 2 characters to search",
+  "searchTabKeyword": "Keyword",
+  "searchTabSemantic": "Semantic",
+  "searchTabDocumentChat": "Ask my book",
+  "documentChatPickFile": "Choose PDF or EPUB",
+  "documentChatUploading": "Uploading…",
+  "documentChatProcessing": "Processing your book…",
+  "documentChatEmbedProgress": "Embedding {done} of {total}",
+  "@documentChatEmbedProgress": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "documentChatExtracting": "Extracting text…",
+  "documentChatEmptyHint": "Upload a book to ask questions about its content.",
+  "documentChatSessionExpired": "Your session has expired. Upload the book again.",
+  "documentChatProcessingFailed": "Could not process this book.",
+  "documentChatStillProcessing": "Still processing — please wait.",
+  "documentChatQuestionsRemaining": "{count} questions left",
+  "@documentChatQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "documentChatTruncatedWarning": "Only part of the book was processed. Answers may be incomplete.",
+  "documentChatUnsupportedFormat": "Only PDF and EPUB files are supported.",
+  "documentChatFileTooLarge": "File exceeds the {mb} MB limit.",
+  "@documentChatFileTooLarge": {
+    "placeholders": {
+      "mb": {"type": "int"}
+    }
+  },
+  "documentChatAskPlaceholder": "Ask about this book…",
+  "documentChatSourcePage": "Page {page}",
+  "@documentChatSourcePage": {
+    "placeholders": {
+      "page": {"type": "int"}
+    }
+  },
+  "documentChatEphemeralNotice": "Chats are temporary and not saved to your account.",
+  "documentChatSupportedFormats": "Supported: .pdf, .epub (max 20 MB / ~500 PDF pages)",
+  "documentChatNewFile": "New file",
+  "documentChatPages": "pages",
+  "documentChatChapters": "chapters",
+  "documentChatExpiresIn": "{minutes} min left",
+  "@documentChatExpiresIn": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "semanticSearchHint": "Describe the kind of book you're looking for…",
+  "semanticSearchMinHint": "Describe what you're looking for and tap Search",
+  "semanticFiltersTitle": "Filters",
+  "semanticCategoryLabel": "Category",
+  "semanticToneLabel": "Tone",
+  "semanticApiNotConfigured": "Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.",
+  "apply": "Apply",
+  "semanticModeSimple": "Quick",
+  "semanticModeAdvanced": "Deep",
+  "semanticModeAdvancedHint": "Rewrites your query and may add new books from Google Books",
   "discover": "Discover",
   "noBooksFound": "No books found",
   "searchCouldNotComplete": "Search didn't complete. Please try again.",
-  "continueReading": "Continue Reading",
+  "continueReading": "Currently Reading",
   "popular": "Popular",
   "loadPopularBooksError": "Could not load popular books.",
   "loadGenreBooksError": "Could not load {genre} books.",
@@ -183,7 +290,7 @@
   "couldNotLoadRating": "Could not load rating.",
   "submitRating": "Submit rating",
   "reviews": "Reviews",
-  "userReviews": "User Reviews",
+  "userReviews": "App Reviews",
   "externalReviews": "External Reviews",
   "writeReviewHint": "Share your thoughts (at least 10 characters)",
   "addReview": "Add review",
@@ -197,6 +304,39 @@
     }
   },
   "reviewInFavorites": "In favorites",
+  "relativeTimeJustNow": "just now",
+  "relativeTimeMinutesAgo": "{count} min ago",
+  "@relativeTimeMinutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeTimeHoursAgo": "{count} hr ago",
+  "@relativeTimeHoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeTimeDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@relativeTimeDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeTimeWeeksAgo": "{count, plural, =1{1 week ago} other{{count} weeks ago}}",
+  "@relativeTimeWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "couldNotLoadReviews": "Could not load reviews.",
   "reviewTitle": "Review title",
   "reviewUrlHint": "https://example.com/review",
@@ -208,6 +348,31 @@
   "addQuote": "Add quote",
   "noQuotesYet": "Saved quotes from this book will appear here.",
   "couldNotLoadQuotes": "Could not load quotes.",
+  "notes": "Notes",
+  "myNotes": "My Notes",
+  "myNotesDescription": "Search, filter, and manage your reading notes.",
+  "signInToSeeNotes": "Sign in to view and manage your notes.",
+  "addNote": "Add note",
+  "editNote": "Edit note",
+  "noteTitleHint": "Note title",
+  "noteContentHint": "Write your note…",
+  "notePageHint": "Page (optional)",
+  "noteChapterHint": "Chapter (optional)",
+  "noteTagsHint": "Tags (comma separated)",
+  "publicNote": "Public note",
+  "publicNoteDescription": "Public notes appear on the book's Notes tab for everyone.",
+  "privateNote": "Private",
+  "searchNotesHint": "Search notes…",
+  "noPublicNotesYet": "No public notes yet.",
+  "noMyNotesYet": "You haven't added any notes yet.",
+  "noteAdded": "Note added.",
+  "noteUpdated": "Note updated.",
+  "noteDeleted": "Note deleted.",
+  "deleteNoteTitle": "Delete note?",
+  "deleteNoteMessage": "This note will be permanently deleted.",
+  "allTags": "All",
+  "notePageLabel": "Page {page}",
+  "@notePageLabel": {"placeholders": {"page": {"type": "int"}}},
   "editReview": "Edit review",
   "save": "Save"
   ,"log":"Record"
@@ -304,7 +469,7 @@
   ,"couldNotLoadAuthor":"Could not load author. {error}"
   ,"@couldNotLoadAuthor":{"placeholders":{"error":{}}}
   ,"listsForYou":"For you"
-  ,"listsTopTwenty":"Timeless picks"
+  ,"listsTopTwenty":"Timeless"
   ,"listsFollowing":"Following"
   ,"myLists":"My Lists"
   ,"savedLists":"Saved Lists"

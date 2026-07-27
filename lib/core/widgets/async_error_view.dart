@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../i18n/l10n/app_localizations.dart';
-import '../theme/app_spacing.dart';
-import '../ux/l10n_app_error.dart';
+import '../errors/app_error.dart';
+import '../errors/error_mapper.dart';
+import 'app_error_view.dart';
+import 'app_no_internet_view.dart';
 
-/// Full-region friendly error + retry (no raw exception text).
+/// Picks [AppNoInternetView] for network failures, [AppErrorView] otherwise.
 class AsyncErrorView extends StatelessWidget {
   const AsyncErrorView({
     super.key,
@@ -19,33 +20,10 @@ class AsyncErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final msg = l10n.userFacingMessage(error);
-    final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.wifi_find_outlined,
-          size: compact ? 32 : 44,
-          color: Theme.of(context).colorScheme.error,
-        ),
-        SizedBox(height: compact ? AppSpacing.xs : AppSpacing.sm),
-        Text(msg, textAlign: TextAlign.center),
-        SizedBox(height: compact ? AppSpacing.sm : AppSpacing.md),
-        FilledButton(onPressed: onRetry, child: Text(l10n.uxRetry)),
-      ],
-    );
-    if (compact) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-        child: content,
-      );
+    final code = ErrorMapper.map(error).code;
+    if (code == AppErrorCodes.network) {
+      return AppNoInternetView(onRetry: onRetry, compact: compact);
     }
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: content,
-      ),
-    );
+    return AppErrorView(error: error, onRetry: onRetry, compact: compact);
   }
 }

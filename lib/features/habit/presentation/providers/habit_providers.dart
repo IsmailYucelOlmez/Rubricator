@@ -115,6 +115,7 @@ Future<List<HabitReadingBookChoice>> _loadHabitReadingBookChoices(
       HabitReadingBookChoice(
         bookId: ub.bookId,
         title: title,
+        status: ub.status,
         author: author?.isNotEmpty == true ? author : null,
         progress: ub.progress,
       ),
@@ -232,13 +233,32 @@ class HabitLogController {
     _ref.invalidate(readingStatsProvider);
     _ref.invalidate(readingLogsProvider);
     _ref.invalidate(todayReadingProvider);
+    _ref.invalidate(habitReadingBookChoicesProvider);
+  }
+
+  Future<void> _updateBookProgressIfNeeded(String bookId, int progress) async {
+    final userBook =
+        await _ref.read(userBooksRepositoryProvider).getUserBook(bookId);
+    if (userBook == null || userBook.status != ReadingStatus.reading) {
+      return;
+    }
+
+    final completed = progress >= 100;
+    await _ref.read(userBookProvider(bookId).notifier).upsert(
+          status: completed ? ReadingStatus.completed : ReadingStatus.reading,
+          progress: completed ? null : progress,
+        );
   }
 
   Future<AddLogResult> addLog({
     String? bookId,
     required int minutesRead,
     required int pagesRead,
+    int? progress,
   }) async {
+    if (bookId != null && progress != null) {
+      await _updateBookProgressIfNeeded(bookId, progress);
+    }
     final outcome = await _ref.read(addReadingLogUseCaseProvider).call(
           bookId: bookId,
           minutesRead: minutesRead,
@@ -251,10 +271,18 @@ class HabitLogController {
   }
 
   Future<AddLogResult> addLogs(
-    List<({String? bookId, int minutesRead, int pagesRead})> entries,
+    List<({
+      String? bookId,
+      int minutesRead,
+      int pagesRead,
+      int? progress,
+    })> entries,
   ) async {
     var savedOffline = false;
     for (final entry in entries) {
+      if (entry.bookId != null && entry.progress != null) {
+        await _updateBookProgressIfNeeded(entry.bookId!, entry.progress!);
+      }
       final outcome = await _ref.read(addReadingLogUseCaseProvider).call(
             bookId: entry.bookId,
             minutesRead: entry.minutesRead,

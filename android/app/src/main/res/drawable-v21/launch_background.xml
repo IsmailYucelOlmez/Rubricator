@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Native launch splash — logo 115dp matches system splash (~48% of 240dp icon) -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/splash_background" />
-
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:gravity="fill"
+            android:src="@drawable/splash_bg" />
+    </item>
+    <item
+        android:width="115dp"
+        android:height="115dp"
+        android:gravity="center">
+        <bitmap
+            android:gravity="fill"
+            android:src="@drawable/splash_logo" />
     </item>
 </layer-list>

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../auth/presentation/auth_provider.dart';
+import '../../../auth/presentation/login_page.dart';
+import '../widgets/virgil_brand_header.dart';
+import '../widgets/virgil_colors.dart';
 import 'virgil_about_book_page.dart';
 import 'virgil_recommendation_page.dart';
 
@@ -13,15 +18,15 @@ import 'virgil_recommendation_page.dart';
 /// Tap zones:
 /// - From the tagline down to the center line → [VirgilRecommendationPage]
 /// - From the center line down to the bottom tab → [VirgilAboutBookPage]
-class VirgilHubPage extends StatelessWidget {
+///
+/// Only signed-in users can open either flow.
+class VirgilHubPage extends ConsumerWidget {
   const VirgilHubPage({super.key});
 
-  static const _ink = Color(0xFF000000);
-  static const _paper = Color(0xFFFFFFFF);
-  static const double _headerHeight = 64;
-
-  void _openRecommendation(BuildContext context) {
-    Navigator.of(context).push(
+  Future<void> _openRecommendation(BuildContext context, WidgetRef ref) async {
+    if (!await _ensureSignedIn(context, ref)) return;
+    if (!context.mounted) return;
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         settings: const RouteSettings(name: 'virgil/recommendation'),
         builder: (_) => const VirgilRecommendationPage(),
@@ -29,33 +34,52 @@ class VirgilHubPage extends StatelessWidget {
     );
   }
 
-  void _openAboutBook(BuildContext context) {
-    Navigator.of(context).push(
+  Future<void> _openAboutBook(BuildContext context, WidgetRef ref) async {
+    if (!await _ensureSignedIn(context, ref)) return;
+    if (!context.mounted) return;
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        settings: const RouteSettings(name: 'virgil/aboutbook'),
+        settings: const RouteSettings(name: 'virgil/qa'),
         builder: (_) => const VirgilAboutBookPage(),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<bool> _ensureSignedIn(BuildContext context, WidgetRef ref) async {
+    final user = ref.read(authStateProvider).valueOrNull;
+    if (user != null) return true;
+    if (!context.mounted) return false;
     final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.signInForVirgil)),
+    );
+    await Navigator.of(context).push(
+      MaterialPageRoute<bool>(
+        builder: (_) => const LoginPage(),
+      ),
+    );
+    return ref.read(authStateProvider).valueOrNull != null;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = VirgilColors.of(context);
 
     return ColoredBox(
-      color: _paper,
+      color: colors.paper,
       child: SafeArea(
         bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: _headerHeight,
+              height: VirgilBrandHeader.height,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: _VirgilBrandRow(badge: l10n.virgilBetaBadge),
+                  child: VirgilBrandHeader(badge: l10n.virgilBetaBadge),
                 ),
               ),
             ),
@@ -73,11 +97,11 @@ class VirgilHubPage extends StatelessWidget {
                         right: 0,
                         height: midY,
                         child: Material(
-                          color: _paper,
+                          color: colors.paper,
                           child: InkWell(
-                            onTap: () => _openRecommendation(context),
-                            splashColor: _ink.withValues(alpha: 0.06),
-                            highlightColor: _ink.withValues(alpha: 0.03),
+                            onTap: () => _openRecommendation(context, ref),
+                            splashColor: colors.ink.withValues(alpha: 0.06),
+                            highlightColor: colors.ink.withValues(alpha: 0.03),
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 AppSpacing.lg,
@@ -92,12 +116,12 @@ class VirgilHubPage extends StatelessWidget {
                                     padding: const EdgeInsets.only(top: 5),
                                     child: Text(
                                       l10n.virgilTagline,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Quicksand',
                                         fontWeight: FontWeight.w400,
                                         fontSize: 14,
                                         height: 1.35,
-                                        color: _ink,
+                                        color: colors.ink,
                                       ),
                                     ),
                                   ),
@@ -107,24 +131,24 @@ class VirgilHubPage extends StatelessWidget {
                                       Text(
                                         l10n.virgilRecommendationHint,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Outfit',
                                           fontWeight: FontWeight.w300,
                                           fontSize: 11,
                                           height: 1.35,
-                                          color: _ink,
+                                          color: colors.ink,
                                         ),
                                       ),
                                       const SizedBox(height: AppSpacing.sm),
                                       Text(
                                         l10n.virgilRecommendationTitle,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Outfit',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 32,
                                           height: 1.15,
-                                          color: _ink,
+                                          color: colors.ink,
                                         ),
                                       ),
                                     ],
@@ -141,9 +165,9 @@ class VirgilHubPage extends StatelessWidget {
                         top: midY - 0.5,
                         left: AppSpacing.lg,
                         right: AppSpacing.lg,
-                        child: const ColoredBox(
-                          color: _ink,
-                          child: SizedBox(height: 1),
+                        child: ColoredBox(
+                          color: colors.ink,
+                          child: const SizedBox(height: 1),
                         ),
                       ),
 
@@ -154,11 +178,11 @@ class VirgilHubPage extends StatelessWidget {
                         right: 0,
                         bottom: 0,
                         child: Material(
-                          color: _paper,
+                          color: colors.paper,
                           child: InkWell(
-                            onTap: () => _openAboutBook(context),
-                            splashColor: _ink.withValues(alpha: 0.06),
-                            highlightColor: _ink.withValues(alpha: 0.03),
+                            onTap: () => _openAboutBook(context, ref),
+                            splashColor: colors.ink.withValues(alpha: 0.06),
+                            highlightColor: colors.ink.withValues(alpha: 0.03),
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 AppSpacing.lg,
@@ -173,24 +197,24 @@ class VirgilHubPage extends StatelessWidget {
                                       Text(
                                         l10n.virgilAboutBookTitle,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Outfit',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 32,
                                           height: 1.15,
-                                          color: _ink,
+                                          color: colors.ink,
                                         ),
                                       ),
                                       const SizedBox(height: AppSpacing.sm),
                                       Text(
                                         l10n.virgilAboutBookHint,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Outfit',
                                           fontWeight: FontWeight.w300,
                                           fontSize: 11,
                                           height: 1.35,
-                                          color: _ink,
+                                          color: colors.ink,
                                         ),
                                       ),
                                     ],
@@ -210,53 +234,6 @@ class VirgilHubPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _VirgilBrandRow extends StatelessWidget {
-  const _VirgilBrandRow({required this.badge});
-
-  final String badge;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const Text(
-          'Virgil',
-          style: TextStyle(
-            fontFamily: 'Megrim',
-            fontSize: 40,
-            height: 1,
-            letterSpacing: 2,
-            color: VirgilHubPage._ink,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Container(
-          width: 24,
-          height: 12,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(color: VirgilHubPage._ink, width: 1),
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Text(
-            badge.toUpperCase(),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Megrim',
-              fontSize: 8,
-              fontWeight: FontWeight.w700,
-              height: 1,
-              letterSpacing: 0.2,
-              color: VirgilHubPage._ink,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

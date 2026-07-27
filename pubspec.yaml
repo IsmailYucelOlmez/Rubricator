@@ -48,6 +48,7 @@ dependencies:
   timezone: ^0.10.1
   sentry_flutter: ^8.14.2
   file_picker: 8.3.7
+  flutter_dotenv: ^6.0.1
 
 dev_dependencies:
   flutter_test:
@@ -74,11 +75,15 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/.env
     - assets/RubricatorLogov1pngv2.png
     - assets/bottomtab/homeicon.svg
     - assets/bottomtab/Search.svg
     - assets/bottomtab/Books.svg
     - assets/bottomtab/user.svg
+    - assets/Virgil/recommendation/redBtn.svg
+    - assets/Virgil/QA/Rubricator.gif
+    - assets/Virgil/QA/Group 16.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -134,6 +139,9 @@ flutter:
     - family: Nouveau
       fonts:
         - asset: assets/DT_nouveau/DT Nouveau/DTNouveau-Regular.otf
+    - family: Kramer
+      fonts:
+        - asset: assets/kramer/Kramer.ttf
     - family: SansitaSwashed
       fonts:
         - asset: assets/Sansita_Swashed/static/SansitaSwashed-Light.ttf
@@ -193,9 +201,11 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/RubricatorLogov1pngv2.png
-  adaptive_icon_background: "#fce9cb"
-  adaptive_icon_foreground: assets/RubricatorLogov1pngv2.png
+  remove_alpha_ios: true
+  image_path: assets/splash/launcher_icon_full.png
+  adaptive_icon_background: "#F7F7F7"
+  adaptive_icon_foreground: assets/splash/launcher_foreground.png
+  adaptive_icon_foreground_inset: 18
   web:
     generate: true
   windows:

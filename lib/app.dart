@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/i18n/locale_provider.dart';
 import 'core/i18n/l10n/app_localizations.dart';
+import 'core/navigation/app_route_observer.dart';
 import 'core/network/connectivity_provider.dart';
 import 'core/layout/app_breakpoints.dart';
 import 'core/layout/responsive_scaffold_body.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/system_navigation_chrome.dart';
 import 'core/theme/theme_mode_provider.dart';
 import 'core/theme/app_spacing.dart';
 import 'features/lists/presentation/pages/lists_feed_page.dart';
@@ -68,38 +71,23 @@ class _BookAppState extends ConsumerState<BookApp> {
   List<NavigationDestination> _navDestinations(AppLocalizations l10n) {
     return [
       NavigationDestination(
-        icon: const BottomTabIcon(assetPath: _homeIcon, size: 36),
-        selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _homeIcon, size: 36),
-        ),
+        icon: const BottomTabIcon(assetPath: _homeIcon, size: 28),
         label: l10n.navHome,
       ),
       NavigationDestination(
-        icon: const BottomTabIcon(assetPath: _searchIcon, size: 42),
-        selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _searchIcon, size: 42),
-        ),
+        icon: const BottomTabIcon(assetPath: _searchIcon, size: 24),
         label: l10n.navSearch,
       ),
       NavigationDestination(
-        icon: const VirgilTabMark(size: 42),
-        selectedIcon: const BottomTabSelectionHalo(
-          child: VirgilTabMark(size: 42),
-        ),
+        icon: const VirgilTabMark(size: 32),
         label: l10n.navVirgil,
       ),
       NavigationDestination(
-        icon: const BottomTabIcon(assetPath: _booksIcon, size: 30),
-        selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _booksIcon, size: 30),
-        ),
+        icon: const BottomTabIcon(assetPath: _booksIcon, size: 24),
         label: l10n.navLists,
       ),
       NavigationDestination(
-        icon: const BottomTabIcon(assetPath: _userIcon, size: 38),
-        selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _userIcon, size: 38),
-        ),
+        icon: const BottomTabIcon(assetPath: _userIcon, size: 30),
         label: l10n.profile,
       ),
     ];
@@ -108,37 +96,37 @@ class _BookAppState extends ConsumerState<BookApp> {
   List<NavigationRailDestination> _railDestinations(AppLocalizations l10n) {
     return [
       NavigationRailDestination(
-        icon: const BottomTabIcon(assetPath: _homeIcon, size: 36),
+        icon: const BottomTabIcon(assetPath: _homeIcon, size: 28),
         selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _homeIcon, size: 36),
+          child: BottomTabIcon(assetPath: _homeIcon, size: 28),
         ),
         label: Text(l10n.navHome),
       ),
       NavigationRailDestination(
-        icon: const BottomTabIcon(assetPath: _searchIcon, size: 42),
+        icon: const BottomTabIcon(assetPath: _searchIcon, size: 24),
         selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _searchIcon, size: 42),
+          child: BottomTabIcon(assetPath: _searchIcon, size: 24),
         ),
         label: Text(l10n.navSearch),
       ),
       NavigationRailDestination(
-        icon: const VirgilTabMark(size: 42),
+        icon: const VirgilTabMark(size: 32),
         selectedIcon: const BottomTabSelectionHalo(
-          child: VirgilTabMark(size: 42),
+          child: VirgilTabMark(size: 32),
         ),
         label: Text(l10n.navVirgil),
       ),
       NavigationRailDestination(
-        icon: const BottomTabIcon(assetPath: _booksIcon, size: 30),
+        icon: const BottomTabIcon(assetPath: _booksIcon, size: 24),
         selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _booksIcon, size: 30),
+          child: BottomTabIcon(assetPath: _booksIcon, size: 24),
         ),
         label: Text(l10n.navLists),
       ),
       NavigationRailDestination(
-        icon: const BottomTabIcon(assetPath: _userIcon, size: 38),
+        icon: const BottomTabIcon(assetPath: _userIcon, size: 30),
         selectedIcon: const BottomTabSelectionHalo(
-          child: BottomTabIcon(assetPath: _userIcon, size: 38),
+          child: BottomTabIcon(assetPath: _userIcon, size: 30),
         ),
         label: Text(l10n.profile),
       ),
@@ -163,6 +151,13 @@ class _BookAppState extends ConsumerState<BookApp> {
       theme: _webPageTransitions(AppTheme.light(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
       darkTheme: _webPageTransitions(AppTheme.dark(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
       themeMode: themeMode,
+      navigatorObservers: [appRouteObserver],
+      builder: (context, child) {
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemNavigationChrome.overlayStyle(context),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: ReadingReminderBootstrap(
         child: HabitOfflineSyncListener(
           child: Builder(
@@ -204,6 +199,7 @@ class _BookAppState extends ConsumerState<BookApp> {
             child: ResponsiveScaffoldBody(child: _tabBody(context)),
           );
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             body: tablet
                 ? SafeArea(
                     child: Row(
@@ -239,12 +235,12 @@ class _BookAppState extends ConsumerState<BookApp> {
                   ),
             bottomNavigationBar: tablet
                 ? null
-                : NavigationBar(
+                : BottomTabNavBar(
                     selectedIndex: _currentIndex,
-                    labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-                    height: 82,
-                    onDestinationSelected: (index) =>
-                        setState(() => _currentIndex = index),
+                    onDestinationSelected: (index) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      setState(() => _currentIndex = index);
+                    },
                     destinations: _navDestinations(l10n),
                   ),
           );

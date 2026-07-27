@@ -1,22 +1,17 @@
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'core/notification/reading_reminder_scheduler.dart';
+import 'app.dart';
+import 'core/env.dart';
 import 'core/logging/app_logger.dart';
+import 'core/network/supabase_service.dart';
+import 'core/notification/notification_service.dart';
+import 'core/notification/reading_reminder_scheduler.dart';
+import 'core/theme/theme_mode_provider.dart';
 import 'core/ux/global_error_handler.dart';
 import 'core/widgets/app_root_restarter.dart';
-
-import 'core/notification/notification_service.dart';
-
-import 'app.dart';
-
-import 'core/env.dart';
-
-import 'core/network/supabase_service.dart';
 
 final _rootRestarterKey = GlobalKey<AppRootRestarterState>();
 
@@ -26,6 +21,8 @@ Future<void> main() async {
   AppGlobalErrorHandler.install(
     restartApp: () => _rootRestarterKey.currentState?.restart(),
   );
+
+  await Env.load();
 
   await SentryFlutter.init((options) {
     options.dsn = Env.sentryDsn;
@@ -60,10 +57,18 @@ Future<void> main() async {
     _bindSentryUserContext();
 
     AppLogger.info('startup', 'Bootstrap complete');
+    final initialTheme = await ThemeModeNotifier.loadInitial();
     runApp(
       AppRootRestarter(
         key: _rootRestarterKey,
-        child: const ProviderScope(child: BookApp()),
+        child: ProviderScope(
+          overrides: [
+            themeModeProvider.overrideWith(
+              (ref) => ThemeModeNotifier(initial: initialTheme),
+            ),
+          ],
+          child: const BookApp(),
+        ),
       ),
     );
   } catch (error, stackTrace) {
@@ -116,7 +121,8 @@ class _ConfigErrorApp extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Release build env.production.json ile alınmalı:\n'
+                  'Debug: assets/.env dosyasını doldurun.\n'
+                  'Release: env.production.json ile build alın:\n'
                   'flutter build appbundle --release '
                   '--dart-define-from-file=env.production.json',
                 ),

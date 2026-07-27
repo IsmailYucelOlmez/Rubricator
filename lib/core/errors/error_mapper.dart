@@ -31,15 +31,14 @@ class ErrorMapper {
     if (error is SocketException) {
       return const AppError(AppErrorCodes.network);
     }
-    if (error is HttpException) {
-      return const AppError(AppErrorCodes.network);
-    }
     final text = error.toString().toLowerCase();
-    if (text.contains('network') ||
-        text.contains('socket') ||
-        text.contains('connection') ||
-        text.contains('host lookup') ||
-        text.contains('failed host lookup')) {
+    if (text.contains('socketexception') ||
+        text.contains('network is unreachable') ||
+        text.contains('failed host lookup') ||
+        text.contains('no address associated') ||
+        text.contains('nodename nor servname') ||
+        text.contains('network_error') ||
+        text.contains('offline')) {
       return const AppError(AppErrorCodes.network);
     }
     if (text.contains('timeout') || text.contains('timed out')) {

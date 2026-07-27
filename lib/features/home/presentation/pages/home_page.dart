@@ -18,7 +18,7 @@ import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../favorites/presentation/favorites_provider.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
 import '../../../habit/presentation/widgets/habit_quick_add_sheet.dart';
-import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
+import '../../../books/presentation/widgets/vertical_book_card.dart';
 import 'genre_books_page.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/entities/home_genre_section.dart';
@@ -65,7 +65,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             child: Text(
               'Rubricator',
               style: TextStyle(
-                fontFamily: 'Nouveau',
+                fontFamily: 'Kramer',
                 fontSize: _logoHeight * 0.7,
                 height: 1.0,
                 color: Theme.of(context).colorScheme.onSurface,
@@ -210,7 +210,16 @@ class _ContinueReadingSection extends ConsumerWidget {
         title: l10n.continueReading,
         child: const _ContinueReadingSkeleton(),
       ),
-      error: (_, stackTrace) => const SizedBox.shrink(),
+      error: (error, stackTrace) => _Section(
+        title: l10n.continueReading,
+        child: AsyncErrorView(
+          error: error,
+          compact: true,
+          onRetry: () => ref.invalidate(
+            listEntriesByStatusProvider(ReadingStatus.reading),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -324,7 +333,7 @@ class _ContinueReadingCard extends StatelessWidget {
                     captionStyle: captionStyle?.copyWith(
                       fontSize: captionFontSize,
                       color: Colors.white,
-                      fontFamily: 'LTSoul',
+                      fontFamily: 'Outfit',
                       fontWeight: FontWeight.w600,
                       shadows: const [
                         Shadow(blurRadius: 6, color: Colors.black54),
@@ -402,13 +411,13 @@ class _ContinueReadingCover extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
-      return ColoredBox(
-        color: cs.surfaceContainerHighest,
+      return const ColoredBox(
+        color: Colors.white,
         child: Center(
           child: Icon(
             Icons.menu_book_outlined,
             size: 48,
-            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+            color: Color(0xFF9E9E9E),
           ),
         ),
       );
@@ -419,12 +428,12 @@ class _ContinueReadingCover extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => ColoredBox(
-        color: cs.surfaceContainerHighest,
+      errorBuilder: (context, error, stackTrace) => const ColoredBox(
+        color: Colors.white,
         child: Center(
           child: Icon(
             Icons.broken_image_outlined,
-            color: cs.onSurfaceVariant,
+            color: Color(0xFF9E9E9E),
           ),
         ),
       ),
@@ -703,7 +712,7 @@ class _GenreSection extends StatelessWidget {
         child: Text(
           l10n.homeShowAll,
           style: TextStyle(
-            fontFamily: 'LTMuseum',
+            fontFamily: 'Outfit',
             fontSize: 10 * 1.2,
           ),
         ),
@@ -790,128 +799,29 @@ class _HorizontalBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cardWidth = context.isTabletLayout ? 158.0 : 145.0;
     return SizedBox(
       height: 288,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: books.length,
-        separatorBuilder: (_, index) =>
-            const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-        itemBuilder: (context, index) => _BookCard(
-          book: books[index],
-          isFavorite: favoriteIds.contains(books[index].id),
-        ),
-      ),
-    );
-  }
-}
-
-class _BookCard extends StatelessWidget {
-  const _BookCard({
-    required this.book,
-    required this.isFavorite,
-  });
-
-  final HomeBookEntity book;
-  final bool isFavorite;
-
-  @override
-  Widget build(BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.titleSmall;
-    final titleFontSize = (titleStyle?.fontSize ?? 14) * 1.1;
-    final authorStyle = Theme.of(context).textTheme.bodySmall;
-    final authorFontSize = (authorStyle?.fontSize ?? 12) * 1.40;
-    return SizedBox(
-      width: context.isTabletLayout ? 158 : 145,
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => BookDetailPage(book: book.toBook()),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: BookCoverWithFavoriteButton(
-                bookId: book.id,
-                title: book.title,
-                author: book.authorNames,
-                isFavorite: isFavorite,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  child: _CoverImage(coverImageUrl: book.coverImageUrl),
-                ),
+        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.lg),
+        itemBuilder: (context, index) {
+          final book = books[index];
+          final entity = book.toBook();
+          return VerticalBookCard(
+            book: entity,
+            width: cardWidth,
+            author: book.authorNames,
+            isFavorite: favoriteIds.contains(book.id),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => BookDetailPage(book: entity),
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              book.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: titleStyle?.copyWith(
-                fontSize: titleFontSize,
-                fontFamily: 'LTSoul',
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              book.authorNames,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: authorStyle?.copyWith(fontSize: authorFontSize),
-            ),
-          ],
-        ),
+          );
+        },
       ),
-    );
-  }
-}
-
-class _CoverImage extends StatelessWidget {
-  const _CoverImage({this.coverImageUrl});
-
-  final String? coverImageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final url = AppConstants.bookThumbnailUrl(coverImageUrl);
-    if (url == null) {
-      return ColoredBox(
-        color: cs.surfaceContainerHighest,
-        child: Center(
-          child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant),
-        ),
-      );
-    }
-    return Image.network(
-      url,
-      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => ColoredBox(
-        color: cs.surfaceContainerHighest,
-        child: Center(
-          child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
-        ),
-      ),
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return ColoredBox(
-          color: cs.surfaceContainer,
-          child: const Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: AppLoadingIndicator(
-                size: 20,
-                strokeWidth: 2,
-                centered: false,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -921,20 +831,16 @@ class _HorizontalSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final placeholder = Theme.of(context).colorScheme.surfaceContainerHighest;
+    final cardWidth = context.isTabletLayout ? 158.0 : 145.0;
     return SizedBox(
       height: 288,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 4,
-        separatorBuilder: (_, index) =>
-            const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
-        itemBuilder: (_, index) => Container(
-          width: context.isTabletLayout ? 158 : 145,
-          decoration: BoxDecoration(
-            color: placeholder,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
+        separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.lg),
+        itemBuilder: (_, index) => SizedBox(
+          width: cardWidth,
+          child: const VerticalBookCardSkeleton(),
         ),
       ),
     );

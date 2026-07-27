@@ -10,7 +10,7 @@ import 'book_cover_with_favorite_button.dart';
 TextStyle? bookListTitleStyle(TextTheme theme) {
   final titleMedium = theme.titleMedium;
   return titleMedium?.copyWith(
-    fontFamily: 'LTSoul',
+    fontFamily: 'Outfit',
     fontSize: (titleMedium?.fontSize ?? 16) * 1.1,
   );
 }

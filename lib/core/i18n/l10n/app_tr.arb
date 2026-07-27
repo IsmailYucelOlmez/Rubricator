@@ -10,6 +10,46 @@
   "virgilAboutBookTitle": "About Book",
   "virgilAboutBookHint": "Bir kitap yükle ve hakkında sorular sor",
   "virgilBetaBadge": "BETA",
+  "virgilRecommendationEmptyBody": "Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.",
+  "virgilRecommendationInputHint": "Bir şey yazın...",
+  "virgilQaInputHint": "soru sorun",
+  "virgilQaUploadTitle": "PDF veya Epub yükleyin",
+  "virgilQaSizeLimit": "20 MB Limit",
+  "virgilQaPagesLimit": "500 Sayfa Limit",
+  "virgilQaPrivacyNotice": "Yüklediğiniz dosyalar ve sohbetleriniz kaydedilmez.",
+  "virgilQaProcessingTitle": "Dosya işleniyor...",
+  "virgilQaProcessingSubtitle": "Lütfen bekleyin",
+  "virgilQaFileMeta": "{filename} | {format} | {pages} sayfa",
+  "@virgilQaFileMeta": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "pages": {"type": "int"}
+    }
+  },
+  "virgilQaFileMetaChapters": "{filename} | {format} | {chapters} bölüm",
+  "@virgilQaFileMetaChapters": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "chapters": {"type": "int"}
+    }
+  },
+  "virgilGenreLabel": "Tür",
+  "virgilGenreAll": "Tümü",
+  "virgilGenreFiction": "Kurgu",
+  "virgilGenreNonfiction": "Kurgu dışı",
+  "virgilGenreChildrensFiction": "Çocuk kurgusu",
+  "virgilGenreChildrensNonfiction": "Çocuk kurgu dışı",
+  "signInForVirgil": "Virgil önerileri ve kitap soru-cevap için giriş yapın.",
+  "virgilDailyRecommendationLimit": "Günde en fazla 3 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.",
+  "virgilDailyUploadLimit": "Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.",
+  "virgilQuestionsRemaining": "Bu kitap için {count} soru kaldı",
+  "@virgilQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "listsFeedHeading": "Listeleri Keşfet",
   "listsFeedHeading": "Listbox",
   "profileZoneTitle": "Zone",
@@ -17,8 +57,8 @@
   "homeShowAll": "Tümünü gör",
   "editProfile": "Profili düzenle",
   "pickPhotoFromGallery": "Galeriden fotoğraf seç",
-  "pickProfilePhotoFromGallery": "Profil fotoğrafını galeriden seç",
-  "changeProfilePhoto": "Profil fotoğrafını değiştir",
+  "pickProfilePhotoFromGallery": "Fotoğraf seç",
+  "changeProfilePhoto": "Fotoğrafı değiştir",
   "removeProfilePhotoTooltip": "Fotoğrafı kaldır",
   "privacyPolicyCheckbox": "Gizlilik politikasını okudum ve kabul ediyorum.",
   "displayNameLabel": "İsim",
@@ -47,7 +87,7 @@
   "accountAlreadyExists": "Bu e-posta ile bir hesap zaten var.",
   "email": "E-posta",
   "password": "Şifre",
-  "passwordMin6": "En az 6 karakter, büyük/küçük harf ve noktalama",
+  "passwordMin6": "Şifre (En az 6 karakter, büyük/küçük harf ve noktalama)",
   "cancel": "İptal",
   "signUp": "Kayıt ol",
   "confirmAccountEmailNotice": "Gerekirse hesabınızı doğrulamak için e-postanızı kontrol edin.",
@@ -167,7 +207,7 @@
   "discover": "Keşfet",
   "noBooksFound": "Kitap bulunamadı",
   "searchCouldNotComplete": "Arama tamamlanamadı. Lütfen tekrar deneyin.",
-  "continueReading": "Okumaya Devam Et",
+  "continueReading": "Okunanlar",
   "popular": "Popüler",
   "loadPopularBooksError": "Popüler kitaplar yüklenemedi.",
   "loadGenreBooksError": "{genre} kitapları yüklenemedi.",
@@ -251,7 +291,7 @@
   "couldNotLoadRating": "Puan yüklenemedi.",
   "submitRating": "Puanı gönder",
   "reviews": "Yorumlar",
-  "userReviews": "Kullanıcı Yorumları",
+  "userReviews": "Uygulama Yorumları",
   "externalReviews": "Harici Yorumlar",
   "writeReviewHint": "Düşüncelerinizi paylaşın (en az 10 karakter)",
   "addReview": "Yorum ekle",

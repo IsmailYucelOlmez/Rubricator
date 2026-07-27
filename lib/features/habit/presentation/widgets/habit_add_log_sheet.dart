@@ -21,6 +21,7 @@ Future<void> showHabitAddLogBottomSheet(BuildContext context) async {
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
+    useSafeArea: true,
     builder: (ctx) {
       return Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
@@ -365,6 +366,7 @@ class _HabitAddLogBodyState extends ConsumerState<_HabitAddLogBody> {
     final booksAsync = ref.watch(habitReadingBookChoicesProvider);
 
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md + AppSpacing.xs,

@@ -71,15 +71,15 @@ abstract final class AppTheme {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             color: selected ? AppColors.gold : AppColors.textSecondary,
-            size: 38,
+            size: 28,
           );
         }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.surface,
         indicatorColor: Colors.transparent,
-        selectedIconTheme: const IconThemeData(color: AppColors.gold, size: 38),
-        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary, size: 38),
+        selectedIconTheme: const IconThemeData(color: AppColors.gold, size: 28),
+        unselectedIconTheme: IconThemeData(color: AppColors.textSecondary, size: 28),
         selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.gold),
         unselectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.textSecondary),
       ),
@@ -251,16 +251,16 @@ abstract final class AppTheme {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             color: selected ? AppColors.primary : AppColors.lightOnSurfaceVariant,
-            size: 38,
+            size: 28,
           );
         }),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: AppColors.lightSurface,
         indicatorColor: Colors.transparent,
-        selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 38),
+        selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 28),
         unselectedIconTheme:
-            IconThemeData(color: AppColors.lightOnSurfaceVariant, size: 38),
+            IconThemeData(color: AppColors.lightOnSurfaceVariant, size: 28),
         selectedLabelTextStyle: AppTypography.bottomNavLabel(color: AppColors.primary),
         unselectedLabelTextStyle:
             AppTypography.bottomNavLabel(color: AppColors.lightOnSurfaceVariant),

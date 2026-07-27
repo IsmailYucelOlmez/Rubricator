@@ -164,6 +164,132 @@ abstract class AppLocalizations {
   /// **'BETA'**
   String get virgilBetaBadge;
 
+  /// No description provided for @virgilRecommendationEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.'**
+  String get virgilRecommendationEmptyBody;
+
+  /// No description provided for @virgilRecommendationInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type something...'**
+  String get virgilRecommendationInputHint;
+
+  /// No description provided for @virgilQaInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ask question'**
+  String get virgilQaInputHint;
+
+  /// No description provided for @virgilQaUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF or Epub'**
+  String get virgilQaUploadTitle;
+
+  /// No description provided for @virgilQaSizeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'20 MB Limit'**
+  String get virgilQaSizeLimit;
+
+  /// No description provided for @virgilQaPagesLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'500 Pages Limit'**
+  String get virgilQaPagesLimit;
+
+  /// No description provided for @virgilQaPrivacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'The files you upload and your conversations are not recorded.'**
+  String get virgilQaPrivacyNotice;
+
+  /// No description provided for @virgilQaProcessingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File processing...'**
+  String get virgilQaProcessingTitle;
+
+  /// No description provided for @virgilQaProcessingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait'**
+  String get virgilQaProcessingSubtitle;
+
+  /// No description provided for @virgilQaFileMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{filename} | {format} | {pages} pages'**
+  String virgilQaFileMeta(String filename, String format, int pages);
+
+  /// No description provided for @virgilQaFileMetaChapters.
+  ///
+  /// In en, this message translates to:
+  /// **'{filename} | {format} | {chapters} chapters'**
+  String virgilQaFileMetaChapters(String filename, String format, int chapters);
+
+  /// No description provided for @virgilGenreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Genre'**
+  String get virgilGenreLabel;
+
+  /// No description provided for @virgilGenreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get virgilGenreAll;
+
+  /// No description provided for @virgilGenreFiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiction'**
+  String get virgilGenreFiction;
+
+  /// No description provided for @virgilGenreNonfiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Nonfiction'**
+  String get virgilGenreNonfiction;
+
+  /// No description provided for @virgilGenreChildrensFiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s Fiction'**
+  String get virgilGenreChildrensFiction;
+
+  /// No description provided for @virgilGenreChildrensNonfiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s Nonfiction'**
+  String get virgilGenreChildrensNonfiction;
+
+  /// No description provided for @signInForVirgil.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to use Virgil recommendations and book Q&A.'**
+  String get signInForVirgil;
+
+  /// No description provided for @virgilDailyRecommendationLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can request recommendations up to 3 times per day. Try again tomorrow.'**
+  String get virgilDailyRecommendationLimit;
+
+  /// No description provided for @virgilDailyUploadLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can upload up to 3 books per day. Try again tomorrow.'**
+  String get virgilDailyUploadLimit;
+
+  /// No description provided for @virgilQuestionsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} questions left for this book'**
+  String virgilQuestionsRemaining(int count);
+
   /// No description provided for @listsFeedHeading.
   ///
   /// In en, this message translates to:
@@ -203,13 +329,13 @@ abstract class AppLocalizations {
   /// No description provided for @pickProfilePhotoFromGallery.
   ///
   /// In en, this message translates to:
-  /// **'Choose profile photo from gallery'**
+  /// **'Choose photo'**
   String get pickProfilePhotoFromGallery;
 
   /// No description provided for @changeProfilePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Change profile photo'**
+  /// **'Change photo'**
   String get changeProfilePhoto;
 
   /// No description provided for @removeProfilePhotoTooltip.
@@ -353,7 +479,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordMin6.
   ///
   /// In en, this message translates to:
-  /// **'At least 6 characters with upper, lower, and punctuation'**
+  /// **'Password (At least 6 characters with upper, lower, and punctuation)'**
   String get passwordMin6;
 
   /// No description provided for @cancel.
@@ -737,7 +863,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueReading.
   ///
   /// In en, this message translates to:
-  /// **'Continue Reading'**
+  /// **'Currently Reading'**
   String get continueReading;
 
   /// No description provided for @popular.
@@ -1031,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @userReviews.
   ///
   /// In en, this message translates to:
-  /// **'User Reviews'**
+  /// **'App Reviews'**
   String get userReviews;
 
   /// No description provided for @externalReviews.

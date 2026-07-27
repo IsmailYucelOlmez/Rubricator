@@ -48,7 +48,7 @@ class SemanticSearchState {
     this.query = '',
     this.category = 'All',
     this.tone = 'All',
-    this.mode = SemanticSearchMode.simple,
+    this.mode = SemanticSearchMode.advanced,
   });
 
   final String query;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/document_chat_message.dart';
-import 'document_source_chip.dart';
 
 class DocumentChatMessageList extends StatelessWidget {
   const DocumentChatMessageList({
@@ -62,17 +61,9 @@ class _MessageBubble extends StatelessWidget {
             color: bg,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            crossAxisAlignment:
-                isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              SelectableText(
-                message.content,
-                style: theme.textTheme.bodyMedium?.copyWith(color: fg),
-              ),
-              if (!isUser && message.sources.isNotEmpty)
-                DocumentSourceChipRow(sources: message.sources),
-            ],
+          child: SelectableText(
+            message.content,
+            style: theme.textTheme.bodyMedium?.copyWith(color: fg),
           ),
         ),
       ),

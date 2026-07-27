@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../virgil/data/datasources/virgil_usage_remote_datasource.dart';
+import '../../../virgil/presentation/providers/virgil_usage_providers.dart';
 import '../../data/datasources/document_chat_api_datasource.dart';
 import '../../data/datasources/document_chat_exception.dart';
 import '../../data/repositories/document_chat_repository_impl.dart';
@@ -115,6 +117,7 @@ enum DocumentChatErrorKind {
   questionLimit,
   stillProcessing,
   pollTimeout,
+  dailyUploadLimit,
 }
 
 class DocumentChatNotifier extends StateNotifier<DocumentChatState> {
@@ -123,16 +126,19 @@ class DocumentChatNotifier extends StateNotifier<DocumentChatState> {
     required PollDocumentSessionUseCase pollSession,
     required AskDocumentQuestionUseCase askQuestion,
     required DeleteDocumentSessionUseCase deleteSession,
+    required VirgilUsageService usageService,
   })  : _createSession = createSession,
         _pollSession = pollSession,
         _askQuestion = askQuestion,
         _deleteSession = deleteSession,
+        _usageService = usageService,
         super(const DocumentChatState());
 
   final CreateDocumentSessionUseCase _createSession;
   final PollDocumentSessionUseCase _pollSession;
   final AskDocumentQuestionUseCase _askQuestion;
   final DeleteDocumentSessionUseCase _deleteSession;
+  final VirgilUsageService _usageService;
   Timer? _pollTimer;
   DateTime? _pollStartedAt;
   int _messageSeq = 0;
@@ -191,6 +197,17 @@ class DocumentChatNotifier extends StateNotifier<DocumentChatState> {
           isUploading: false,
           error: 'file_too_large',
           errorKind: DocumentChatErrorKind.fileTooLarge,
+        ));
+        return;
+      }
+
+      try {
+        await _usageService.consumeUpload();
+      } on VirgilUsageLimitException {
+        _setState(state.copyWith(
+          isUploading: false,
+          error: 'daily_upload_limit',
+          errorKind: DocumentChatErrorKind.dailyUploadLimit,
         ));
         return;
       }
@@ -447,5 +464,6 @@ final documentChatProvider =
     pollSession: ref.watch(pollDocumentSessionUseCaseProvider),
     askQuestion: ref.watch(askDocumentQuestionUseCaseProvider),
     deleteSession: ref.watch(deleteDocumentSessionUseCaseProvider),
+    usageService: ref.watch(virgilUsageServiceProvider),
   ),
 );

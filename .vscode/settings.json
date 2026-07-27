@@ -9,5 +9,11 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  },
+  "dart.flutterRunAdditionalArgs": [
+    "--dart-define-from-file=env.development.json"
+  ],
+  "dart.flutterTestAdditionalArgs": [
+    "--dart-define-from-file=env.development.json"
+  ]
 }

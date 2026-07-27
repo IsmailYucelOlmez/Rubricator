@@ -43,6 +43,84 @@ class AppLocalizationsTr extends AppLocalizations {
   String get virgilBetaBadge => 'BETA';
 
   @override
+  String get virgilRecommendationEmptyBody =>
+      'Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.';
+
+  @override
+  String get virgilRecommendationInputHint => 'Bir şey yazın...';
+
+  @override
+  String get virgilQaInputHint => 'soru sorun';
+
+  @override
+  String get virgilQaUploadTitle => 'PDF veya Epub yükleyin';
+
+  @override
+  String get virgilQaSizeLimit => '20 MB Limit';
+
+  @override
+  String get virgilQaPagesLimit => '500 Sayfa Limit';
+
+  @override
+  String get virgilQaPrivacyNotice =>
+      'Yüklediğiniz dosyalar ve sohbetleriniz kaydedilmez.';
+
+  @override
+  String get virgilQaProcessingTitle => 'Dosya işleniyor...';
+
+  @override
+  String get virgilQaProcessingSubtitle => 'Lütfen bekleyin';
+
+  @override
+  String virgilQaFileMeta(String filename, String format, int pages) {
+    return '$filename | $format | $pages sayfa';
+  }
+
+  @override
+  String virgilQaFileMetaChapters(
+    String filename,
+    String format,
+    int chapters,
+  ) {
+    return '$filename | $format | $chapters bölüm';
+  }
+
+  @override
+  String get virgilGenreLabel => 'Tür';
+
+  @override
+  String get virgilGenreAll => 'Tümü';
+
+  @override
+  String get virgilGenreFiction => 'Kurgu';
+
+  @override
+  String get virgilGenreNonfiction => 'Kurgu dışı';
+
+  @override
+  String get virgilGenreChildrensFiction => 'Çocuk kurgusu';
+
+  @override
+  String get virgilGenreChildrensNonfiction => 'Çocuk kurgu dışı';
+
+  @override
+  String get signInForVirgil =>
+      'Virgil önerileri ve kitap soru-cevap için giriş yapın.';
+
+  @override
+  String get virgilDailyRecommendationLimit =>
+      'Günde en fazla 3 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.';
+
+  @override
+  String get virgilDailyUploadLimit =>
+      'Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.';
+
+  @override
+  String virgilQuestionsRemaining(int count) {
+    return 'Bu kitap için $count soru kaldı';
+  }
+
+  @override
   String get listsFeedHeading => 'Listbox';
 
   @override
@@ -61,10 +139,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get pickPhotoFromGallery => 'Galeriden fotoğraf seç';
 
   @override
-  String get pickProfilePhotoFromGallery => 'Profil fotoğrafını galeriden seç';
+  String get pickProfilePhotoFromGallery => 'Fotoğraf seç';
 
   @override
-  String get changeProfilePhoto => 'Profil fotoğrafını değiştir';
+  String get changeProfilePhoto => 'Fotoğrafı değiştir';
 
   @override
   String get removeProfilePhotoTooltip => 'Fotoğrafı kaldır';
@@ -141,7 +219,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get password => 'Şifre';
 
   @override
-  String get passwordMin6 => 'En az 6 karakter, büyük/küçük harf ve noktalama';
+  String get passwordMin6 =>
+      'Şifre (En az 6 karakter, büyük/küçük harf ve noktalama)';
 
   @override
   String get cancel => 'İptal';
@@ -368,7 +447,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Arama tamamlanamadı. Lütfen tekrar deneyin.';
 
   @override
-  String get continueReading => 'Okumaya Devam Et';
+  String get continueReading => 'Okunanlar';
 
   @override
   String get popular => 'Popüler';
@@ -533,7 +612,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reviews => 'Yorumlar';
 
   @override
-  String get userReviews => 'Kullanıcı Yorumları';
+  String get userReviews => 'Uygulama Yorumları';
 
   @override
   String get externalReviews => 'Harici Yorumlar';

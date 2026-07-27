@@ -10,14 +10,54 @@
   "virgilAboutBookTitle": "About Book",
   "virgilAboutBookHint": "Upload a book and ask questions about",
   "virgilBetaBadge": "BETA",
+  "virgilRecommendationEmptyBody": "Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.",
+  "virgilRecommendationInputHint": "Type something...",
+  "virgilQaInputHint": "ask question",
+  "virgilQaUploadTitle": "Upload PDF or Epub",
+  "virgilQaSizeLimit": "20 MB Limit",
+  "virgilQaPagesLimit": "500 Pages Limit",
+  "virgilQaPrivacyNotice": "The files you upload and your conversations are not recorded.",
+  "virgilQaProcessingTitle": "File processing...",
+  "virgilQaProcessingSubtitle": "Please wait",
+  "virgilQaFileMeta": "{filename} | {format} | {pages} pages",
+  "@virgilQaFileMeta": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "pages": {"type": "int"}
+    }
+  },
+  "virgilQaFileMetaChapters": "{filename} | {format} | {chapters} chapters",
+  "@virgilQaFileMetaChapters": {
+    "placeholders": {
+      "filename": {"type": "String"},
+      "format": {"type": "String"},
+      "chapters": {"type": "int"}
+    }
+  },
+  "virgilGenreLabel": "Genre",
+  "virgilGenreAll": "All",
+  "virgilGenreFiction": "Fiction",
+  "virgilGenreNonfiction": "Nonfiction",
+  "virgilGenreChildrensFiction": "Children's Fiction",
+  "virgilGenreChildrensNonfiction": "Children's Nonfiction",
+  "signInForVirgil": "Sign in to use Virgil recommendations and book Q&A.",
+  "virgilDailyRecommendationLimit": "You can request recommendations up to 3 times per day. Try again tomorrow.",
+  "virgilDailyUploadLimit": "You can upload up to 3 books per day. Try again tomorrow.",
+  "virgilQuestionsRemaining": "{count} questions left for this book",
+  "@virgilQuestionsRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "listsFeedHeading": "Listbox",
   "profileZoneTitle": "Zone",
   "readingStatsListsTitle": "Your reading lists by status",
   "homeShowAll": "Show all",
   "editProfile": "Edit profile",
   "pickPhotoFromGallery": "Choose photo from gallery",
-  "pickProfilePhotoFromGallery": "Choose profile photo from gallery",
-  "changeProfilePhoto": "Change profile photo",
+  "pickProfilePhotoFromGallery": "Choose photo",
+  "changeProfilePhoto": "Change photo",
   "removeProfilePhotoTooltip": "Remove photo",
   "privacyPolicyCheckbox": "I have read and accept the privacy policy.",
   "displayNameLabel": "Display name",
@@ -46,7 +86,7 @@
   "accountAlreadyExists": "An account with this email already exists.",
   "email": "Email",
   "password": "Password",
-  "passwordMin6": "At least 6 characters with upper, lower, and punctuation",
+  "passwordMin6": "Password (At least 6 characters with upper, lower, and punctuation)",
   "cancel": "Cancel",
   "signUp": "Sign up",
   "confirmAccountEmailNotice": "If prompted, check your email to verify your account.",
@@ -166,7 +206,7 @@
   "discover": "Discover",
   "noBooksFound": "No books found",
   "searchCouldNotComplete": "Search didn't complete. Please try again.",
-  "continueReading": "Continue Reading",
+  "continueReading": "Currently Reading",
   "popular": "Popular",
   "loadPopularBooksError": "Could not load popular books.",
   "loadGenreBooksError": "Could not load {genre} books.",
@@ -250,7 +290,7 @@
   "couldNotLoadRating": "Could not load rating.",
   "submitRating": "Submit rating",
   "reviews": "Reviews",
-  "userReviews": "User Reviews",
+  "userReviews": "App Reviews",
   "externalReviews": "External Reviews",
   "writeReviewHint": "Share your thoughts (at least 10 characters)",
   "addReview": "Add review",

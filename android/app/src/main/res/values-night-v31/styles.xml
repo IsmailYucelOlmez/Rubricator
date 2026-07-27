@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#F7F7F7</item>
+        <item name="android:windowSplashScreenBackground">#F7F7F7</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo_android12</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_android12</item>
+        <item name="windowSplashScreenIconBackgroundColor">#F7F7F7</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#F7F7F7</item>
+        <item name="postSplashScreenTheme">@style/NormalTheme</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

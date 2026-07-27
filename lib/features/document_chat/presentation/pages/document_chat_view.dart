@@ -156,6 +156,8 @@ class DocumentChatView extends ConsumerWidget {
         return l10n.documentChatProcessingFailed;
       case DocumentChatErrorKind.questionLimit:
         return l10n.documentChatQuestionsRemaining(0);
+      case DocumentChatErrorKind.dailyUploadLimit:
+        return l10n.virgilDailyUploadLimit;
       case DocumentChatErrorKind.stillProcessing:
         return l10n.documentChatStillProcessing;
       case DocumentChatErrorKind.pollTimeout:

@@ -16,13 +16,21 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="SplashBg" translatesAutoresizingMaskIntoConstraints="NO" id="bg-splash">
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="SplashLogo" translatesAutoresizingMaskIntoConstraints="NO" id="logo-splash">
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.9882352941176471" green="0.9137254901960784" blue="0.796078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.9686274509803922" green="0.9686274509803922" blue="0.9686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
+                            <constraint firstItem="bg-splash" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="bg-t"/>
+                            <constraint firstItem="bg-splash" firstAttribute="bottom" secondItem="Ze5-6b-2t3" secondAttribute="bottom" id="bg-b"/>
+                            <constraint firstItem="bg-splash" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="bg-l"/>
+                            <constraint firstItem="bg-splash" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="bg-r"/>
+                            <constraint firstItem="logo-splash" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="logo-x"/>
+                            <constraint firstItem="logo-splash" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="logo-y"/>
+                            <constraint firstItem="logo-splash" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.32" id="logo-w"/>
+                            <constraint firstItem="logo-splash" firstAttribute="height" secondItem="logo-splash" secondAttribute="width" id="logo-h"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -32,6 +40,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchImage" width="168" height="185"/>
+        <image name="SplashBg" width="1080" height="1920"/>
+        <image name="SplashLogo" width="420" height="420"/>
     </resources>
 </document>

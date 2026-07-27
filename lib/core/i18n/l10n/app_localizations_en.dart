@@ -43,6 +43,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get virgilBetaBadge => 'BETA';
 
   @override
+  String get virgilRecommendationEmptyBody =>
+      'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.';
+
+  @override
+  String get virgilRecommendationInputHint => 'Type something...';
+
+  @override
+  String get virgilQaInputHint => 'ask question';
+
+  @override
+  String get virgilQaUploadTitle => 'Upload PDF or Epub';
+
+  @override
+  String get virgilQaSizeLimit => '20 MB Limit';
+
+  @override
+  String get virgilQaPagesLimit => '500 Pages Limit';
+
+  @override
+  String get virgilQaPrivacyNotice =>
+      'The files you upload and your conversations are not recorded.';
+
+  @override
+  String get virgilQaProcessingTitle => 'File processing...';
+
+  @override
+  String get virgilQaProcessingSubtitle => 'Please wait';
+
+  @override
+  String virgilQaFileMeta(String filename, String format, int pages) {
+    return '$filename | $format | $pages pages';
+  }
+
+  @override
+  String virgilQaFileMetaChapters(
+    String filename,
+    String format,
+    int chapters,
+  ) {
+    return '$filename | $format | $chapters chapters';
+  }
+
+  @override
+  String get virgilGenreLabel => 'Genre';
+
+  @override
+  String get virgilGenreAll => 'All';
+
+  @override
+  String get virgilGenreFiction => 'Fiction';
+
+  @override
+  String get virgilGenreNonfiction => 'Nonfiction';
+
+  @override
+  String get virgilGenreChildrensFiction => 'Children\'s Fiction';
+
+  @override
+  String get virgilGenreChildrensNonfiction => 'Children\'s Nonfiction';
+
+  @override
+  String get signInForVirgil =>
+      'Sign in to use Virgil recommendations and book Q&A.';
+
+  @override
+  String get virgilDailyRecommendationLimit =>
+      'You can request recommendations up to 3 times per day. Try again tomorrow.';
+
+  @override
+  String get virgilDailyUploadLimit =>
+      'You can upload up to 3 books per day. Try again tomorrow.';
+
+  @override
+  String virgilQuestionsRemaining(int count) {
+    return '$count questions left for this book';
+  }
+
+  @override
   String get listsFeedHeading => 'Listbox';
 
   @override
@@ -61,10 +139,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickPhotoFromGallery => 'Choose photo from gallery';
 
   @override
-  String get pickProfilePhotoFromGallery => 'Choose profile photo from gallery';
+  String get pickProfilePhotoFromGallery => 'Choose photo';
 
   @override
-  String get changeProfilePhoto => 'Change profile photo';
+  String get changeProfilePhoto => 'Change photo';
 
   @override
   String get removeProfilePhotoTooltip => 'Remove photo';
@@ -142,7 +220,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordMin6 =>
-      'At least 6 characters with upper, lower, and punctuation';
+      'Password (At least 6 characters with upper, lower, and punctuation)';
 
   @override
   String get cancel => 'Cancel';
@@ -370,7 +448,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Search didn\'t complete. Please try again.';
 
   @override
-  String get continueReading => 'Continue Reading';
+  String get continueReading => 'Currently Reading';
 
   @override
   String get popular => 'Popular';
@@ -536,7 +614,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviews => 'Reviews';
 
   @override
-  String get userReviews => 'User Reviews';
+  String get userReviews => 'App Reviews';
 
   @override
   String get externalReviews => 'External Reviews';

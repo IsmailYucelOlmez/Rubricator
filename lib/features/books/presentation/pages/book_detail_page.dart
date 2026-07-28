@@ -15,6 +15,7 @@ import '../../../../core/utils/relative_time_utils.dart';
 import '../../../../core/utils/text_utils.dart';
 import '../../../../core/ux/app_feedback.dart';
 import '../../../../core/widgets/app_loading.dart';
+import '../../../../core/widgets/app_toggle_switch.dart';
 import '../../../../core/widgets/async_error_view.dart';
 import '../../../auth/presentation/auth_provider.dart';
 import '../../../user_books/domain/entities/user_book_entity.dart';
@@ -22,6 +23,7 @@ import '../../../user_books/domain/entities/user_book_snapshot.dart';
 import '../../../user_books/presentation/providers/user_books_provider.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/book_detail_entities.dart';
+import '../providers/book_resolve_providers.dart';
 import '../providers/books_providers.dart';
 import '../../../book_notes/presentation/providers/book_notes_providers.dart';
 import '../../../book_notes/presentation/widgets/book_note_form_sheet.dart';
@@ -115,13 +117,14 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
 
   Future<void> _setReadingStatus(
     ReadingStatus selected, {
+    required String bookId,
     required bool isFavorite,
     required String title,
     required String author,
     required List<String> categories,
   }) async {
     await ref
-        .read(userBookProvider(widget.book.id).notifier)
+        .read(userBookProvider(bookId).notifier)
         .upsert(
           status: selected,
           isFavorite: isFavorite,
@@ -276,9 +279,20 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final detailedBookAsync = ref.watch(bookDetailProvider(widget.book));
-    final detailedBook = detailedBookAsync.valueOrNull;
-    final userBookAsync = ref.watch(userBookProvider(widget.book.id));
+    final seedEntity = bookEntityFromBook(widget.book);
+    final detailedBookAsync = isPendingBookId(widget.book.id)
+        ? ref.watch(resolvedBookDetailProvider(widget.book))
+        : ref.watch(bookDetailProvider(widget.book));
+
+    // Show seed immediately; resolve/detail hydrate in place (no blocking spinner).
+    final detailedBook = detailedBookAsync.valueOrNull ?? seedEntity;
+    final isPendingId = isPendingBookId(detailedBook.id);
+    final detailFailed =
+        detailedBookAsync.hasError && !isPendingBookId(widget.book.id);
+
+    final userBookAsync = isPendingId
+        ? const AsyncValue<UserBookEntity?>.data(null)
+        : ref.watch(userBookProvider(detailedBook.id));
     final userBook = userBookAsync.valueOrNull;
     final isFavorite = userBook?.isFavorite ?? false;
     final status = userBook?.status;
@@ -288,54 +302,59 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
         title: Text(l10n.bookDetails),
         actions: [
           IconButton(
-            onPressed: () async {
-              try {
-                await showModalBottomSheet<void>(
-                  context: context,
-                  builder: (context) => _StatusBottomSheet(
-                    current: status,
-                    onSelect: (selected) async {
-                      await _setReadingStatus(
-                        selected,
-                        isFavorite: isFavorite,
-                        title: widget.book.title,
-                        author: widget.book.author,
-                        categories: widget.book.subjectKeys,
+            onPressed: isPendingId
+                ? null
+                : () async {
+                    try {
+                      await showModalBottomSheet<void>(
+                        context: context,
+                        builder: (context) => _StatusBottomSheet(
+                          current: status,
+                          onSelect: (selected) async {
+                            await _setReadingStatus(
+                              selected,
+                              bookId: detailedBook.id,
+                              isFavorite: isFavorite,
+                              title: detailedBook.title,
+                              author: detailedBook.author,
+                              categories: detailedBook.subjectKeys,
+                            );
+                            if (!context.mounted) return;
+                            Navigator.of(context).pop();
+                          },
+                        ),
                       );
-                      if (!context.mounted) return;
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                );
-              } catch (e) {
-                if (!mounted) return;
-                _feedbackError(e);
-              }
-            },
+                    } catch (e) {
+                      if (!mounted) return;
+                      _feedbackError(e);
+                    }
+                  },
             icon: const Icon(Icons.menu_book_outlined),
           ),
           IconButton(
-            onPressed: () async {
-              try {
-                await ref
-                    .read(userBookProvider(widget.book.id).notifier)
-                    .toggleFavorite(
-                      snapshot: _snapshotFor(
-                        title: widget.book.title,
-                        author: widget.book.author,
-                        categories: widget.book.subjectKeys,
-                      ),
-                    );
-              } catch (e) {
-                if (!mounted) return;
-                _feedbackError(e);
-              }
-            },
+            onPressed: isPendingId
+                ? null
+                : () async {
+                    try {
+                      await ref
+                          .read(userBookProvider(detailedBook.id).notifier)
+                          .toggleFavorite(
+                            snapshot: _snapshotFor(
+                              title: detailedBook.title,
+                              author: detailedBook.author,
+                              categories: detailedBook.subjectKeys,
+                            ),
+                          );
+                    } catch (e) {
+                      if (!mounted) return;
+                      _feedbackError(e);
+                    }
+                  },
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
           ),
         ],
       ),
-      floatingActionButton: detailedBook != null
+      floatingActionButton: !isPendingId
           ? FloatingActionButton(
               onPressed: () => _showAddContentSheet(
                 context,
@@ -346,14 +365,45 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             )
           : null,
       body: ResponsiveScaffoldBody(
-        child: detailedBookAsync.when(
-          data: (detailedBook) {
-            final reviews = ref.watch(reviewListProvider(detailedBook.id));
-            final externalReviews = ref.watch(
-              externalReviewProvider(detailedBook.id),
-            );
-            final quotes = ref.watch(quoteProvider(detailedBook.id));
-            final rating = ref.watch(ratingProvider(detailedBook.id));
+        child: detailFailed
+            ? AsyncErrorView(
+                error: detailedBookAsync.error!,
+                onRetry: () => ref.invalidate(bookDetailProvider(widget.book)),
+              )
+            : _buildDetailBody(
+                context: context,
+                l10n: l10n,
+                detailedBook: detailedBook,
+                isPendingId: isPendingId,
+                userBook: userBook,
+                isFavorite: isFavorite,
+                status: status,
+              ),
+      ),
+    );
+  }
+
+  Widget _buildDetailBody({
+    required BuildContext context,
+    required AppLocalizations l10n,
+    required BookEntity detailedBook,
+    required bool isPendingId,
+    required UserBookEntity? userBook,
+    required bool isFavorite,
+    required ReadingStatus? status,
+  }) {
+            final reviews = isPendingId
+                ? const AsyncValue<List<ReviewEntity>>.data([])
+                : ref.watch(reviewListProvider(detailedBook.id));
+            final externalReviews = isPendingId
+                ? const AsyncValue<List<ExternalReviewEntity>>.data([])
+                : ref.watch(externalReviewProvider(detailedBook.id));
+            final quotes = isPendingId
+                ? const AsyncValue<List<QuoteEntity>>.data([])
+                : ref.watch(quoteProvider(detailedBook.id));
+            final rating = isPendingId
+                ? const AsyncValue<RatingState>.loading()
+                : ref.watch(ratingProvider(detailedBook.id));
             final hasUserRated = rating.valueOrNull?.userRating != null;
             final userRating = rating.valueOrNull?.userRating;
             final selectedRatingForUi = _selectedRating > 0
@@ -362,13 +412,15 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             final coverUrl = AppConstants.bookDetailCoverUrl(
               detailedBook.coverImageUrl,
             );
-            final related = ref.watch(
-              relatedBooksProvider((
-                workId: detailedBook.id,
-                subjects: detailedBook.subjectKeys,
-                author: detailedBook.author,
-              )),
-            );
+            final related = isPendingId
+                ? const AsyncValue<List<Book>>.loading()
+                : ref.watch(
+                    relatedBooksProvider((
+                      workId: detailedBook.id,
+                      subjects: detailedBook.subjectKeys,
+                      author: detailedBook.author,
+                    )),
+                  );
             final bookDescription = stripHtmlTags(detailedBook.description);
 
             return ListView(
@@ -410,7 +462,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 const SizedBox(height: 12),
-                _ReadingStatusCard(
+                if (isPendingId)
+                  const AppSkeletonBox(height: 72)
+                else
+                  _ReadingStatusCard(
                   userBook: userBook,
                   onTapSelectStatus: () async {
                     try {
@@ -421,6 +476,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                           onSelect: (selected) async {
                             await _setReadingStatus(
                               selected,
+                              bookId: detailedBook.id,
                               isFavorite: isFavorite,
                               title: detailedBook.title,
                               author: detailedBook.author,
@@ -444,7 +500,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                         : current;
                     try {
                       await ref
-                          .read(userBookProvider(widget.book.id).notifier)
+                          .read(userBookProvider(detailedBook.id).notifier)
                           .upsert(
                             status: status,
                             isFavorite: isFavorite,
@@ -462,7 +518,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   },
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _RatingSection(
+                if (isPendingId)
+                  const AppSkeletonBox(height: 48)
+                else
+                  _RatingSection(
                   state: rating,
                   selectedRating: selectedRatingForUi,
                   onRetry: () =>
@@ -574,9 +633,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                                                       error,
                                                       stackTrace,
                                                     ) => ColoredBox(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surfaceContainerHighest,
+                                                      color: Colors.white,
                                                       child: Icon(
                                                         Icons
                                                             .menu_book_outlined,
@@ -587,9 +644,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                                                     ),
                                               )
                                             : ColoredBox(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .surfaceContainerHighest,
+                                                color: Colors.white,
                                                 child: Icon(
                                                   Icons.menu_book_outlined,
                                                   color: Theme.of(context)
@@ -632,7 +687,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                _ReviewsAndQuotesSection(
+                if (isPendingId)
+                  const AppSkeletonBox(height: 180)
+                else
+                  _ReviewsAndQuotesSection(
                   bookId: detailedBook.id,
                   tabController: _contentTabController,
                   reviews: reviews,
@@ -732,15 +790,6 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                 ),
               ],
             );
-          },
-          loading: () => const AppLoadingIndicator(),
-          error: (error, stackTrace) => AsyncErrorView(
-            error: error,
-            onRetry: () => ref.invalidate(bookDetailProvider(widget.book)),
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -1288,29 +1337,40 @@ class _ReviewSectionState extends State<_ReviewSection> {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  l10n.userReviews,
-                  textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: _showExternal ? cs.onSurfaceVariant : cs.primary,
-                    fontWeight: _showExternal
-                        ? FontWeight.normal
-                        : FontWeight.w600,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(() => _showExternal = false),
+                  child: Text(
+                    l10n.userReviews,
+                    textAlign: TextAlign.end,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _showExternal ? cs.onSurfaceVariant : cs.primary,
+                      fontWeight: _showExternal
+                          ? FontWeight.normal
+                          : FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-              Switch(
-                value: _showExternal,
-                onChanged: (value) => setState(() => _showExternal = value),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                child: AppToggleSwitch(
+                  value: _showExternal,
+                  onChanged: (value) => setState(() => _showExternal = value),
+                ),
               ),
               Expanded(
-                child: Text(
-                  l10n.externalReviews,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: _showExternal ? cs.primary : cs.onSurfaceVariant,
-                    fontWeight: _showExternal
-                        ? FontWeight.w600
-                        : FontWeight.normal,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(() => _showExternal = true),
+                  child: Text(
+                    l10n.externalReviews,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: _showExternal ? cs.primary : cs.onSurfaceVariant,
+                      fontWeight: _showExternal
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
@@ -2008,33 +2068,44 @@ class _AddReviewTab extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  l10n.userReviews,
-                  textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: showExternalReview
-                        ? colorScheme.onSurfaceVariant
-                        : colorScheme.primary,
-                    fontWeight: showExternalReview
-                        ? FontWeight.normal
-                        : FontWeight.w600,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onExternalReviewChanged(false),
+                  child: Text(
+                    l10n.userReviews,
+                    textAlign: TextAlign.end,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: showExternalReview
+                          ? colorScheme.onSurfaceVariant
+                          : colorScheme.primary,
+                      fontWeight: showExternalReview
+                          ? FontWeight.normal
+                          : FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-              Switch(
-                value: showExternalReview,
-                onChanged: onExternalReviewChanged,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                child: AppToggleSwitch(
+                  value: showExternalReview,
+                  onChanged: onExternalReviewChanged,
+                ),
               ),
               Expanded(
-                child: Text(
-                  l10n.externalReviews,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: showExternalReview
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: showExternalReview
-                        ? FontWeight.w600
-                        : FontWeight.normal,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onExternalReviewChanged(true),
+                  child: Text(
+                    l10n.externalReviews,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: showExternalReview
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
+                      fontWeight: showExternalReview
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),

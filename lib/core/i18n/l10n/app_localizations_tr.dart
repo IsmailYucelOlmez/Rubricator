@@ -18,7 +18,107 @@ class AppLocalizationsTr extends AppLocalizations {
   String get navSearch => 'Ara';
 
   @override
+  String get navVirgil => 'Virgil';
+
+  @override
   String get navLists => 'Listeler';
+
+  @override
+  String get virgilTagline => 'Virgil okuma yolculuğuna rehberlik eder';
+
+  @override
+  String get virgilRecommendationHint =>
+      'Önerilerle bir sonraki favori kitabını bul.';
+
+  @override
+  String get virgilRecommendationTitle => 'Recommendation';
+
+  @override
+  String get virgilAboutBookTitle => 'About Book';
+
+  @override
+  String get virgilAboutBookHint => 'Bir kitap yükle ve hakkında sorular sor';
+
+  @override
+  String get virgilBetaBadge => 'BETA';
+
+  @override
+  String get virgilRecommendationEmptyBody =>
+      'Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.';
+
+  @override
+  String get virgilRecommendationInputHint => 'Bir şey yazın...';
+
+  @override
+  String get virgilQaInputHint => 'soru sorun';
+
+  @override
+  String get virgilQaUploadTitle => 'PDF veya Epub yükleyin';
+
+  @override
+  String get virgilQaSizeLimit => '20 MB Limit';
+
+  @override
+  String get virgilQaPagesLimit => '500 Sayfa Limit';
+
+  @override
+  String get virgilQaPrivacyNotice =>
+      'Yüklediğiniz dosyalar ve sohbetleriniz kaydedilmez.';
+
+  @override
+  String get virgilQaProcessingTitle => 'Dosya işleniyor...';
+
+  @override
+  String get virgilQaProcessingSubtitle => 'Lütfen bekleyin';
+
+  @override
+  String virgilQaFileMeta(String filename, String format, int pages) {
+    return '$filename | $format | $pages sayfa';
+  }
+
+  @override
+  String virgilQaFileMetaChapters(
+    String filename,
+    String format,
+    int chapters,
+  ) {
+    return '$filename | $format | $chapters bölüm';
+  }
+
+  @override
+  String get virgilGenreLabel => 'Tür';
+
+  @override
+  String get virgilGenreAll => 'Tümü';
+
+  @override
+  String get virgilGenreFiction => 'Kurgu';
+
+  @override
+  String get virgilGenreNonfiction => 'Kurgu dışı';
+
+  @override
+  String get virgilGenreChildrensFiction => 'Çocuk kurgusu';
+
+  @override
+  String get virgilGenreChildrensNonfiction => 'Çocuk kurgu dışı';
+
+  @override
+  String get signInForVirgil =>
+      'Virgil önerileri ve kitap soru-cevap için giriş yapın.';
+
+  @override
+  String get virgilDailyRecommendationLimit =>
+      'Günde en fazla 3 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.';
+
+  @override
+  String get virgilDailyUploadLimit =>
+      'Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.';
+
+  @override
+  String virgilQuestionsRemaining(int count) {
+    return 'Bu kitap için $count soru kaldı';
+  }
 
   @override
   String get listsFeedHeading => 'Listbox';
@@ -39,10 +139,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get pickPhotoFromGallery => 'Galeriden fotoğraf seç';
 
   @override
-  String get pickProfilePhotoFromGallery => 'Profil fotoğrafını galeriden seç';
+  String get pickProfilePhotoFromGallery => 'Fotoğraf seç';
 
   @override
-  String get changeProfilePhoto => 'Profil fotoğrafını değiştir';
+  String get changeProfilePhoto => 'Fotoğrafı değiştir';
 
   @override
   String get removeProfilePhotoTooltip => 'Fotoğrafı kaldır';
@@ -119,7 +219,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get password => 'Şifre';
 
   @override
-  String get passwordMin6 => 'En az 6 karakter, büyük/küçük harf ve noktalama';
+  String get passwordMin6 =>
+      'Şifre (En az 6 karakter, büyük/küçük harf ve noktalama)';
 
   @override
   String get cancel => 'İptal';
@@ -215,6 +316,127 @@ class AppLocalizationsTr extends AppLocalizations {
   String get searchBooksMin2Hint => 'Aramak için en az 2 karakter yazın';
 
   @override
+  String get searchTabKeyword => 'Anahtar kelime';
+
+  @override
+  String get searchTabSemantic => 'Anlamsal';
+
+  @override
+  String get searchTabDocumentChat => 'Kitabımla sor';
+
+  @override
+  String get documentChatPickFile => 'PDF veya EPUB seç';
+
+  @override
+  String get documentChatUploading => 'Yükleniyor…';
+
+  @override
+  String get documentChatProcessing => 'Kitabınız işleniyor…';
+
+  @override
+  String documentChatEmbedProgress(int done, int total) {
+    return '$done / $total gömülüyor';
+  }
+
+  @override
+  String get documentChatExtracting => 'Metin çıkarılıyor…';
+
+  @override
+  String get documentChatEmptyHint =>
+      'İçerik hakkında soru sormak için kitap yükleyin.';
+
+  @override
+  String get documentChatSessionExpired =>
+      'Oturumunuz sona erdi. Kitabı yeniden yükleyin.';
+
+  @override
+  String get documentChatProcessingFailed => 'Bu kitap işlenemedi.';
+
+  @override
+  String get documentChatStillProcessing => 'Hâlâ işleniyor — lütfen bekleyin.';
+
+  @override
+  String documentChatQuestionsRemaining(int count) {
+    return '$count soru kaldı';
+  }
+
+  @override
+  String get documentChatTruncatedWarning =>
+      'Kitabın yalnızca bir bölümü işlendi. Yanıtlar eksik olabilir.';
+
+  @override
+  String get documentChatUnsupportedFormat =>
+      'Yalnızca PDF ve EPUB desteklenir.';
+
+  @override
+  String documentChatFileTooLarge(int mb) {
+    return 'Dosya $mb MB sınırını aşıyor.';
+  }
+
+  @override
+  String get documentChatAskPlaceholder => 'Bu kitap hakkında sorun…';
+
+  @override
+  String documentChatSourcePage(int page) {
+    return 'Sayfa $page';
+  }
+
+  @override
+  String get documentChatEphemeralNotice =>
+      'Sohbetler geçicidir; hesabınıza kaydedilmez.';
+
+  @override
+  String get documentChatSupportedFormats =>
+      'Desteklenen: .pdf, .epub (en fazla 20 MB / ~500 PDF sayfası)';
+
+  @override
+  String get documentChatNewFile => 'Yeni dosya';
+
+  @override
+  String get documentChatPages => 'sayfa';
+
+  @override
+  String get documentChatChapters => 'bölüm';
+
+  @override
+  String documentChatExpiresIn(int minutes) {
+    return '$minutes dk kaldı';
+  }
+
+  @override
+  String get semanticSearchHint => 'Aradığınız kitabı tarif edin…';
+
+  @override
+  String get semanticSearchMinHint =>
+      'Aradığınız kitabı tarif edin ve Ara\'ya dokunun';
+
+  @override
+  String get semanticFiltersTitle => 'Filtreler';
+
+  @override
+  String get semanticCategoryLabel => 'Kategori';
+
+  @override
+  String get semanticToneLabel => 'Ton';
+
+  @override
+  String get semanticApiNotConfigured =>
+      'Anlamsal keşif yapılandırılmamış. SEMANTIC_API_BASE_URL ayarlayın.';
+
+  @override
+  String get apply => 'Uygula';
+
+  @override
+  String get semanticModeSimple => 'Hızlı';
+
+  @override
+  String get semanticModeAdvanced => 'Derin';
+
+  @override
+  String get semanticModeAdvancedHint =>
+      'Sorgunuzu yeniden yazar ve Google Books\'tan yeni kitaplar ekleyebilir';
+
+  @override
   String get discover => 'Keşfet';
 
   @override
@@ -225,7 +447,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Arama tamamlanamadı. Lütfen tekrar deneyin.';
 
   @override
-  String get continueReading => 'Okumaya Devam Et';
+  String get continueReading => 'Okunanlar';
 
   @override
   String get popular => 'Popüler';
@@ -390,7 +612,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reviews => 'Yorumlar';
 
   @override
-  String get userReviews => 'Kullanıcı Yorumları';
+  String get userReviews => 'Uygulama Yorumları';
 
   @override
   String get externalReviews => 'Harici Yorumlar';

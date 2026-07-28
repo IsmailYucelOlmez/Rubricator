@@ -58,8 +58,8 @@ class GoogleBooksRemoteDataSource {
         .toList();
   }
 
-  List<BookModel> _parseItems(Map<String, dynamic> json) {
-    return GoogleBooksUtils.postProcess(_parseItemsRaw(json));
+  List<BookModel> _parseItems(Map<String, dynamic> json, {String? query}) {
+    return GoogleBooksUtils.postProcess(_parseItemsRaw(json), query: query);
   }
 
   Future<GoogleBooksSearchPage> searchBooks({
@@ -96,7 +96,7 @@ class GoogleBooksRemoteDataSource {
       merged.addAll(batch);
     }
 
-    final docs = GoogleBooksUtils.postProcess(merged);
+    final docs = GoogleBooksUtils.postProcess(merged, query: query);
     return GoogleBooksSearchPage(
       docs: docs,
       numFound: docs.length,
@@ -166,7 +166,7 @@ class GoogleBooksRemoteDataSource {
           '/volumes',
           queryParameters: _listParams(q: q, maxResults: maxResults),
         );
-        final results = _parseItems(json);
+        final results = _parseItems(json, query: a);
         if (results.isNotEmpty) {
           return results;
         }
@@ -237,7 +237,7 @@ class GoogleBooksRemoteDataSource {
     );
     final exclude = excludeVolumeId.trim();
     final out = <BookModel>[];
-    for (final m in _parseItems(json)) {
+    for (final m in _parseItems(json, query: subject)) {
       if (m.workId == exclude) continue;
       out.add(m);
       if (out.length >= limit) break;
@@ -261,7 +261,7 @@ class GoogleBooksRemoteDataSource {
     );
     final exclude = excludeVolumeId.trim();
     final out = <BookModel>[];
-    for (final m in _parseItems(json)) {
+    for (final m in _parseItems(json, query: author)) {
       if (m.workId == exclude) continue;
       out.add(m);
       if (out.length >= limit) break;

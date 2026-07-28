@@ -232,13 +232,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     child: _selectedAvatarBytes == null ? const Icon(Icons.person_outline) : null,
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  TextButton.icon(
-                    onPressed: _submitting ? null : _pickAvatarFromGallery,
-                    icon: const Icon(Icons.photo_library_outlined),
-                    label: Text(
-                      _selectedAvatar == null
-                          ? l10n.pickProfilePhotoFromGallery
-                          : l10n.changeProfilePhoto,
+                  Flexible(
+                    child: TextButton.icon(
+                      onPressed: _submitting ? null : _pickAvatarFromGallery,
+                      icon: const Icon(Icons.photo_library_outlined),
+                      label: Text(
+                        _selectedAvatar == null
+                            ? l10n.pickProfilePhotoFromGallery
+                            : l10n.changeProfilePhoto,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   if (_selectedAvatar != null)

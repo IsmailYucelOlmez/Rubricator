@@ -245,8 +245,15 @@ class _TagFilterBar extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      loading: () => const SizedBox(
+        height: 44,
+        child: AppLoadingIndicator(size: 22, strokeWidth: 2),
+      ),
+      error: (e, _) => AsyncErrorView(
+        error: e,
+        compact: true,
+        onRetry: () => ref.invalidate(myNoteTagsProvider),
+      ),
     );
   }
 }

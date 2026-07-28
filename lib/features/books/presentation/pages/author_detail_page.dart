@@ -8,8 +8,7 @@ import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 import '../../domain/entities/book.dart';
 import '../providers/books_providers.dart';
-import 'book_detail_page.dart';
-import '../widgets/book_search_result_tile.dart';
+import '../widgets/vertical_book_card.dart';
 
 class AuthorDetailPage extends ConsumerWidget {
   const AuthorDetailPage({super.key, required this.authorId});
@@ -35,7 +34,12 @@ class AuthorDetailPage extends ConsumerWidget {
         child: asyncAuthor.when(
           data: (author) {
             return ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
               children: [
                 if (author.birthDate != null || author.deathDate != null) ...[
                   const SizedBox(height: AppSpacing.sm),
@@ -47,8 +51,8 @@ class AuthorDetailPage extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                  const SizedBox(height: AppSpacing.md + AppSpacing.xs),
                 ],
-                const SizedBox(height: AppSpacing.md + AppSpacing.xs),
                 _AuthorBooksSection(authorId: authorId, booksState: asyncAuthorBooks),
               ],
             );
@@ -74,15 +78,12 @@ class _AuthorBooksSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     return booksState.when(
-      loading: () => ListView.separated(
+      loading: () => GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: BookGridLayout.delegate,
         itemCount: 4,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (_, _) => const Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
-          child: AppListTileSkeleton(),
-        ),
+        itemBuilder: (_, _) => const VerticalBookCardSkeleton(),
       ),
       error: (error, stackTrace) => AsyncErrorView(
         error: error,
@@ -93,21 +94,14 @@ class _AuthorBooksSection extends ConsumerWidget {
         if (books.isEmpty) {
           return Text(l10n.noBooksFound);
         }
-        return ListView.separated(
+        return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: BookGridLayout.delegate,
           itemCount: books.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final book = books[index];
-            return BookSearchResultTile(
-              book: book,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => BookDetailPage(book: book),
-                ),
-              ),
-            );
+            return VerticalBookCard(book: book);
           },
         );
       },
@@ -121,15 +115,22 @@ class _AuthorDetailSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      children: const [
-        AppSkeletonBox(height: 18, width: 180),
-        SizedBox(height: AppSpacing.md + AppSpacing.xs),
-        AppListTileSkeleton(),
-        SizedBox(height: AppSpacing.sm),
-        AppListTileSkeleton(),
-        SizedBox(height: AppSpacing.sm),
-        AppListTileSkeleton(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.md,
+      ),
+      children: [
+        const AppSkeletonBox(height: 18, width: 180),
+        const SizedBox(height: AppSpacing.md + AppSpacing.xs),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: BookGridLayout.delegate,
+          itemCount: 4,
+          itemBuilder: (_, _) => const VerticalBookCardSkeleton(),
+        ),
       ],
     );
   }

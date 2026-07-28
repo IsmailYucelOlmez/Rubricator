@@ -4,24 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
+import '../../../../core/navigation/app_route_observer.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
-import '../../../books/presentation/widgets/book_cover_leading.dart';
-import '../../../books/presentation/widgets/book_cover_with_favorite_button.dart';
-import '../../../books/presentation/widgets/book_search_result_tile.dart';
+import '../../../books/presentation/widgets/vertical_book_card.dart';
 import '../providers/search_notifier.dart';
-
-/// Matches home horizontal [HomePage] `_BookCard` author typography.
-TextStyle? _homeLikeBookAuthorStyle(TextTheme theme) {
-  final bodySmall = theme.bodySmall;
-  return bodySmall?.copyWith(
-    fontSize: (bodySmall.fontSize ?? 12) * 1.40,
-  );
-}
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -30,20 +23,42 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends ConsumerState<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage> with RouteAware {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   Timer? _debounce;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      appRouteObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
+    appRouteObserver.unsubscribe(this);
     _debounce?.cancel();
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPushNext() {
+    _clearFocus();
+  }
+
+  void _clearFocus() {
+    _focusNode.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   void _onSearchChanged(String raw) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
+    _debounce = Timer(const Duration(milliseconds: 200), () {
       final q = raw.trim();
       ref.read(searchQueryProvider.notifier).state = q;
     });
@@ -52,72 +67,128 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   Future<void> _submitSearch() async {
     final q = _controller.text.trim();
     ref.read(searchQueryProvider.notifier).state = q;
+    _clearFocus();
     await ref.read(searchInteractionProvider).logSubmit(q);
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final raw = _controller.text.trim();
-    final showHint = raw.isEmpty || raw.length < 2;
     return SafeArea(
+      bottom: false,
       child: ResponsiveScaffoldBody(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: l10n.searchByTitleOrAuthorHint,
-                prefixIcon: const Icon(Icons.search),
-              ),
-              textInputAction: TextInputAction.search,
-              onChanged: (value) {
-                setState(() {});
-                _onSearchChanged(value);
-              },
-              onSubmitted: (_) => _submitSearch(),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Expanded(
-              child: showHint
-                  ? _DiscoveryView(
-                      l10n: l10n,
-                      onOpenBook: (book) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => BookDetailPage(book: book),
-                          ),
-                        );
-                      },
-                      onPickQuery: (query) {
-                        _controller.text = query;
-                        setState(() {});
-                        ref.read(searchQueryProvider.notifier).state = query;
-                        ref.read(searchInteractionProvider).logSubmit(query);
-                      },
-                    )
-                  : _SearchResultsView(
-                      activeQuery: raw,
-                      onOpenBook: (book) async {
-                        await ref
-                            .read(searchInteractionProvider)
-                            .logBookClick(query: raw, bookId: book.id);
-                        if (!context.mounted) return;
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => BookDetailPage(book: book),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
+          child: _KeywordSearchBody(
+            controller: _controller,
+            focusNode: _focusNode,
+            onSearchChanged: _onSearchChanged,
+            onSubmitSearch: _submitSearch,
+            onClearFocus: _clearFocus,
+            onStateChanged: () => setState(() {}),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _KeywordSearchBody extends ConsumerWidget {
+  const _KeywordSearchBody({
+    required this.controller,
+    required this.focusNode,
+    required this.onSearchChanged,
+    required this.onSubmitSearch,
+    required this.onClearFocus,
+    required this.onStateChanged,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final void Function(String raw) onSearchChanged;
+  final Future<void> Function() onSubmitSearch;
+  final VoidCallback onClearFocus;
+  final VoidCallback onStateChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final hasText = controller.text.isNotEmpty;
+    final raw = controller.text.trim();
+    final showHint = raw.isEmpty || raw.length < 2;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            hintText: l10n.searchByTitleOrAuthorHint,
+            prefixIcon: const Icon(Icons.search),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: const BorderSide(
+                color: AppColors.lightOnSurface,
+                width: 1.5,
+              ),
+            ),
+            suffixIcon: hasText
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                    onPressed: () {
+                      controller.clear();
+                      onStateChanged();
+                      onSearchChanged('');
+                      ref.read(searchQueryProvider.notifier).state = '';
+                    },
+                  )
+                : null,
+          ),
+          textInputAction: TextInputAction.search,
+          onChanged: (value) {
+            onStateChanged();
+            onSearchChanged(value);
+          },
+          onSubmitted: (_) => onSubmitSearch(),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Expanded(
+          child: showHint
+              ? _DiscoveryView(
+                  l10n: l10n,
+                  onOpenBook: (book) {
+                    onClearFocus();
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => BookDetailPage(book: book),
+                      ),
+                    );
+                  },
+                  onPickQuery: (query) {
+                    controller.text = query;
+                    onStateChanged();
+                    ref.read(searchQueryProvider.notifier).state = query;
+                    ref.read(searchInteractionProvider).logSubmit(query);
+                    onClearFocus();
+                  },
+                )
+              : _SearchResultsView(
+                  activeQuery: raw,
+                  onOpenBook: (book) async {
+                    onClearFocus();
+                    await ref
+                        .read(searchInteractionProvider)
+                        .logBookClick(query: raw, bookId: book.id);
+                    if (!context.mounted) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => BookDetailPage(book: book),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
@@ -164,13 +235,10 @@ class _SearchResultsViewState extends ConsumerState<_SearchResultsView> {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(searchProvider);
     return state.when(
-      loading: () => ListView.separated(
+      loading: () => GridView.builder(
+        gridDelegate: BookGridLayout.delegate,
         itemCount: 6,
-        separatorBuilder: (context, index) => const Divider(height: 1),
-        itemBuilder: (context, index) => const Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
-          child: AppListTileSkeleton(),
-        ),
+        itemBuilder: (_, _) => const VerticalBookCardSkeleton(),
       ),
       error: (error, stackTrace) => AsyncErrorView(
             error: error,
@@ -181,23 +249,30 @@ class _SearchResultsViewState extends ConsumerState<_SearchResultsView> {
         if (books.isEmpty) {
           return Center(child: Text(l10n.noBooksFoundFor(widget.activeQuery)));
         }
-        return ListView.separated(
+        return CustomScrollView(
           controller: _scrollController,
-          itemCount: books.length + (pagination.isLoadingMore ? 1 : 0),
-          separatorBuilder: (context, index) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            if (index >= books.length) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                child: Center(child: AppLoadingIndicator()),
-              );
-            }
-            final book = books[index];
-            return BookSearchResultTile(
-              book: book,
-              onTap: () => widget.onOpenBook(book),
-            );
-          },
+          slivers: [
+            SliverGrid(
+              gridDelegate: BookGridLayout.delegate,
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final book = books[index];
+                  return VerticalBookCard(
+                    book: book,
+                    onTap: () => widget.onOpenBook(book),
+                  );
+                },
+                childCount: books.length,
+              ),
+            ),
+            if (pagination.isLoadingMore)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Center(child: AppLoadingIndicator()),
+                ),
+              ),
+          ],
         );
       },
     );
@@ -284,47 +359,13 @@ class _DiscoveryView extends ConsumerWidget {
             return GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.sm,
-                mainAxisSpacing: AppSpacing.sm,
-                childAspectRatio: 0.52,
-              ),
+              gridDelegate: BookGridLayout.delegate,
               itemCount: displayBooks.length,
               itemBuilder: (context, index) {
                 final book = displayBooks[index];
-                final theme = Theme.of(context);
-                return InkWell(
+                return VerticalBookCard(
+                  book: book,
                   onTap: () => onOpenBook(book),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: BookCoverWithFavoriteButton(
-                          bookId: book.id,
-                          title: book.title,
-                          author: book.author,
-                          categories: book.subjectKeys,
-                          child: BookCoverLeading(
-                            coverImageUrl: book.coverImageUrl,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        book.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: bookListTitleStyle(theme.textTheme),
-                      ),
-                      Text(
-                        book.author,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: _homeLikeBookAuthorStyle(theme.textTheme),
-                      ),
-                    ],
-                  ),
                 );
               },
             );

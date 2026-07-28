@@ -31,6 +31,7 @@ class ProfilePage extends ConsumerWidget {
     final authAsync = ref.watch(authStateProvider);
     final l10n = AppLocalizations.of(context)!;
     return SafeArea(
+      bottom: false,
       child: ResponsiveScaffoldBody(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -63,11 +64,12 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
-                      child: FilledButton(
+                      child: FilledButton.icon(
                         onPressed: () async {
                           await ref.read(authServiceProvider).signOut();
                         },
-                        child: Text(
+                        icon: const Icon(Icons.logout_outlined),
+                        label: Text(
                           l10n.signOut,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -79,7 +81,7 @@ class ProfilePage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               const LanguageSelector(),
               const ThemeSelector(),
-              const NotificationSelector(),
+              if (user != null) const NotificationSelector(),
               if (user != null) const _ProfileReadingListsSection(),
               if (user == null) ...[
                 const SizedBox(height: AppSpacing.md),

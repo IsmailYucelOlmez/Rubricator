@@ -47,6 +47,8 @@ dependencies:
   flutter_timezone: ^5.1.0
   timezone: ^0.10.1
   sentry_flutter: ^8.14.2
+  file_picker: 8.3.7
+  flutter_dotenv: ^6.0.1
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +75,15 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/.env
     - assets/RubricatorLogov1pngv2.png
+    - assets/bottomtab/homeicon.svg
+    - assets/bottomtab/Search.svg
+    - assets/bottomtab/Books.svg
+    - assets/bottomtab/user.svg
+    - assets/Virgil/recommendation/redBtn.svg
+    - assets/Virgil/QA/Rubricator.gif
+    - assets/Virgil/QA/Group 16.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -129,6 +139,9 @@ flutter:
     - family: Nouveau
       fonts:
         - asset: assets/DT_nouveau/DT Nouveau/DTNouveau-Regular.otf
+    - family: Kramer
+      fonts:
+        - asset: assets/kramer/Kramer.ttf
     - family: SansitaSwashed
       fonts:
         - asset: assets/Sansita_Swashed/static/SansitaSwashed-Light.ttf
@@ -149,13 +162,50 @@ flutter:
         - asset: assets/sinistre-main/fonts/Sinistre-Regular.otf
         - asset: assets/sinistre-main/fonts/Sinistre-Bold.otf
           weight: 700
+    - family: Megrim
+      fonts:
+        - asset: assets/Virgil/Megrim/Megrim-Regular.ttf
+    - family: Outfit
+      fonts:
+        - asset: assets/Virgil/Outfit/static/Outfit-Thin.ttf
+          weight: 100
+        - asset: assets/Virgil/Outfit/static/Outfit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/Virgil/Outfit/static/Outfit-Light.ttf
+          weight: 300
+        - asset: assets/Virgil/Outfit/static/Outfit-Regular.ttf
+          weight: 400
+        - asset: assets/Virgil/Outfit/static/Outfit-Medium.ttf
+          weight: 500
+        - asset: assets/Virgil/Outfit/static/Outfit-SemiBold.ttf
+          weight: 600
+        - asset: assets/Virgil/Outfit/static/Outfit-Bold.ttf
+          weight: 700
+        - asset: assets/Virgil/Outfit/static/Outfit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/Virgil/Outfit/static/Outfit-Black.ttf
+          weight: 900
+    - family: Quicksand
+      fonts:
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Regular.ttf
+          weight: 400
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Medium.ttf
+          weight: 500
+        - asset: assets/Virgil/Quicksand/static/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/Virgil/Quicksand/static/Quicksand-Bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/RubricatorLogov1pngv2.png
-  adaptive_icon_background: "#fce9cb"
-  adaptive_icon_foreground: assets/RubricatorLogov1pngv2.png
+  remove_alpha_ios: true
+  image_path: assets/splash/launcher_icon_full.png
+  adaptive_icon_background: "#F7F7F7"
+  adaptive_icon_foreground: assets/splash/launcher_foreground.png
+  adaptive_icon_foreground_inset: 18
   web:
     generate: true
   windows:

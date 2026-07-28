@@ -25,7 +25,7 @@ class BookCoverLeading extends StatelessWidget {
         width: size,
         height: size * 1.4,
         child: ColoredBox(
-          color: cs.surfaceContainerHighest,
+          color: Colors.white,
           child: Icon(Icons.menu_book_outlined, color: mutedIcon),
         ),
       );
@@ -42,7 +42,7 @@ class BookCoverLeading extends StatelessWidget {
           width: size,
           height: size * 1.4,
           child: ColoredBox(
-            color: cs.surfaceContainerHighest,
+            color: Colors.white,
             child: Icon(Icons.broken_image_outlined, color: mutedIcon),
           ),
         ),

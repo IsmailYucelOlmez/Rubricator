@@ -75,7 +75,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/.env
+    - assets/.env.example
     - assets/RubricatorLogov1pngv2.png
     - assets/bottomtab/homeicon.svg
     - assets/bottomtab/Search.svg

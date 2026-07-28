@@ -46,7 +46,8 @@ jobs:
           fi
           flutter build web --release \
             --dart-define-from-file=env.production.json \
-            --base-href "${BASE_HREF}"
+            --base-href "${BASE_HREF}" \
+            --no-wasm-dry-run
 
       - name: Preserve static Pages routes
         run: |

@@ -2,40 +2,34 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/env.dart';
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/network/supabase_service.dart';
 import '../models/chat_response_model.dart';
 import '../models/create_session_response_model.dart';
 import '../models/session_status_response_model.dart';
 import 'document_chat_exception.dart';
 
+/// Document-chat FastAPI traffic goes through the `rubricatorApi` edge function
+/// so the API key stays a Supabase secret, not a client bundle value.
 class DocumentChatApiDataSource {
   DocumentChatApiDataSource({Dio? dio})
       : _dio = dio ??
             Dio(
               BaseOptions(
-                baseUrl: Env.semanticApiBaseUrl,
+                baseUrl: '${SupabaseService.url}/functions/v1/rubricatorApi',
                 connectTimeout: const Duration(seconds: 30),
                 receiveTimeout: const Duration(seconds: 90),
                 sendTimeout: const Duration(seconds: 60),
-                headers: _defaultHeaders(),
+                headers: SupabaseService.edgeFunctionHeaders(),
                 validateStatus: (code) => code != null && code < 500,
               ),
             );
 
   final Dio _dio;
 
-  static Map<String, String> _defaultHeaders() {
-    final headers = <String, String>{};
-    final apiKey = Env.semanticApiKey.trim();
-    if (apiKey.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $apiKey';
-    }
-    return headers;
-  }
-
   void _ensureConfigured() {
     if (!Env.hasSemanticApiConfig) {
       throw StateError(
-        'Semantic API is not configured. Set SEMANTIC_API_BASE_URL in env.',
+        'Semantic API is not configured. Supabase must be initialized.',
       );
     }
   }
@@ -47,7 +41,7 @@ class DocumentChatApiDataSource {
     _ensureConfigured();
     AppLogger.info('document_chat', 'POST /api/v1/sessions', data: {
       'filename': filename,
-      'baseUrl': Env.semanticApiBaseUrl,
+      'baseUrl': _dio.options.baseUrl,
     });
 
     try {

@@ -25,8 +25,9 @@ class SupabaseService {
   /// Headers for Edge Function HTTP calls.
   ///
   /// `sb_publishable_*` keys are not JWTs — never send them as Bearer tokens.
-  /// With [verify_jwt = false] on `google-books`, `apikey` alone is enough for
-  /// anonymous traffic; logged-in users also send their session access token.
+  /// With [verify_jwt = false] on `google-books` / `rubricatorApi`, `apikey`
+  /// alone is enough for anonymous traffic; logged-in users also send their
+  /// session access token.
   static Map<String, String> edgeFunctionHeaders() {
     final key = anonKey;
     final headers = <String, String>{'apikey': key};

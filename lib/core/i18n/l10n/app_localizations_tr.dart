@@ -420,8 +420,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get semanticToneLabel => 'Ton';
 
   @override
-  String get semanticApiNotConfigured =>
-      'Anlamsal keşif yapılandırılmamış. SEMANTIC_API_BASE_URL ayarlayın.';
+  String get semanticApiNotConfigured => 'Anlamsal keşif yapılandırılmamış.';
 
   @override
   String get apply => 'Uygula';
@@ -1302,236 +1301,434 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyPolicyTitle => 'Rubricator Gizlilik Politikası';
 
   @override
-  String get privacyPolicyLastUpdated => 'Son güncelleme: 19.04.2026';
+  String get privacyPolicyLastUpdated => 'Son güncelleme: 28.07.2026';
+
+  @override
+  String get privacyPolicyMeta =>
+      'Uygulama: Rubricator (Flutter tabanlı, iOS/Android/Web/Masaüstü)\nGeliştirici/Veri Sorumlusu: İsmail Yücel Ölmez\nİletişim: support@rubricator.app';
 
   @override
   String get privacyPolicySection1Title => '1. Giriş';
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Rubricator\'a hoş geldiniz (\"biz\", \"bizim\" veya \"bize\"). Rubricator; kullanıcıların kitap keşfedebildiği, liste oluşturabildiği, okuma alışkanlıklarını takip edebildiği ve içerik paylaşabildiği sosyal bir okuma platformudur.';
+      'Rubricator (\"uygulama\", \"biz\", \"bizim\"), kitap keşfi, kişisel okuma takibi, kitap notları/incelemeleri, okuma listeleri ve yapay zekâ destekli kitap özellikleri sunan bir mobil/masaüstü uygulamasıdır.';
 
   @override
   String get privacyPolicySection1Body2 =>
-      'Bu Gizlilik Politikası, mobil uygulamamızı kullanırken bilgilerinizi nasıl topladığımızı, kullandığımızı, paylaştığımızı ve koruduğumuzu açıklar.';
+      'Bu Gizlilik Politikası; Rubricator\'ı kullanırken hangi verilerin toplandığını, bu verilerin nasıl kullanıldığını, kimlerle ve neden paylaşıldığını, ne kadar süreyle saklandığını ve verileriniz üzerindeki haklarınızı açıklar. Politika, uygulamanın gerçek teknik mimarisi (Supabase, özel API sunucusu ve Google Gemini tabanlı yapay zekâ özellikleri dâhil) incelenerek hazırlanmıştır.';
 
   @override
-  String get privacyPolicySection2Title => '2. Topladığımız Bilgiler';
+  String get privacyPolicySection1Body3 =>
+      'Uygulamayı kullanarak bu politikada açıklanan veri işleme faaliyetlerini kabul etmiş olursunuz. Politikayı kabul etmiyorsanız lütfen uygulamayı kullanmayınız.';
 
   @override
-  String get privacyPolicySection21Title => '2.1 Kişisel Bilgiler';
+  String get privacyPolicySection2Title => '2. Hangi Verileri Topluyoruz';
 
   @override
-  String get privacyPolicySection21Item1 => '- E-posta adresi';
+  String get privacyPolicySection21Title =>
+      '2.1 Hesap Oluştururken Verdiğiniz Bilgiler';
 
   @override
-  String get privacyPolicySection21Item2 => '- Kullanıcı adı';
+  String get privacyPolicySection21Body =>
+      'Rubricator\'da hesap, e-posta adresi ve şifre ile oluşturulur (üçüncü taraf ile tek tıkla giriş — Google/Apple girişi — kullanılmamaktadır). Kayıt ve kimlik doğrulama sırasında topladığımız veriler:';
 
   @override
-  String get privacyPolicySection21Item3 => '- Profil bilgileri (isteğe bağlı)';
+  String get privacyPolicySection21Item1 => '- E-posta adresiniz';
 
   @override
-  String get privacyPolicySection22Title =>
-      '2.2 Kullanıcı Tarafından Üretilen İçerik';
+  String get privacyPolicySection21Item2 =>
+      '- Şifreniz (şifreleriniz bizim sunucularımızda değil, kimlik doğrulama altyapımız olan Supabase Auth tarafından güvenli biçimde (hash\'lenerek) saklanır; düz metin olarak hiçbir yerde tutulmaz)';
 
   @override
-  String get privacyPolicySection22Item1 => '- Kitap incelemeleri';
+  String get privacyPolicySection21Item3 => '- Kullanıcı adı / görünen ad';
 
   @override
-  String get privacyPolicySection22Item2 => '- Puanlamalar';
+  String get privacyPolicySection21Item4 =>
+      '- (Varsa) e-posta doğrulama / şifre sıfırlama sürecinde oluşturulan tek kullanımlık kod (OTP)';
 
   @override
-  String get privacyPolicySection22Item3 => '- Alintilar';
+  String get privacyPolicySection22Title => '2.2 Profil Bilgileri';
 
   @override
-  String get privacyPolicySection22Item4 => '- Oluşturduğunuz listeler';
+  String get privacyPolicySection22Item1 =>
+      '- Profil fotoğrafı (isteğe bağlıdır; galerinizden seçtiğiniz bir görseli yükleyebilirsiniz, cihaz galerisine erişim yalnızca sizin başlattığınız yükleme anında istenir)';
 
   @override
-  String get privacyPolicySection22Item5 => '- Yorumlar';
+  String get privacyPolicySection22Item2 =>
+      '- Profilde görünmesini seçtiğiniz diğer bilgiler';
 
   @override
-  String get privacyPolicySection23Title => '2.3 Kullanım Verileri';
+  String get privacyPolicySection23Title =>
+      '2.3 Uygulama İçinde Oluşturduğunuz İçerikler';
 
   @override
-  String get privacyPolicySection23Item1 => '- Uygulama kullanım etkileşimleri';
+  String get privacyPolicySection23Body =>
+      'Uygulamayı kullanırken oluşturduğunuz aşağıdaki içerikler hesabınızla ilişkilendirilerek saklanır:';
 
   @override
-  String get privacyPolicySection23Item2 =>
-      '- Özellik kullanımı (örneğin listeler, istatistikler, arama)';
+  String get privacyPolicySection23Item1 =>
+      '- Kitap incelemeleri ve puanlamalar (10 üzerinden derecelendirme sistemi)';
+
+  @override
+  String get privacyPolicySection23Item2 => '- Kitap notları ve alıntılar';
 
   @override
   String get privacyPolicySection23Item3 =>
-      '- Cihaz bilgileri (işletim sistemi sürümü, cihaz tipi)';
+      '- Oluşturduğunuz okuma listeleri (sosyal listeler) ve bu listelere eklediğiniz kitaplar';
 
   @override
-  String get privacyPolicySection24Title => '2.4 Kimlik Doğrulama Verileri';
+  String get privacyPolicySection23Item4 => '- Favori kitaplarınız';
 
   @override
-  String get privacyPolicySection24Item1 => '- Temel profil bilgileri';
+  String get privacyPolicySection23Item5 =>
+      '- \"Okudum / okuyorum\" durumları, okuma günlükleri ve tamamlanan kitap kayıtları';
 
   @override
-  String get privacyPolicySection24Item2 => '- E-posta adresi';
+  String get privacyPolicySection23Item6 =>
+      '- İnceleme, liste ve içeriklere verdiğiniz beğeniler';
 
   @override
-  String get privacyPolicySection3Title =>
-      '3. Bilgilerinizi Nasıl Kullanıyoruz';
+  String get privacyPolicySection23Item7 =>
+      '- Alışkanlık takibi verileri — örneğin okuma hedefi/serisi (streak) kayıtlarınız';
 
   @override
-  String get privacyPolicySection3Item1 => '- Uygulamayı sunmak ve sürdürmek';
+  String get privacyPolicySection23Item8 =>
+      '- Uygulama içi arama geçmişiniz (öneri kalitesini artırmak amacıyla tutulabilir)';
+
+  @override
+  String get privacyPolicySection24Title =>
+      '2.4 Yapay Zekâ Özellikleri Kapsamında İşlenen Veriler';
+
+  @override
+  String get privacyPolicySection24Body =>
+      'Rubricator, aşağıdaki yapay zekâ destekli özellikleri sunar ve bu özellikler kapsamında girdileriniz işlenmek üzere Google Gemini modellerine (embedding ve gemini-2.5-flash) aktarılır:';
+
+  @override
+  String get privacyPolicySection24Item1 =>
+      '- Semantik Kitap Keşfi (Virgil): Doğal dilde yazdığınız arama sorguları, kendi sunucumuz (FastAPI) üzerinden Google Gemini API\'sine iletilir.';
+
+  @override
+  String get privacyPolicySection24Item2 =>
+      '- Belge Sohbeti (PDF/EPUB): Yüklediğiniz PDF veya EPUB dosyaları geçici olarak sunucumuza aktarılır, parçalara ayrılıp vektörleştirilir ve Google Gemini\'ye gönderilir. Belgeler ve oturum verileri kalıcı olarak kaydedilmez; oturum süresi sonunda veya siz sonlandırdığınızda silinir.';
+
+  @override
+  String get privacyPolicySection24Item3 =>
+      '- Kitap Hakkında Sohbet / Öneri (Virgil): Kitaplarla ilgili sorularınız ve öneriler benzer şekilde yapay zekâ sağlayıcısına iletilir. Anonim kullanım sayaçları (günlük istek adedi gibi) tutulabilir.';
+
+  @override
+  String get privacyPolicySection24Note =>
+      'Önemli: Yapay zekâ sağlayıcısına (Google Gemini) gönderilen veriler, ilgili sağlayıcının kendi gizlilik politikası ve veri işleme koşullarına tabidir. Hassas kişisel veri içeren belgeleri belge sohbeti özelliğine yüklememenizi tavsiye ederiz.';
+
+  @override
+  String get privacyPolicySection25Title =>
+      '2.5 Kitap Kataloğu Verileri (Üçüncü Taraf Kaynaklı)';
+
+  @override
+  String get privacyPolicySection25Body =>
+      'Kitap arama, kapak görseli, açıklama ve yazar bilgileri Google Books API\'sinden, sunucumuz üzerinden bir vekil (proxy) aracılığıyla çekilir. Bu veriler kitaplara aittir, sizinle ilgili kişisel veri içermez.';
+
+  @override
+  String get privacyPolicySection26Title =>
+      '2.6 Otomatik Olarak Toplanan Teknik Veriler';
+
+  @override
+  String get privacyPolicySection26Item1 =>
+      '- Hata/çökme raporları: Uygulama kararlılığı için Sentry kullanılır. Cihaz/işletim sistemi bilgisi, uygulama sürümü, hata yığın izi ve bağlam iletilir; varsayılan olarak isim/e-posta gibi doğrudan kimliklendirici bilgi gönderilmez.';
+
+  @override
+  String get privacyPolicySection26Item2 =>
+      '- Bağlantı durumu: Yalnızca cihaz üzerinde kontrol edilir; sunucularımıza gönderilmez.';
+
+  @override
+  String get privacyPolicySection26Item3 =>
+      '- Yerel bildirim verileri: Okuma hatırlatıcıları tamamen cihazınızda planlanır; sunucularımıza aktarılmaz.';
+
+  @override
+  String get privacyPolicySection27Title => '2.7 Cihaz İzinleri';
+
+  @override
+  String get privacyPolicySection27Body =>
+      'Konum, kamera, kişi listesi, mikrofon gibi izinler uygulama tarafından talep edilmez. Talep edilebilecek izinler:';
+
+  @override
+  String get privacyPolicySection27Item1 =>
+      '- İnternet erişimi: Sunucularımızla ve üçüncü taraf servislerle iletişim';
+
+  @override
+  String get privacyPolicySection27Item2 =>
+      '- Bildirim gönderme: Okuma hatırlatıcıları ve uygulama içi bildirimler';
+
+  @override
+  String get privacyPolicySection27Item3 =>
+      '- Tam zamanlı alarm / zamanlayıcı: Belirlediğiniz saatte okuma hatırlatıcısı gösterebilmek';
+
+  @override
+  String get privacyPolicySection27Item4 =>
+      '- Galeri / dosya erişimi: Profil fotoğrafı yükleme, belge sohbeti için PDF/EPUB seçme';
+
+  @override
+  String get privacyPolicySection3Title => '3. Verilerinizi Neden İşliyoruz';
+
+  @override
+  String get privacyPolicySection3Item1 =>
+      '- Hesabınızı oluşturmak, kimliğinizi doğrulamak ve oturumunuzu güvenli şekilde yönetmek';
 
   @override
   String get privacyPolicySection3Item2 =>
-      '- Sosyal özellikleri etkinleştirmek (listeler, yorumlar, beğeniler)';
+      '- Kitap keşfi, arama, favoriler, listeler, notlar, incelemeler gibi temel işlevleri sunmak';
 
   @override
   String get privacyPolicySection3Item3 =>
-      '- İçeriği ve önerileri kişiselleştirmek';
+      '- Yapay zekâ destekli semantik arama, kitap önerisi ve belge sohbeti özelliklerini çalıştırmak';
 
   @override
   String get privacyPolicySection3Item4 =>
-      '- Uygulama performansını ve özellikleri iyileştirmek';
+      '- Size kişiselleştirilmiş kitap önerileri sunmak';
 
   @override
-  String get privacyPolicySection3Item5 => '- Önemli güncellemeleri iletmek';
+  String get privacyPolicySection3Item5 =>
+      '- Okuma hatırlatıcıları ve alışkanlık takibi bildirimleri göndermek';
 
   @override
-  String get privacyPolicySection4Title => '4. Veri Saklama ve Güvenlik';
+  String get privacyPolicySection3Item6 =>
+      '- Uygulama performansını izlemek, hataları tespit edip gidermek';
+
+  @override
+  String get privacyPolicySection3Item7 =>
+      '- Kötüye kullanımı önlemek, hizmet kotalarını uygulamak';
+
+  @override
+  String get privacyPolicySection3Item8 =>
+      '- Yasal yükümlülüklere uymak ve kullanıcı güvenliğini korumak';
+
+  @override
+  String get privacyPolicySection3Body =>
+      'Verileriniz; rızanız (ör. yapay zekâ özelliklerini kullanmayı tercih etmeniz), sözleşmenin ifası (hesabınızın ve hizmetin sağlanması) ve meşru menfaat (güvenlik, hata giderme, hizmet iyileştirme) hukuki sebeplerine dayanarak işlenmektedir.';
+
+  @override
+  String get privacyPolicySection4Title =>
+      '4. Verilerin Saklandığı Yer ve Güvenlik';
 
   @override
   String get privacyPolicySection4Body =>
-      'Verileriniz, Supabase gibi üçüncü taraf altyapılar kullanılarak güvenli şekilde saklanır.';
+      'Verileriniz şu altyapılarda barındırılır: Supabase (veritabanı, kimlik doğrulama, dosya depolama); kendi API sunucumuz (FastAPI — semantik arama ve belge sohbeti; belge oturumları geçicidir); Google Gemini API; Sentry (hata raporları).';
 
   @override
-  String get privacyPolicySection4Item1 => '- Güvenli kimlik doğrulama';
+  String get privacyPolicySection4Item1 =>
+      '- Tüm iletişim şifreli bağlantılar (HTTPS/TLS) üzerinden yapılır';
 
   @override
-  String get privacyPolicySection4Item2 => '- Şifreli bağlantılar (HTTPS)';
+  String get privacyPolicySection4Item2 =>
+      '- Şifreler asla düz metin olarak saklanmaz';
 
   @override
-  String get privacyPolicySection4Item3 => '- Erişim kontrol mekanizmaları';
+  String get privacyPolicySection4Item3 =>
+      '- Veritabanı erişimi satır düzeyi güvenlik (RLS) ile hesap sahibine özgülenir';
 
   @override
-  String get privacyPolicySection5Title => '5. Veri Paylaşımı';
+  String get privacyPolicySection4Item4 =>
+      '- Sunucu tarafı yetkilendirme ve erişim kontrolü uygulanır';
 
   @override
-  String get privacyPolicySection5Body => 'Kişisel verilerinizi SATMAYIZ.';
+  String get privacyPolicySection4Body2 =>
+      'Hiçbir internet tabanlı sistemin %100 güvenli olduğu garanti edilemez; ancak verilerinizi korumak için makul teknik ve idari önlemleri alıyoruz.';
+
+  @override
+  String get privacyPolicySection5Title => '5. Verilerin Paylaşımı';
+
+  @override
+  String get privacyPolicySection5Body =>
+      'Kişisel verilerinizi satmıyoruz. Verileriniz yalnızca aşağıdaki durumlarda ve taraflarla paylaşılır:';
 
   @override
   String get privacyPolicySection5Item1 =>
-      '- Hizmet sağlayıcılarla (örneğin backend barındırma)';
+      '- Supabase: Hesap, profil, kullanıcı içerikleri — barındırma, kimlik doğrulama, dosya depolama';
 
   @override
-  String get privacyPolicySection5Item2 => '- Yasal yükümlülüklere uymak için';
+  String get privacyPolicySection5Item2 =>
+      '- Google Gemini: Arama sorgunuz, belge içerikleri, sohbet mesajlarınız — yapay zekâ özellikleri';
 
   @override
   String get privacyPolicySection5Item3 =>
-      '- Kullanıcı güvenliğini ve haklarını korumak için';
+      '- Google Books API: Kitap arama terimleri — katalog verisi (kişisel veri içermez)';
 
   @override
-  String get privacyPolicySection6Title => '6. Herkese Açık İçerik';
+  String get privacyPolicySection5Item4 =>
+      '- Sentry: Cihaz/uygulama teknik bilgisi, hata izleri — kararlılık izleme';
 
   @override
-  String get privacyPolicySection6Item1 => '- Herkese açık listeler';
+  String get privacyPolicySection5Body2 =>
+      'Ayrıca yasal yükümlülük, mahkeme kararı veya resmi talep; kullanıcı/uygulama güvenliğini koruma; birleşme, devralma veya varlık satışı hâlinde (önceden bilgilendirilirsiniz) paylaşım yapılabilir.';
 
   @override
-  String get privacyPolicySection6Item2 => '- Incelemeler';
-
-  @override
-  String get privacyPolicySection6Item3 => '- Yorumlar';
+  String get privacyPolicySection6Title => '6. Herkese Açık İçerikler';
 
   @override
   String get privacyPolicySection6Body =>
-      'Herkese açık paylaştığınız içerikler diğer kullanıcılar tarafından görülebilir.';
+      'Bazı içerikler varsayılan veya tercihinize göre diğer kullanıcılar (ve bazı durumlarda oturum açmamış ziyaretçiler) tarafından görülebilir:';
 
   @override
-  String get privacyPolicySection7Title => '7. Veri Saklama Süresi';
+  String get privacyPolicySection6Item1 =>
+      '- Herkese açık olarak paylaştığınız okuma listeleri';
 
   @override
-  String get privacyPolicySection7Item1 => '- Hesabınız aktif olduğu sürece';
+  String get privacyPolicySection6Item2 =>
+      '- Kitap incelemeleriniz, puanlarınız, notlarınız ve alıntılarınız (kullanıcı adınızla)';
+
+  @override
+  String get privacyPolicySection6Item3 => '- Aldığınız/verdiğiniz beğeniler';
+
+  @override
+  String get privacyPolicySection6Body2 =>
+      'Herkese açık paylaştığınız içerikler, siz silseniz dahi başka kullanıcılar tarafından önceden görüntülenmiş, kopyalanmış veya paylaşılmış olabilir; bu tür ikincil paylaşımlar üzerinde kontrolümüz bulunmamaktadır.';
+
+  @override
+  String get privacyPolicySection7Title => '7. Veri Saklama Süreleri';
+
+  @override
+  String get privacyPolicySection7Item1 =>
+      '- Hesap ve içerik verileriniz, hesabınız aktif olduğu sürece saklanır.';
 
   @override
   String get privacyPolicySection7Item2 =>
-      '- Veya hizmetleri sunmak için gerektiği sürece';
+      '- Belge sohbeti dosyaları ve oturum verileri işlem/oturum bitince otomatik silinir; kalıcı saklanmaz.';
 
   @override
-  String get privacyPolicySection7Body =>
-      'Verilerinizin silinmesini istediğiniz zaman talep edebilirsiniz.';
+  String get privacyPolicySection7Item3 =>
+      '- Hesap silme talebinde, doğrulamadan itibaren 7 gün içinde silinir; yasal yükümlülük nedeniyle bazı veriler en fazla 30 gün daha saklanabilir.';
+
+  @override
+  String get privacyPolicySection7Item4 =>
+      '- Hata/çökme raporları Sentry\'nin saklama süresi politikasına tabidir.';
 
   @override
   String get privacyPolicySection8Title => '8. Haklarınız';
 
   @override
-  String get privacyPolicySection8Item1 => '- Verilerinize erişme';
+  String get privacyPolicySection8Body =>
+      'KVKK ve/veya GDPR kapsamında, uygulanabilir olduğu ölçüde aşağıdaki haklara sahipsiniz:';
 
   @override
-  String get privacyPolicySection8Item2 => '- Bilgilerinizi güncelleme';
+  String get privacyPolicySection8Item1 =>
+      '- Kişisel verilerinizin işlenip işlenmediğini öğrenme';
+
+  @override
+  String get privacyPolicySection8Item2 =>
+      '- İşlenen verileriniz hakkında bilgi talep etme';
 
   @override
   String get privacyPolicySection8Item3 =>
-      '- Hesabınızın silinmesini talep etme';
+      '- Verilerinize erişme ve bir kopyasını (taşınabilir formatta) alma';
 
   @override
-  String get privacyPolicySection8Item4 => '- Onayı geri çekme';
+  String get privacyPolicySection8Item4 =>
+      '- Yanlış veya eksik verilerin düzeltilmesini isteme';
 
   @override
-  String get privacyPolicySection8Body =>
-      'Bu hakları kullanmak için bize ulaşın:';
+  String get privacyPolicySection8Item5 =>
+      '- Verilerinizin silinmesini veya yok edilmesini talep etme';
 
   @override
-  String get privacyPolicySection8Email => 'E-posta: [YOUR EMAIL]';
+  String get privacyPolicySection8Item6 =>
+      '- İşlemeye itiraz etme veya rızanızı geri çekme';
 
   @override
-  String get privacyPolicySection9Title => '9. Çocukların Gizliliği';
+  String get privacyPolicySection8Item7 =>
+      '- Otomatik sistemlerle aleyhinize sonuç çıkmasına itiraz etme';
+
+  @override
+  String get privacyPolicySection8Item8 =>
+      '- Kanuna aykırı işleme nedeniyle zarara uğramanız hâlinde giderim talep etme';
+
+  @override
+  String get privacyPolicySection8Body2 =>
+      'Bu haklarınızı kullanmak için support@rubricator.app adresinden bizimle iletişime geçebilirsiniz.';
+
+  @override
+  String get privacyPolicySection9Title => '9. Hesap ve Veri Silme';
 
   @override
   String get privacyPolicySection9Body1 =>
-      'Rubricator, 13 yaş altındaki kullanıcılar için tasarlanmamıştır.';
+      'Hesabınızı ve ilişkili verilerinizi silmek isterseniz:';
+
+  @override
+  String get privacyPolicySection9Item1 =>
+      '1. support@rubricator.app adresine e-posta gönderin.';
+
+  @override
+  String get privacyPolicySection9Item2 =>
+      '2. Konu satırına \"Account Deletion Request\" yazın.';
+
+  @override
+  String get privacyPolicySection9Item3 =>
+      '3. E-posta metnine Rubricator\'a kayıtlı e-posta adresinizi ekleyin.';
 
   @override
   String get privacyPolicySection9Body2 =>
-      'Çocuklardan bilerek veri toplamayız.';
+      'Talebiniz doğrulandıktan sonra hesap profiliniz ve kişisel verileriniz 7 gün içinde silinir; yasal saklama gereken sınırlı veriler en fazla 30 gün daha tutulabilir.';
 
   @override
-  String get privacyPolicySection10Title => '10. Üçüncü Taraf Hizmetler';
-
-  @override
-  String get privacyPolicySection10Item1 =>
-      '- Google (kimlik doğrulama, analiz)';
-
-  @override
-  String get privacyPolicySection10Item2 => '- Supabase (veri depolama)';
+  String get privacyPolicySection10Title => '10. Çocukların Gizliliği';
 
   @override
   String get privacyPolicySection10Body =>
-      'Bu hizmetlerin kendi gizlilik politikaları vardır.';
+      'Rubricator, 13 yaşın altındaki çocuklara yönelik değildir ve bu yaş grubundaki kullanıcılardan bilerek veri toplamaz. 13 yaşın altındaki bir çocuğun bize kişisel veri sağladığını fark edersek, bu veriyi makul süre içinde sileriz. Bir ebeveyn veya vasi olarak çocuğunuzun bize veri sağladığını düşünüyorsanız lütfen support@rubricator.app adresinden bizimle iletişime geçin.';
 
   @override
-  String get privacyPolicySection11Title => '11. Uluslararası Veri Aktarımları';
+  String get privacyPolicySection11Title =>
+      '11. Yerel Depolama (Cihaz Üzerinde Saklanan Veriler)';
 
   @override
   String get privacyPolicySection11Body =>
-      'Bilgileriniz, hizmet sağlayıcılarımızın faaliyet gösterdiği farklı ülkelerde işlenebilir.';
+      'Uygulama, bazı tercihlerinizi ve önbellek verilerini (ör. oturum bilgisi, tema tercihi, geçici içerik önbelleği) doğrudan cihazınızda yerel olarak saklar. Bu veriler uygulamayı kaldırdığınızda cihazınızdan silinir ve sunucularımıza otomatik olarak aktarılmaz.';
 
   @override
-  String get privacyPolicySection12Title =>
-      '12. Bu Gizlilik Politikasındaki Değişiklikler';
+  String get privacyPolicySection12Title => '12. Uluslararası Veri Aktarımı';
 
   @override
   String get privacyPolicySection12Body =>
-      'Bu politikayı zaman zaman güncelleyebiliriz. Değişiklikler \"Son güncelleme\" tarihi güncellenerek yansıtılır.';
+      'Kullandığımız altyapı sağlayıcıları (Supabase, Google, Sentry) verilerinizi Türkiye dışındaki sunucularda (ör. Avrupa Birliği veya Amerika Birleşik Devletleri) işleyebilir. Bu tür aktarımlarda, ilgili sağlayıcıların sunduğu güvenlik ve uyumluluk mekanizmalarına (standart sözleşme hükümleri, veri işleme anlaşmaları vb.) güveniyoruz.';
 
   @override
-  String get privacyPolicySection13Title => '13. Bize Ulaşın';
+  String get privacyPolicySection13Title =>
+      '13. Üçüncü Taraf Servisler ve Bağlantılar';
 
   @override
   String get privacyPolicySection13Body =>
-      'Bu Gizlilik Politikası hakkında sorunuz varsa bize ulaşın:';
+      'Uygulama içinde üçüncü taraf web sitelerine veya kaynaklara bağlantılar bulunabilir. Bu üçüncü taraf sitelerin kendi gizlilik politikaları geçerlidir; bu politika yalnızca Rubricator\'ın kendi veri işleme faaliyetlerini kapsar.';
 
   @override
-  String get privacyPolicySection13Email =>
-      'E-posta: ismailyucelolmez514@gmail.com';
+  String get privacyPolicySection13Item1 =>
+      '- Supabase Gizlilik Politikası: https://supabase.com/privacy';
+
+  @override
+  String get privacyPolicySection13Item2 =>
+      '- Google Gizlilik Politikası: https://policies.google.com/privacy (Gemini API ve Google Books API)';
+
+  @override
+  String get privacyPolicySection13Item3 =>
+      '- Sentry Gizlilik Politikası: https://sentry.io/privacy/';
+
+  @override
+  String get privacyPolicySection14Title => '14. Politikadaki Değişiklikler';
+
+  @override
+  String get privacyPolicySection14Body =>
+      'Bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Önemli değişikliklerde uygulama içi bildirim veya e-posta yoluyla sizi bilgilendirebiliriz. Güncel politika her zaman bu sayfanın en üstündeki \"Son güncelleme\" tarihiyle yayınlanır. Politikayı düzenli olarak gözden geçirmenizi öneririz.';
+
+  @override
+  String get privacyPolicySection15Title => '15. İletişim';
+
+  @override
+  String get privacyPolicySection15Body =>
+      'Bu Gizlilik Politikası veya kişisel verilerinizin işlenmesiyle ilgili sorularınız, talepleriniz veya şikâyetleriniz için bizimle iletişime geçebilirsiniz:';
+
+  @override
+  String get privacyPolicySection15Contact =>
+      'Rubricator\nE-posta: support@rubricator.app\nGeliştirici: İsmail Yücel Ölmez';
 
   @override
   String get privacyPolicyFooter =>
-      'Rubricator\'u kullanarak bu Gizlilik Politikası\'nı kabul etmiş olursunuz.';
+      'Rubricator\'ı kullanarak bu Gizlilik Politikasını kabul etmiş olursunuz.';
 }

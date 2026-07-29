@@ -107,13 +107,16 @@ class GoogleBooksRemoteDataSource {
 
   Future<BookModel> fetchVolume(String volumeId) async {
     final id = volumeId.trim();
+    if (!GoogleBooksUtils.isFetchableVolumeId(id)) {
+      throw StateError('Not a Google Books volume id: $id');
+    }
     final json = await _api.getJson('/volumes/$id');
     return BookModel.fromGoogleBooksVolume(json);
   }
 
   Future<BookModel> fetchVolumeMerged(String volumeId, BookModel seed) async {
     final id = volumeId.trim();
-    if (id.isEmpty) return seed;
+    if (!GoogleBooksUtils.isFetchableVolumeId(id)) return seed;
     try {
       final json = await _api.getJson('/volumes/$id');
       return BookModel.fromGoogleBooksVolume(json, mergeFrom: seed);

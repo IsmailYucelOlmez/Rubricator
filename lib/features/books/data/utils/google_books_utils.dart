@@ -9,6 +9,23 @@ abstract final class GoogleBooksUtils {
   static final RegExp _isbnDigits = RegExp(r'^\d{10}$|^\d{13}$');
   static final RegExp _nonAlnum = RegExp(r'[^\p{L}\p{N}\s]+', unicode: true);
   static final RegExp _multiSpace = RegExp(r'\s+');
+  /// Legacy Open Library work (`…W`) / edition (`…M`) ids, e.g. `OL1064277W`.
+  static final RegExp _openLibraryId = RegExp(
+    r'^OL\d+[A-Za-z]$',
+    caseSensitive: false,
+  );
+
+  /// Whether [raw] is safe to pass to Google Books `/volumes/{id}`.
+  ///
+  /// Rejects empty, `pending:` (ISBN resolve), and legacy Open Library ids that
+  /// otherwise produce upstream 503 `backendFailed` noise.
+  static bool isFetchableVolumeId(String raw) {
+    final id = raw.trim();
+    if (id.isEmpty) return false;
+    if (id.startsWith('pending:')) return false;
+    if (_openLibraryId.hasMatch(id)) return false;
+    return true;
+  }
 
   /// Base query params required on every `/volumes` list request.
   static Map<String, dynamic> baseListParams({

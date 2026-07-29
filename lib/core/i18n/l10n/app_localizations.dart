@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @semanticApiNotConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.'**
+  /// **'Semantic discovery is not configured.'**
   String get semanticApiNotConfigured;
 
   /// No description provided for @apply.
@@ -2333,14 +2333,20 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy for Rubricator'**
+  /// **'Rubricator Privacy Policy'**
   String get privacyPolicyTitle;
 
   /// No description provided for @privacyPolicyLastUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Last updated: 19.04.2026'**
+  /// **'Last updated: 28.07.2026'**
   String get privacyPolicyLastUpdated;
+
+  /// No description provided for @privacyPolicyMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app'**
+  String get privacyPolicyMeta;
 
   /// No description provided for @privacyPolicySection1Title.
   ///
@@ -2351,188 +2357,350 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection1Body1.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Rubricator (\"we\", \"our\", or \"us\"). Rubricator is a social reading platform where users can discover books, create lists, track reading habits, and share content.'**
+  /// **'Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.'**
   String get privacyPolicySection1Body1;
 
   /// No description provided for @privacyPolicySection1Body2.
   ///
   /// In en, this message translates to:
-  /// **'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.'**
+  /// **'This Privacy Policy explains which data is collected when you use Rubricator, how that data is used, with whom and why it is shared, how long it is retained, and your rights over your data. The policy was prepared by reviewing the app’s actual technical architecture (including Supabase, a custom API server, and Google Gemini–based AI features).'**
   String get privacyPolicySection1Body2;
+
+  /// No description provided for @privacyPolicySection1Body3.
+  ///
+  /// In en, this message translates to:
+  /// **'By using the app, you accept the data processing activities described in this policy. If you do not accept the policy, please do not use the app.'**
+  String get privacyPolicySection1Body3;
 
   /// No description provided for @privacyPolicySection2Title.
   ///
   /// In en, this message translates to:
-  /// **'2. Information We Collect'**
+  /// **'2. What Data We Collect'**
   String get privacyPolicySection2Title;
 
   /// No description provided for @privacyPolicySection21Title.
   ///
   /// In en, this message translates to:
-  /// **'2.1 Personal Information'**
+  /// **'2.1 Information You Provide When Creating an Account'**
   String get privacyPolicySection21Title;
+
+  /// No description provided for @privacyPolicySection21Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts in Rubricator are created with an email address and password (one-tap third-party sign-in — Google/Apple Sign-In — is not used). Data we collect during registration and authentication:'**
+  String get privacyPolicySection21Body;
 
   /// No description provided for @privacyPolicySection21Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Email address'**
+  /// **'- Your email address'**
   String get privacyPolicySection21Item1;
 
   /// No description provided for @privacyPolicySection21Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Username'**
+  /// **'- Your password (passwords are not stored on our servers; they are stored securely (hashed) by our authentication provider, Supabase Auth, and are never kept in plain text)'**
   String get privacyPolicySection21Item2;
 
   /// No description provided for @privacyPolicySection21Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Profile information (optional)'**
+  /// **'- Username / display name'**
   String get privacyPolicySection21Item3;
+
+  /// No description provided for @privacyPolicySection21Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- (If applicable) one-time codes (OTP) created during email verification / password reset'**
+  String get privacyPolicySection21Item4;
 
   /// No description provided for @privacyPolicySection22Title.
   ///
   /// In en, this message translates to:
-  /// **'2.2 User-Generated Content'**
+  /// **'2.2 Profile Information'**
   String get privacyPolicySection22Title;
 
   /// No description provided for @privacyPolicySection22Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Book reviews'**
+  /// **'- Profile photo (optional; you may upload an image from your gallery; gallery access is requested only when you start an upload)'**
   String get privacyPolicySection22Item1;
 
   /// No description provided for @privacyPolicySection22Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Ratings'**
+  /// **'- Other information you choose to show on your profile'**
   String get privacyPolicySection22Item2;
-
-  /// No description provided for @privacyPolicySection22Item3.
-  ///
-  /// In en, this message translates to:
-  /// **'- Quotes'**
-  String get privacyPolicySection22Item3;
-
-  /// No description provided for @privacyPolicySection22Item4.
-  ///
-  /// In en, this message translates to:
-  /// **'- Lists you create'**
-  String get privacyPolicySection22Item4;
-
-  /// No description provided for @privacyPolicySection22Item5.
-  ///
-  /// In en, this message translates to:
-  /// **'- Comments'**
-  String get privacyPolicySection22Item5;
 
   /// No description provided for @privacyPolicySection23Title.
   ///
   /// In en, this message translates to:
-  /// **'2.3 Usage Data'**
+  /// **'2.3 Content You Create in the App'**
   String get privacyPolicySection23Title;
+
+  /// No description provided for @privacyPolicySection23Body.
+  ///
+  /// In en, this message translates to:
+  /// **'The following content you create while using the app is stored and associated with your account:'**
+  String get privacyPolicySection23Body;
 
   /// No description provided for @privacyPolicySection23Item1.
   ///
   /// In en, this message translates to:
-  /// **'- App usage interactions'**
+  /// **'- Book reviews and ratings (out-of-10 rating system)'**
   String get privacyPolicySection23Item1;
 
   /// No description provided for @privacyPolicySection23Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Feature usage (e.g., lists, stats, search)'**
+  /// **'- Book notes and quotes'**
   String get privacyPolicySection23Item2;
 
   /// No description provided for @privacyPolicySection23Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Device information (OS version, device type)'**
+  /// **'- Reading lists (social lists) you create and books you add to them'**
   String get privacyPolicySection23Item3;
+
+  /// No description provided for @privacyPolicySection23Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Favorite books'**
+  String get privacyPolicySection23Item4;
+
+  /// No description provided for @privacyPolicySection23Item5.
+  ///
+  /// In en, this message translates to:
+  /// **'- \"Read / reading\" statuses, reading logs, and completed-book records'**
+  String get privacyPolicySection23Item5;
+
+  /// No description provided for @privacyPolicySection23Item6.
+  ///
+  /// In en, this message translates to:
+  /// **'- Likes on reviews, lists, and content'**
+  String get privacyPolicySection23Item6;
+
+  /// No description provided for @privacyPolicySection23Item7.
+  ///
+  /// In en, this message translates to:
+  /// **'- Habit tracker data — e.g. reading goal/streak records'**
+  String get privacyPolicySection23Item7;
+
+  /// No description provided for @privacyPolicySection23Item8.
+  ///
+  /// In en, this message translates to:
+  /// **'- In-app search history (may be kept to improve recommendation quality)'**
+  String get privacyPolicySection23Item8;
 
   /// No description provided for @privacyPolicySection24Title.
   ///
   /// In en, this message translates to:
-  /// **'2.4 Authentication Data'**
+  /// **'2.4 Data Processed for AI Features'**
   String get privacyPolicySection24Title;
+
+  /// No description provided for @privacyPolicySection24Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Rubricator offers the following AI-assisted features. Inputs for these features are sent to Google Gemini models (embedding and gemini-2.5-flash):'**
+  String get privacyPolicySection24Body;
 
   /// No description provided for @privacyPolicySection24Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Basic profile information'**
+  /// **'- Semantic Book Discovery (Virgil): Natural-language search queries are sent via our own server (FastAPI) to the Google Gemini API.'**
   String get privacyPolicySection24Item1;
 
   /// No description provided for @privacyPolicySection24Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Email address'**
+  /// **'- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out.'**
   String get privacyPolicySection24Item2;
+
+  /// No description provided for @privacyPolicySection24Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Book Chat / Recommendations (Virgil): Questions and recommendations about books are likewise sent to the AI provider. Anonymous usage counters (e.g. daily request counts) may be kept.'**
+  String get privacyPolicySection24Item3;
+
+  /// No description provided for @privacyPolicySection24Note.
+  ///
+  /// In en, this message translates to:
+  /// **'Important: Data sent to the AI provider (Google Gemini) is subject to that provider’s own privacy policy and data-processing terms. We advise against uploading documents that contain sensitive personal data to Document Chat.'**
+  String get privacyPolicySection24Note;
+
+  /// No description provided for @privacyPolicySection25Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.5 Book Catalog Data (Third-Party Sources)'**
+  String get privacyPolicySection25Title;
+
+  /// No description provided for @privacyPolicySection25Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you.'**
+  String get privacyPolicySection25Body;
+
+  /// No description provided for @privacyPolicySection26Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.6 Automatically Collected Technical Data'**
+  String get privacyPolicySection26Title;
+
+  /// No description provided for @privacyPolicySection26Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Crash/error reports: We use Sentry to monitor stability. Device/OS info, app version, stack trace, and context are sent; direct identifiers such as name/email are not included by default.'**
+  String get privacyPolicySection26Item1;
+
+  /// No description provided for @privacyPolicySection26Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Connectivity status: Checked only on-device; not sent to our servers.'**
+  String get privacyPolicySection26Item2;
+
+  /// No description provided for @privacyPolicySection26Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers.'**
+  String get privacyPolicySection26Item3;
+
+  /// No description provided for @privacyPolicySection27Title.
+  ///
+  /// In en, this message translates to:
+  /// **'2.7 Device Permissions'**
+  String get privacyPolicySection27Title;
+
+  /// No description provided for @privacyPolicySection27Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Location, camera, contacts, microphone, and similar permissions are not requested. Permissions that may be requested:'**
+  String get privacyPolicySection27Body;
+
+  /// No description provided for @privacyPolicySection27Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'- Internet access: Communicate with our servers and third-party services'**
+  String get privacyPolicySection27Item1;
+
+  /// No description provided for @privacyPolicySection27Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Send notifications: Reading reminders and in-app notifications'**
+  String get privacyPolicySection27Item2;
+
+  /// No description provided for @privacyPolicySection27Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Exact alarm / timer: Show reading reminders at the time you set'**
+  String get privacyPolicySection27Item3;
+
+  /// No description provided for @privacyPolicySection27Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat'**
+  String get privacyPolicySection27Item4;
 
   /// No description provided for @privacyPolicySection3Title.
   ///
   /// In en, this message translates to:
-  /// **'3. How We Use Your Information'**
+  /// **'3. Why We Process Your Data'**
   String get privacyPolicySection3Title;
 
   /// No description provided for @privacyPolicySection3Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Provide and maintain the app'**
+  /// **'- Create your account, verify your identity, and manage your session securely'**
   String get privacyPolicySection3Item1;
 
   /// No description provided for @privacyPolicySection3Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Enable social features (lists, comments, likes)'**
+  /// **'- Provide core features such as book discovery, search, favorites, lists, notes, and reviews'**
   String get privacyPolicySection3Item2;
 
   /// No description provided for @privacyPolicySection3Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Personalize content and recommendations'**
+  /// **'- Run AI-assisted semantic search, book recommendations, and Document Chat'**
   String get privacyPolicySection3Item3;
 
   /// No description provided for @privacyPolicySection3Item4.
   ///
   /// In en, this message translates to:
-  /// **'- Improve app performance and features'**
+  /// **'- Offer personalized book recommendations'**
   String get privacyPolicySection3Item4;
 
   /// No description provided for @privacyPolicySection3Item5.
   ///
   /// In en, this message translates to:
-  /// **'- Communicate important updates'**
+  /// **'- Send reading reminders and habit-tracker notifications'**
   String get privacyPolicySection3Item5;
+
+  /// No description provided for @privacyPolicySection3Item6.
+  ///
+  /// In en, this message translates to:
+  /// **'- Monitor app performance and detect/fix bugs'**
+  String get privacyPolicySection3Item6;
+
+  /// No description provided for @privacyPolicySection3Item7.
+  ///
+  /// In en, this message translates to:
+  /// **'- Prevent abuse and enforce service quotas'**
+  String get privacyPolicySection3Item7;
+
+  /// No description provided for @privacyPolicySection3Item8.
+  ///
+  /// In en, this message translates to:
+  /// **'- Comply with legal obligations and protect user safety'**
+  String get privacyPolicySection3Item8;
+
+  /// No description provided for @privacyPolicySection3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is processed on the legal bases of consent (e.g. choosing to use AI features), performance of a contract (providing your account and the service), and legitimate interest (security, bug fixing, service improvement).'**
+  String get privacyPolicySection3Body;
 
   /// No description provided for @privacyPolicySection4Title.
   ///
   /// In en, this message translates to:
-  /// **'4. Data Storage and Security'**
+  /// **'4. Where Data Is Stored and Security'**
   String get privacyPolicySection4Title;
 
   /// No description provided for @privacyPolicySection4Body.
   ///
   /// In en, this message translates to:
-  /// **'Your data is stored securely using third-party infrastructure such as Supabase.'**
+  /// **'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports).'**
   String get privacyPolicySection4Body;
 
   /// No description provided for @privacyPolicySection4Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Secure authentication'**
+  /// **'- All communication uses encrypted connections (HTTPS/TLS)'**
   String get privacyPolicySection4Item1;
 
   /// No description provided for @privacyPolicySection4Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Encrypted connections (HTTPS)'**
+  /// **'- Passwords are never stored in plain text'**
   String get privacyPolicySection4Item2;
 
   /// No description provided for @privacyPolicySection4Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Access control mechanisms'**
+  /// **'- Database access is scoped to the account owner via Row Level Security (RLS)'**
   String get privacyPolicySection4Item3;
+
+  /// No description provided for @privacyPolicySection4Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Server-side authorization and access control are applied'**
+  String get privacyPolicySection4Item4;
+
+  /// No description provided for @privacyPolicySection4Body2.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet-based system can be guaranteed 100% secure; however, we take reasonable technical and organizational measures to protect your data.'**
+  String get privacyPolicySection4Body2;
 
   /// No description provided for @privacyPolicySection5Title.
   ///
@@ -2543,26 +2711,38 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection5Body.
   ///
   /// In en, this message translates to:
-  /// **'We do NOT sell your personal data.'**
+  /// **'We do not sell your personal data. Your data is shared only in the following cases and with the following parties:'**
   String get privacyPolicySection5Body;
 
   /// No description provided for @privacyPolicySection5Item1.
   ///
   /// In en, this message translates to:
-  /// **'- With service providers (e.g., backend hosting)'**
+  /// **'- Supabase: Account, profile, user content — hosting, authentication, file storage'**
   String get privacyPolicySection5Item1;
 
   /// No description provided for @privacyPolicySection5Item2.
   ///
   /// In en, this message translates to:
-  /// **'- To comply with legal obligations'**
+  /// **'- Google Gemini: Your search queries, document contents, chat messages — AI features'**
   String get privacyPolicySection5Item2;
 
   /// No description provided for @privacyPolicySection5Item3.
   ///
   /// In en, this message translates to:
-  /// **'- To protect user safety and rights'**
+  /// **'- Google Books API: Book search terms — catalog data (does not contain personal data)'**
   String get privacyPolicySection5Item3;
+
+  /// No description provided for @privacyPolicySection5Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Sentry: Device/app technical info, error traces — stability monitoring'**
+  String get privacyPolicySection5Item4;
+
+  /// No description provided for @privacyPolicySection5Body2.
+  ///
+  /// In en, this message translates to:
+  /// **'Data may also be shared to comply with legal obligations, court orders, or official requests; to protect user/app safety; or in a merger, acquisition, or asset sale (you will be notified in advance).'**
+  String get privacyPolicySection5Body2;
 
   /// No description provided for @privacyPolicySection6Title.
   ///
@@ -2570,53 +2750,65 @@ abstract class AppLocalizations {
   /// **'6. Public Content'**
   String get privacyPolicySection6Title;
 
+  /// No description provided for @privacyPolicySection6Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Some content may be visible to other users (and in some cases to visitors who are not signed in), by default or according to your preference:'**
+  String get privacyPolicySection6Body;
+
   /// No description provided for @privacyPolicySection6Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Public lists'**
+  /// **'- Reading lists you share publicly'**
   String get privacyPolicySection6Item1;
 
   /// No description provided for @privacyPolicySection6Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Reviews'**
+  /// **'- Your book reviews, ratings, notes, and quotes (shown with your username)'**
   String get privacyPolicySection6Item2;
 
   /// No description provided for @privacyPolicySection6Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Comments'**
+  /// **'- Likes you give or receive'**
   String get privacyPolicySection6Item3;
 
-  /// No description provided for @privacyPolicySection6Body.
+  /// No description provided for @privacyPolicySection6Body2.
   ///
   /// In en, this message translates to:
-  /// **'Content you share publicly may be visible to other users.'**
-  String get privacyPolicySection6Body;
+  /// **'Even if you delete public content, it may already have been viewed, copied, or shared by others; we have no control over such secondary sharing.'**
+  String get privacyPolicySection6Body2;
 
   /// No description provided for @privacyPolicySection7Title.
   ///
   /// In en, this message translates to:
-  /// **'7. Data Retention'**
+  /// **'7. Data Retention Periods'**
   String get privacyPolicySection7Title;
 
   /// No description provided for @privacyPolicySection7Item1.
   ///
   /// In en, this message translates to:
-  /// **'- As long as your account is active'**
+  /// **'- Account and content data are retained while your account is active.'**
   String get privacyPolicySection7Item1;
 
   /// No description provided for @privacyPolicySection7Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Or as needed to provide services'**
+  /// **'- Document Chat files and session data are automatically deleted when processing/session ends; not stored permanently.'**
   String get privacyPolicySection7Item2;
 
-  /// No description provided for @privacyPolicySection7Body.
+  /// No description provided for @privacyPolicySection7Item3.
   ///
   /// In en, this message translates to:
-  /// **'You may request deletion of your data at any time.'**
-  String get privacyPolicySection7Body;
+  /// **'- After an account deletion request is verified, data is deleted within 7 days; some data may be retained up to 30 more days for legal obligations.'**
+  String get privacyPolicySection7Item3;
+
+  /// No description provided for @privacyPolicySection7Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Crash/error reports are subject to Sentry’s retention policy.'**
+  String get privacyPolicySection7Item4;
 
   /// No description provided for @privacyPolicySection8Title.
   ///
@@ -2624,125 +2816,197 @@ abstract class AppLocalizations {
   /// **'8. Your Rights'**
   String get privacyPolicySection8Title;
 
+  /// No description provided for @privacyPolicySection8Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Under KVKK and/or GDPR, to the extent applicable, you have the right to:'**
+  String get privacyPolicySection8Body;
+
   /// No description provided for @privacyPolicySection8Item1.
   ///
   /// In en, this message translates to:
-  /// **'- Access your data'**
+  /// **'- Learn whether your personal data is being processed'**
   String get privacyPolicySection8Item1;
 
   /// No description provided for @privacyPolicySection8Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Update your information'**
+  /// **'- Request information about your processed data'**
   String get privacyPolicySection8Item2;
 
   /// No description provided for @privacyPolicySection8Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Request deletion of your account'**
+  /// **'- Access your data and obtain a copy (in a portable format)'**
   String get privacyPolicySection8Item3;
 
   /// No description provided for @privacyPolicySection8Item4.
   ///
   /// In en, this message translates to:
-  /// **'- Withdraw consent'**
+  /// **'- Request correction of inaccurate or incomplete data'**
   String get privacyPolicySection8Item4;
 
-  /// No description provided for @privacyPolicySection8Body.
+  /// No description provided for @privacyPolicySection8Item5.
   ///
   /// In en, this message translates to:
-  /// **'To exercise these rights, contact us at:'**
-  String get privacyPolicySection8Body;
+  /// **'- Request deletion or destruction of your data'**
+  String get privacyPolicySection8Item5;
 
-  /// No description provided for @privacyPolicySection8Email.
+  /// No description provided for @privacyPolicySection8Item6.
   ///
   /// In en, this message translates to:
-  /// **'Email: [YOUR EMAIL]'**
-  String get privacyPolicySection8Email;
+  /// **'- Object to processing or withdraw consent'**
+  String get privacyPolicySection8Item6;
+
+  /// No description provided for @privacyPolicySection8Item7.
+  ///
+  /// In en, this message translates to:
+  /// **'- Object to adverse outcomes produced solely by automated systems'**
+  String get privacyPolicySection8Item7;
+
+  /// No description provided for @privacyPolicySection8Item8.
+  ///
+  /// In en, this message translates to:
+  /// **'- Seek redress if you suffer damage due to unlawful processing'**
+  String get privacyPolicySection8Item8;
+
+  /// No description provided for @privacyPolicySection8Body2.
+  ///
+  /// In en, this message translates to:
+  /// **'To exercise these rights, contact us at support@rubricator.app.'**
+  String get privacyPolicySection8Body2;
 
   /// No description provided for @privacyPolicySection9Title.
   ///
   /// In en, this message translates to:
-  /// **'9. Children\'s Privacy'**
+  /// **'9. Account and Data Deletion'**
   String get privacyPolicySection9Title;
 
   /// No description provided for @privacyPolicySection9Body1.
   ///
   /// In en, this message translates to:
-  /// **'Rubricator is not intended for users under the age of 13.'**
+  /// **'To delete your account and associated data:'**
   String get privacyPolicySection9Body1;
+
+  /// No description provided for @privacyPolicySection9Item1.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Email support@rubricator.app.'**
+  String get privacyPolicySection9Item1;
+
+  /// No description provided for @privacyPolicySection9Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Use the subject line \"Account Deletion Request\".'**
+  String get privacyPolicySection9Item2;
+
+  /// No description provided for @privacyPolicySection9Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Include the email address registered with Rubricator in the message body.'**
+  String get privacyPolicySection9Item3;
 
   /// No description provided for @privacyPolicySection9Body2.
   ///
   /// In en, this message translates to:
-  /// **'We do not knowingly collect data from children.'**
+  /// **'After your request is verified, your account profile and personal data are deleted within 7 days; limited data required for legal retention may be kept for up to 30 additional days.'**
   String get privacyPolicySection9Body2;
 
   /// No description provided for @privacyPolicySection10Title.
   ///
   /// In en, this message translates to:
-  /// **'10. Third-Party Services'**
+  /// **'10. Children’s Privacy'**
   String get privacyPolicySection10Title;
-
-  /// No description provided for @privacyPolicySection10Item1.
-  ///
-  /// In en, this message translates to:
-  /// **'- Google (authentication, analytics)'**
-  String get privacyPolicySection10Item1;
-
-  /// No description provided for @privacyPolicySection10Item2.
-  ///
-  /// In en, this message translates to:
-  /// **'- Supabase (data storage)'**
-  String get privacyPolicySection10Item2;
 
   /// No description provided for @privacyPolicySection10Body.
   ///
   /// In en, this message translates to:
-  /// **'These services have their own privacy policies.'**
+  /// **'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.'**
   String get privacyPolicySection10Body;
 
   /// No description provided for @privacyPolicySection11Title.
   ///
   /// In en, this message translates to:
-  /// **'11. International Data Transfers'**
+  /// **'11. Local Storage (Data Stored on Device)'**
   String get privacyPolicySection11Title;
 
   /// No description provided for @privacyPolicySection11Body.
   ///
   /// In en, this message translates to:
-  /// **'Your information may be processed in different countries where our service providers operate.'**
+  /// **'The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.'**
   String get privacyPolicySection11Body;
 
   /// No description provided for @privacyPolicySection12Title.
   ///
   /// In en, this message translates to:
-  /// **'12. Changes to This Privacy Policy'**
+  /// **'12. International Data Transfers'**
   String get privacyPolicySection12Title;
 
   /// No description provided for @privacyPolicySection12Body.
   ///
   /// In en, this message translates to:
-  /// **'We may update this policy from time to time. Changes will be reflected by updating the \"Last updated\" date.'**
+  /// **'Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).'**
   String get privacyPolicySection12Body;
 
   /// No description provided for @privacyPolicySection13Title.
   ///
   /// In en, this message translates to:
-  /// **'13. Contact Us'**
+  /// **'13. Third-Party Services and Links'**
   String get privacyPolicySection13Title;
 
   /// No description provided for @privacyPolicySection13Body.
   ///
   /// In en, this message translates to:
-  /// **'If you have any questions about this Privacy Policy, contact us:'**
+  /// **'The app may contain links to third-party websites or resources. Those third-party sites have their own privacy policies; this policy covers only Rubricator’s own data processing.'**
   String get privacyPolicySection13Body;
 
-  /// No description provided for @privacyPolicySection13Email.
+  /// No description provided for @privacyPolicySection13Item1.
   ///
   /// In en, this message translates to:
-  /// **'Email: ismailyucelolmez514@gmail.com'**
-  String get privacyPolicySection13Email;
+  /// **'- Supabase Privacy Policy: https://supabase.com/privacy'**
+  String get privacyPolicySection13Item1;
+
+  /// No description provided for @privacyPolicySection13Item2.
+  ///
+  /// In en, this message translates to:
+  /// **'- Google Privacy Policy: https://policies.google.com/privacy (Gemini API and Google Books API)'**
+  String get privacyPolicySection13Item2;
+
+  /// No description provided for @privacyPolicySection13Item3.
+  ///
+  /// In en, this message translates to:
+  /// **'- Sentry Privacy Policy: https://sentry.io/privacy/'**
+  String get privacyPolicySection13Item3;
+
+  /// No description provided for @privacyPolicySection14Title.
+  ///
+  /// In en, this message translates to:
+  /// **'14. Changes to This Policy'**
+  String get privacyPolicySection14Title;
+
+  /// No description provided for @privacyPolicySection14Body.
+  ///
+  /// In en, this message translates to:
+  /// **'We may update this Privacy Policy from time to time. For material changes, we may notify you via an in-app notice or email. The current policy is always published with the \"Last updated\" date at the top of this page. We recommend reviewing the policy regularly.'**
+  String get privacyPolicySection14Body;
+
+  /// No description provided for @privacyPolicySection15Title.
+  ///
+  /// In en, this message translates to:
+  /// **'15. Contact'**
+  String get privacyPolicySection15Title;
+
+  /// No description provided for @privacyPolicySection15Body.
+  ///
+  /// In en, this message translates to:
+  /// **'For questions, requests, or complaints about this Privacy Policy or the processing of your personal data:'**
+  String get privacyPolicySection15Body;
+
+  /// No description provided for @privacyPolicySection15Contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez'**
+  String get privacyPolicySection15Contact;
 
   /// No description provided for @privacyPolicyFooter.
   ///

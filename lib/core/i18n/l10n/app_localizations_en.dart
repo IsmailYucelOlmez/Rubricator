@@ -422,7 +422,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get semanticApiNotConfigured =>
-      'Semantic discovery is not configured. Set SEMANTIC_API_BASE_URL.';
+      'Semantic discovery is not configured.';
 
   @override
   String get apply => 'Apply';
@@ -1311,234 +1311,432 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicyAppBar => 'Privacy Policy';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy for Rubricator';
+  String get privacyPolicyTitle => 'Rubricator Privacy Policy';
 
   @override
-  String get privacyPolicyLastUpdated => 'Last updated: 19.04.2026';
+  String get privacyPolicyLastUpdated => 'Last updated: 28.07.2026';
+
+  @override
+  String get privacyPolicyMeta =>
+      'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app';
 
   @override
   String get privacyPolicySection1Title => '1. Introduction';
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Welcome to Rubricator (\"we\", \"our\", or \"us\"). Rubricator is a social reading platform where users can discover books, create lists, track reading habits, and share content.';
+      'Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.';
 
   @override
   String get privacyPolicySection1Body2 =>
-      'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application.';
+      'This Privacy Policy explains which data is collected when you use Rubricator, how that data is used, with whom and why it is shared, how long it is retained, and your rights over your data. The policy was prepared by reviewing the app’s actual technical architecture (including Supabase, a custom API server, and Google Gemini–based AI features).';
 
   @override
-  String get privacyPolicySection2Title => '2. Information We Collect';
+  String get privacyPolicySection1Body3 =>
+      'By using the app, you accept the data processing activities described in this policy. If you do not accept the policy, please do not use the app.';
 
   @override
-  String get privacyPolicySection21Title => '2.1 Personal Information';
+  String get privacyPolicySection2Title => '2. What Data We Collect';
 
   @override
-  String get privacyPolicySection21Item1 => '- Email address';
+  String get privacyPolicySection21Title =>
+      '2.1 Information You Provide When Creating an Account';
 
   @override
-  String get privacyPolicySection21Item2 => '- Username';
+  String get privacyPolicySection21Body =>
+      'Accounts in Rubricator are created with an email address and password (one-tap third-party sign-in — Google/Apple Sign-In — is not used). Data we collect during registration and authentication:';
 
   @override
-  String get privacyPolicySection21Item3 => '- Profile information (optional)';
+  String get privacyPolicySection21Item1 => '- Your email address';
 
   @override
-  String get privacyPolicySection22Title => '2.2 User-Generated Content';
+  String get privacyPolicySection21Item2 =>
+      '- Your password (passwords are not stored on our servers; they are stored securely (hashed) by our authentication provider, Supabase Auth, and are never kept in plain text)';
 
   @override
-  String get privacyPolicySection22Item1 => '- Book reviews';
+  String get privacyPolicySection21Item3 => '- Username / display name';
 
   @override
-  String get privacyPolicySection22Item2 => '- Ratings';
+  String get privacyPolicySection21Item4 =>
+      '- (If applicable) one-time codes (OTP) created during email verification / password reset';
 
   @override
-  String get privacyPolicySection22Item3 => '- Quotes';
+  String get privacyPolicySection22Title => '2.2 Profile Information';
 
   @override
-  String get privacyPolicySection22Item4 => '- Lists you create';
+  String get privacyPolicySection22Item1 =>
+      '- Profile photo (optional; you may upload an image from your gallery; gallery access is requested only when you start an upload)';
 
   @override
-  String get privacyPolicySection22Item5 => '- Comments';
+  String get privacyPolicySection22Item2 =>
+      '- Other information you choose to show on your profile';
 
   @override
-  String get privacyPolicySection23Title => '2.3 Usage Data';
+  String get privacyPolicySection23Title => '2.3 Content You Create in the App';
 
   @override
-  String get privacyPolicySection23Item1 => '- App usage interactions';
+  String get privacyPolicySection23Body =>
+      'The following content you create while using the app is stored and associated with your account:';
 
   @override
-  String get privacyPolicySection23Item2 =>
-      '- Feature usage (e.g., lists, stats, search)';
+  String get privacyPolicySection23Item1 =>
+      '- Book reviews and ratings (out-of-10 rating system)';
+
+  @override
+  String get privacyPolicySection23Item2 => '- Book notes and quotes';
 
   @override
   String get privacyPolicySection23Item3 =>
-      '- Device information (OS version, device type)';
+      '- Reading lists (social lists) you create and books you add to them';
 
   @override
-  String get privacyPolicySection24Title => '2.4 Authentication Data';
+  String get privacyPolicySection23Item4 => '- Favorite books';
 
   @override
-  String get privacyPolicySection24Item1 => '- Basic profile information';
+  String get privacyPolicySection23Item5 =>
+      '- \"Read / reading\" statuses, reading logs, and completed-book records';
 
   @override
-  String get privacyPolicySection24Item2 => '- Email address';
+  String get privacyPolicySection23Item6 =>
+      '- Likes on reviews, lists, and content';
 
   @override
-  String get privacyPolicySection3Title => '3. How We Use Your Information';
+  String get privacyPolicySection23Item7 =>
+      '- Habit tracker data — e.g. reading goal/streak records';
 
   @override
-  String get privacyPolicySection3Item1 => '- Provide and maintain the app';
+  String get privacyPolicySection23Item8 =>
+      '- In-app search history (may be kept to improve recommendation quality)';
+
+  @override
+  String get privacyPolicySection24Title =>
+      '2.4 Data Processed for AI Features';
+
+  @override
+  String get privacyPolicySection24Body =>
+      'Rubricator offers the following AI-assisted features. Inputs for these features are sent to Google Gemini models (embedding and gemini-2.5-flash):';
+
+  @override
+  String get privacyPolicySection24Item1 =>
+      '- Semantic Book Discovery (Virgil): Natural-language search queries are sent via our own server (FastAPI) to the Google Gemini API.';
+
+  @override
+  String get privacyPolicySection24Item2 =>
+      '- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out.';
+
+  @override
+  String get privacyPolicySection24Item3 =>
+      '- Book Chat / Recommendations (Virgil): Questions and recommendations about books are likewise sent to the AI provider. Anonymous usage counters (e.g. daily request counts) may be kept.';
+
+  @override
+  String get privacyPolicySection24Note =>
+      'Important: Data sent to the AI provider (Google Gemini) is subject to that provider’s own privacy policy and data-processing terms. We advise against uploading documents that contain sensitive personal data to Document Chat.';
+
+  @override
+  String get privacyPolicySection25Title =>
+      '2.5 Book Catalog Data (Third-Party Sources)';
+
+  @override
+  String get privacyPolicySection25Body =>
+      'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you.';
+
+  @override
+  String get privacyPolicySection26Title =>
+      '2.6 Automatically Collected Technical Data';
+
+  @override
+  String get privacyPolicySection26Item1 =>
+      '- Crash/error reports: We use Sentry to monitor stability. Device/OS info, app version, stack trace, and context are sent; direct identifiers such as name/email are not included by default.';
+
+  @override
+  String get privacyPolicySection26Item2 =>
+      '- Connectivity status: Checked only on-device; not sent to our servers.';
+
+  @override
+  String get privacyPolicySection26Item3 =>
+      '- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers.';
+
+  @override
+  String get privacyPolicySection27Title => '2.7 Device Permissions';
+
+  @override
+  String get privacyPolicySection27Body =>
+      'Location, camera, contacts, microphone, and similar permissions are not requested. Permissions that may be requested:';
+
+  @override
+  String get privacyPolicySection27Item1 =>
+      '- Internet access: Communicate with our servers and third-party services';
+
+  @override
+  String get privacyPolicySection27Item2 =>
+      '- Send notifications: Reading reminders and in-app notifications';
+
+  @override
+  String get privacyPolicySection27Item3 =>
+      '- Exact alarm / timer: Show reading reminders at the time you set';
+
+  @override
+  String get privacyPolicySection27Item4 =>
+      '- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat';
+
+  @override
+  String get privacyPolicySection3Title => '3. Why We Process Your Data';
+
+  @override
+  String get privacyPolicySection3Item1 =>
+      '- Create your account, verify your identity, and manage your session securely';
 
   @override
   String get privacyPolicySection3Item2 =>
-      '- Enable social features (lists, comments, likes)';
+      '- Provide core features such as book discovery, search, favorites, lists, notes, and reviews';
 
   @override
   String get privacyPolicySection3Item3 =>
-      '- Personalize content and recommendations';
+      '- Run AI-assisted semantic search, book recommendations, and Document Chat';
 
   @override
   String get privacyPolicySection3Item4 =>
-      '- Improve app performance and features';
+      '- Offer personalized book recommendations';
 
   @override
-  String get privacyPolicySection3Item5 => '- Communicate important updates';
+  String get privacyPolicySection3Item5 =>
+      '- Send reading reminders and habit-tracker notifications';
 
   @override
-  String get privacyPolicySection4Title => '4. Data Storage and Security';
+  String get privacyPolicySection3Item6 =>
+      '- Monitor app performance and detect/fix bugs';
+
+  @override
+  String get privacyPolicySection3Item7 =>
+      '- Prevent abuse and enforce service quotas';
+
+  @override
+  String get privacyPolicySection3Item8 =>
+      '- Comply with legal obligations and protect user safety';
+
+  @override
+  String get privacyPolicySection3Body =>
+      'Your data is processed on the legal bases of consent (e.g. choosing to use AI features), performance of a contract (providing your account and the service), and legitimate interest (security, bug fixing, service improvement).';
+
+  @override
+  String get privacyPolicySection4Title =>
+      '4. Where Data Is Stored and Security';
 
   @override
   String get privacyPolicySection4Body =>
-      'Your data is stored securely using third-party infrastructure such as Supabase.';
+      'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports).';
 
   @override
-  String get privacyPolicySection4Item1 => '- Secure authentication';
+  String get privacyPolicySection4Item1 =>
+      '- All communication uses encrypted connections (HTTPS/TLS)';
 
   @override
-  String get privacyPolicySection4Item2 => '- Encrypted connections (HTTPS)';
+  String get privacyPolicySection4Item2 =>
+      '- Passwords are never stored in plain text';
 
   @override
-  String get privacyPolicySection4Item3 => '- Access control mechanisms';
+  String get privacyPolicySection4Item3 =>
+      '- Database access is scoped to the account owner via Row Level Security (RLS)';
+
+  @override
+  String get privacyPolicySection4Item4 =>
+      '- Server-side authorization and access control are applied';
+
+  @override
+  String get privacyPolicySection4Body2 =>
+      'No internet-based system can be guaranteed 100% secure; however, we take reasonable technical and organizational measures to protect your data.';
 
   @override
   String get privacyPolicySection5Title => '5. Data Sharing';
 
   @override
-  String get privacyPolicySection5Body => 'We do NOT sell your personal data.';
+  String get privacyPolicySection5Body =>
+      'We do not sell your personal data. Your data is shared only in the following cases and with the following parties:';
 
   @override
   String get privacyPolicySection5Item1 =>
-      '- With service providers (e.g., backend hosting)';
+      '- Supabase: Account, profile, user content — hosting, authentication, file storage';
 
   @override
-  String get privacyPolicySection5Item2 => '- To comply with legal obligations';
+  String get privacyPolicySection5Item2 =>
+      '- Google Gemini: Your search queries, document contents, chat messages — AI features';
 
   @override
   String get privacyPolicySection5Item3 =>
-      '- To protect user safety and rights';
+      '- Google Books API: Book search terms — catalog data (does not contain personal data)';
+
+  @override
+  String get privacyPolicySection5Item4 =>
+      '- Sentry: Device/app technical info, error traces — stability monitoring';
+
+  @override
+  String get privacyPolicySection5Body2 =>
+      'Data may also be shared to comply with legal obligations, court orders, or official requests; to protect user/app safety; or in a merger, acquisition, or asset sale (you will be notified in advance).';
 
   @override
   String get privacyPolicySection6Title => '6. Public Content';
 
   @override
-  String get privacyPolicySection6Item1 => '- Public lists';
-
-  @override
-  String get privacyPolicySection6Item2 => '- Reviews';
-
-  @override
-  String get privacyPolicySection6Item3 => '- Comments';
-
-  @override
   String get privacyPolicySection6Body =>
-      'Content you share publicly may be visible to other users.';
+      'Some content may be visible to other users (and in some cases to visitors who are not signed in), by default or according to your preference:';
 
   @override
-  String get privacyPolicySection7Title => '7. Data Retention';
+  String get privacyPolicySection6Item1 => '- Reading lists you share publicly';
+
+  @override
+  String get privacyPolicySection6Item2 =>
+      '- Your book reviews, ratings, notes, and quotes (shown with your username)';
+
+  @override
+  String get privacyPolicySection6Item3 => '- Likes you give or receive';
+
+  @override
+  String get privacyPolicySection6Body2 =>
+      'Even if you delete public content, it may already have been viewed, copied, or shared by others; we have no control over such secondary sharing.';
+
+  @override
+  String get privacyPolicySection7Title => '7. Data Retention Periods';
 
   @override
   String get privacyPolicySection7Item1 =>
-      '- As long as your account is active';
+      '- Account and content data are retained while your account is active.';
 
   @override
-  String get privacyPolicySection7Item2 => '- Or as needed to provide services';
+  String get privacyPolicySection7Item2 =>
+      '- Document Chat files and session data are automatically deleted when processing/session ends; not stored permanently.';
 
   @override
-  String get privacyPolicySection7Body =>
-      'You may request deletion of your data at any time.';
+  String get privacyPolicySection7Item3 =>
+      '- After an account deletion request is verified, data is deleted within 7 days; some data may be retained up to 30 more days for legal obligations.';
+
+  @override
+  String get privacyPolicySection7Item4 =>
+      '- Crash/error reports are subject to Sentry’s retention policy.';
 
   @override
   String get privacyPolicySection8Title => '8. Your Rights';
 
   @override
-  String get privacyPolicySection8Item1 => '- Access your data';
-
-  @override
-  String get privacyPolicySection8Item2 => '- Update your information';
-
-  @override
-  String get privacyPolicySection8Item3 => '- Request deletion of your account';
-
-  @override
-  String get privacyPolicySection8Item4 => '- Withdraw consent';
-
-  @override
   String get privacyPolicySection8Body =>
-      'To exercise these rights, contact us at:';
+      'Under KVKK and/or GDPR, to the extent applicable, you have the right to:';
 
   @override
-  String get privacyPolicySection8Email => 'Email: [YOUR EMAIL]';
+  String get privacyPolicySection8Item1 =>
+      '- Learn whether your personal data is being processed';
 
   @override
-  String get privacyPolicySection9Title => '9. Children\'s Privacy';
+  String get privacyPolicySection8Item2 =>
+      '- Request information about your processed data';
+
+  @override
+  String get privacyPolicySection8Item3 =>
+      '- Access your data and obtain a copy (in a portable format)';
+
+  @override
+  String get privacyPolicySection8Item4 =>
+      '- Request correction of inaccurate or incomplete data';
+
+  @override
+  String get privacyPolicySection8Item5 =>
+      '- Request deletion or destruction of your data';
+
+  @override
+  String get privacyPolicySection8Item6 =>
+      '- Object to processing or withdraw consent';
+
+  @override
+  String get privacyPolicySection8Item7 =>
+      '- Object to adverse outcomes produced solely by automated systems';
+
+  @override
+  String get privacyPolicySection8Item8 =>
+      '- Seek redress if you suffer damage due to unlawful processing';
+
+  @override
+  String get privacyPolicySection8Body2 =>
+      'To exercise these rights, contact us at support@rubricator.app.';
+
+  @override
+  String get privacyPolicySection9Title => '9. Account and Data Deletion';
 
   @override
   String get privacyPolicySection9Body1 =>
-      'Rubricator is not intended for users under the age of 13.';
+      'To delete your account and associated data:';
+
+  @override
+  String get privacyPolicySection9Item1 => '1. Email support@rubricator.app.';
+
+  @override
+  String get privacyPolicySection9Item2 =>
+      '2. Use the subject line \"Account Deletion Request\".';
+
+  @override
+  String get privacyPolicySection9Item3 =>
+      '3. Include the email address registered with Rubricator in the message body.';
 
   @override
   String get privacyPolicySection9Body2 =>
-      'We do not knowingly collect data from children.';
+      'After your request is verified, your account profile and personal data are deleted within 7 days; limited data required for legal retention may be kept for up to 30 additional days.';
 
   @override
-  String get privacyPolicySection10Title => '10. Third-Party Services';
-
-  @override
-  String get privacyPolicySection10Item1 =>
-      '- Google (authentication, analytics)';
-
-  @override
-  String get privacyPolicySection10Item2 => '- Supabase (data storage)';
+  String get privacyPolicySection10Title => '10. Children’s Privacy';
 
   @override
   String get privacyPolicySection10Body =>
-      'These services have their own privacy policies.';
+      'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.';
 
   @override
-  String get privacyPolicySection11Title => '11. International Data Transfers';
+  String get privacyPolicySection11Title =>
+      '11. Local Storage (Data Stored on Device)';
 
   @override
   String get privacyPolicySection11Body =>
-      'Your information may be processed in different countries where our service providers operate.';
+      'The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.';
 
   @override
-  String get privacyPolicySection12Title =>
-      '12. Changes to This Privacy Policy';
+  String get privacyPolicySection12Title => '12. International Data Transfers';
 
   @override
   String get privacyPolicySection12Body =>
-      'We may update this policy from time to time. Changes will be reflected by updating the \"Last updated\" date.';
+      'Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).';
 
   @override
-  String get privacyPolicySection13Title => '13. Contact Us';
+  String get privacyPolicySection13Title =>
+      '13. Third-Party Services and Links';
 
   @override
   String get privacyPolicySection13Body =>
-      'If you have any questions about this Privacy Policy, contact us:';
+      'The app may contain links to third-party websites or resources. Those third-party sites have their own privacy policies; this policy covers only Rubricator’s own data processing.';
 
   @override
-  String get privacyPolicySection13Email =>
-      'Email: ismailyucelolmez514@gmail.com';
+  String get privacyPolicySection13Item1 =>
+      '- Supabase Privacy Policy: https://supabase.com/privacy';
+
+  @override
+  String get privacyPolicySection13Item2 =>
+      '- Google Privacy Policy: https://policies.google.com/privacy (Gemini API and Google Books API)';
+
+  @override
+  String get privacyPolicySection13Item3 =>
+      '- Sentry Privacy Policy: https://sentry.io/privacy/';
+
+  @override
+  String get privacyPolicySection14Title => '14. Changes to This Policy';
+
+  @override
+  String get privacyPolicySection14Body =>
+      'We may update this Privacy Policy from time to time. For material changes, we may notify you via an in-app notice or email. The current policy is always published with the \"Last updated\" date at the top of this page. We recommend reviewing the policy regularly.';
+
+  @override
+  String get privacyPolicySection15Title => '15. Contact';
+
+  @override
+  String get privacyPolicySection15Body =>
+      'For questions, requests, or complaints about this Privacy Policy or the processing of your personal data:';
+
+  @override
+  String get privacyPolicySection15Contact =>
+      'Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez';
 
   @override
   String get privacyPolicyFooter =>

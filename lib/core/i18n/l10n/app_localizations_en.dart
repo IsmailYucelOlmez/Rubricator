@@ -109,7 +109,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get virgilDailyRecommendationLimit =>
-      'You can request recommendations up to 3 times per day. Try again tomorrow.';
+      'You can request recommendations up to 5 times per day. Try again tomorrow.';
 
   @override
   String get virgilDailyUploadLimit =>
@@ -555,6 +555,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get externalReviewAdded => 'External review added.';
 
   @override
+  String get externalReviewDeleted => 'External review deleted.';
+
+  @override
   String get invalidUrl => 'Invalid URL';
 
   @override
@@ -626,8 +629,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addReview => 'Add review';
 
   @override
+  String get containsSpoilers => 'Contains spoilers';
+
+  @override
+  String get hideSpoilers => 'Hide spoilers';
+
+  @override
+  String get showSpoiler => 'Tap to reveal spoiler';
+
+  @override
+  String get spoilerBadge => 'Spoiler';
+
+  @override
   String get noUserReviewsYet =>
       'Be the first to share your thoughts on this book.';
+
+  @override
+  String get noReviewsAfterSpoilerFilter =>
+      'No reviews to show. Turn off Hide spoilers to see spoiler reviews.';
 
   @override
   String reviewUserRating(int rating) {
@@ -1225,6 +1244,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get uxDeleteReviewMessage =>
       'This review will be permanently deleted.';
+
+  @override
+  String get uxDeleteExternalReviewTitle => 'Delete external review?';
+
+  @override
+  String get uxDeleteExternalReviewMessage =>
+      'This external review will be permanently deleted.';
 
   @override
   String get uxGalleryPluginError =>

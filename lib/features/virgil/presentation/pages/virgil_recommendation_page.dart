@@ -11,6 +11,7 @@ import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/providers/book_resolve_providers.dart';
+import '../../../books/presentation/widgets/vertical_book_card.dart';
 import '../../../semantic_discovery/domain/entities/semantic_book_result.dart';
 import '../../../semantic_discovery/domain/entities/semantic_search_request.dart';
 import '../../../semantic_discovery/presentation/providers/semantic_discovery_providers.dart';
@@ -45,6 +46,7 @@ class _VirgilRecommendationPageState
   final _focusNode = FocusNode();
   String? _activeQuery;
   bool _genrePanelOpen = false;
+  bool _submitting = false;
 
   @override
   void initState() {
@@ -88,35 +90,40 @@ class _VirgilRecommendationPageState
 
   Future<void> _submit() async {
     final query = _controller.text.trim();
-    if (query.length < 3) return;
+    if (query.length < 3 || _submitting) return;
 
+    setState(() => _submitting = true);
     final l10n = AppLocalizations.of(context)!;
-    if (!await ensureVirgilSignedIn(context, ref)) return;
-    if (!mounted) return;
-
     try {
-      await ref.read(virgilUsageServiceProvider).consumeRecommendation();
-    } on VirgilUsageLimitException catch (e) {
+      if (!await ensureVirgilSignedIn(context, ref)) return;
       if (!mounted) return;
-      showVirgilSnackBar(context, virgilUsageLimitMessage(l10n, e));
-      return;
-    } catch (e) {
-      if (!mounted) return;
-      showVirgilSnackBar(context, e.toString());
-      return;
-    }
-    if (!mounted) return;
 
-    final filters = ref.read(semanticSearchFiltersProvider);
-    ref.read(semanticSearchFiltersProvider.notifier).state = filters.copyWith(
-      mode: SemanticSearchMode.advanced,
-      tone: 'All',
-    );
-    _clearFocus();
-    setState(() {
-      _activeQuery = query;
-      _genrePanelOpen = false;
-    });
+      try {
+        await ref.read(virgilUsageServiceProvider).consumeRecommendation();
+      } on VirgilUsageLimitException catch (e) {
+        if (!mounted) return;
+        showVirgilSnackBar(context, virgilUsageLimitMessage(l10n, e));
+        return;
+      } catch (e) {
+        if (!mounted) return;
+        showVirgilSnackBar(context, e.toString());
+        return;
+      }
+      if (!mounted) return;
+
+      final filters = ref.read(semanticSearchFiltersProvider);
+      ref.read(semanticSearchFiltersProvider.notifier).state = filters.copyWith(
+        mode: SemanticSearchMode.advanced,
+        tone: 'All',
+      );
+      _clearFocus();
+      setState(() {
+        _activeQuery = query;
+        _genrePanelOpen = false;
+      });
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   void _prefetchResolve(SemanticBookResult result) {
@@ -158,7 +165,8 @@ class _VirgilRecommendationPageState
     final colors = VirgilColors.of(context);
     final filters = ref.watch(semanticSearchFiltersProvider);
     final activeQuery = _activeQuery;
-    final searchEnabled = _controller.text.trim().length >= 3;
+    final searchEnabled =
+        _controller.text.trim().length >= 3 && !_submitting;
 
     return Scaffold(
       backgroundColor: colors.paper,
@@ -251,6 +259,7 @@ class _VirgilRecommendationPageState
               focusNode: _focusNode,
               hintText: l10n.virgilRecommendationInputHint,
               searchEnabled: searchEnabled,
+              isSubmitting: _submitting,
               genrePanelOpen: _genrePanelOpen,
               onChanged: (_) => setState(() {}),
               onToggleGenre: () =>
@@ -366,17 +375,12 @@ class _ResultsBody extends ConsumerWidget {
           child: results.when(
             loading: () => GridView.builder(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 0,
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 AppSpacing.md,
               ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.lg,
-                childAspectRatio: 0.58,
-              ),
+              gridDelegate: BookGridLayout.delegate,
               itemCount: 6,
               itemBuilder: (_, index) => const _SkeletonCard(),
             ),
@@ -400,17 +404,12 @@ class _ResultsBody extends ConsumerWidget {
               }
               return GridView.builder(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
+                  BookGridLayout.horizontalPadding,
                   0,
-                  AppSpacing.lg,
+                  BookGridLayout.horizontalPadding,
                   AppSpacing.md,
                 ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: AppSpacing.md,
-                  mainAxisSpacing: AppSpacing.lg,
-                  childAspectRatio: 0.58,
-                ),
+                gridDelegate: BookGridLayout.delegate,
                 itemCount: books.length,
                 itemBuilder: (context, index) {
                   final result = books[index];
@@ -718,6 +717,7 @@ class _BottomBar extends StatelessWidget {
     required this.focusNode,
     required this.hintText,
     required this.searchEnabled,
+    required this.isSubmitting,
     required this.genrePanelOpen,
     required this.onChanged,
     required this.onToggleGenre,
@@ -728,6 +728,7 @@ class _BottomBar extends StatelessWidget {
   final FocusNode focusNode;
   final String hintText;
   final bool searchEnabled;
+  final bool isSubmitting;
   final bool genrePanelOpen;
   final ValueChanged<String> onChanged;
   final VoidCallback onToggleGenre;
@@ -831,6 +832,7 @@ class _BottomBar extends StatelessWidget {
             const SizedBox(width: _gap),
             _RedSubmitButton(
               assetPath: _redBtnAsset,
+              isSubmitting: isSubmitting,
               onTap: searchEnabled ? onSubmit : null,
             ),
           ],
@@ -887,27 +889,39 @@ class _RedSubmitButton extends StatelessWidget {
   const _RedSubmitButton({
     required this.assetPath,
     required this.onTap,
+    this.isSubmitting = false,
   });
 
   final String assetPath;
   final VoidCallback? onTap;
+  final bool isSubmitting;
 
   static const _size = 36.0;
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onTap != null;
+    final enabled = onTap != null && !isSubmitting;
     return Opacity(
-      opacity: enabled ? 1 : 0.45,
+      opacity: enabled || isSubmitting ? 1 : 0.45,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: enabled ? onTap : null,
           customBorder: const CircleBorder(),
-          child: SvgPicture.asset(
-            assetPath,
+          child: SizedBox(
             width: _size,
             height: _size,
+            child: isSubmitting
+                ? const AppLoadingIndicator(
+                    size: 20,
+                    strokeWidth: 2,
+                    centered: false,
+                  )
+                : SvgPicture.asset(
+                    assetPath,
+                    width: _size,
+                    height: _size,
+                  ),
           ),
         ),
       ),

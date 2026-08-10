@@ -65,6 +65,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
   final _reviewController = TextEditingController();
   final _externalTitleController = TextEditingController();
   final _externalUrlController = TextEditingController();
+  final _externalDescriptionController = TextEditingController();
   final _quoteController = TextEditingController();
   final _noteTitleController = TextEditingController();
   final _noteContentController = TextEditingController();
@@ -75,6 +76,8 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
   // Rating is stored on a 1-10 scale (half-star steps on a 5-star UI).
   int _selectedRating = 0;
   bool _isEditingRating = false;
+  bool _favoriteBusy = false;
+  bool _preferExternalReviews = false;
 
   @override
   void initState() {
@@ -88,6 +91,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     _reviewController.dispose();
     _externalTitleController.dispose();
     _externalUrlController.dispose();
+    _externalDescriptionController.dispose();
     _quoteController.dispose();
     _noteTitleController.dispose();
     _noteContentController.dispose();
@@ -136,23 +140,32 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
         );
   }
 
-  void _feedbackError(Object e) {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
+  void _feedbackError(Object e, [BuildContext? feedbackContext]) {
+    final ctx = feedbackContext ?? context;
+    if (!(feedbackContext?.mounted ?? mounted)) return;
+    final l10n = AppLocalizations.of(ctx)!;
     final s = e.toString().toLowerCase();
     if (s.contains('sign in required') || s.contains('sign in to')) {
-      _showMessage(l10n.uxMustSignIn);
+      AppFeedback.showSuccessSnackBar(ctx, l10n.uxMustSignIn);
       return;
     }
     if (s.contains('10 characters')) {
-      _showMessage(l10n.uxReviewMinLength);
+      AppFeedback.showSuccessSnackBar(ctx, l10n.uxReviewMinLength);
+      return;
+    }
+    if (s.contains('title is required')) {
+      AppFeedback.showSuccessSnackBar(ctx, l10n.uxTitleRequired);
+      return;
+    }
+    if (s.contains('valid url') || s.contains('invalid url')) {
+      AppFeedback.showSuccessSnackBar(ctx, l10n.invalidUrl);
       return;
     }
     if (e is BookNoteValidationException) {
-      _showMessage(e.message);
+      AppFeedback.showSuccessSnackBar(ctx, e.message);
       return;
     }
-    AppFeedback.showErrorSnackBar(context, e);
+    AppFeedback.showErrorSnackBar(ctx, e);
   }
 
   Future<void> _showAddContentSheet(
@@ -167,107 +180,123 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
       showDragHandle: true,
       builder: (sheetContext) {
         final mq = MediaQuery.of(sheetContext);
+        final keyboard = mq.viewInsets.bottom;
         final preferredHeight = (mq.size.height * 0.58).clamp(420.0, 560.0);
-        final maxSheetHeight = mq.size.height - mq.viewInsets.bottom - 24;
-        final sheetHeight = preferredHeight.clamp(280.0, maxSheetHeight);
+        final maxSheetHeight = (mq.size.height - keyboard - 24).clamp(
+          200.0,
+          mq.size.height,
+        );
+        final sheetHeight = preferredHeight > maxSheetHeight
+            ? maxSheetHeight
+            : preferredHeight;
 
         return Padding(
-          padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: keyboard),
           child: SizedBox(
             height: sheetHeight,
-            child: SafeArea(
-              top: false,
-              child: _AddContentBottomSheet(
-                initialTabIndex: initialTabIndex,
-                reviewController: _reviewController,
-                externalTitleController: _externalTitleController,
-                externalUrlController: _externalUrlController,
-                quoteController: _quoteController,
-                noteTitleController: _noteTitleController,
-                noteContentController: _noteContentController,
-                notePageController: _notePageController,
-                noteChapterController: _noteChapterController,
-                noteTagsController: _noteTagsController,
-                onAddReview: () async {
-                  try {
-                    await ref
-                        .read(reviewListProvider(bookId).notifier)
-                        .add(_reviewController.text);
-                    _reviewController.clear();
-                    if (!sheetContext.mounted) return;
-                    Navigator.pop(sheetContext);
-                    if (!mounted) return;
-                    _showMessage(l10n.reviewAdded);
-                  } catch (e) {
-                    if (!mounted) return;
-                    _feedbackError(e);
-                  }
-                },
-                onAddExternalReview: () async {
-                  try {
-                    await ref
-                        .read(externalReviewProvider(bookId).notifier)
-                        .add(
-                          title: _externalTitleController.text,
-                          url: _externalUrlController.text,
-                        );
-                    _externalTitleController.clear();
-                    _externalUrlController.clear();
-                    if (!sheetContext.mounted) return;
-                    Navigator.pop(sheetContext);
-                    if (!mounted) return;
-                    _showMessage(l10n.externalReviewAdded);
-                  } catch (e) {
-                    if (!mounted) return;
-                    _feedbackError(e);
-                  }
-                },
-                onAddQuote: () async {
-                  try {
-                    await ref
-                        .read(quoteProvider(bookId).notifier)
-                        .add(_quoteController.text);
-                    _quoteController.clear();
-                    if (!sheetContext.mounted) return;
-                    Navigator.pop(sheetContext);
-                    if (!mounted) return;
-                    _showMessage(l10n.quoteAdded);
-                  } catch (e) {
-                    if (!mounted) return;
-                    _feedbackError(e);
-                  }
-                },
-                onAddNote: ({required isPublic}) async {
-                  try {
-                    await ref
-                        .read(publicBookNotesProvider(bookId).notifier)
-                        .addNote(
-                          noteTitle: _noteTitleController.text,
-                          noteContent: _noteContentController.text,
-                          pageNumber: parseBookNotePage(
-                            _notePageController.text,
-                          ),
-                          chapterTitle:
-                              _noteChapterController.text.trim().isEmpty
-                              ? null
-                              : _noteChapterController.text.trim(),
-                          tags: parseBookNoteTags(_noteTagsController.text),
-                          isPublic: isPublic,
-                        );
-                    _noteTitleController.clear();
-                    _noteContentController.clear();
-                    _notePageController.clear();
-                    _noteChapterController.clear();
-                    _noteTagsController.clear();
-                    if (!sheetContext.mounted) return;
-                    Navigator.pop(sheetContext);
-                    if (!mounted) return;
-                    _showMessage(l10n.noteAdded);
-                  } catch (e) {
-                    if (!mounted) return;
-                    _feedbackError(e);
-                  }
-                },
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: SafeArea(
+                top: false,
+                child: _AddContentBottomSheet(
+                  initialTabIndex: initialTabIndex,
+                  reviewController: _reviewController,
+                  externalTitleController: _externalTitleController,
+                  externalUrlController: _externalUrlController,
+                  externalDescriptionController: _externalDescriptionController,
+                  quoteController: _quoteController,
+                  noteTitleController: _noteTitleController,
+                  noteContentController: _noteContentController,
+                  notePageController: _notePageController,
+                  noteChapterController: _noteChapterController,
+                  noteTagsController: _noteTagsController,
+                  onAddReview: (isSpoiler) async {
+                    try {
+                      await ref
+                          .read(reviewListProvider(bookId).notifier)
+                          .add(_reviewController.text, isSpoiler: isSpoiler);
+                      _reviewController.clear();
+                      if (!sheetContext.mounted) return;
+                      Navigator.pop(sheetContext);
+                      if (!mounted) return;
+                      _showMessage(l10n.reviewAdded);
+                    } catch (e) {
+                      if (!sheetContext.mounted) return;
+                      _feedbackError(e, sheetContext);
+                    }
+                  },
+                  onAddExternalReview: () async {
+                    try {
+                      await ref
+                          .read(externalReviewProvider(bookId).notifier)
+                          .add(
+                            title: _externalTitleController.text,
+                            url: _externalUrlController.text,
+                            description: _externalDescriptionController.text,
+                          );
+                      _externalTitleController.clear();
+                      _externalUrlController.clear();
+                      _externalDescriptionController.clear();
+                      if (!sheetContext.mounted) return;
+                      Navigator.pop(sheetContext);
+                      if (!mounted) return;
+                      setState(() {
+                        _preferExternalReviews = true;
+                        _contentTabController.index = 0;
+                      });
+                      _showMessage(l10n.externalReviewAdded);
+                    } catch (e) {
+                      if (!sheetContext.mounted) return;
+                      _feedbackError(e, sheetContext);
+                    }
+                  },
+                  onAddQuote: () async {
+                    try {
+                      await ref
+                          .read(quoteProvider(bookId).notifier)
+                          .add(_quoteController.text);
+                      _quoteController.clear();
+                      if (!sheetContext.mounted) return;
+                      Navigator.pop(sheetContext);
+                      if (!mounted) return;
+                      _showMessage(l10n.quoteAdded);
+                    } catch (e) {
+                      if (!sheetContext.mounted) return;
+                      _feedbackError(e, sheetContext);
+                    }
+                  },
+                  onAddNote: ({required isPublic}) async {
+                    try {
+                      await ref
+                          .read(publicBookNotesProvider(bookId).notifier)
+                          .addNote(
+                            noteTitle: _noteTitleController.text,
+                            noteContent: _noteContentController.text,
+                            pageNumber: parseBookNotePage(
+                              _notePageController.text,
+                            ),
+                            chapterTitle:
+                                _noteChapterController.text.trim().isEmpty
+                                ? null
+                                : _noteChapterController.text.trim(),
+                            tags: parseBookNoteTags(_noteTagsController.text),
+                            isPublic: isPublic,
+                          );
+                      _noteTitleController.clear();
+                      _noteContentController.clear();
+                      _notePageController.clear();
+                      _noteChapterController.clear();
+                      _noteTagsController.clear();
+                      if (!sheetContext.mounted) return;
+                      Navigator.pop(sheetContext);
+                      if (!mounted) return;
+                      _showMessage(l10n.noteAdded);
+                    } catch (e) {
+                      if (!sheetContext.mounted) return;
+                      _feedbackError(e, sheetContext);
+                    }
+                  },
+                ),
               ),
             ),
           ),
@@ -332,9 +361,10 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
             icon: const Icon(Icons.menu_book_outlined),
           ),
           IconButton(
-            onPressed: isPendingId
+            onPressed: isPendingId || _favoriteBusy
                 ? null
                 : () async {
+                    setState(() => _favoriteBusy = true);
                     try {
                       await ref
                           .read(userBookProvider(detailedBook.id).notifier)
@@ -348,9 +378,21 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                     } catch (e) {
                       if (!mounted) return;
                       _feedbackError(e);
+                    } finally {
+                      if (mounted) setState(() => _favoriteBusy = false);
                     }
                   },
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
+            icon: _favoriteBusy
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: AppLoadingIndicator(
+                      size: 18,
+                      strokeWidth: 2,
+                      centered: false,
+                    ),
+                  )
+                : Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
           ),
         ],
       ),
@@ -695,6 +737,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   tabController: _contentTabController,
                   reviews: reviews,
                   externalReviews: externalReviews,
+                  preferExternalReviews: _preferExternalReviews,
                   currentUserId: ref.watch(currentUserIdProvider),
                   currentUserDisplayName: ref.watch(
                     currentUserDisplayNameProvider,
@@ -705,16 +748,23 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                       ref.invalidate(externalReviewProvider(detailedBook.id)),
                   onEditReview: (review) async {
                     _reviewController.text = review.content;
-                    final edited = await showDialog<String>(
+                    final edited =
+                        await showDialog<({String content, bool isSpoiler})>(
                       context: context,
-                      builder: (dialogContext) =>
-                          _EditReviewDialog(initialValue: review.content),
+                      builder: (dialogContext) => _EditReviewDialog(
+                        initialValue: review.content,
+                        initialIsSpoiler: review.isSpoiler,
+                      ),
                     );
                     if (edited == null) return;
                     try {
                       await ref
                           .read(reviewListProvider(detailedBook.id).notifier)
-                          .editReview(review, edited);
+                          .editReview(
+                            review,
+                            edited.content,
+                            isSpoiler: edited.isSpoiler,
+                          );
                       _showMessage(l10n.reviewUpdated);
                     } catch (e) {
                       if (!mounted) return;
@@ -762,6 +812,37 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                     );
                     if (!ok && mounted) {
                       _showMessage(l10n.couldNotOpenBrowser);
+                    }
+                  },
+                  onDeleteExternalReview: (review) async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(l10n.uxDeleteExternalReviewTitle),
+                        content: Text(l10n.uxDeleteExternalReviewMessage),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(l10n.cancel),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(l10n.delete),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirm != true || !mounted) return;
+                    try {
+                      await ref
+                          .read(
+                            externalReviewProvider(detailedBook.id).notifier,
+                          )
+                          .remove(review);
+                      _showMessage(l10n.externalReviewDeleted);
+                    } catch (e) {
+                      if (!mounted) return;
+                      _feedbackError(e);
                     }
                   },
                   quotes: quotes,
@@ -986,11 +1067,18 @@ class _ReadingStatusCardState extends State<_ReadingStatusCard> {
   }
 }
 
-class _StatusBottomSheet extends StatelessWidget {
+class _StatusBottomSheet extends StatefulWidget {
   const _StatusBottomSheet({required this.current, required this.onSelect});
 
   final ReadingStatus? current;
   final Future<void> Function(ReadingStatus status) onSelect;
+
+  @override
+  State<_StatusBottomSheet> createState() => _StatusBottomSheetState();
+}
+
+class _StatusBottomSheetState extends State<_StatusBottomSheet> {
+  bool _selecting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1004,21 +1092,36 @@ class _StatusBottomSheet extends StatelessWidget {
     return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: options
-            .map(
-              (status) => ListTile(
-                leading: Icon(
-                  current == status
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
-                ),
-                title: Text(
-                  _statusLabel(status, AppLocalizations.of(context)!),
-                ),
-                onTap: () => onSelect(status),
+        children: [
+          if (_selecting)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+              child: AppLoadingIndicator(size: 24, strokeWidth: 2),
+            ),
+          ...options.map(
+            (status) => ListTile(
+              enabled: !_selecting,
+              leading: Icon(
+                widget.current == status
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
               ),
-            )
-            .toList(),
+              title: Text(
+                _statusLabel(status, AppLocalizations.of(context)!),
+              ),
+              onTap: _selecting
+                  ? null
+                  : () async {
+                      setState(() => _selecting = true);
+                      try {
+                        await widget.onSelect(status);
+                      } finally {
+                        if (mounted) setState(() => _selecting = false);
+                      }
+                    },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1066,6 +1169,12 @@ class _RatingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSubmitting = state.maybeWhen(
+      data: (data) => data.submitting,
+      orElse: () => false,
+    );
+    final canChangeStars = canEdit && !isSubmitting;
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -1112,7 +1221,7 @@ class _RatingSection extends StatelessWidget {
                         children: List<Widget>.generate(
                           5,
                           (index) => GestureDetector(
-                            onTapDown: canEdit
+                            onTapDown: canChangeStars
                                 ? (details) {
                                     final dx = details.localPosition.dx;
                                     final isLeftHalf = dx < 14;
@@ -1155,9 +1264,17 @@ class _RatingSection extends StatelessWidget {
                         ? AppLocalizations.of(context)!.submitRating
                         : AppLocalizations.of(context)!.editReview,
                     onPressed: isEditing
-                        ? (selectedRating == 0 ? null : onSubmit)
-                        : onTapEdit,
-                    icon: Icon(isEditing ? Icons.check : Icons.edit_outlined),
+                        ? (selectedRating == 0 || isSubmitting
+                              ? null
+                              : onSubmit)
+                        : (isSubmitting ? null : onTapEdit),
+                    icon: isSubmitting && isEditing
+                        ? const AppLoadingIndicator(
+                            size: 18,
+                            strokeWidth: 2,
+                            centered: false,
+                          )
+                        : Icon(isEditing ? Icons.check : Icons.edit_outlined),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -1168,7 +1285,7 @@ class _RatingSection extends StatelessWidget {
                   if (isEditing)
                     IconButton(
                       tooltip: AppLocalizations.of(context)!.cancel,
-                      onPressed: onCancelEdit,
+                      onPressed: isSubmitting ? null : onCancelEdit,
                       icon: const Icon(Icons.close),
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
@@ -1185,8 +1302,16 @@ class _RatingSection extends StatelessWidget {
                         vertical: 8,
                       ),
                     ),
-                    onPressed: selectedRating == 0 ? null : onSubmit,
-                    child: Text(AppLocalizations.of(context)!.submitRating),
+                    onPressed: selectedRating == 0 || isSubmitting
+                        ? null
+                        : onSubmit,
+                    child: isSubmitting
+                        ? const AppLoadingIndicator(
+                            size: 18,
+                            strokeWidth: 2,
+                            centered: false,
+                          )
+                        : Text(AppLocalizations.of(context)!.submitRating),
                   ),
               ],
             ),
@@ -1210,6 +1335,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
     required this.tabController,
     required this.reviews,
     required this.externalReviews,
+    required this.preferExternalReviews,
     required this.currentUserId,
     required this.currentUserDisplayName,
     required this.onRetryReviews,
@@ -1217,6 +1343,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
     required this.onEditReview,
     required this.onDeleteReview,
     required this.onOpenExternalReview,
+    required this.onDeleteExternalReview,
     required this.quotes,
     required this.onRetryQuotes,
     required this.onLikeQuote,
@@ -1227,6 +1354,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
   final TabController tabController;
   final AsyncValue<List<ReviewEntity>> reviews;
   final AsyncValue<List<ExternalReviewEntity>> externalReviews;
+  final bool preferExternalReviews;
   final String? currentUserId;
   final String currentUserDisplayName;
   final VoidCallback onRetryReviews;
@@ -1234,6 +1362,8 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
   final Future<void> Function(ReviewEntity review) onEditReview;
   final Future<void> Function(ReviewEntity review) onDeleteReview;
   final Future<void> Function(String url) onOpenExternalReview;
+  final Future<void> Function(ExternalReviewEntity review)
+  onDeleteExternalReview;
   final AsyncValue<List<QuoteEntity>> quotes;
   final VoidCallback onRetryQuotes;
   final Future<void> Function(String quoteId) onLikeQuote;
@@ -1264,6 +1394,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
               _ReviewSection(
                 reviews: reviews,
                 externalReviews: externalReviews,
+                preferExternalReviews: preferExternalReviews,
                 currentUserId: currentUserId,
                 currentUserDisplayName: currentUserDisplayName,
                 onRetryReviews: onRetryReviews,
@@ -1271,6 +1402,7 @@ class _ReviewsAndQuotesSection extends StatelessWidget {
                 onEditReview: onEditReview,
                 onDeleteReview: onDeleteReview,
                 onOpenExternalReview: onOpenExternalReview,
+                onDeleteExternalReview: onDeleteExternalReview,
                 onLikeReview: onLikeReview,
               ),
               BookNotesTab(bookId: bookId),
@@ -1293,6 +1425,7 @@ class _ReviewSection extends StatefulWidget {
   const _ReviewSection({
     required this.reviews,
     required this.externalReviews,
+    required this.preferExternalReviews,
     required this.currentUserId,
     required this.currentUserDisplayName,
     required this.onRetryReviews,
@@ -1300,11 +1433,13 @@ class _ReviewSection extends StatefulWidget {
     required this.onEditReview,
     required this.onDeleteReview,
     required this.onOpenExternalReview,
+    required this.onDeleteExternalReview,
     required this.onLikeReview,
   });
 
   final AsyncValue<List<ReviewEntity>> reviews;
   final AsyncValue<List<ExternalReviewEntity>> externalReviews;
+  final bool preferExternalReviews;
   final String? currentUserId;
   final String currentUserDisplayName;
   final VoidCallback onRetryReviews;
@@ -1312,6 +1447,8 @@ class _ReviewSection extends StatefulWidget {
   final Future<void> Function(ReviewEntity review) onEditReview;
   final Future<void> Function(ReviewEntity review) onDeleteReview;
   final Future<void> Function(String url) onOpenExternalReview;
+  final Future<void> Function(ExternalReviewEntity review)
+  onDeleteExternalReview;
   final Future<void> Function(String reviewId) onLikeReview;
 
   @override
@@ -1319,7 +1456,16 @@ class _ReviewSection extends StatefulWidget {
 }
 
 class _ReviewSectionState extends State<_ReviewSection> {
-  var _showExternal = false;
+  late var _showExternal = widget.preferExternalReviews;
+  var _hideSpoilers = false;
+
+  @override
+  void didUpdateWidget(covariant _ReviewSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.preferExternalReviews && !oldWidget.preferExternalReviews) {
+      _showExternal = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1377,6 +1523,21 @@ class _ReviewSectionState extends State<_ReviewSection> {
             ],
           ),
         ),
+        if (!_showExternal)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.sm,
+              0,
+              AppSpacing.sm,
+              AppSpacing.xs,
+            ),
+            child: _CompactCheckbox(
+              label: l10n.hideSpoilers,
+              value: _hideSpoilers,
+              labelStyle: Theme.of(context).textTheme.labelMedium,
+              onChanged: (value) => setState(() => _hideSpoilers = value),
+            ),
+          ),
         Expanded(
           child: _showExternal
               ? widget.externalReviews.when(
@@ -1399,10 +1560,20 @@ class _ReviewSectionState extends State<_ReviewSection> {
                               const SizedBox(height: AppSpacing.sm),
                           itemBuilder: (context, index) {
                             final item = list[index];
+                            final own = item.userId == widget.currentUserId;
                             return _ExternalReviewCard(
                               review: item,
+                              userName: _externalReviewDisplayName(
+                                item,
+                                own: own,
+                                currentUserDisplayName:
+                                    widget.currentUserDisplayName,
+                              ),
+                              own: own,
                               onOpen: () =>
                                   widget.onOpenExternalReview(item.url),
+                              onDelete: () =>
+                                  widget.onDeleteExternalReview(item),
                             );
                           },
                         ),
@@ -1414,41 +1585,56 @@ class _ReviewSectionState extends State<_ReviewSection> {
                   ),
                 )
               : widget.reviews.when(
-                  data: (list) => list.isEmpty
-                      ? Center(
-                          child: Text(
-                            l10n.noUserReviewsYet,
-                            style: _bookDetailBodyStyle(context),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.sm,
-                            0,
-                            AppSpacing.sm,
-                            AppSpacing.md,
-                          ),
-                          itemCount: list.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: AppSpacing.sm),
-                          itemBuilder: (context, index) {
-                            final item = list[index];
-                            final own = item.userId == widget.currentUserId;
-                            return _ReviewCard(
-                              review: item,
-                              userName: _reviewDisplayName(
-                                item,
-                                own: own,
-                                currentUserDisplayName:
-                                    widget.currentUserDisplayName,
-                              ),
-                              own: own,
-                              onLike: () => widget.onLikeReview(item.id),
-                              onEdit: () => widget.onEditReview(item),
-                              onDelete: () => widget.onDeleteReview(item),
-                            );
-                          },
+                  data: (list) {
+                    final filtered = _hideSpoilers
+                        ? list.where((r) => !r.isSpoiler).toList()
+                        : list;
+                    if (list.isEmpty) {
+                      return Center(
+                        child: Text(
+                          l10n.noUserReviewsYet,
+                          style: _bookDetailBodyStyle(context),
                         ),
+                      );
+                    }
+                    if (filtered.isEmpty) {
+                      return Center(
+                        child: Text(
+                          l10n.noReviewsAfterSpoilerFilter,
+                          textAlign: TextAlign.center,
+                          style: _bookDetailBodyStyle(context),
+                        ),
+                      );
+                    }
+                    return ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.sm,
+                        0,
+                        AppSpacing.sm,
+                        AppSpacing.md,
+                      ),
+                      itemCount: filtered.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: AppSpacing.sm),
+                      itemBuilder: (context, index) {
+                        final item = filtered[index];
+                        final own = item.userId == widget.currentUserId;
+                        return _ReviewCard(
+                          review: item,
+                          userName: _reviewDisplayName(
+                            item,
+                            own: own,
+                            currentUserDisplayName:
+                                widget.currentUserDisplayName,
+                          ),
+                          own: own,
+                          onLike: () => widget.onLikeReview(item.id),
+                          onEdit: () => widget.onEditReview(item),
+                          onDelete: () => widget.onDeleteReview(item),
+                        );
+                      },
+                    );
+                  },
                   loading: () => const AppLoadingIndicator(),
                   error: (error, stackTrace) => AsyncErrorView(
                     error: error,
@@ -1518,7 +1704,7 @@ class _QuoteSection extends StatelessWidget {
   }
 }
 
-class _ReviewCard extends StatelessWidget {
+class _ReviewCard extends StatefulWidget {
   const _ReviewCard({
     required this.review,
     required this.userName,
@@ -1531,15 +1717,44 @@ class _ReviewCard extends StatelessWidget {
   final ReviewEntity review;
   final String userName;
   final bool own;
-  final VoidCallback onLike;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final Future<void> Function() onLike;
+  final Future<void> Function() onEdit;
+  final Future<void> Function() onDelete;
+
+  @override
+  State<_ReviewCard> createState() => _ReviewCardState();
+}
+
+class _ReviewCardState extends State<_ReviewCard> {
+  bool _actionBusy = false;
+  bool _spoilerRevealed = false;
+
+  @override
+  void didUpdateWidget(covariant _ReviewCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.review.id != widget.review.id ||
+        oldWidget.review.isSpoiler != widget.review.isSpoiler) {
+      _spoilerRevealed = false;
+    }
+  }
+
+  Future<void> _run(Future<void> Function() action) async {
+    if (_actionBusy) return;
+    setState(() => _actionBusy = true);
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final review = widget.review;
+    final hideContent = review.isSpoiler && !widget.own && !_spoilerRevealed;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -1563,12 +1778,32 @@ class _ReviewCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    userName,
+                    widget.userName,
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
+                if (review.isSpoiler) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cs.errorContainer,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      l10n.spoilerBadge,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: cs.onErrorContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                ],
                 if (review.userRating != null)
                   _ReadOnlyStarRating(rating: review.userRating!),
                 if (review.isFavorite) ...[
@@ -1578,11 +1813,36 @@ class _ReviewCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text(
-              review.content,
-              textAlign: TextAlign.start,
-              style: _bookDetailBodyStyle(context).copyWith(height: 1.42),
-            ),
+            if (hideContent)
+              InkWell(
+                onTap: () => setState(() => _spoilerRevealed = true),
+                borderRadius: BorderRadius.circular(4),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.md,
+                    horizontal: AppSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    l10n.showSpoiler,
+                    textAlign: TextAlign.center,
+                    style: _bookDetailBodyStyle(context).copyWith(
+                      color: cs.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Text(
+                review.content,
+                textAlign: TextAlign.start,
+                style: _bookDetailBodyStyle(context).copyWith(height: 1.42),
+              ),
             const SizedBox(height: AppSpacing.xs),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1590,12 +1850,14 @@ class _ReviewCard extends StatelessWidget {
                 _ContentLikeButton(
                   liked: review.likedByCurrentUser,
                   likes: review.likes,
-                  onPressed: onLike,
+                  onPressed: widget.onLike,
                 ),
-                if (own) ...[
+                if (widget.own) ...[
                   IconButton(
                     tooltip: l10n.editReview,
-                    onPressed: onEdit,
+                    onPressed: _actionBusy
+                        ? null
+                        : () => _run(widget.onEdit),
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
@@ -1606,8 +1868,16 @@ class _ReviewCard extends StatelessWidget {
                   ),
                   IconButton(
                     tooltip: l10n.delete,
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline, size: 18),
+                    onPressed: _actionBusy
+                        ? null
+                        : () => _run(widget.onDelete),
+                    icon: _actionBusy
+                        ? const AppLoadingIndicator(
+                            size: 16,
+                            strokeWidth: 2,
+                            centered: false,
+                          )
+                        : const Icon(Icons.delete_outline, size: 18),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -1632,24 +1902,152 @@ class _ReviewCard extends StatelessWidget {
   }
 }
 
-class _ExternalReviewCard extends StatelessWidget {
-  const _ExternalReviewCard({required this.review, required this.onOpen});
+class _ExternalReviewCard extends StatefulWidget {
+  const _ExternalReviewCard({
+    required this.review,
+    required this.userName,
+    required this.own,
+    required this.onOpen,
+    required this.onDelete,
+  });
 
   final ExternalReviewEntity review;
-  final VoidCallback onOpen;
+  final String userName;
+  final bool own;
+  final Future<void> Function() onOpen;
+  final Future<void> Function() onDelete;
+
+  @override
+  State<_ExternalReviewCard> createState() => _ExternalReviewCardState();
+}
+
+class _ExternalReviewCardState extends State<_ExternalReviewCard> {
+  bool _actionBusy = false;
+
+  Future<void> _run(Future<void> Function() action) async {
+    if (_actionBusy) return;
+    setState(() => _actionBusy = true);
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _actionBusy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return _ContentCard(
-      icon: Icons.open_in_new,
-      accentColor: Theme.of(context).colorScheme.secondary,
-      body: review.title,
-      meta: [_compactDate(review.createdAt), review.url],
-      footer: Align(
-        alignment: Alignment.centerRight,
-        child: IconButton(
-          onPressed: onOpen,
-          icon: const Icon(Icons.open_in_new),
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final review = widget.review;
+    final host = _externalReviewHost(review.url);
+    final description = review.description.trim();
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _run(widget.onOpen),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest.withValues(alpha: 0.7),
+            border: Border(
+              bottom: BorderSide(color: cs.outline.withValues(alpha: 0.28)),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.userName,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize:
+                                  (theme.textTheme.labelSmall?.fontSize ?? 11) -
+                                  1,
+                              fontWeight: FontWeight.w600,
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            review.title,
+                            textAlign: TextAlign.start,
+                            style: _bookDetailBodyStyle(context).copyWith(
+                              height: 1.25,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (widget.own)
+                      IconButton(
+                        tooltip: l10n.delete,
+                        onPressed: _actionBusy
+                            ? null
+                            : () => _run(widget.onDelete),
+                        icon: _actionBusy
+                            ? const AppLoadingIndicator(
+                                size: 16,
+                                strokeWidth: 2,
+                                centered: false,
+                              )
+                            : const Icon(Icons.delete_outline, size: 18),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                      ),
+                  ],
+                ),
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    description,
+                    textAlign: TextAlign.start,
+                    style: _bookDetailBodyStyle(context).copyWith(height: 1.42),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        host,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Icon(
+                      Icons.open_in_new,
+                      size: 14,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -1665,7 +2063,7 @@ class _QuoteCard extends StatelessWidget {
 
   final QuoteEntity quote;
   final String userName;
-  final VoidCallback onLike;
+  final Future<void> Function() onLike;
 
   @override
   Widget build(BuildContext context) {
@@ -1732,114 +2130,7 @@ class _QuoteCard extends StatelessWidget {
   }
 }
 
-class _ContentCard extends StatelessWidget {
-  const _ContentCard({
-    required this.icon,
-    required this.accentColor,
-    required this.body,
-    required this.meta,
-    required this.footer,
-    this.bodyStyle,
-  });
-
-  final IconData icon;
-  final Color accentColor;
-  final String body;
-  final List<String> meta;
-  final Widget footer;
-  final TextStyle? bodyStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: cs.outline.withValues(alpha: 0.28)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                  ),
-                  child: Icon(icon, color: accentColor, size: 20),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    body,
-                    style:
-                        bodyStyle ??
-                        _bookDetailBodyStyle(context).copyWith(height: 1.42),
-                  ),
-                ),
-              ],
-            ),
-            if (meta.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.md),
-              Wrap(
-                spacing: AppSpacing.xs,
-                runSpacing: AppSpacing.xs,
-                children: [
-                  for (final item in meta)
-                    _MetaPill(
-                      text: item,
-                      color: item == meta.first ? accentColor : cs.onSurface,
-                    ),
-                ],
-              ),
-            ],
-            const SizedBox(height: AppSpacing.sm),
-            footer,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MetaPill extends StatelessWidget {
-  const _MetaPill({required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
-      ),
-      child: Text(
-        text,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-}
-
-class _ContentLikeButton extends StatelessWidget {
+class _ContentLikeButton extends StatefulWidget {
   const _ContentLikeButton({
     required this.liked,
     required this.likes,
@@ -1848,35 +2139,69 @@ class _ContentLikeButton extends StatelessWidget {
 
   final bool liked;
   final int likes;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
+
+  @override
+  State<_ContentLikeButton> createState() => _ContentLikeButtonState();
+}
+
+class _ContentLikeButtonState extends State<_ContentLikeButton> {
+  bool _busy = false;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return TextButton.icon(
-      onPressed: onPressed,
+      onPressed: _busy
+          ? null
+          : () async {
+              setState(() => _busy = true);
+              try {
+                await widget.onPressed();
+              } finally {
+                if (mounted) setState(() => _busy = false);
+              }
+            },
       style: TextButton.styleFrom(
-        foregroundColor: liked ? cs.primary : null,
+        foregroundColor: widget.liked ? cs.primary : null,
         visualDensity: VisualDensity.compact,
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      icon: Icon(
-        liked ? Icons.thumb_up : Icons.thumb_up_outlined,
-        size: 18,
-      ),
-      label: Text(likes.toString()),
+      icon: _busy
+          ? const AppLoadingIndicator(
+              size: 16,
+              strokeWidth: 2,
+              centered: false,
+            )
+          : Icon(
+              widget.liked ? Icons.thumb_up : Icons.thumb_up_outlined,
+              size: 18,
+            ),
+      label: Text(widget.likes.toString()),
     );
   }
 }
 
-String _compactDate(DateTime value) {
-  final local = value.toLocal();
-  final day = local.day.toString().padLeft(2, '0');
-  final month = local.month.toString().padLeft(2, '0');
-  final year = local.year.toString();
-  return '$day.$month.$year';
+String _externalReviewHost(String url) {
+  final uri = Uri.tryParse(url);
+  final host = uri?.host.trim();
+  if (host != null && host.isNotEmpty) {
+    return host.startsWith('www.') ? host.substring(4) : host;
+  }
+  return url;
+}
+
+String _externalReviewDisplayName(
+  ExternalReviewEntity review, {
+  required bool own,
+  required String currentUserDisplayName,
+}) {
+  final stored = review.userName?.trim();
+  if (stored != null && stored.isNotEmpty) return stored;
+  if (own) return currentUserDisplayName;
+  return 'user';
 }
 
 String _quoteDisplayName(
@@ -1931,6 +2256,7 @@ class _AddContentBottomSheet extends StatefulWidget {
     required this.reviewController,
     required this.externalTitleController,
     required this.externalUrlController,
+    required this.externalDescriptionController,
     required this.quoteController,
     required this.noteTitleController,
     required this.noteContentController,
@@ -1947,13 +2273,14 @@ class _AddContentBottomSheet extends StatefulWidget {
   final TextEditingController reviewController;
   final TextEditingController externalTitleController;
   final TextEditingController externalUrlController;
+  final TextEditingController externalDescriptionController;
   final TextEditingController quoteController;
   final TextEditingController noteTitleController;
   final TextEditingController noteContentController;
   final TextEditingController notePageController;
   final TextEditingController noteChapterController;
   final TextEditingController noteTagsController;
-  final Future<void> Function() onAddReview;
+  final Future<void> Function(bool isSpoiler) onAddReview;
   final Future<void> Function() onAddExternalReview;
   final Future<void> Function() onAddQuote;
   final Future<void> Function({required bool isPublic}) onAddNote;
@@ -1965,72 +2292,88 @@ class _AddContentBottomSheet extends StatefulWidget {
 class _AddContentBottomSheetState extends State<_AddContentBottomSheet> {
   var _showExternalReview = false;
   var _isPublicNote = false;
+  var _isSpoilerReview = false;
+  var _submitting = false;
+
+  Future<void> _runSubmit(Future<void> Function() action) async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final cs = Theme.of(context).colorScheme;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const tabBarHeight = 48.0;
-        final panelHeight = (constraints.maxHeight - tabBarHeight).clamp(
-          180.0,
-          560.0,
-        );
-
-        return DefaultTabController(
-          length: 3,
-          initialIndex: widget.initialTabIndex.clamp(0, 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TabBar(
-                tabAlignment: TabAlignment.fill,
-                tabs: [
-                  Tab(text: l10n.reviews),
-                  Tab(text: l10n.notes),
-                  Tab(text: l10n.quotes),
-                ],
-              ),
-              SizedBox(
-                height: panelHeight,
-                child: TabBarView(
-                  children: [
-                    _AddReviewTab(
-                      showExternalReview: _showExternalReview,
-                      onExternalReviewChanged: (value) =>
-                          setState(() => _showExternalReview = value),
-                      reviewController: widget.reviewController,
-                      externalTitleController: widget.externalTitleController,
-                      externalUrlController: widget.externalUrlController,
-                      onAddReview: widget.onAddReview,
-                      onAddExternalReview: widget.onAddExternalReview,
-                      colorScheme: cs,
-                    ),
-                    _AddNoteTab(
-                      noteTitleController: widget.noteTitleController,
-                      noteContentController: widget.noteContentController,
-                      notePageController: widget.notePageController,
-                      noteChapterController: widget.noteChapterController,
-                      noteTagsController: widget.noteTagsController,
-                      isPublic: _isPublicNote,
-                      onPublicChanged: (value) =>
-                          setState(() => _isPublicNote = value),
-                      onAddNote: () =>
-                          widget.onAddNote(isPublic: _isPublicNote),
-                    ),
-                    _AddQuoteTab(
-                      quoteController: widget.quoteController,
-                      onAddQuote: widget.onAddQuote,
-                    ),
-                  ],
-                ),
-              ),
+    return DefaultTabController(
+      length: 3,
+      initialIndex: widget.initialTabIndex.clamp(0, 2),
+      child: Column(
+        children: [
+          TabBar(
+            tabAlignment: TabAlignment.fill,
+            tabs: [
+              Tab(text: l10n.reviews),
+              Tab(text: l10n.notes),
+              Tab(text: l10n.quotes),
             ],
           ),
-        );
-      },
+          Expanded(
+            child: TabBarView(
+              children: [
+                _AddReviewTab(
+                  showExternalReview: _showExternalReview,
+                  onExternalReviewChanged: _submitting
+                      ? null
+                      : (value) =>
+                          setState(() => _showExternalReview = value),
+                  reviewController: widget.reviewController,
+                  externalTitleController: widget.externalTitleController,
+                  externalUrlController: widget.externalUrlController,
+                  externalDescriptionController:
+                      widget.externalDescriptionController,
+                  isSpoiler: _isSpoilerReview,
+                  onSpoilerChanged: _submitting
+                      ? null
+                      : (value) => setState(() => _isSpoilerReview = value),
+                  submitting: _submitting,
+                  onAddReview: () => _runSubmit(
+                    () => widget.onAddReview(_isSpoilerReview),
+                  ),
+                  onAddExternalReview: () =>
+                      _runSubmit(widget.onAddExternalReview),
+                  colorScheme: cs,
+                ),
+                _AddNoteTab(
+                  noteTitleController: widget.noteTitleController,
+                  noteContentController: widget.noteContentController,
+                  notePageController: widget.notePageController,
+                  noteChapterController: widget.noteChapterController,
+                  noteTagsController: widget.noteTagsController,
+                  isPublic: _isPublicNote,
+                  onPublicChanged: _submitting
+                      ? null
+                      : (value) => setState(() => _isPublicNote = value),
+                  submitting: _submitting,
+                  onAddNote: () => _runSubmit(
+                    () => widget.onAddNote(isPublic: _isPublicNote),
+                  ),
+                ),
+                _AddQuoteTab(
+                  quoteController: widget.quoteController,
+                  submitting: _submitting,
+                  onAddQuote: () => _runSubmit(widget.onAddQuote),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -2042,18 +2385,26 @@ class _AddReviewTab extends StatelessWidget {
     required this.reviewController,
     required this.externalTitleController,
     required this.externalUrlController,
+    required this.externalDescriptionController,
+    required this.isSpoiler,
+    required this.onSpoilerChanged,
+    required this.submitting,
     required this.onAddReview,
     required this.onAddExternalReview,
     required this.colorScheme,
   });
 
   final bool showExternalReview;
-  final ValueChanged<bool> onExternalReviewChanged;
+  final ValueChanged<bool>? onExternalReviewChanged;
   final TextEditingController reviewController;
   final TextEditingController externalTitleController;
   final TextEditingController externalUrlController;
-  final Future<void> Function() onAddReview;
-  final Future<void> Function() onAddExternalReview;
+  final TextEditingController externalDescriptionController;
+  final bool isSpoiler;
+  final ValueChanged<bool>? onSpoilerChanged;
+  final bool submitting;
+  final VoidCallback onAddReview;
+  final VoidCallback onAddExternalReview;
   final ColorScheme colorScheme;
 
   @override
@@ -2070,7 +2421,9 @@ class _AddReviewTab extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => onExternalReviewChanged(false),
+                  onTap: onExternalReviewChanged == null
+                      ? null
+                      : () => onExternalReviewChanged!(false),
                   child: Text(
                     l10n.userReviews,
                     textAlign: TextAlign.end,
@@ -2095,7 +2448,9 @@ class _AddReviewTab extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => onExternalReviewChanged(true),
+                  onTap: onExternalReviewChanged == null
+                      ? null
+                      : () => onExternalReviewChanged!(true),
                   child: Text(
                     l10n.externalReviews,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -2120,6 +2475,7 @@ class _AddReviewTab extends StatelessWidget {
                       children: [
                         TextField(
                           controller: externalTitleController,
+                          enabled: !submitting,
                           style: _bookDetailInputStyle(context),
                           decoration: InputDecoration(
                             hintText: l10n.reviewTitle,
@@ -2127,7 +2483,19 @@ class _AddReviewTab extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         TextField(
+                          controller: externalDescriptionController,
+                          enabled: !submitting,
+                          minLines: 2,
+                          maxLines: 4,
+                          style: _bookDetailInputStyle(context),
+                          decoration: InputDecoration(
+                            hintText: l10n.description,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        TextField(
                           controller: externalUrlController,
+                          enabled: !submitting,
                           style: _bookDetailInputStyle(context),
                           decoration: InputDecoration(
                             hintText: l10n.reviewUrlHint,
@@ -2135,23 +2503,45 @@ class _AddReviewTab extends StatelessWidget {
                         ),
                       ],
                     )
-                  : TextField(
-                      controller: reviewController,
-                      minLines: 2,
-                      maxLines: 6,
-                      style: _bookDetailInputStyle(context),
-                      decoration: InputDecoration(
-                        hintText: l10n.writeReviewHint,
-                      ),
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextField(
+                          controller: reviewController,
+                          enabled: !submitting,
+                          minLines: 2,
+                          maxLines: 6,
+                          style: _bookDetailInputStyle(context),
+                          decoration: InputDecoration(
+                            hintText: l10n.writeReviewHint,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        _CompactCheckbox(
+                          label: l10n.containsSpoilers,
+                          value: isSpoiler,
+                          onChanged: onSpoilerChanged,
+                        ),
+                      ],
                     ),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
           FilledButton(
-            onPressed: showExternalReview ? onAddExternalReview : onAddReview,
-            child: Text(
-              showExternalReview ? l10n.addExternalReview : l10n.addReview,
-            ),
+            onPressed: submitting
+                ? null
+                : (showExternalReview ? onAddExternalReview : onAddReview),
+            child: submitting
+                ? const AppLoadingIndicator(
+                    size: 18,
+                    strokeWidth: 2,
+                    centered: false,
+                  )
+                : Text(
+                    showExternalReview
+                        ? l10n.addExternalReview
+                        : l10n.addReview,
+                  ),
           ),
         ],
       ),
@@ -2168,6 +2558,7 @@ class _AddNoteTab extends StatelessWidget {
     required this.noteTagsController,
     required this.isPublic,
     required this.onPublicChanged,
+    required this.submitting,
     required this.onAddNote,
   });
 
@@ -2177,7 +2568,8 @@ class _AddNoteTab extends StatelessWidget {
   final TextEditingController noteChapterController;
   final TextEditingController noteTagsController;
   final bool isPublic;
-  final ValueChanged<bool> onPublicChanged;
+  final ValueChanged<bool>? onPublicChanged;
+  final bool submitting;
   final VoidCallback onAddNote;
 
   @override
@@ -2192,20 +2584,32 @@ class _AddNoteTab extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: BookNoteFormFields(
-                titleController: noteTitleController,
-                contentController: noteContentController,
-                pageController: notePageController,
-                chapterController: noteChapterController,
-                tagsController: noteTagsController,
-                isPublic: isPublic,
-                onPublicChanged: onPublicChanged,
-                inputStyle: _bookDetailInputStyle(context),
-                contentMaxLines: 4,
+              child: AbsorbPointer(
+                absorbing: submitting,
+                child: BookNoteFormFields(
+                  titleController: noteTitleController,
+                  contentController: noteContentController,
+                  pageController: notePageController,
+                  chapterController: noteChapterController,
+                  tagsController: noteTagsController,
+                  isPublic: isPublic,
+                  onPublicChanged: onPublicChanged ?? (_) {},
+                  inputStyle: _bookDetailInputStyle(context),
+                  contentMaxLines: 4,
+                ),
               ),
             ),
           ),
-          FilledButton(onPressed: onAddNote, child: Text(l10n.addNote)),
+          FilledButton(
+            onPressed: submitting ? null : onAddNote,
+            child: submitting
+                ? const AppLoadingIndicator(
+                    size: 18,
+                    strokeWidth: 2,
+                    centered: false,
+                  )
+                : Text(l10n.addNote),
+          ),
         ],
       ),
     );
@@ -2213,10 +2617,15 @@ class _AddNoteTab extends StatelessWidget {
 }
 
 class _AddQuoteTab extends StatelessWidget {
-  const _AddQuoteTab({required this.quoteController, required this.onAddQuote});
+  const _AddQuoteTab({
+    required this.quoteController,
+    required this.submitting,
+    required this.onAddQuote,
+  });
 
   final TextEditingController quoteController;
-  final Future<void> Function() onAddQuote;
+  final bool submitting;
+  final VoidCallback onAddQuote;
 
   @override
   Widget build(BuildContext context) {
@@ -2231,6 +2640,7 @@ class _AddQuoteTab extends StatelessWidget {
             child: SingleChildScrollView(
               child: TextField(
                 controller: quoteController,
+                enabled: !submitting,
                 minLines: 2,
                 maxLines: 6,
                 style: _bookDetailInputStyle(context),
@@ -2239,7 +2649,16 @@ class _AddQuoteTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          FilledButton(onPressed: onAddQuote, child: Text(l10n.addQuote)),
+          FilledButton(
+            onPressed: submitting ? null : onAddQuote,
+            child: submitting
+                ? const AppLoadingIndicator(
+                    size: 18,
+                    strokeWidth: 2,
+                    centered: false,
+                  )
+                : Text(l10n.addQuote),
+          ),
         ],
       ),
     );
@@ -2247,9 +2666,13 @@ class _AddQuoteTab extends StatelessWidget {
 }
 
 class _EditReviewDialog extends StatefulWidget {
-  const _EditReviewDialog({required this.initialValue});
+  const _EditReviewDialog({
+    required this.initialValue,
+    this.initialIsSpoiler = false,
+  });
 
   final String initialValue;
+  final bool initialIsSpoiler;
 
   @override
   State<_EditReviewDialog> createState() => _EditReviewDialogState();
@@ -2257,11 +2680,13 @@ class _EditReviewDialog extends StatefulWidget {
 
 class _EditReviewDialogState extends State<_EditReviewDialog> {
   late final TextEditingController _controller;
+  late bool _isSpoiler;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
+    _isSpoiler = widget.initialIsSpoiler;
   }
 
   @override
@@ -2272,24 +2697,89 @@ class _EditReviewDialogState extends State<_EditReviewDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(AppLocalizations.of(context)!.editReview),
-      content: TextField(
-        controller: _controller,
-        minLines: 2,
-        maxLines: 5,
-        style: _bookDetailInputStyle(context),
+      title: Text(l10n.editReview),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _controller,
+            minLines: 2,
+            maxLines: 5,
+            style: _bookDetailInputStyle(context),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _CompactCheckbox(
+            label: l10n.containsSpoilers,
+            value: _isSpoiler,
+            onChanged: (value) => setState(() => _isSpoiler = value),
+          ),
+        ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.cancel),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
-          child: Text(AppLocalizations.of(context)!.save),
+          onPressed: () => Navigator.of(context).pop((
+            content: _controller.text.trim(),
+            isSpoiler: _isSpoiler,
+          )),
+          child: Text(l10n.save),
         ),
       ],
+    );
+  }
+}
+
+class _CompactCheckbox extends StatelessWidget {
+  const _CompactCheckbox({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.labelStyle,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+  final TextStyle? labelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onChanged == null ? null : () => onChanged!(!value),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: Checkbox(
+              value: value,
+              onChanged: onChanged == null
+                  ? null
+                  : (v) => onChanged!(v ?? false),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: labelStyle ?? Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

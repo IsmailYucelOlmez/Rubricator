@@ -64,16 +64,7 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
-                      child: FilledButton.icon(
-                        onPressed: () async {
-                          await ref.read(authServiceProvider).signOut();
-                        },
-                        icon: const Icon(Icons.logout_outlined),
-                        label: Text(
-                          l10n.signOut,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      child: _SignOutButton(),
                     ),
                   ],
                 ),
@@ -151,6 +142,47 @@ class ProfilePage extends ConsumerWidget {
       return l10n.uxProfilePhotoPermissionDenied;
     }
     return l10n.userFacingMessage(e);
+  }
+}
+
+class _SignOutButton extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_SignOutButton> createState() => _SignOutButtonState();
+}
+
+class _SignOutButtonState extends ConsumerState<_SignOutButton> {
+  bool _signingOut = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return FilledButton.icon(
+      onPressed: _signingOut
+          ? null
+          : () async {
+              setState(() => _signingOut = true);
+              try {
+                await ref.read(authServiceProvider).signOut();
+              } finally {
+                if (mounted) setState(() => _signingOut = false);
+              }
+            },
+      icon: _signingOut
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: AppLoadingIndicator(
+                size: 18,
+                strokeWidth: 2,
+                centered: false,
+              ),
+            )
+          : const Icon(Icons.logout_outlined),
+      label: Text(
+        l10n.signOut,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
 }
 

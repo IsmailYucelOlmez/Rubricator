@@ -8,9 +8,35 @@ class AppFeedback {
 
   static void showErrorSnackBar(BuildContext context, Object error) {
     final l10n = AppLocalizations.of(context)!;
+    final detail = _postgrestDetail(error);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.userFacingMessage(error))),
+      SnackBar(
+        content: Text(
+          detail == null || detail.isEmpty
+              ? l10n.userFacingMessage(error)
+              : detail,
+        ),
+      ),
     );
+  }
+
+  static String? _postgrestDetail(Object error) {
+    try {
+      // supabase_flutter PostgrestException exposes `message`.
+      final dynamic dyn = error;
+      final message = dyn.message;
+      if (message is String && message.trim().isNotEmpty) {
+        final detail = message.trim();
+        if (detail.length > 180) return '${detail.substring(0, 177)}...';
+        return detail;
+      }
+    } catch (_) {
+      // Not a PostgrestException-like object.
+    }
+    final text = error.toString().trim();
+    if (text.isEmpty || text == 'Exception') return null;
+    if (text.length > 180) return '${text.substring(0, 177)}...';
+    return text;
   }
 
   static void showSuccessSnackBar(BuildContext context, String message) {

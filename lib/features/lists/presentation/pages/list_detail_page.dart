@@ -27,6 +27,7 @@ class ListDetailPage extends ConsumerStatefulWidget {
 class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   final _commentCtrl = TextEditingController();
   bool _commenting = false;
+  bool _deleting = false;
 
   @override
   void dispose() {
@@ -57,25 +58,40 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
           if (isOwner)
             IconButton(
               tooltip: l10n.editListTooltip,
-              onPressed: () async {
-                final changed = await Navigator.of(context).push<bool>(
-                  MaterialPageRoute<bool>(
-                    builder: (_) => CreateEditListPage(initialList: list),
-                  ),
-                );
-                if (!context.mounted) return;
-                if (changed == true) {
-                  _invalidateAll();
-                  Navigator.of(context).pop(true);
-                }
-              },
+              onPressed: _deleting
+                  ? null
+                  : () async {
+                      final changed = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute<bool>(
+                          builder: (_) =>
+                              CreateEditListPage(initialList: list),
+                        ),
+                      );
+                      if (!context.mounted) return;
+                      if (changed == true) {
+                        _invalidateAll();
+                        Navigator.of(context).pop(true);
+                      }
+                    },
               icon: const Icon(Icons.edit_outlined),
             ),
           if (isOwner)
             IconButton(
               tooltip: l10n.deleteListTooltip,
-              onPressed: () => _deleteList(context, list.id),
-              icon: const Icon(Icons.delete_outline),
+              onPressed: _deleting
+                  ? null
+                  : () => _deleteList(context, list.id),
+              icon: _deleting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: AppLoadingIndicator(
+                        size: 18,
+                        strokeWidth: 2,
+                        centered: false,
+                      ),
+                    )
+                  : const Icon(Icons.delete_outline),
             ),
         ],
       ),
@@ -288,6 +304,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   }
 
   Future<void> _deleteList(BuildContext context, String listId) async {
+    if (_deleting) return;
     final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
@@ -301,6 +318,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       ),
     );
     if (confirm != true) return;
+    setState(() => _deleting = true);
     try {
       await ref.read(listsRepositoryProvider).deleteList(listId);
       if (!context.mounted) return;
@@ -309,6 +327,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     } catch (e) {
       if (!context.mounted) return;
       AppFeedback.showErrorSnackBar(context, e);
+      if (mounted) setState(() => _deleting = false);
     }
   }
 

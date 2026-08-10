@@ -15,6 +15,7 @@ class BookNoteCard extends StatelessWidget {
     this.onEdit,
     this.onDelete,
     this.subtitle,
+    this.isDeleting = false,
   });
 
   final BookNoteEntity note;
@@ -23,6 +24,7 @@ class BookNoteCard extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final String? subtitle;
+  final bool isDeleting;
 
   bool get _isOwner => currentUserId != null && currentUserId == note.userId;
 
@@ -149,7 +151,7 @@ class BookNoteCard extends StatelessWidget {
                 if (_isOwner && onEdit != null)
                   IconButton(
                     tooltip: l10n.editNote,
-                    onPressed: onEdit,
+                    onPressed: isDeleting ? null : onEdit,
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
@@ -158,11 +160,17 @@ class BookNoteCard extends StatelessWidget {
                       minHeight: 32,
                     ),
                   ),
-                if (_isOwner && onDelete != null)
+                if (_isOwner && (onDelete != null || isDeleting))
                   IconButton(
                     tooltip: l10n.delete,
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline, size: 18),
+                    onPressed: isDeleting ? null : onDelete,
+                    icon: isDeleting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.delete_outline, size: 18),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(

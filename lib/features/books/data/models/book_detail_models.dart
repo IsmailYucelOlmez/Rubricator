@@ -12,6 +12,7 @@ class ReviewModel {
     this.userRating,
     this.isFavorite = false,
     this.userName,
+    this.isSpoiler = false,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class ReviewModel {
   final int? userRating;
   final bool isFavorite;
   final String? userName;
+  final bool isSpoiler;
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
@@ -36,6 +38,7 @@ class ReviewModel {
           DateTime.fromMillisecondsSinceEpoch(0),
       likes: (json['likes'] as num?)?.toInt() ?? 0,
       userName: (json['user_name'] as String?)?.trim(),
+      isSpoiler: json['is_spoiler'] as bool? ?? false,
     );
   }
 
@@ -46,6 +49,7 @@ class ReviewModel {
     'content': content,
     'created_at': createdAt.toUtc().toIso8601String(),
     'likes': likes,
+    'is_spoiler': isSpoiler,
   };
 
   ReviewEntity toEntity() => ReviewEntity(
@@ -59,6 +63,7 @@ class ReviewModel {
     userRating: userRating,
     isFavorite: isFavorite,
     userName: userName,
+    isSpoiler: isSpoiler,
   );
 
   factory ReviewModel.fromEntity(ReviewEntity entity) => ReviewModel(
@@ -72,6 +77,7 @@ class ReviewModel {
     userRating: entity.userRating,
     isFavorite: entity.isFavorite,
     userName: entity.userName,
+    isSpoiler: entity.isSpoiler,
   );
 }
 
@@ -83,6 +89,8 @@ class ExternalReviewModel {
     required this.title,
     required this.url,
     required this.createdAt,
+    this.description = '',
+    this.userName,
   });
 
   final String id;
@@ -91,6 +99,8 @@ class ExternalReviewModel {
   final String title;
   final String url;
   final DateTime createdAt;
+  final String description;
+  final String? userName;
 
   factory ExternalReviewModel.fromJson(Map<String, dynamic> json) {
     return ExternalReviewModel(
@@ -102,6 +112,8 @@ class ExternalReviewModel {
       createdAt:
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
+      description: (json['description'] ?? '').toString(),
+      userName: (json['user_name'] as String?)?.trim(),
     );
   }
 
@@ -112,6 +124,7 @@ class ExternalReviewModel {
     'title': title,
     'url': url,
     'created_at': createdAt.toUtc().toIso8601String(),
+    'description': description,
   };
 
   ExternalReviewEntity toEntity() => ExternalReviewEntity(
@@ -121,6 +134,8 @@ class ExternalReviewModel {
     title: title,
     url: url,
     createdAt: createdAt,
+    description: description,
+    userName: userName,
   );
 
   factory ExternalReviewModel.fromEntity(ExternalReviewEntity entity) =>
@@ -131,6 +146,8 @@ class ExternalReviewModel {
         title: entity.title,
         url: entity.url,
         createdAt: entity.createdAt,
+        description: entity.description,
+        userName: entity.userName,
       );
 }
 

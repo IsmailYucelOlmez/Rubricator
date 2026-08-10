@@ -26,6 +26,7 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
   final _searchController = TextEditingController();
   Timer? _debounce;
   final _scrollController = ScrollController();
+  String? _deletingNoteId;
 
   @override
   void initState() {
@@ -72,9 +73,11 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
   }
 
   Future<void> _deleteNote(String noteId) async {
+    if (_deletingNoteId != null) return;
     final l10n = AppLocalizations.of(context)!;
     final confirm = await confirmDeleteBookNote(context);
     if (confirm != true || !mounted) return;
+    setState(() => _deletingNoteId = noteId);
     try {
       await ref.read(myNotesProvider.notifier).deleteNote(noteId);
       if (!mounted) return;
@@ -84,6 +87,8 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
     } catch (e) {
       if (!mounted) return;
       showBookNoteFeedback(context, e);
+    } finally {
+      if (mounted) setState(() => _deletingNoteId = null);
     }
   }
 
@@ -178,8 +183,16 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
                                     '$bookTitle · ${_formatDate(note.createdAt)}',
                                   ),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.delete_outline),
-                                    onPressed: () => _deleteNote(note.id),
+                                    icon: _deletingNoteId == note.id
+                                        ? const AppLoadingIndicator(
+                                            size: 18,
+                                            strokeWidth: 2,
+                                            centered: false,
+                                          )
+                                        : const Icon(Icons.delete_outline),
+                                    onPressed: _deletingNoteId != null
+                                        ? null
+                                        : () => _deleteNote(note.id),
                                   ),
                                   onTap: () =>
                                       _openBook(note.bookId, titles[note.bookId]),

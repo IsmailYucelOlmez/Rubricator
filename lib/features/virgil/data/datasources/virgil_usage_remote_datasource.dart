@@ -6,7 +6,7 @@ class VirgilUsageToday {
   const VirgilUsageToday({
     required this.recommendationsCount,
     required this.uploadsCount,
-    this.recommendationsLimit = 3,
+    this.recommendationsLimit = 5,
     this.uploadsLimit = 3,
   });
 
@@ -39,7 +39,7 @@ class VirgilUsageRemoteDataSource {
 
   final SupabaseClient _client;
 
-  static const recommendationsPerDay = 3;
+  static const recommendationsPerDay = 5;
   static const uploadsPerDay = 3;
 
   Future<VirgilUsageToday> fetchToday() async {

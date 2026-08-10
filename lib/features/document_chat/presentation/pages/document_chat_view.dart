@@ -84,6 +84,7 @@ class DocumentChatView extends ConsumerWidget {
       children: [
         _SessionHeader(
           session: session,
+          isBusy: state.isSending,
           onNewFile: notifier.resetSession,
         ),
         if (session.truncated)
@@ -173,10 +174,12 @@ class _SessionHeader extends StatelessWidget {
   const _SessionHeader({
     required this.session,
     required this.onNewFile,
+    this.isBusy = false,
   });
 
   final DocumentSession session;
   final VoidCallback onNewFile;
+  final bool isBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +214,7 @@ class _SessionHeader extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: onNewFile,
+            onPressed: isBusy ? null : onNewFile,
             child: Text(l10n.documentChatNewFile),
           ),
         ],

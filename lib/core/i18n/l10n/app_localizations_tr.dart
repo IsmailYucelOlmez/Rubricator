@@ -109,7 +109,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get virgilDailyRecommendationLimit =>
-      'Günde en fazla 3 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.';
+      'Günde en fazla 5 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.';
 
   @override
   String get virgilDailyUploadLimit =>
@@ -553,6 +553,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get externalReviewAdded => 'Harici yorum eklendi.';
 
   @override
+  String get externalReviewDeleted => 'Harici yorum silindi.';
+
+  @override
   String get invalidUrl => 'Geçersiz URL';
 
   @override
@@ -623,7 +626,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addReview => 'Yorum ekle';
 
   @override
+  String get containsSpoilers => 'Spoiler içerir';
+
+  @override
+  String get hideSpoilers => 'Spoilerları gizle';
+
+  @override
+  String get showSpoiler => 'Spoilerı görmek için dokun';
+
+  @override
+  String get spoilerBadge => 'Spoiler';
+
+  @override
   String get noUserReviewsYet => 'Bu kitap hakkında ilk yorumu siz yazın.';
+
+  @override
+  String get noReviewsAfterSpoilerFilter =>
+      'Gösterilecek yorum yok. Spoiler yorumları görmek için Spoilerları gizle seçeneğini kapatın.';
 
   @override
   String reviewUserRating(int rating) {
@@ -1211,6 +1230,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get uxDeleteReviewMessage => 'Bu inceleme kalıcı olarak silinecek.';
+
+  @override
+  String get uxDeleteExternalReviewTitle => 'Harici yorum silinsin mi?';
+
+  @override
+  String get uxDeleteExternalReviewMessage =>
+      'Bu harici yorum kalıcı olarak silinecek.';
 
   @override
   String get uxGalleryPluginError =>

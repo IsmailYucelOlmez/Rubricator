@@ -275,7 +275,7 @@ abstract class AppLocalizations {
   /// No description provided for @virgilDailyRecommendationLimit.
   ///
   /// In en, this message translates to:
-  /// **'You can request recommendations up to 3 times per day. Try again tomorrow.'**
+  /// **'You can request recommendations up to 5 times per day. Try again tomorrow.'**
   String get virgilDailyRecommendationLimit;
 
   /// No description provided for @virgilDailyUploadLimit.
@@ -1052,6 +1052,12 @@ abstract class AppLocalizations {
   /// **'External review added.'**
   String get externalReviewAdded;
 
+  /// No description provided for @externalReviewDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'External review deleted.'**
+  String get externalReviewDeleted;
+
   /// No description provided for @invalidUrl.
   ///
   /// In en, this message translates to:
@@ -1178,11 +1184,41 @@ abstract class AppLocalizations {
   /// **'Add review'**
   String get addReview;
 
+  /// No description provided for @containsSpoilers.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains spoilers'**
+  String get containsSpoilers;
+
+  /// No description provided for @hideSpoilers.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide spoilers'**
+  String get hideSpoilers;
+
+  /// No description provided for @showSpoiler.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to reveal spoiler'**
+  String get showSpoiler;
+
+  /// No description provided for @spoilerBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Spoiler'**
+  String get spoilerBadge;
+
   /// No description provided for @noUserReviewsYet.
   ///
   /// In en, this message translates to:
   /// **'Be the first to share your thoughts on this book.'**
   String get noUserReviewsYet;
+
+  /// No description provided for @noReviewsAfterSpoilerFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews to show. Turn off Hide spoilers to see spoiler reviews.'**
+  String get noReviewsAfterSpoilerFilter;
 
   /// No description provided for @reviewUserRating.
   ///
@@ -2179,6 +2215,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This review will be permanently deleted.'**
   String get uxDeleteReviewMessage;
+
+  /// No description provided for @uxDeleteExternalReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete external review?'**
+  String get uxDeleteExternalReviewTitle;
+
+  /// No description provided for @uxDeleteExternalReviewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This external review will be permanently deleted.'**
+  String get uxDeleteExternalReviewMessage;
 
   /// No description provided for @uxGalleryPluginError.
   ///

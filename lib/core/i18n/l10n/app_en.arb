@@ -42,7 +42,7 @@
   "virgilGenreChildrensFiction": "Children's Fiction",
   "virgilGenreChildrensNonfiction": "Children's Nonfiction",
   "signInForVirgil": "Sign in to use Virgil recommendations and book Q&A.",
-  "virgilDailyRecommendationLimit": "You can request recommendations up to 3 times per day. Try again tomorrow.",
+  "virgilDailyRecommendationLimit": "You can request recommendations up to 5 times per day. Try again tomorrow.",
   "virgilDailyUploadLimit": "You can upload up to 3 books per day. Try again tomorrow.",
   "virgilQuestionsRemaining": "{count} questions left for this book",
   "@virgilQuestionsRemaining": {
@@ -258,6 +258,7 @@
   "reviewUpdated": "Review updated.",
   "reviewDeleted": "Review deleted.",
   "externalReviewAdded": "External review added.",
+  "externalReviewDeleted": "External review deleted.",
   "invalidUrl": "Invalid URL",
   "couldNotOpenBrowser": "Could not open browser.",
   "quoteAdded": "Quote added.",
@@ -294,7 +295,12 @@
   "externalReviews": "External Reviews",
   "writeReviewHint": "Share your thoughts (at least 10 characters)",
   "addReview": "Add review",
+  "containsSpoilers": "Contains spoilers",
+  "hideSpoilers": "Hide spoilers",
+  "showSpoiler": "Tap to reveal spoiler",
+  "spoilerBadge": "Spoiler",
   "noUserReviewsYet": "Be the first to share your thoughts on this book.",
+  "noReviewsAfterSpoilerFilter": "No reviews to show. Turn off Hide spoilers to see spoiler reviews.",
   "reviewUserRating": "Rating: {rating}/10",
   "@reviewUserRating": {
     "placeholders": {
@@ -526,6 +532,8 @@
   ,"uxRemove":"Remove"
   ,"uxDeleteReviewTitle":"Delete review?"
   ,"uxDeleteReviewMessage":"This review will be permanently deleted."
+  ,"uxDeleteExternalReviewTitle":"Delete external review?"
+  ,"uxDeleteExternalReviewMessage":"This external review will be permanently deleted."
   ,"uxGalleryPluginError":"Gallery could not be opened. Close the app completely and try again."
   ,"uxProfilePhotoStorageNotReady":"Profile photos aren't available yet. Please try again later."
   ,"uxProfilePhotoPermissionDenied":"Profile photo upload is temporarily unavailable. Please try again later."

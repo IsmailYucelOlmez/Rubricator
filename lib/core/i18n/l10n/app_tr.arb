@@ -42,7 +42,7 @@
   "virgilGenreChildrensFiction": "Çocuk kurgusu",
   "virgilGenreChildrensNonfiction": "Çocuk kurgu dışı",
   "signInForVirgil": "Virgil önerileri ve kitap soru-cevap için giriş yapın.",
-  "virgilDailyRecommendationLimit": "Günde en fazla 3 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.",
+  "virgilDailyRecommendationLimit": "Günde en fazla 5 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.",
   "virgilDailyUploadLimit": "Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.",
   "virgilQuestionsRemaining": "Bu kitap için {count} soru kaldı",
   "@virgilQuestionsRemaining": {
@@ -259,6 +259,7 @@
   "reviewUpdated": "Yorum güncellendi.",
   "reviewDeleted": "Yorum silindi.",
   "externalReviewAdded": "Harici yorum eklendi.",
+  "externalReviewDeleted": "Harici yorum silindi.",
   "invalidUrl": "Geçersiz URL",
   "couldNotOpenBrowser": "Tarayıcı açılamadı.",
   "quoteAdded": "Alıntı eklendi.",
@@ -295,7 +296,12 @@
   "externalReviews": "Harici Yorumlar",
   "writeReviewHint": "Düşüncelerinizi paylaşın (en az 10 karakter)",
   "addReview": "Yorum ekle",
+  "containsSpoilers": "Spoiler içerir",
+  "hideSpoilers": "Spoilerları gizle",
+  "showSpoiler": "Spoilerı görmek için dokun",
+  "spoilerBadge": "Spoiler",
   "noUserReviewsYet": "Bu kitap hakkında ilk yorumu siz yazın.",
+  "noReviewsAfterSpoilerFilter": "Gösterilecek yorum yok. Spoiler yorumları görmek için Spoilerları gizle seçeneğini kapatın.",
   "reviewUserRating": "Puan: {rating}/10",
   "reviewInFavorites": "Favorilerde",
   "relativeTimeJustNow": "az önce",
@@ -492,6 +498,8 @@
   ,"uxRemove":"Kaldır"
   ,"uxDeleteReviewTitle":"İnceleme silinsin mi?"
   ,"uxDeleteReviewMessage":"Bu inceleme kalıcı olarak silinecek."
+  ,"uxDeleteExternalReviewTitle":"Harici yorum silinsin mi?"
+  ,"uxDeleteExternalReviewMessage":"Bu harici yorum kalıcı olarak silinecek."
   ,"uxGalleryPluginError":"Galeri açılamadı. Uygulamayı tamamen kapatıp yeniden deneyin."
   ,"uxProfilePhotoStorageNotReady":"Profil fotoğrafları henüz kullanılamıyor. Lütfen daha sonra tekrar deneyin."
   ,"uxProfilePhotoPermissionDenied":"Profil fotoğrafı yükleme geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."

@@ -120,7 +120,7 @@ class ReviewListNotifier
     return ref.watch(bookDetailRepositoryProvider).getReviews(arg);
   }
 
-  Future<void> add(String content) async {
+  Future<void> add(String content, {bool isSpoiler = false}) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) throw Exception('Sign in required.');
     if (content.trim().length < 10) {
@@ -137,13 +137,18 @@ class ReviewListNotifier
               userId: userId,
               content: content.trim(),
               createdAt: DateTime.now(),
+              isSpoiler: isSpoiler,
             ),
           );
       return ref.read(bookDetailRepositoryProvider).getReviews(_bookId);
     });
   }
 
-  Future<void> editReview(ReviewEntity review, String content) async {
+  Future<void> editReview(
+    ReviewEntity review,
+    String content, {
+    bool? isSpoiler,
+  }) async {
     if (content.trim().length < 10) {
       throw Exception('Review must be at least 10 characters.');
     }
@@ -163,6 +168,7 @@ class ReviewListNotifier
               userRating: review.userRating,
               isFavorite: review.isFavorite,
               userName: review.userName,
+              isSpoiler: isSpoiler ?? review.isSpoiler,
             ),
           );
       return ref.read(bookDetailRepositoryProvider).getReviews(_bookId);
@@ -189,6 +195,7 @@ class ReviewListNotifier
                   userRating: review.userRating,
                   isFavorite: review.isFavorite,
                   userName: review.userName,
+                  isSpoiler: review.isSpoiler,
                 );
               },
             )
@@ -215,6 +222,7 @@ class ReviewListNotifier
                         userRating: review.userRating,
                         isFavorite: review.isFavorite,
                         userName: review.userName,
+                        isSpoiler: review.isSpoiler,
                       )
                     : review,
               )
@@ -257,16 +265,25 @@ class ExternalReviewNotifier
     return ref.watch(bookDetailRepositoryProvider).getExternalReviews(arg);
   }
 
-  Future<void> add({required String title, required String url}) async {
+  Future<void> add({
+    required String title,
+    required String url,
+    String description = '',
+  }) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) throw Exception('Sign in required.');
-    final parsed = Uri.tryParse(url.trim());
+    final normalizedUrl = _normalizeExternalReviewUrl(url);
+    final parsed = Uri.tryParse(normalizedUrl);
     if (title.trim().isEmpty) throw Exception('Title is required.');
-    if (parsed == null || !parsed.hasAbsolutePath || parsed.scheme.isEmpty) {
+    final scheme = parsed?.scheme.toLowerCase() ?? '';
+    if (parsed == null ||
+        parsed.host.isEmpty ||
+        (scheme != 'http' && scheme != 'https')) {
       throw Exception('Enter a valid URL.');
     }
+    final displayName = ref.read(currentUserDisplayNameProvider).trim();
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       await ref
           .read(bookDetailRepositoryProvider)
           .addExternalReview(
@@ -275,13 +292,49 @@ class ExternalReviewNotifier
               bookId: _bookId,
               userId: userId,
               title: title.trim(),
-              url: url.trim(),
+              url: normalizedUrl,
               createdAt: DateTime.now(),
+              description: description.trim(),
+              userName: displayName.isEmpty ? null : displayName,
             ),
           );
-      return ref.read(bookDetailRepositoryProvider).getExternalReviews(_bookId);
-    });
+      final list = await ref
+          .read(bookDetailRepositoryProvider)
+          .getExternalReviews(_bookId);
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
+
+  Future<void> remove(ExternalReviewEntity review) async {
+    state = const AsyncLoading();
+    try {
+      await ref
+          .read(bookDetailRepositoryProvider)
+          .deleteExternalReview(review.id);
+      final list = await ref
+          .read(bookDetailRepositoryProvider)
+          .getExternalReviews(_bookId);
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+}
+
+String _normalizeExternalReviewUrl(String raw) {
+  final trimmed = raw.trim();
+  if (trimmed.isEmpty) return trimmed;
+  final parsed = Uri.tryParse(trimmed);
+  if (parsed != null &&
+      parsed.hasScheme &&
+      parsed.host.isNotEmpty) {
+    return trimmed;
+  }
+  return 'https://$trimmed';
 }
 
 final externalReviewProvider =

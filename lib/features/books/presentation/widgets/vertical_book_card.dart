@@ -14,9 +14,10 @@ const double kBookGridCoverRadius = 10;
 /// Shared 2-column book grid metrics (Virgil recommendation layout).
 abstract final class BookGridLayout {
   static const int crossAxisCount = 2;
-  static const double crossAxisSpacing = AppSpacing.md;
+  static const double crossAxisSpacing = 30;
   static const double mainAxisSpacing = AppSpacing.lg;
   static const double childAspectRatio = 0.58;
+  static const double horizontalPadding = AppSpacing.lg + 8;
 
   static const SliverGridDelegateWithFixedCrossAxisCount delegate =
       SliverGridDelegateWithFixedCrossAxisCount(

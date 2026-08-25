@@ -1,5 +1,7 @@
 {
   "appTitle": "Rubricator",
+  "unknownTitle": "Unknown title",
+  "unknownAuthor": "Unknown author",
   "navHome": "Home",
   "navSearch": "Search",
   "navVirgil": "Virgil",

@@ -496,10 +496,10 @@ class _CoverFillImage extends StatelessWidget {
     final colors = VirgilColors.of(context);
     final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
-      return const ColoredBox(
-        color: Colors.white,
+      return ColoredBox(
+        color: colors.coverBg,
         child: Center(
-          child: Icon(Icons.menu_book_outlined, color: Color(0xFF9E9E9E)),
+          child: Icon(Icons.menu_book_outlined, color: colors.muted),
         ),
       );
     }
@@ -509,10 +509,10 @@ class _CoverFillImage extends StatelessWidget {
       fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(
-        color: Colors.white,
+      errorBuilder: (context, error, stackTrace) => ColoredBox(
+        color: colors.coverBg,
         child: Center(
-          child: Icon(Icons.broken_image_outlined, color: Color(0xFF9E9E9E)),
+          child: Icon(Icons.broken_image_outlined, color: colors.muted),
         ),
       ),
       loadingBuilder: (context, child, progress) {

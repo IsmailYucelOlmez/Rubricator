@@ -12,6 +12,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appTitle => 'Rubricator';
 
   @override
+  String get unknownTitle => 'Bilinmeyen başlık';
+
+  @override
+  String get unknownAuthor => 'Bilinmeyen yazar';
+
+  @override
   String get navHome => 'Ana Sayfa';
 
   @override

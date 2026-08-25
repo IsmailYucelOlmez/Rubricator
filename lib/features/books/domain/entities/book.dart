@@ -1,3 +1,5 @@
+import '../../../../core/i18n/fallback_strings.dart';
+
 /// Domain entity for a Google Books volume.
 ///
 /// [id] is the stable key; equality uses [id] so Riverpod `family` providers
@@ -71,8 +73,8 @@ class Book {
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
       id: json['id'] as String? ?? '',
-      title: json['title'] as String? ?? 'Unknown title',
-      author: json['author'] as String? ?? 'Unknown author',
+      title: json['title'] as String? ?? FallbackStrings.unknownTitle,
+      author: json['author'] as String? ?? FallbackStrings.unknownAuthor,
       coverImageUrl: json['coverImageUrl'] as String?,
       description: json['description'] as String? ?? '',
       authorIds:

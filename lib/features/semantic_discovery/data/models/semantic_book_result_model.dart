@@ -1,3 +1,4 @@
+import '../../../../core/i18n/fallback_strings.dart';
 import '../../domain/entities/semantic_book_result.dart';
 
 class SemanticBookResultModel {
@@ -24,8 +25,8 @@ class SemanticBookResultModel {
   factory SemanticBookResultModel.fromJson(Map<String, dynamic> json) {
     return SemanticBookResultModel(
       isbn13: json['isbn13'] as String? ?? '',
-      title: json['title'] as String? ?? 'Unknown title',
-      author: json['author'] as String? ?? 'Unknown author',
+      title: json['title'] as String? ?? FallbackStrings.unknownTitle,
+      author: json['author'] as String? ?? FallbackStrings.unknownAuthor,
       description: json['description'] as String? ?? '',
       coverImageUrl: json['coverImageUrl'] as String?,
       category: json['category'] as String?,

@@ -11,15 +11,18 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(
     this._remoteDataSource,
     this._cacheDataSource,
-    this._bookRepository,
-  );
+    this._bookRepository, {
+    required this.lang,
+  });
 
   final HomeRemoteDataSource _remoteDataSource;
   final HomeCacheDataSource _cacheDataSource;
   final BookRepository _bookRepository;
+  final String lang;
 
   static const int _maxBooksPerHomeSection = 10;
   static const int _maxGoogleBooksFetchSize = 40;
+  static const String _fallbackLang = 'en';
 
   static final RegExp _latinRegex = RegExp(
     r'^[a-zA-Z0-9\s\-\.,:;\x27\x22!?()]+$',
@@ -70,7 +73,10 @@ class HomeRepositoryImpl implements HomeRepository {
   /// Genre detail page: cache first, then client fetch when allowed.
   Future<({List<HomeBookModel> models, HomeGenreSectionLoadState sectionState})>
   _loadGenreModels(String genreKey, {required int maxResults}) async {
-    final cachedRow = await _cacheDataSource.getGenreCache(genreKey);
+    final cachedRow = await _cacheDataSource.getGenreCache(
+      genreKey,
+      lang: lang,
+    );
     final cachedBooks = _prioritizeModels(
       _cacheDataSource.parseCachedBooks(cachedRow),
     );
@@ -102,7 +108,8 @@ class HomeRepositoryImpl implements HomeRepository {
     GenreCacheSnapshot? cachedRow,
     bool ignoreWeekdaySchedule = false,
   }) async {
-    final row = cachedRow ?? await _cacheDataSource.getGenreCache(genreKey);
+    final row =
+        cachedRow ?? await _cacheDataSource.getGenreCache(genreKey, lang: lang);
     if (!ignoreWeekdaySchedule && !_cacheDataSource.canAttemptFetchToday(row)) {
       return (
         models: const <HomeBookModel>[],
@@ -123,6 +130,7 @@ class HomeRepositoryImpl implements HomeRepository {
         }
         await _cacheDataSource.saveFetchSuccess(
           genreKey: genreKey,
+          lang: lang,
           books: prioritized,
         );
         return (
@@ -137,6 +145,7 @@ class HomeRepositoryImpl implements HomeRepository {
     if (lastError != null) {
       await _cacheDataSource.saveFetchFailure(
         genreKey: genreKey,
+        lang: lang,
         error: lastError,
       );
     }
@@ -175,13 +184,45 @@ class HomeRepositoryImpl implements HomeRepository {
     );
   }
 
+  /// Reads the home cache for [lang]; genre keys with no (or empty) rows in
+  /// that language fall back to [_fallbackLang] so a section is never blank
+  /// just because the warm-cache job hasn't produced that language yet.
+  Future<Map<String, GenreCacheSnapshot>> _loadHomeCacheWithFallback(
+    List<String> cacheKeys,
+  ) async {
+    final cacheMap = await _cacheDataSource.getGenreCaches(
+      cacheKeys,
+      lang: lang,
+    );
+    if (lang == _fallbackLang) return cacheMap;
+
+    final emptyKeys = cacheKeys
+        .where((key) => _cacheDataSource.parseCachedBooks(cacheMap[key]).isEmpty)
+        .toList();
+    if (emptyKeys.isEmpty) return cacheMap;
+
+    final fallbackMap = await _cacheDataSource.getGenreCaches(
+      emptyKeys,
+      lang: _fallbackLang,
+    );
+    final merged = <String, GenreCacheSnapshot>{...cacheMap};
+    for (final key in emptyKeys) {
+      final fallbackRow = fallbackMap[key];
+      if (fallbackRow != null &&
+          _cacheDataSource.parseCachedBooks(fallbackRow).isNotEmpty) {
+        merged[key] = fallbackRow;
+      }
+    }
+    return merged;
+  }
+
   @override
   Future<HomePageSnapshot> loadHomePage(List<String> genreKeys) async {
     final cacheKeys = <String>[
       HomeCacheDataSource.popularCacheKey,
       ...genreKeys,
     ];
-    final cacheMap = await _cacheDataSource.getGenreCaches(cacheKeys);
+    final cacheMap = await _loadHomeCacheWithFallback(cacheKeys);
 
     final popularBooks = _homeBooksFromModels(
       _cacheDataSource.parseCachedBooks(

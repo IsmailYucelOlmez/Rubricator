@@ -15,6 +15,8 @@ const GENRE_KEYS = [
   "horror",
 ] as const;
 
+const LANGS = ["en", "tr"] as const;
+
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -86,10 +88,12 @@ function parseVolume(item: Record<string, unknown>): CachedBook | null {
 async function fetchGoogleBooks(
   apiKey: string,
   q: string,
+  lang: string,
 ): Promise<CachedBook[]> {
   const url = new URL(`${GOOGLE_BOOKS_BASE}/volumes`);
   url.searchParams.set("q", q);
   url.searchParams.set("printType", "books");
+  url.searchParams.set("langRestrict", lang);
   url.searchParams.set("maxResults", String(MAX_RESULTS));
   url.searchParams.set("key", apiKey);
 
@@ -143,36 +147,41 @@ Deno.serve(async (req: Request) => {
   const results: Record<string, { status: string; count?: number; error?: string }> = {};
 
   for (const genreKey of GENRE_KEYS) {
-    try {
-      const books = await fetchGoogleBooks(apiKey, queryForGenreKey(genreKey));
-      if (books.length === 0) {
-        throw new Error(`No books returned for ${genreKey}`);
+    for (const lang of LANGS) {
+      const resultKey = `${genreKey}:${lang}`;
+      try {
+        const books = await fetchGoogleBooks(apiKey, queryForGenreKey(genreKey), lang);
+        if (books.length === 0) {
+          throw new Error(`No books returned for ${genreKey} (${lang})`);
+        }
+
+        const { error } = await supabase.from(TABLE).upsert({
+          genre_key: genreKey,
+          lang,
+          books_json: books,
+          total_count: books.length,
+          last_fetch_at: new Date().toISOString(),
+          last_fetch_status: "success",
+          last_fetch_error: null,
+          fetch_completed: true,
+          is_active: true,
+        }, { onConflict: "genre_key,lang" });
+
+        if (error) throw error;
+        results[resultKey] = { status: "success", count: books.length };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        results[resultKey] = { status: "error", error: message };
+        await supabase.from(TABLE).upsert({
+          genre_key: genreKey,
+          lang,
+          last_fetch_at: new Date().toISOString(),
+          last_fetch_status: "error",
+          last_fetch_error: message,
+          fetch_completed: false,
+          is_active: true,
+        }, { onConflict: "genre_key,lang" });
       }
-
-      const { error } = await supabase.from(TABLE).upsert({
-        genre_key: genreKey,
-        books_json: books,
-        total_count: books.length,
-        last_fetch_at: new Date().toISOString(),
-        last_fetch_status: "success",
-        last_fetch_error: null,
-        fetch_completed: true,
-        is_active: true,
-      });
-
-      if (error) throw error;
-      results[genreKey] = { status: "success", count: books.length };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      results[genreKey] = { status: "error", error: message };
-      await supabase.from(TABLE).upsert({
-        genre_key: genreKey,
-        last_fetch_at: new Date().toISOString(),
-        last_fetch_status: "error",
-        last_fetch_error: message,
-        fetch_completed: false,
-        is_active: true,
-      });
     }
   }
 

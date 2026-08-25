@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'Rubricator'**
   String get appTitle;
 
+  /// No description provided for @unknownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown title'**
+  String get unknownTitle;
+
+  /// No description provided for @unknownAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown author'**
+  String get unknownAuthor;
+
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:

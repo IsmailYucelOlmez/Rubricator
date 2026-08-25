@@ -1,3 +1,4 @@
+import '../../../../core/i18n/fallback_strings.dart';
 import '../models/author_model.dart';
 import '../models/book_model.dart';
 import '../services/api_service.dart';
@@ -28,6 +29,10 @@ class GoogleBooksRemoteDataSource {
   static const int _defaultLimit = 20;
   static const int _maxPageSize = 40;
 
+  /// Below this result count, a search is considered "thin" and eligible for
+  /// widening fallbacks (bare-query, langRestrict-less retry).
+  static const int _thinResultThreshold = 5;
+
   int _clampedLimit(int limit) {
     if (limit < 1) return 1;
     return limit > _maxPageSize ? _maxPageSize : limit;
@@ -38,6 +43,7 @@ class GoogleBooksRemoteDataSource {
     required int maxResults,
     String? orderBy,
     int? startIndex,
+    bool restrictLanguage = true,
   }) {
     return <String, dynamic>{
       'q': q,
@@ -46,8 +52,34 @@ class GoogleBooksRemoteDataSource {
         maxResults: maxResults,
         orderBy: orderBy,
         startIndex: startIndex,
+        restrictLanguage: restrictLanguage,
       ),
     };
+  }
+
+  /// Fetches one `/volumes` page, returning an empty list on failure instead
+  /// of throwing — used for best-effort widening fallbacks that should never
+  /// break a search that already has primary results.
+  Future<List<BookModel>> _tryFetchRaw({
+    required String q,
+    required int maxResults,
+    int? startIndex,
+    bool restrictLanguage = true,
+  }) async {
+    try {
+      final json = await _api.getJsonWithRetry(
+        '/volumes',
+        queryParameters: _listParams(
+          q: q,
+          maxResults: maxResults,
+          startIndex: startIndex,
+          restrictLanguage: restrictLanguage,
+        ),
+      );
+      return _parseItemsRaw(json);
+    } catch (_) {
+      return <BookModel>[];
+    }
   }
 
   List<BookModel> _parseItemsRaw(Map<String, dynamic> json) {
@@ -96,6 +128,37 @@ class GoogleBooksRemoteDataSource {
       merged.addAll(batch);
     }
 
+    // Combined title+author input (e.g. "suç ve ceza dostoyevski") can miss
+    // both field-restricted queries; widen with a bare-query fallback.
+    if (merged.length < _thinResultThreshold) {
+      final plain = GoogleBooksUtils.buildPlainSearchQuery(query);
+      if (plain.isNotEmpty && !queries.contains(plain)) {
+        merged.addAll(
+          await _tryFetchRaw(
+            q: plain,
+            maxResults: safeLimit,
+            startIndex: startIndex,
+          ),
+        );
+      }
+    }
+
+    // Turkish language metadata on Google Books is often missing/mistagged;
+    // if langRestrict starved the result set, retry unrestricted and let
+    // soft language-priority ranking (BookRepository) sort it out.
+    if (lang == 'tr' && merged.length < _thinResultThreshold) {
+      for (final q in queries) {
+        merged.addAll(
+          await _tryFetchRaw(
+            q: q,
+            maxResults: safeLimit,
+            startIndex: startIndex,
+            restrictLanguage: false,
+          ),
+        );
+      }
+    }
+
     final docs = GoogleBooksUtils.postProcess(merged, query: query);
     return GoogleBooksSearchPage(
       docs: docs,
@@ -132,7 +195,7 @@ class GoogleBooksRemoteDataSource {
       final name = Uri.decodeComponent(raw.substring(2));
       return AuthorModel(
         id: raw,
-        name: name.isNotEmpty ? name : 'Unknown author',
+        name: name.isNotEmpty ? name : FallbackStrings.unknownAuthor,
         bio: '',
         birthDate: null,
         deathDate: null,
@@ -175,6 +238,29 @@ class GoogleBooksRemoteDataSource {
         }
       } catch (_) {
         // Continue with the next variant to reduce flaky empty states.
+      }
+    }
+
+    // All langRestrict'd variants came up empty — Turkish author metadata is
+    // often missing/mistagged, so retry unrestricted as a last resort.
+    if (lang == 'tr') {
+      for (final q in queries) {
+        try {
+          final json = await _api.getJsonWithRetry(
+            '/volumes',
+            queryParameters: _listParams(
+              q: q,
+              maxResults: maxResults,
+              restrictLanguage: false,
+            ),
+          );
+          final results = _parseItems(json, query: a);
+          if (results.isNotEmpty) {
+            return results;
+          }
+        } catch (_) {
+          // Continue with the next variant.
+        }
       }
     }
 

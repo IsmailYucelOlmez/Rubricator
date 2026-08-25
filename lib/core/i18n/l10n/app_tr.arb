@@ -1,5 +1,7 @@
 {
   "appTitle": "Rubricator",
+  "unknownTitle": "Bilinmeyen başlık",
+  "unknownAuthor": "Bilinmeyen yazar",
   "navHome": "Ana Sayfa",
   "navSearch": "Ara",
   "navVirgil": "Virgil",

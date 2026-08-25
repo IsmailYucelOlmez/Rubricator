@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/i18n/fallback_strings.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../domain/entities/list_entities.dart';
 import '../../domain/repositories/lists_repository.dart';
@@ -215,8 +216,9 @@ class SupabaseListsRepository implements ListsRepository {
             id: row['id'].toString(),
             listId: row['list_id'].toString(),
             bookId: row['book_id']?.toString() ?? '',
-            bookTitle: (row['book_title'] as String?) ?? (row['book_id']?.toString() ?? 'Unknown'),
-            bookAuthor: (row['book_author'] as String?) ?? 'Unknown author',
+            bookTitle: (row['book_title'] as String?) ??
+                (row['book_id']?.toString() ?? FallbackStrings.unknownTitle),
+            bookAuthor: (row['book_author'] as String?) ?? FallbackStrings.unknownAuthor,
             coverImageUrl: row['cover_image_url'] as String?,
             orderIndex: (row['order_index'] as num?)?.toInt() ?? 0,
             note: row['note'] as String?,
@@ -249,8 +251,8 @@ class SupabaseListsRepository implements ListsRepository {
           bookId: row['book_id']?.toString() ?? '',
           bookTitle:
               (row['book_title'] as String?) ??
-              (row['book_id']?.toString() ?? 'Unknown'),
-          bookAuthor: (row['book_author'] as String?) ?? 'Unknown author',
+              (row['book_id']?.toString() ?? FallbackStrings.unknownTitle),
+          bookAuthor: (row['book_author'] as String?) ?? FallbackStrings.unknownAuthor,
           coverImageUrl: row['cover_image_url'] as String?,
           orderIndex: (row['order_index'] as num?)?.toInt() ?? 0,
           note: row['note'] as String?,

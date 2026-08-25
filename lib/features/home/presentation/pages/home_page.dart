@@ -411,13 +411,13 @@ class _ContinueReadingCover extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
-      return const ColoredBox(
-        color: Colors.white,
+      return ColoredBox(
+        color: cs.surfaceContainerHighest,
         child: Center(
           child: Icon(
             Icons.menu_book_outlined,
             size: 48,
-            color: Color(0xFF9E9E9E),
+            color: cs.onSurfaceVariant,
           ),
         ),
       );
@@ -428,12 +428,12 @@ class _ContinueReadingCover extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(
-        color: Colors.white,
+      errorBuilder: (context, error, stackTrace) => ColoredBox(
+        color: cs.surfaceContainerHighest,
         child: Center(
           child: Icon(
             Icons.broken_image_outlined,
-            color: Color(0xFF9E9E9E),
+            color: cs.onSurfaceVariant,
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import 'localization_service.dart';
 
@@ -16,16 +17,25 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
 
 class LocaleNotifier extends StateNotifier<Locale> {
   LocaleNotifier(this._service) : super(const Locale('en')) {
+    Intl.defaultLocale = state.languageCode;
     loadLocale();
   }
 
   final LocalizationService _service;
 
+  /// Device language when supported, else the app fallback.
+  String get _deviceLanguageCode {
+    final deviceCode = PlatformDispatcher.instance.locale.languageCode;
+    return LocalizationService.supportedLanguageCodes.contains(deviceCode)
+        ? deviceCode
+        : LocalizationService.fallbackLanguageCode;
+  }
+
   Future<void> loadLocale() async {
     final saved = await _service.getSavedLocale();
-    if (saved != null) {
-      state = Locale(saved);
-    }
+    final code = saved ?? _deviceLanguageCode;
+    state = Locale(code);
+    Intl.defaultLocale = code;
   }
 
   Future<void> changeLocale(String code) async {
@@ -33,6 +43,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
         ? code
         : LocalizationService.fallbackLanguageCode;
     state = Locale(normalized);
+    Intl.defaultLocale = normalized;
     await _service.saveLocale(normalized);
   }
 }

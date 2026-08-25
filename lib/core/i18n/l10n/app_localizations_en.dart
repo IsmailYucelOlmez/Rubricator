@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Rubricator';
 
   @override
+  String get unknownTitle => 'Unknown title';
+
+  @override
+  String get unknownAuthor => 'Unknown author';
+
+  @override
   String get navHome => 'Home';
 
   @override

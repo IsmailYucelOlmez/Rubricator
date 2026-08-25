@@ -1,3 +1,4 @@
+import '../../../../core/i18n/fallback_strings.dart';
 import '../../domain/entities/home_book_entity.dart';
 
 class HomeBookModel {
@@ -50,7 +51,7 @@ class HomeBookModel {
       final first = names.first;
       if (first is String && first.trim().isNotEmpty) return first.trim();
     }
-    return 'Unknown author';
+    return FallbackStrings.unknownAuthor;
   }
 
   factory HomeBookModel.fromGoogleVolume(Map<String, dynamic> json) {
@@ -70,7 +71,9 @@ class HomeBookModel {
     }
     return HomeBookModel(
       id: id.isEmpty ? 'unknown' : id,
-      title: titleRaw != null && titleRaw.isNotEmpty ? titleRaw : 'Unknown title',
+      title: titleRaw != null && titleRaw.isNotEmpty
+          ? titleRaw
+          : FallbackStrings.unknownTitle,
       coverImageUrl: _httpsThumbnail(
         volumeInfo['imageLinks'] as Map<String, dynamic>?,
       ),

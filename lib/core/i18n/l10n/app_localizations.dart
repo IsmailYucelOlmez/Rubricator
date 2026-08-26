@@ -2012,6 +2012,18 @@ abstract class AppLocalizations {
   /// **'You haven\'t created any lists yet. Start your first one!'**
   String get noListsYet;
 
+  /// No description provided for @searchListsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by list name or description…'**
+  String get searchListsHint;
+
+  /// No description provided for @noListsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No lists match your search.'**
+  String get noListsFound;
+
   /// No description provided for @couldNotLoadLists.
   ///
   /// In en, this message translates to:

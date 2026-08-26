@@ -1129,6 +1129,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'You haven\'t created any lists yet. Start your first one!';
 
   @override
+  String get searchListsHint => 'Search by list name or description…';
+
+  @override
+  String get noListsFound => 'No lists match your search.';
+
+  @override
   String couldNotLoadLists(Object error) {
     return 'Could not load lists: $error';
   }

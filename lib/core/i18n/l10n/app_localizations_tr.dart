@@ -1116,6 +1116,12 @@ class AppLocalizationsTr extends AppLocalizations {
       'Henüz liste oluşturmadınız. İlk listenizi oluşturun!';
 
   @override
+  String get searchListsHint => 'Liste adı veya açıklamasında ara…';
+
+  @override
+  String get noListsFound => 'Aramanızla eşleşen liste bulunamadı.';
+
+  @override
   String couldNotLoadLists(Object error) {
     return 'Listeler yüklenemedi. $error';
   }

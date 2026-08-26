@@ -492,6 +492,8 @@
   ,"selectedBooks":"Selected books"
   ,"noBooksSelectedYet":"Search and add books to your list."
   ,"noListsYet":"You haven't created any lists yet. Start your first one!"
+  ,"searchListsHint":"Search by list name or description…"
+  ,"noListsFound":"No lists match your search."
   ,"couldNotLoadLists":"Could not load lists: {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
   ,"byUser":"by {userName}"

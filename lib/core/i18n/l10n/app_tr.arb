@@ -458,6 +458,8 @@
   ,"selectedBooks":"Seçilen kitaplar"
   ,"noBooksSelectedYet":"Listenize kitap arayın ve ekleyin."
   ,"noListsYet":"Henüz liste oluşturmadınız. İlk listenizi oluşturun!"
+  ,"searchListsHint":"Liste adı veya açıklamasında ara…"
+  ,"noListsFound":"Aramanızla eşleşen liste bulunamadı."
   ,"couldNotLoadLists":"Listeler yüklenemedi. {error}"
   ,"@couldNotLoadLists":{"placeholders":{"error":{}}}
   ,"byUser":"{userName} tarafından"

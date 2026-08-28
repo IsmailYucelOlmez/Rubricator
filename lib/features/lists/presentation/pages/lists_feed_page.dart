@@ -16,13 +16,28 @@ import 'create_edit_list_page.dart';
 import 'list_detail_page.dart';
 import 'user_lists_page.dart';
 
-class ListsPage extends ConsumerWidget {
+class ListsPage extends ConsumerStatefulWidget {
   const ListsPage({super.key, this.embedded = false});
 
   final bool embedded;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ListsPage> createState() => _ListsPageState();
+}
+
+class _ListsPageState extends ConsumerState<ListsPage> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final embedded = widget.embedded;
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final tabLabelStyle = theme.textTheme.titleMedium?.copyWith(
@@ -110,6 +125,29 @@ class ListsPage extends ConsumerWidget {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: l10n.searchListsHint,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _query.isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _query = '');
+                        },
+                      ),
+              ),
+              onChanged: (value) => setState(() => _query = value),
+            ),
+          ),
           Expanded(
             child: ScrollConfiguration(
               behavior: const _NoTabViewEdgeGlowScrollBehavior(),
@@ -118,16 +156,19 @@ class ListsPage extends ConsumerWidget {
                 children: [
                   _FeedTab(
                     async: ref.watch(forYouListsProvider),
+                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(forYouListsProvider),
                   ),
                   _FeedTab(
                     async: ref.watch(popularListsProvider),
+                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(popularListsProvider),
                   ),
                   _FeedTab(
                     async: ref.watch(topListsProvider),
+                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(topListsProvider),
                   ),
@@ -157,20 +198,42 @@ class _NoTabViewEdgeGlowScrollBehavior extends MaterialScrollBehavior {
 }
 
 class _FeedTab extends ConsumerWidget {
-  const _FeedTab({required this.async, required this.onChanged, required this.onRetry});
+  const _FeedTab({
+    required this.async,
+    required this.query,
+    required this.onChanged,
+    required this.onRetry,
+  });
   final AsyncValue<List<ListEntity>> async;
+  final String query;
   final VoidCallback onChanged;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return async.when(
-      data: (lists) {
+      data: (allLists) {
         final l10n = AppLocalizations.of(context)!;
-        if (lists.isEmpty) {
+        if (allLists.isEmpty) {
           return AppEmptyState(
             icon: Icons.menu_book_outlined,
             title: l10n.noListsYet,
+          );
+        }
+        final normalizedQuery = query.trim().toLowerCase();
+        final lists = normalizedQuery.isEmpty
+            ? allLists
+            : allLists
+                .where(
+                  (list) =>
+                      list.title.toLowerCase().contains(normalizedQuery) ||
+                      list.description.toLowerCase().contains(normalizedQuery),
+                )
+                .toList();
+        if (lists.isEmpty) {
+          return AppEmptyState(
+            icon: Icons.search_off,
+            title: l10n.noListsFound,
           );
         }
         final userId = ref.watch(authStateProvider).valueOrNull?.id;

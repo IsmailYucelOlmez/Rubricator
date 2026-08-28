@@ -513,17 +513,20 @@ class _ChatBody extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: onNewFile,
+                onTap: isSending ? null : onNewFile,
                 behavior: HitTestBehavior.opaque,
                 child: Padding(
                   padding: const EdgeInsets.only(left: AppSpacing.sm),
-                  child: Text(
-                    l10n.documentChatNewFile,
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: colors.muted,
+                  child: Opacity(
+                    opacity: isSending ? 0.45 : 1,
+                    child: Text(
+                      l10n.documentChatNewFile,
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: colors.muted,
+                      ),
                     ),
                   ),
                 ),

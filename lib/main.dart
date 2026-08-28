@@ -37,8 +37,6 @@ Future<void> main() async {
     data: {
       'apiUrl': Env.apiUrl.isEmpty ? '(empty)' : Env.apiUrl,
       'supabaseUrl': Env.supabaseUrl.isEmpty ? '(empty)' : Env.supabaseUrl,
-      'semanticApiBaseUrl':
-          Env.semanticApiBaseUrl.isEmpty ? '(empty)' : Env.semanticApiBaseUrl,
       'semanticApiConfigured': Env.hasSemanticApiConfig,
       'sentryEnabled': Env.hasSentryConfig,
     },

@@ -34,9 +34,9 @@ class GenreBooksPage extends ConsumerWidget {
             }
             return GridView.builder(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 AppSpacing.md,
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 AppSpacing.md,
               ),
               gridDelegate: BookGridLayout.delegate,
@@ -58,9 +58,9 @@ class GenreBooksPage extends ConsumerWidget {
           },
           loading: () => GridView.builder(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
+              BookGridLayout.horizontalPadding,
               AppSpacing.md,
-              AppSpacing.lg,
+              BookGridLayout.horizontalPadding,
               AppSpacing.md,
             ),
             gridDelegate: BookGridLayout.delegate,

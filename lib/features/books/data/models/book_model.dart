@@ -1,3 +1,4 @@
+import '../../../../core/i18n/fallback_strings.dart';
 import '../../domain/entities/book.dart';
 
 /// Normalized Google Books volume (data layer only).
@@ -107,11 +108,11 @@ class BookModel {
           : 'unknown',
       title: (json['title'] as String?)?.trim().isNotEmpty == true
           ? (json['title'] as String).trim()
-          : 'Unknown title',
+          : FallbackStrings.unknownTitle,
       primaryAuthorName:
           (json['primary_author_name'] as String?)?.trim().isNotEmpty == true
           ? (json['primary_author_name'] as String).trim()
-          : 'Unknown author',
+          : FallbackStrings.unknownAuthor,
       authorKeys: authorKeysRaw is List
           ? authorKeysRaw.whereType<String>().toList()
           : const <String>[],
@@ -191,13 +192,13 @@ class BookModel {
         .toList();
   }
 
-  static String _primaryAuthor(Map<String, dynamic> volumeInfo) {
+  static String? _primaryAuthor(Map<String, dynamic> volumeInfo) {
     final names = volumeInfo['authors'];
     if (names is List && names.isNotEmpty) {
       final first = names.first;
       if (first is String && first.trim().isNotEmpty) return first.trim();
     }
-    return 'Unknown author';
+    return null;
   }
 
   factory BookModel.fromEntity(Book book) {
@@ -223,7 +224,7 @@ class BookModel {
     final titleRaw = (volumeInfo['title'] as String?)?.trim();
     final title = titleRaw != null && titleRaw.isNotEmpty
         ? titleRaw
-        : (mergeFrom?.title ?? 'Unknown title');
+        : (mergeFrom?.title ?? FallbackStrings.unknownTitle);
     final description = (volumeInfo['description'] as String?)?.trim() ?? '';
     final authorKeys = _authorKeysFromVolume(volumeInfo);
     final primary = authorKeys.isNotEmpty
@@ -244,9 +245,7 @@ class BookModel {
       workId: id.isNotEmpty ? id : (mergeFrom?.workId ?? 'unknown'),
       title: title,
       primaryAuthorName:
-          primary != 'Unknown author'
-              ? primary
-              : (mergeFrom?.primaryAuthorName ?? 'Unknown author'),
+          primary ?? mergeFrom?.primaryAuthorName ?? FallbackStrings.unknownAuthor,
       authorKeys: authorKeys.isNotEmpty
           ? authorKeys
           : (mergeFrom?.authorKeys ?? const []),

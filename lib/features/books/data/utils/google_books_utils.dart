@@ -9,19 +9,42 @@ abstract final class GoogleBooksUtils {
   static final RegExp _isbnDigits = RegExp(r'^\d{10}$|^\d{13}$');
   static final RegExp _nonAlnum = RegExp(r'[^\p{L}\p{N}\s]+', unicode: true);
   static final RegExp _multiSpace = RegExp(r'\s+');
+  /// Legacy Open Library work (`…W`) / edition (`…M`) ids, e.g. `OL1064277W`.
+  static final RegExp _openLibraryId = RegExp(
+    r'^OL\d+[A-Za-z]$',
+    caseSensitive: false,
+  );
+
+  /// Whether [raw] is safe to pass to Google Books `/volumes/{id}`.
+  ///
+  /// Rejects empty, `pending:` (ISBN resolve), and legacy Open Library ids that
+  /// otherwise produce upstream 503 `backendFailed` noise.
+  static bool isFetchableVolumeId(String raw) {
+    final id = raw.trim();
+    if (id.isEmpty) return false;
+    if (id.startsWith('pending:')) return false;
+    if (_openLibraryId.hasMatch(id)) return false;
+    return true;
+  }
 
   /// Base query params required on every `/volumes` list request.
+  ///
+  /// [restrictLanguage] can be set to `false` to drop `langRestrict` — used as
+  /// a fallback when a language-restricted search returns too few results.
   static Map<String, dynamic> baseListParams({
     required String lang,
     int maxResults = defaultMaxResults,
     String? orderBy,
     int? startIndex,
+    bool restrictLanguage = true,
   }) {
     final params = <String, dynamic>{
       'printType': 'books',
-      'langRestrict': lang,
       'maxResults': maxResults,
     };
+    if (restrictLanguage) {
+      params['langRestrict'] = lang;
+    }
     if (orderBy != null && orderBy.isNotEmpty) {
       params['orderBy'] = orderBy;
     }
@@ -44,6 +67,14 @@ abstract final class GoogleBooksUtils {
 
     final term = trimmed.contains(' ') ? '"$trimmed"' : trimmed;
     return <String>['intitle:$term', 'inauthor:$term'];
+  }
+
+  /// Field-unrestricted fallback query for combined title+author input (e.g.
+  /// `"suç ve ceza dostoyevski"`) that `intitle:`/`inauthor:` alone can miss.
+  static String buildPlainSearchQuery(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return '';
+    return trimmed.contains(' ') ? '"$trimmed"' : trimmed;
   }
 
   /// Builds a field-prefixed `q` value — never bare free text.
@@ -71,14 +102,29 @@ abstract final class GoogleBooksUtils {
     return books.where((book) {
       final key =
           book.isbn13 ??
-          '${book.title.toLowerCase()}|'
-              '${book.authorKeys.isNotEmpty ? Uri.decodeComponent(book.authorKeys.first.substring(2)).toLowerCase() : book.primaryAuthorName.toLowerCase()}';
+          '${normalizeSearchText(book.title)}|'
+              '${book.authorKeys.isNotEmpty ? normalizeSearchText(Uri.decodeComponent(book.authorKeys.first.substring(2))) : normalizeSearchText(book.primaryAuthorName)}';
       return seen.add(key);
     }).toList();
   }
 
+  /// Folds Turkish letters to their ASCII equivalents so diacritic and
+  /// non-diacritic spellings (`"sokağın"` vs `"sokagin"`) compare equal.
+  /// Only used for client-side comparison/dedup — never sent as `q=`.
+  static String _foldTurkish(String input) {
+    const from = 'İIıŞşĞğÇçÖöÜü';
+    const to = 'iiissggccoouu';
+    final buffer = StringBuffer();
+    for (var i = 0; i < input.length; i++) {
+      final ch = input[i];
+      final idx = from.indexOf(ch);
+      buffer.write(idx >= 0 ? to[idx] : ch);
+    }
+    return buffer.toString();
+  }
+
   static String normalizeSearchText(String input) {
-    return input
+    return _foldTurkish(input)
         .toLowerCase()
         .replaceAll(_nonAlnum, ' ')
         .replaceAll(_multiSpace, ' ')
@@ -173,9 +219,34 @@ abstract final class GoogleBooksUtils {
     return copy;
   }
 
-  /// Deduplicate, then rank by relevance (when [query] given) and quality.
+  /// Minimum [relevanceScore] a result must reach to survive [query]
+  /// filtering. Below this, a book shares no meaningful title/author overlap
+  /// with the query and is likely a popularity-ranked false positive.
+  static const double minRelevanceScore = 1.5;
+
+  /// Drops results with no meaningful relevance to [query]. If every result
+  /// would be dropped, returns [books] unchanged rather than emptying it —
+  /// a few weak matches are better than none.
+  static List<BookModel> filterByMinRelevance(
+    List<BookModel> books,
+    String query, {
+    double minScore = minRelevanceScore,
+  }) {
+    if (query.trim().isEmpty) return books;
+    final filtered = books
+        .where((b) => relevanceScore(b, query) >= minScore)
+        .toList();
+    return filtered.isEmpty ? books : filtered;
+  }
+
+  /// Deduplicate, filter out irrelevant noise (when [query] given), then rank
+  /// by relevance and quality.
   static List<BookModel> postProcess(List<BookModel> books, {String? query}) {
-    return sortByRelevanceThenQuality(deduplicate(books), query: query);
+    final deduped = deduplicate(books);
+    final relevant = query != null && query.trim().isNotEmpty
+        ? filterByMinRelevance(deduped, query)
+        : deduped;
+    return sortByRelevanceThenQuality(relevant, query: query);
   }
 
   static String searchCacheKey({
@@ -184,7 +255,7 @@ abstract final class GoogleBooksUtils {
     required int page,
     required int limit,
   }) {
-    return 'search|v3|${query.toLowerCase().trim()}|$lang|$page|$limit';
+    return 'search|v4|${query.toLowerCase().trim()}|$lang|$page|$limit';
   }
 
   static String authorCacheKey({
@@ -192,6 +263,6 @@ abstract final class GoogleBooksUtils {
     required String lang,
     required int limit,
   }) {
-    return 'author|v2|${authorName.toLowerCase().trim()}|$lang|$limit';
+    return 'author|v3|${authorName.toLowerCase().trim()}|$lang|$limit';
   }
 }

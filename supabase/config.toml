@@ -20,6 +20,11 @@ port = 54323
 # Anonymous + publishable-key clients send apikey only (see ApiService).
 verify_jwt = false
 
+[functions.rubricatorApi]
+# Proxies FastAPI (semantic + document chat). API key comes from edge secrets.
+# Clients send apikey / session JWT (see SupabaseService.edgeFunctionHeaders).
+verify_jwt = false
+
 [functions.warm-genre-cache]
 # Invoked by pg_cron with service role; no end-user JWT.
 verify_jwt = false

@@ -2,38 +2,35 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/env.dart';
 import '../../../../core/logging/app_logger.dart';
+import '../../../../core/network/supabase_service.dart';
 import '../models/semantic_book_result_model.dart';
 import '../../domain/entities/semantic_search_request.dart';
 
+/// Semantic FastAPI traffic goes through the `rubricatorApi` edge function so
+/// the API key stays a Supabase secret, not a client bundle value.
 class SemanticApiDataSource {
   SemanticApiDataSource({Dio? dio})
       : _dio = dio ??
             Dio(
               BaseOptions(
-                baseUrl: Env.semanticApiBaseUrl,
+                baseUrl: '${SupabaseService.url}/functions/v1/rubricatorApi',
                 connectTimeout: const Duration(seconds: 20),
                 receiveTimeout: const Duration(seconds: 30),
                 sendTimeout: const Duration(seconds: 20),
-                headers: _defaultHeaders(),
+                headers: {
+                  ...SupabaseService.edgeFunctionHeaders(),
+                  'Content-Type': 'application/json',
+                },
                 validateStatus: (code) => code != null && code < 500,
               ),
             );
 
   final Dio _dio;
 
-  static Map<String, String> _defaultHeaders() {
-    final headers = <String, String>{'Content-Type': 'application/json'};
-    final apiKey = Env.semanticApiKey.trim();
-    if (apiKey.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $apiKey';
-    }
-    return headers;
-  }
-
   Future<List<SemanticBookResultModel>> search(SemanticSearchRequest request) async {
     if (!Env.hasSemanticApiConfig) {
       throw StateError(
-        'Semantic API is not configured. Set SEMANTIC_API_BASE_URL in env.',
+        'Semantic API is not configured. Supabase must be initialized.',
       );
     }
 

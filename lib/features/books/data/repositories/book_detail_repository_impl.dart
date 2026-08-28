@@ -52,6 +52,11 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   }
 
   @override
+  Future<void> deleteExternalReview(String reviewId) {
+    return _remote.deleteExternalReview(reviewId);
+  }
+
+  @override
   Future<List<ExternalReviewEntity>> getExternalReviews(String bookId) async {
     final list = await _remote.getExternalReviews(bookId);
     return list.map((e) => e.toEntity()).toList();

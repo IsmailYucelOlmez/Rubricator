@@ -17,9 +17,6 @@ class Env {
   static const _supabaseAnonKeyDefine =
       String.fromEnvironment('SUPABASE_ANON_KEY');
   static const _sentryDsnDefine = String.fromEnvironment('SENTRY_DSN');
-  static const _semanticApiBaseUrlDefine =
-      String.fromEnvironment('SEMANTIC_API_BASE_URL');
-  static const _semanticApiKeyDefine = String.fromEnvironment('SEMANTIC_API_KEY');
 
   /// Loads `assets/.env` when present. Safe to call when the asset is missing.
   static Future<void> load() async {
@@ -35,15 +32,11 @@ class Env {
 
   static String get sentryDsn => _resolve('SENTRY_DSN', _sentryDsnDefine);
 
-  static String get semanticApiBaseUrl =>
-      _resolve('SEMANTIC_API_BASE_URL', _semanticApiBaseUrlDefine);
-
-  static String get semanticApiKey =>
-      _resolve('SEMANTIC_API_KEY', _semanticApiKeyDefine);
-
   static bool get hasSentryConfig => sentryDsn.trim().isNotEmpty;
 
-  static bool get hasSemanticApiConfig => semanticApiBaseUrl.trim().isNotEmpty;
+  /// Semantic + document-chat APIs are reached via the `rubricatorApi` edge
+  /// function; available whenever Supabase is configured.
+  static bool get hasSemanticApiConfig => hasSupabaseConfig;
 
   static bool get hasSupabaseConfig =>
       supabaseUrl.trim().isNotEmpty && supabaseAnonKey.trim().isNotEmpty;

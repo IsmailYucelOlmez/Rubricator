@@ -92,8 +92,8 @@ class _ListsTab extends StatelessWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => ListDetailPage(list: list)),
                 ),
-                onLikeTap: () {},
-                onSaveTap: () {},
+                onLikeTap: () async {},
+                onSaveTap: () async {},
               );
             }
 

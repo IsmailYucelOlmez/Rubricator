@@ -29,6 +29,7 @@ final homeRepositoryProvider = Provider<HomeRepository>(
     ref.watch(_homeRemoteDataSourceProvider),
     ref.watch(_homeCacheDataSourceProvider),
     ref.watch(bookRepositoryProvider),
+    lang: ref.watch(localeProvider).languageCode,
   ),
 );
 

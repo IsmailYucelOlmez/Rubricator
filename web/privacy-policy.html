@@ -28,6 +28,27 @@
       .muted {
         color: #6b7280;
       }
+      .note {
+        background: #f3f4f6;
+        border-left: 3px solid #9ca3af;
+        padding: 12px 16px;
+        margin: 12px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 20px;
+        font-size: 0.95rem;
+      }
+      th, td {
+        border: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+      }
       ul {
         padding-left: 20px;
       }
@@ -43,175 +64,519 @@
   </head>
   <body>
     <main>
-      <h1>Privacy Policy for Rubricator</h1>
-      <p class="muted"><strong>Last updated:</strong> 19.04.2026</p>
+      <h1>Rubricator Privacy Policy</h1>
+      <p class="muted"><strong>Last updated:</strong> 28.07.2026</p>
+      <p class="muted">
+        App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)<br />
+        Developer / Data Controller: İsmail Yücel Ölmez<br />
+        Contact: <a href="mailto:support@rubricator.app">support@rubricator.app</a>
+      </p>
 
       <h2>1. Introduction</h2>
       <p>
-        Welcome to Rubricator ("we", "our", or "us"). Rubricator is a social
-        reading platform where users can discover books, create lists, track
-        reading habits, and share content.
+        Rubricator ("the app", "we", "our") is a mobile/desktop application that
+        offers book discovery, personal reading tracking, book notes/reviews,
+        reading lists, and AI-assisted book features.
       </p>
       <p>
-        This Privacy Policy explains how we collect, use, disclose, and
-        safeguard your information when you use our mobile application.
+        This Privacy Policy explains which data is collected when you use
+        Rubricator, how that data is used, with whom and why it is shared, how
+        long it is retained, and your rights over your data. The policy was
+        prepared by reviewing the app’s actual technical architecture (including
+        Supabase, a custom API server, and Google Gemini–based AI features).
+      </p>
+      <p>
+        By using the app, you accept the data processing activities described in
+        this policy. If you do not accept the policy, please do not use the app.
       </p>
 
       <hr />
 
-      <h2>2. Information We Collect</h2>
-      <h3>2.1 Personal Information</h3>
-      <p>When you create an account, we may collect:</p>
-      <ul>
-        <li>Email address</li>
-        <li>Username</li>
-        <li>Profile information (optional)</li>
-      </ul>
+      <h2>2. What Data We Collect</h2>
 
-      <h3>2.2 User-Generated Content</h3>
-      <p>We collect content you create within the app, including:</p>
-      <ul>
-        <li>Book reviews</li>
-        <li>Ratings</li>
-        <li>Quotes</li>
-        <li>Lists you create</li>
-        <li>Comments</li>
-      </ul>
-
-      <h3>2.3 Usage Data</h3>
-      <p>We may automatically collect:</p>
-      <ul>
-        <li>App usage interactions</li>
-        <li>Feature usage (e.g., lists, stats, search)</li>
-        <li>Device information (OS version, device type)</li>
-      </ul>
-
-      <h3>2.4 Authentication Data</h3>
+      <h3>2.1 Information You Provide When Creating an Account</h3>
       <p>
-        If you log in using third-party providers (e.g., Google), we may
-        receive:
+        Accounts in Rubricator are created with an email address and password
+        (one-tap third-party sign-in — Google/Apple Sign-In — is
+        <strong>not</strong> used). Data we collect during registration and
+        authentication:
       </p>
       <ul>
-        <li>Basic profile information</li>
-        <li>Email address</li>
+        <li>Your email address</li>
+        <li>
+          Your password (passwords are not stored on our servers; they are stored
+          securely (hashed) by our authentication provider, Supabase Auth, and
+          are never kept in plain text)
+        </li>
+        <li>Username / display name</li>
+        <li>
+          (If applicable) one-time codes (OTP) created during email verification
+          / password reset
+        </li>
       </ul>
+
+      <h3>2.2 Profile Information</h3>
+      <ul>
+        <li>
+          Profile photo (optional; you may upload an image from your gallery;
+          gallery access is requested only when you start an upload)
+        </li>
+        <li>Other information you choose to show on your profile</li>
+      </ul>
+
+      <h3>2.3 Content You Create in the App</h3>
+      <p>
+        The following content you create while using the app is stored and
+        associated with your account:
+      </p>
+      <ul>
+        <li>Book reviews and ratings (out-of-10 rating system)</li>
+        <li>Book notes and quotes</li>
+        <li>
+          Reading lists (social lists) you create and books you add to them
+        </li>
+        <li>Favorite books</li>
+        <li>
+          “Read / reading” statuses, reading logs, and completed-book records
+        </li>
+        <li>Likes on reviews, lists, and content</li>
+        <li>Habit tracker data — e.g. reading goal/streak records</li>
+        <li>
+          In-app search history (may be kept to improve recommendation quality)
+        </li>
+      </ul>
+
+      <h3>2.4 Data Processed for AI Features</h3>
+      <p>
+        Rubricator offers the following AI-assisted features. Inputs for these
+        features are sent to <strong>Google Gemini</strong> models (embedding and
+        gemini-2.5-flash):
+      </p>
+      <p>
+        <strong>a) Semantic Book Discovery (Virgil / Semantic Discovery):</strong>
+        Natural-language search queries are sent via our own server (FastAPI
+        backend) to the Google Gemini API to produce relevant book
+        recommendations.
+      </p>
+      <p>
+        <strong>b) Document Chat (Q&amp;A with PDF/EPUB):</strong>
+        If you use this feature, <strong>PDF or EPUB files</strong> you upload
+        from your device are temporarily transferred to our server, chunked,
+        vectorized (embedding), and sent to Google Gemini models to answer your
+        questions.
+      </p>
+      <ul>
+        <li>
+          Uploaded documents and related session data are
+          <strong>not permanently stored in our database</strong>; they are held
+          temporarily (in memory/cache) for the session and deleted after a
+          timeout (TTL) or when you end the session.
+        </li>
+        <li>
+          This feature is entirely optional; this processing does not occur
+          unless you upload a document.
+        </li>
+      </ul>
+      <p>
+        <strong>c) Book Chat / Recommendations (Virgil):</strong>
+        Questions and recommendations about books are likewise sent to the AI
+        provider. Usage may be limited by daily quotas; anonymous usage counters
+        (e.g. daily request counts) may be kept for this purpose.
+      </p>
+      <div class="note">
+        <strong>Important:</strong> Data sent to the AI provider (Google Gemini)
+        is subject to that provider’s own privacy policy and data-processing
+        terms. We advise against uploading documents that contain sensitive
+        personal data (identity, health, financial information, etc.) to Document
+        Chat.
+      </div>
+
+      <h3>2.5 Book Catalog Data (Third-Party Sources)</h3>
+      <p>
+        Book search, cover images, descriptions, and author information are
+        fetched from the <strong>Google Books API</strong> via a proxy on our
+        server. This data belongs to books and does not contain personal data
+        about you.
+      </p>
+
+      <h3>2.6 Automatically Collected Technical Data</h3>
+      <ul>
+        <li>
+          <strong>Crash/error reports:</strong> We use <strong>Sentry</strong> to
+          monitor app stability. When an error occurs, device/OS info, app
+          version, stack trace, and context (e.g. which screen you were on) are
+          sent to Sentry. These reports do not, by default, include direct
+          identifiers such as name or email.
+        </li>
+        <li>
+          <strong>Connectivity status:</strong> Whether you have an internet
+          connection is checked only on-device; this information is not sent to
+          our servers.
+        </li>
+        <li>
+          <strong>Local notification data:</strong> Reading reminders are
+          scheduled entirely on your device using the OS notification/timer
+          infrastructure; this data is not sent to our servers.
+        </li>
+      </ul>
+
+      <h3>2.7 Device Permissions</h3>
+      <p>Rubricator may request the following permissions:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Permission</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Internet access</td>
+            <td>Communicate with our servers and third-party services</td>
+          </tr>
+          <tr>
+            <td>Send notifications</td>
+            <td>Reading reminders and in-app notifications</td>
+          </tr>
+          <tr>
+            <td>Exact alarm / timer</td>
+            <td>Show reading reminders at the time you set</td>
+          </tr>
+          <tr>
+            <td>Gallery / file access</td>
+            <td>
+              Upload a profile photo; select PDF/EPUB for Document Chat
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Location, camera, contacts, microphone, and similar permissions are
+        <strong>not</strong> requested by the app.
+      </p>
 
       <hr />
 
-      <h2>3. How We Use Your Information</h2>
+      <h2>3. Why We Process Your Data</h2>
       <ul>
-        <li>Provide and maintain the app</li>
-        <li>Enable social features (lists, comments, likes)</li>
-        <li>Personalize content and recommendations</li>
-        <li>Improve app performance and features</li>
-        <li>Communicate important updates</li>
+        <li>
+          Create your account, verify your identity, and manage your session
+          securely
+        </li>
+        <li>
+          Provide core features such as book discovery, search, favorites, lists,
+          notes, and reviews
+        </li>
+        <li>
+          Run AI-assisted semantic search, book recommendations, and Document
+          Chat
+        </li>
+        <li>
+          Offer personalized book recommendations (based on your reading history
+          and interactions)
+        </li>
+        <li>Send reading reminders and habit-tracker notifications</li>
+        <li>Monitor app performance and detect/fix bugs</li>
+        <li>
+          Prevent abuse and enforce service quotas (e.g. daily AI usage limits)
+        </li>
+        <li>Comply with legal obligations and protect user safety</li>
       </ul>
+      <p>
+        Your data is processed on the legal bases of <strong>consent</strong>
+        (e.g. choosing to use AI features),
+        <strong>performance of a contract</strong> (providing your account and
+        the service), and <strong>legitimate interest</strong> (security, bug
+        fixing, service improvement).
+      </p>
 
       <hr />
 
-      <h2>4. Data Storage and Security</h2>
-      <p>
-        Your data is stored securely using third-party infrastructure such as
-        Supabase.
-      </p>
-      <p>We take reasonable measures to protect your data, including:</p>
+      <h2>4. Where Data Is Stored and Security</h2>
+      <p>Your data is hosted on the following infrastructure:</p>
       <ul>
-        <li>Secure authentication</li>
-        <li>Encrypted connections (HTTPS)</li>
-        <li>Access control mechanisms</li>
+        <li>
+          <strong>Supabase</strong> (PostgreSQL database, authentication, file
+          storage, and serverless functions) — account data, user content, book
+          catalog cache, and profile photos. Access is limited by Row Level
+          Security policies.
+        </li>
+        <li>
+          Our own <strong>API server (FastAPI)</strong> — processes semantic
+          search and Document Chat requests; Document Chat session data is held
+          non-persistently (temporarily).
+        </li>
+        <li>
+          <strong>Google Gemini API</strong> — used to process AI-based search,
+          recommendation, and Document Chat requests.
+        </li>
+        <li>
+          <strong>Sentry</strong> — used to collect crash/error reports.
+        </li>
       </ul>
+      <p>Measures we take to protect your data include:</p>
+      <ul>
+        <li>All communication uses encrypted connections (HTTPS/TLS)</li>
+        <li>Passwords are never stored in plain text</li>
+        <li>
+          Database access is scoped to the account owner via Row Level Security
+        </li>
+        <li>Server-side authorization and access-control mechanisms are applied</li>
+      </ul>
+      <p>
+        No internet-based system or data transmission method can be guaranteed
+        100% secure; however, we take reasonable technical and organizational
+        measures to protect your data.
+      </p>
 
       <hr />
 
       <h2>5. Data Sharing</h2>
-      <p>We do NOT sell your personal data.</p>
-      <p>We may share data only in the following cases:</p>
+      <p>
+        We do <strong>not</strong> sell your personal data. Your data is shared
+        only in the following cases and with the following parties:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Recipient</th>
+            <th>Shared data</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Supabase</td>
+            <td>Account, profile, user content</td>
+            <td>Hosting, database, authentication, file storage</td>
+          </tr>
+          <tr>
+            <td>Google Gemini (Google)</td>
+            <td>
+              Your search queries, uploaded document contents, chat messages
+            </td>
+            <td>AI-assisted search/recommendation/Document Chat</td>
+          </tr>
+          <tr>
+            <td>Google Books API</td>
+            <td>Book search terms</td>
+            <td>
+              Fetch book catalog data (does not contain personal data)
+            </td>
+          </tr>
+          <tr>
+            <td>Sentry</td>
+            <td>Device/app technical info, error traces</td>
+            <td>Debugging and stability monitoring</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Your data may also be shared:</p>
       <ul>
-        <li>With service providers (e.g., backend hosting)</li>
-        <li>To comply with legal obligations</li>
-        <li>To protect user safety and rights</li>
+        <li>
+          To comply with a legal obligation, court order, or official authority
+          request
+        </li>
+        <li>
+          To protect the safety, rights, or property of our users, the app, or
+          third parties
+        </li>
+        <li>
+          In the event of a merger, acquisition, or asset sale (in which case you
+          will be notified in advance)
+        </li>
       </ul>
 
       <hr />
 
       <h2>6. Public Content</h2>
-      <p>Some features are inherently public:</p>
+      <p>
+        As a social reading platform, Rubricator allows some content to be
+        <strong>public</strong>. The following may be visible to other users (and
+        in some cases to visitors who are not signed in), by default or according
+        to your preference:
+      </p>
       <ul>
-        <li>Public lists</li>
-        <li>Reviews</li>
-        <li>Comments</li>
+        <li>Reading lists you share publicly</li>
+        <li>
+          Your book reviews, ratings, notes, and quotes (shown with your
+          username)
+        </li>
+        <li>Likes you give or receive</li>
       </ul>
-      <p>Content you share publicly may be visible to other users.</p>
+      <p>
+        Even if you delete public content, it may already have been viewed,
+        copied, or shared by others; we have no control over such secondary
+        sharing.
+      </p>
 
       <hr />
 
-      <h2>7. Data Retention</h2>
-      <p>We retain your data:</p>
+      <h2>7. Data Retention Periods</h2>
       <ul>
-        <li>As long as your account is active</li>
-        <li>Or as needed to provide services</li>
+        <li>
+          Account and content data are retained while your account is active.
+        </li>
+        <li>
+          Files and session data uploaded for Document Chat are
+          <strong>automatically deleted</strong> shortly after processing
+          completes / the session expires; they are not stored permanently.
+        </li>
+        <li>
+          When you request account deletion, your account profile and personal
+          data are deleted <strong>within 7 days</strong> after the request is
+          verified. Some data may be retained for up to
+          <strong>30 additional days</strong> where required by legal
+          obligations.
+        </li>
+        <li>
+          Crash/error reports are subject to Sentry’s own retention policy.
+        </li>
       </ul>
-      <p>You may request deletion of your data at any time.</p>
 
       <hr />
 
       <h2>8. Your Rights</h2>
-      <p>You have the right to:</p>
+      <p>
+        Under Türkiye’s Personal Data Protection Law (KVKK) and/or the General
+        Data Protection Regulation (GDPR), to the extent applicable, you have the
+        right to:
+      </p>
       <ul>
-        <li>Access your data</li>
-        <li>Update your information</li>
-        <li>Request deletion of your account</li>
-        <li>Withdraw consent</li>
+        <li>Learn whether your personal data is being processed</li>
+        <li>Request information about your processed data</li>
+        <li>Access your data and obtain a copy (in a portable format)</li>
+        <li>Request correction of inaccurate or incomplete data</li>
+        <li>Request deletion or destruction of your data</li>
+        <li>
+          Object to processing or withdraw consent (for consent-based processing
+          such as AI features)
+        </li>
+        <li>
+          Object to outcomes produced solely by automated analysis that are
+          adverse to you
+        </li>
+        <li>
+          Seek redress if you suffer damage due to unlawful processing
+        </li>
       </ul>
       <p>
-        To exercise these rights, contact us at:
-        <a href="mailto:ismailyucelolmez514@gmail.com"
-          >ismailyucelolmez514@gmail.com</a
-        >.
+        You may exercise these rights by contacting
+        <a href="mailto:support@rubricator.app">support@rubricator.app</a>.
       </p>
 
       <hr />
 
-      <h2>9. Children's Privacy</h2>
+      <h2>9. Account and Data Deletion</h2>
+      <p>To delete your account and associated data:</p>
+      <ol>
+        <li>
+          Email
+          <a href="mailto:support@rubricator.app">support@rubricator.app</a>.
+        </li>
+        <li>
+          Use the subject line <strong>"Account Deletion Request"</strong>.
+        </li>
+        <li>
+          Include the email address registered with Rubricator in the message
+          body.
+        </li>
+      </ol>
       <p>
-        Rubricator is not intended for users under the age of 13. We do not
-        knowingly collect data from children.
+        After your request is verified, your account profile and personal data
+        are deleted <strong>within 7 days</strong>; limited data required for
+        legal retention may be kept for up to
+        <strong>30 additional days</strong>.
       </p>
 
       <hr />
 
-      <h2>10. Third-Party Services</h2>
-      <p>The app may use third-party services such as:</p>
+      <h2>10. Children’s Privacy</h2>
+      <p>
+        Rubricator is <strong>not directed at children under 13</strong> and does
+        not knowingly collect data from that age group. If we learn that a child
+        under 13 has provided us personal data, we will delete it within a
+        reasonable time. If you are a parent or guardian and believe your child
+        has provided us data, please contact us at
+        <a href="mailto:support@rubricator.app">support@rubricator.app</a>.
+      </p>
+
+      <hr />
+
+      <h2>11. Local Storage (Data Stored on Device)</h2>
+      <p>
+        The app stores some preferences and cache data (e.g. session info, theme
+        preference, temporary content cache) locally on your device. This data is
+        removed when you uninstall the app and is not automatically sent to our
+        servers.
+      </p>
+
+      <hr />
+
+      <h2>12. International Data Transfers</h2>
+      <p>
+        Our infrastructure providers (Supabase, Google, Sentry) may process your
+        data on servers outside Türkiye (e.g. the European Union or the United
+        States). For such transfers, we rely on the security and compliance
+        mechanisms offered by those providers (standard contractual clauses, data
+        processing agreements, etc.).
+      </p>
+
+      <hr />
+
+      <h2>13. Third-Party Services and Links</h2>
+      <p>
+        The app may contain links to third-party websites or resources (e.g.
+        external links opened via <code>url_launcher</code>). Those third-party
+        sites have their own privacy policies; this policy covers only
+        Rubricator’s own data processing.
+      </p>
+      <p>Main third-party services we use:</p>
       <ul>
-        <li>Google (authentication, analytics)</li>
-        <li>Supabase (data storage)</li>
+        <li>
+          <a href="https://supabase.com/privacy" target="_blank" rel="noopener"
+            >Supabase Privacy Policy</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener"
+            >Google Privacy Policy</a
+          >
+          (for Gemini API and Google Books API)
+        </li>
+        <li>
+          <a href="https://sentry.io/privacy/" target="_blank" rel="noopener"
+            >Sentry Privacy Policy</a
+          >
+        </li>
       </ul>
-      <p>These services have their own privacy policies.</p>
 
       <hr />
 
-      <h2>11. International Data Transfers</h2>
+      <h2>14. Changes to This Policy</h2>
       <p>
-        Your information may be processed in different countries where our
-        service providers operate.
+        We may update this Privacy Policy from time to time. For material
+        changes, we may notify you via an in-app notice or email. The current
+        policy is always published with the “Last updated” date at the top of
+        this page. We recommend reviewing the policy regularly.
       </p>
 
       <hr />
 
-      <h2>12. Changes to This Privacy Policy</h2>
+      <h2>15. Contact</h2>
       <p>
-        We may update this policy from time to time. Changes will be reflected
-        by updating the "Last updated" date.
+        For questions, requests, or complaints about this Privacy Policy or the
+        processing of your personal data:
       </p>
-
-      <hr />
-
-      <h2>13. Contact Us</h2>
       <p>
-        If you have any questions about this Privacy Policy, contact us:
-        <a href="mailto:ismailyucelolmez514@gmail.com"
-          >ismailyucelolmez514@gmail.com</a
-        >.
+        <strong>Rubricator</strong><br />
+        Email:
+        <a href="mailto:support@rubricator.app">support@rubricator.app</a
+        ><br />
+        Developer: İsmail Yücel Ölmez
       </p>
       <p>By using Rubricator, you agree to this Privacy Policy.</p>
     </main>

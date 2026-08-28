@@ -50,6 +50,7 @@ class BookDetailRemoteDataSource {
       'book_id': review.bookId,
       'user_id': userId,
       'content': review.content,
+      'is_spoiler': review.isSpoiler,
     });
   }
 
@@ -57,7 +58,10 @@ class BookDetailRemoteDataSource {
     final userId = _requiredUserId();
     await _client
         .from('reviews')
-        .update(<String, dynamic>{'content': review.content})
+        .update(<String, dynamic>{
+          'content': review.content,
+          'is_spoiler': review.isSpoiler,
+        })
         .eq('id', review.id)
         .eq('user_id', userId);
   }
@@ -130,6 +134,7 @@ class BookDetailRemoteDataSource {
             userRating: ratingsByUser[review.userId],
             isFavorite: favoritesByUser[review.userId] ?? false,
             userName: review.userName,
+            isSpoiler: review.isSpoiler,
           ),
         )
         .toList();
@@ -181,12 +186,27 @@ class BookDetailRemoteDataSource {
 
   Future<void> addExternalReview(ExternalReviewModel review) async {
     final userId = _requiredUserId();
-    await _client.from('external_reviews').insert(<String, dynamic>{
+    final payload = <String, dynamic>{
       'book_id': review.bookId,
       'user_id': userId,
       'title': review.title,
       'url': review.url,
-    });
+      'description': review.description,
+    };
+    final userName = review.userName?.trim();
+    if (userName != null && userName.isNotEmpty) {
+      payload['user_name'] = userName;
+    }
+    await _client.from('external_reviews').insert(payload);
+  }
+
+  Future<void> deleteExternalReview(String reviewId) async {
+    final userId = _requiredUserId();
+    await _client
+        .from('external_reviews')
+        .delete()
+        .eq('id', reviewId)
+        .eq('user_id', userId);
   }
 
   Future<List<ExternalReviewModel>> getExternalReviews(String bookId) async {

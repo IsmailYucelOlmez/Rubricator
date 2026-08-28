@@ -30,6 +30,7 @@ class ReviewEntity {
     this.userRating,
     this.isFavorite = false,
     this.userName,
+    this.isSpoiler = false,
   });
 
   final String id;
@@ -42,6 +43,7 @@ class ReviewEntity {
   final int? userRating;
   final bool isFavorite;
   final String? userName;
+  final bool isSpoiler;
 }
 
 class ExternalReviewEntity {
@@ -52,6 +54,8 @@ class ExternalReviewEntity {
     required this.title,
     required this.url,
     required this.createdAt,
+    this.description = '',
+    this.userName,
   });
 
   final String id;
@@ -60,6 +64,8 @@ class ExternalReviewEntity {
   final String title;
   final String url;
   final DateTime createdAt;
+  final String description;
+  final String? userName;
 }
 
 class QuoteEntity {

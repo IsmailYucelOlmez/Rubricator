@@ -1,4 +1,5 @@
 import '../../../books/data/repositories/book_repository.dart';
+import '../../../books/data/utils/google_books_utils.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../domain/entities/profile_stats_entities.dart';
 import '../../domain/repositories/profile_stats_repository.dart';
@@ -44,7 +45,7 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
     for (final row in rows) {
       if (row.hasSnapshot) {
         out.add(_bookFromSnapshot(row));
-      } else {
+      } else if (GoogleBooksUtils.isFetchableVolumeId(row.bookId)) {
         needFetch.add(row.bookId);
       }
     }

@@ -45,6 +45,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
   final _searchCtrl = TextEditingController();
   bool _isPublic = true;
   bool _saving = false;
+  bool _searching = false;
   bool _loadingItems = false;
   List<Book> _searchResults = const <Book>[];
   List<_PickedBook> _picked = <_PickedBook>[];
@@ -229,12 +230,14 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                               hintText: l10n.searchViaGoogleBooks,
                               isDense: true,
                             ),
-                            onSubmitted: (_) => _searchBooks(),
+                            onSubmitted: (_) {
+                              if (!_searching && !_saving) _searchBooks();
+                            },
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         FilledButton(
-                          onPressed: _searchBooks,
+                          onPressed: _searching || _saving ? null : _searchBooks,
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.md,
@@ -242,7 +245,13 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                             ),
                             visualDensity: VisualDensity.compact,
                           ),
-                          child: Text(l10n.search),
+                          child: _searching
+                              ? const AppLoadingIndicator(
+                                  size: 18,
+                                  strokeWidth: 2,
+                                  centered: false,
+                                )
+                              : Text(l10n.search),
                         ),
                       ],
                     ),
@@ -273,7 +282,7 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                   AppSpacing.sm,
                 ),
                 child: FilledButton(
-                  onPressed: _saving ? null : _save,
+                  onPressed: _saving || _searching ? null : _save,
                   child: _saving
                       ? const AppLoadingIndicator(
                           size: 18,
@@ -373,7 +382,8 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
 
   Future<void> _searchBooks() async {
     final query = _searchCtrl.text.trim();
-    if (query.length < 2) return;
+    if (query.length < 2 || _searching || _saving) return;
+    setState(() => _searching = true);
     try {
       final result = await ref
           .read(bookRepositoryProvider)
@@ -382,6 +392,8 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
       setState(() => _searchResults = result.books.take(20).toList());
     } catch (e) {
       if (mounted) AppFeedback.showErrorSnackBar(context, e);
+    } finally {
+      if (mounted) setState(() => _searching = false);
     }
   }
 

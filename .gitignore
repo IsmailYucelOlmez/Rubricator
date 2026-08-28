@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 *.env
+!assets/.env.example
 env.production.json
 env.development.json
 supabase/.env

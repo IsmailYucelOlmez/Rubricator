@@ -41,8 +41,7 @@ class DocumentChatException implements Exception {
       case DioExceptionType.receiveTimeout:
         return 'Connection timed out. Is the document API reachable?';
       case DioExceptionType.connectionError:
-        return 'Cannot reach the document API. Check SEMANTIC_API_BASE_URL '
-            '(use adb reverse + 127.0.0.1 on device, or open firewall for LAN IP).';
+        return 'Cannot reach the document API via the rubricatorApi edge function.';
       default:
         return error.message ?? 'Network error';
     }

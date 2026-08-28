@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading.dart';
 import '../../domain/entities/list_entities.dart';
 
-class ListCard extends StatelessWidget {
+class ListCard extends StatefulWidget {
   const ListCard({
     super.key,
     required this.list,
@@ -15,12 +16,43 @@ class ListCard extends StatelessWidget {
 
   final ListEntity list;
   final VoidCallback onTap;
-  final VoidCallback onLikeTap;
-  final VoidCallback onSaveTap;
+  final Future<void> Function() onLikeTap;
+  final Future<void> Function() onSaveTap;
+
+  @override
+  State<ListCard> createState() => _ListCardState();
+}
+
+class _ListCardState extends State<ListCard> {
+  bool _likeBusy = false;
+  bool _saveBusy = false;
+
+  Future<void> _runLike() async {
+    if (_likeBusy) return;
+    setState(() => _likeBusy = true);
+    try {
+      await widget.onLikeTap();
+    } finally {
+      if (mounted) setState(() => _likeBusy = false);
+    }
+  }
+
+  Future<void> _runSave() async {
+    if (_saveBusy) return;
+    setState(() => _saveBusy = true);
+    try {
+      await widget.onSaveTap();
+    } finally {
+      if (mounted) setState(() => _saveBusy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final previewCount = list.previewCoverImageUrls.isEmpty ? 4 : list.previewCoverImageUrls.length.clamp(1, 5);
+    final list = widget.list;
+    final previewCount = list.previewCoverImageUrls.isEmpty
+        ? 4
+        : list.previewCoverImageUrls.length.clamp(1, 5);
     final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
       fontSize: (Theme.of(context).textTheme.titleMedium?.fontSize ?? 16) * 0.8,
     );
@@ -33,9 +65,14 @@ class ListCard extends StatelessWidget {
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
+        onTap: widget.onTap,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.sm, AppSpacing.sm, AppSpacing.sm, AppSpacing.xs),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.sm,
+            AppSpacing.sm,
+            AppSpacing.sm,
+            AppSpacing.xs,
+          ),
           child: SizedBox(
             height: 140,
             child: Row(
@@ -51,11 +88,14 @@ class ListCard extends StatelessWidget {
                         builder: (context, constraints) {
                           const overlap = 18.0;
                           final maxWidth = constraints.maxWidth;
-                          final coverWidth = (maxWidth + (previewCount - 1) * overlap) / previewCount;
+                          final coverWidth =
+                              (maxWidth + (previewCount - 1) * overlap) /
+                              previewCount;
                           return Stack(
                             fit: StackFit.expand,
                             children: List.generate(previewCount, (idx) {
-                              final imageUrl = idx < list.previewCoverImageUrls.length
+                              final imageUrl =
+                                  idx < list.previewCoverImageUrls.length
                                   ? list.previewCoverImageUrls[idx]
                                   : null;
                               return Positioned(
@@ -65,19 +105,26 @@ class ListCard extends StatelessWidget {
                                 child: SizedBox(
                                   width: coverWidth,
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.sm,
+                                    ),
                                     child: imageUrl == null
                                         ? Container(
-                                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceContainerHighest,
                                           )
                                         : Image.network(
                                             imageUrl,
                                             webHtmlElementStrategy:
                                                 WebHtmlElementStrategy.prefer,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (_, _, _) => Container(
-                                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                            ),
+                                            errorBuilder: (_, _, _) =>
+                                                Container(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .surfaceContainerHighest,
+                                                ),
                                           ),
                                   ),
                                 ),
@@ -127,13 +174,19 @@ class ListCard extends StatelessWidget {
                                     visualDensity: VisualDensity.compact,
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
-                                    onPressed: onLikeTap,
-                                    icon: Icon(
-                                      list.isLikedByMe
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      size: 16,
-                                    ),
+                                    onPressed: _likeBusy ? null : _runLike,
+                                    icon: _likeBusy
+                                        ? const AppLoadingIndicator(
+                                            size: 14,
+                                            strokeWidth: 2,
+                                            centered: false,
+                                          )
+                                        : Icon(
+                                            list.isLikedByMe
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            size: 16,
+                                          ),
                                   ),
                                   Text('${list.likeCount}', style: statsStyle),
                                 ],
@@ -146,13 +199,19 @@ class ListCard extends StatelessWidget {
                                 visualDensity: VisualDensity.compact,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                onPressed: onSaveTap,
-                                icon: Icon(
-                                  list.isSavedByMe
-                                      ? Icons.bookmark
-                                      : Icons.bookmark_outline,
-                                  size: 16,
-                                ),
+                                onPressed: _saveBusy ? null : _runSave,
+                                icon: _saveBusy
+                                    ? const AppLoadingIndicator(
+                                        size: 14,
+                                        strokeWidth: 2,
+                                        centered: false,
+                                      )
+                                    : Icon(
+                                        list.isSavedByMe
+                                            ? Icons.bookmark
+                                            : Icons.bookmark_outline,
+                                        size: 16,
+                                      ),
                               ),
                             ),
                           ),
@@ -161,9 +220,15 @@ class ListCard extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.mode_comment_outlined, size: 16),
+                                  const Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 16,
+                                  ),
                                   const SizedBox(width: AppSpacing.xs),
-                                  Text('${list.commentCount}', style: statsStyle),
+                                  Text(
+                                    '${list.commentCount}',
+                                    style: statsStyle,
+                                  ),
                                 ],
                               ),
                             ),

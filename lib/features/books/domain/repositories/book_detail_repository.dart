@@ -9,6 +9,7 @@ abstract class BookDetailRepository {
   Future<List<ReviewEntity>> getReviews(String bookId);
 
   Future<void> addExternalReview(ExternalReviewEntity review);
+  Future<void> deleteExternalReview(String reviewId);
   Future<List<ExternalReviewEntity>> getExternalReviews(String bookId);
 
   Future<void> addQuote(QuoteEntity quote);

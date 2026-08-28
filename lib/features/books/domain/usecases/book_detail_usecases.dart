@@ -27,6 +27,13 @@ class AddExternalReviewUseCase {
       _repository.addExternalReview(review);
 }
 
+class DeleteExternalReviewUseCase {
+  const DeleteExternalReviewUseCase(this._repository);
+  final BookDetailRepository _repository;
+  Future<void> call(String reviewId) =>
+      _repository.deleteExternalReview(reviewId);
+}
+
 class GetExternalReviewsUseCase {
   const GetExternalReviewsUseCase(this._repository);
   final BookDetailRepository _repository;

@@ -28,6 +28,7 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
   final _searchController = TextEditingController();
   Timer? _debounce;
   final _scrollController = ScrollController();
+  String? _deletingNoteId;
 
   @override
   void initState() {
@@ -100,9 +101,11 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
   }
 
   Future<void> _deleteNote(BookNoteEntity note) async {
+    if (_deletingNoteId != null) return;
     final l10n = AppLocalizations.of(context)!;
     final confirm = await confirmDeleteBookNote(context);
     if (confirm != true || !mounted) return;
+    setState(() => _deletingNoteId = note.id);
     try {
       await ref
           .read(publicBookNotesProvider(widget.bookId).notifier)
@@ -114,6 +117,8 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
     } catch (e) {
       if (!mounted) return;
       showBookNoteFeedback(context, e);
+    } finally {
+      if (mounted) setState(() => _deletingNoteId = null);
     }
   }
 
@@ -172,12 +177,15 @@ class _BookNotesTabState extends ConsumerState<BookNotesTab> {
                     note: note,
                     currentUserId: currentUserId,
                     currentUserDisplayName: currentUserDisplayName,
-                    onEdit: note.userId == currentUserId
+                    onEdit: note.userId == currentUserId &&
+                            _deletingNoteId == null
                         ? () => _showEditSheet(note)
                         : null,
-                    onDelete: note.userId == currentUserId
+                    onDelete: note.userId == currentUserId &&
+                            _deletingNoteId == null
                         ? () => _deleteNote(note)
                         : null,
+                    isDeleting: _deletingNoteId == note.id,
                   );
                 },
               );

@@ -35,9 +35,9 @@ class AuthorDetailPage extends ConsumerWidget {
           data: (author) {
             return ListView(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 AppSpacing.md,
-                AppSpacing.lg,
+                BookGridLayout.horizontalPadding,
                 AppSpacing.md,
               ),
               children: [
@@ -116,9 +116,9 @@ class _AuthorDetailSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
+        BookGridLayout.horizontalPadding,
         AppSpacing.md,
-        AppSpacing.lg,
+        BookGridLayout.horizontalPadding,
         AppSpacing.md,
       ),
       children: [

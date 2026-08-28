@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/i18n/fallback_strings.dart';
 import '../models/home_book_model.dart';
 
 class HomeCacheDataSource {
@@ -16,21 +17,26 @@ class HomeCacheDataSource {
   static const _cacheSelectColumns =
       'genre_key, books_json, allowed_weekdays, fetch_completed, is_active, last_fetch_at, last_fetch_status';
 
-  Future<GenreCacheSnapshot?> getGenreCache(String genreKey) async {
-    final map = await getGenreCaches(<String>[genreKey]);
+  Future<GenreCacheSnapshot?> getGenreCache(
+    String genreKey, {
+    required String lang,
+  }) async {
+    final map = await getGenreCaches(<String>[genreKey], lang: lang);
     return map[genreKey];
   }
 
-  /// Single round-trip read for all home sections.
+  /// Single round-trip read for all home sections, for one language.
   Future<Map<String, GenreCacheSnapshot>> getGenreCaches(
-    List<String> genreKeys,
-  ) async {
+    List<String> genreKeys, {
+    required String lang,
+  }) async {
     if (genreKeys.isEmpty) return const <String, GenreCacheSnapshot>{};
 
     final rows = await _client
         .from(_table)
         .select(_cacheSelectColumns)
-        .inFilter('genre_key', genreKeys);
+        .inFilter('genre_key', genreKeys)
+        .eq('lang', lang);
 
     final map = <String, GenreCacheSnapshot>{};
     for (final row in rows as List<dynamic>) {
@@ -65,11 +71,13 @@ class HomeCacheDataSource {
 
   Future<void> saveFetchSuccess({
     required String genreKey,
+    required String lang,
     required List<HomeBookModel> books,
   }) async {
     final payload = books.map((b) => _bookJson(b)).toList();
     await _client.from(_table).upsert(<String, dynamic>{
       'genre_key': genreKey,
+      'lang': lang,
       'books_json': payload,
       'total_count': books.length,
       'last_fetch_at': DateTime.now().toUtc().toIso8601String(),
@@ -77,21 +85,23 @@ class HomeCacheDataSource {
       'last_fetch_error': null,
       'fetch_completed': true,
       'is_active': true,
-    });
+    }, onConflict: 'genre_key,lang');
   }
 
   Future<void> saveFetchFailure({
     required String genreKey,
+    required String lang,
     required Object error,
   }) async {
     await _client.from(_table).upsert(<String, dynamic>{
       'genre_key': genreKey,
+      'lang': lang,
       'last_fetch_at': DateTime.now().toUtc().toIso8601String(),
       'last_fetch_status': 'error',
       'last_fetch_error': error.toString(),
       'fetch_completed': false,
       'is_active': true,
-    });
+    }, onConflict: 'genre_key,lang');
   }
 
   List<HomeBookModel> parseCachedBooks(GenreCacheSnapshot? row) {
@@ -122,11 +132,11 @@ class HomeCacheDataSource {
           : 'unknown',
       title: (json['title'] as String?)?.trim().isNotEmpty == true
           ? (json['title'] as String).trim()
-          : 'Unknown title',
+          : FallbackStrings.unknownTitle,
       coverImageUrl: (json['cover_image_url'] as String?)?.trim(),
       authorNames: (json['author_names'] as String?)?.trim().isNotEmpty == true
           ? (json['author_names'] as String).trim()
-          : 'Unknown author',
+          : FallbackStrings.unknownAuthor,
       languages: languagesRaw is List
           ? languagesRaw.whereType<String>().toList()
           : null,

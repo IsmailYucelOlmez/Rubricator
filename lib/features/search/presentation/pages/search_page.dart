@@ -77,7 +77,12 @@ class _SearchPageState extends ConsumerState<SearchPage> with RouteAware {
       bottom: false,
       child: ResponsiveScaffoldBody(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md + 8,
+            AppSpacing.md,
+            AppSpacing.md + 8,
+            AppSpacing.md,
+          ),
           child: _KeywordSearchBody(
             controller: _controller,
             focusNode: _focusNode,

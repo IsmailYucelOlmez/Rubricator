@@ -14,9 +14,10 @@ const double kBookGridCoverRadius = 10;
 /// Shared 2-column book grid metrics (Virgil recommendation layout).
 abstract final class BookGridLayout {
   static const int crossAxisCount = 2;
-  static const double crossAxisSpacing = AppSpacing.md;
+  static const double crossAxisSpacing = 30;
   static const double mainAxisSpacing = AppSpacing.lg;
   static const double childAspectRatio = 0.58;
+  static const double horizontalPadding = AppSpacing.lg + 8;
 
   static const SliverGridDelegateWithFixedCrossAxisCount delegate =
       SliverGridDelegateWithFixedCrossAxisCount(
@@ -165,10 +166,10 @@ class _BookCoverFillImage extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
-      return const ColoredBox(
-        color: Colors.white,
+      return ColoredBox(
+        color: cs.surfaceContainerHighest,
         child: Center(
-          child: Icon(Icons.menu_book_outlined, color: Color(0xFF9E9E9E)),
+          child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant),
         ),
       );
     }
@@ -178,10 +179,10 @@ class _BookCoverFillImage extends StatelessWidget {
       fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(
-        color: Colors.white,
+      errorBuilder: (context, error, stackTrace) => ColoredBox(
+        color: cs.surfaceContainerHighest,
         child: Center(
-          child: Icon(Icons.broken_image_outlined, color: Color(0xFF9E9E9E)),
+          child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
         ),
       ),
       loadingBuilder: (context, child, progress) {

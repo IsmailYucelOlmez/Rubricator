@@ -31,6 +31,15 @@
 
   <title>Rubricator</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    Supabase's gotrue-dart pulls in the `passkeys` plugin transitively (this
+    app does not use passkey login). On web, passkeys_web crashes at plugin
+    registration time with "Cannot read properties of undefined (reading
+    'init')" unless this SDK bundle defines window.PasskeyAuthenticator first.
+    See https://github.com/corbado/flutter-passkeys/releases/tag/2.4.0
+  -->
+  <script src="passkeys-bundle.js"></script>
 </head>
 <body>
   <!--

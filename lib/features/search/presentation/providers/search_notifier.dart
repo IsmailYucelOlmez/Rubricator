@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/providers/books_providers.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../data/datasources/search_remote_datasource.dart';
 import '../../data/repositories/search_repository_impl.dart';
 import '../../domain/entities/search_log_entity.dart';
@@ -17,6 +19,7 @@ final searchRepositoryProvider = Provider<SearchRepository>((ref) {
   return SearchRepositoryImpl(
     ref.watch(bookRepositoryProvider),
     ref.watch(_searchRemoteDataSourceProvider),
+    ref.watch(resolveBookByIdUseCaseProvider),
   );
 });
 
@@ -77,15 +80,40 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
         query: '',
       );
     }
+    final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
     final result = await ref
         .read(bookRepositoryProvider)
         .searchBooks(query: query, page: 1);
+    if (!isTurkish) {
+      return SearchPaginationState(
+        books: _deduplicateBooks(result.books),
+        hasMore: result.hasMore,
+        isLoadingMore: false,
+        query: query,
+      );
+    }
+    // Turkish locale: trbooks is the primary catalog, Google Books fills in
+    // around/after it (and is the only source when trbooks has no match).
+    final trbooks = await _searchTrbooks(query);
+    final combined = trbooks.isNotEmpty
+        ? <Book>[...trbooks, ...result.books]
+        : result.books;
     return SearchPaginationState(
-      books: _deduplicateBooks(result.books),
+      books: _deduplicateBooks(combined),
       hasMore: result.hasMore,
       isLoadingMore: false,
       query: query,
     );
+  }
+
+  Future<List<Book>> _searchTrbooks(String query) async {
+    try {
+      return await ref.read(searchTrbooksUseCaseProvider).call(query);
+    } catch (_) {
+      // Local Turkish catalog is a supplemental source; Google Books results
+      // alone are still a valid search outcome if this fails.
+      return const <Book>[];
+    }
   }
 
   Future<void> loadMore() async {

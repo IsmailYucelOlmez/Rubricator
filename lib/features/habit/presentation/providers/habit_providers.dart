@@ -97,14 +97,14 @@ Future<List<HabitReadingBookChoice>> _loadHabitReadingBookChoices(
   }
   if (userBooks.isEmpty) return const <HabitReadingBookChoice>[];
 
-  final bookRepo = ref.watch(bookRepositoryProvider);
+  final resolveBookById = ref.watch(resolveBookByIdUseCaseProvider);
   final out = <HabitReadingBookChoice>[];
   for (final ub in userBooks.take(24)) {
     var title = ub.bookTitle?.trim() ?? '';
     String? author = ub.bookAuthor?.trim();
     if (title.isEmpty) {
       try {
-        final book = await bookRepo.getBookByWorkId(ub.bookId);
+        final book = await resolveBookById.call(ub.bookId);
         title = book.title;
         author = book.author;
       } catch (_) {
@@ -139,7 +139,7 @@ Future<Map<String, String>> _resolveBookTitles(
   if (ids.isEmpty) return const {};
 
   final userBooksRepo = ref.read(userBooksRepositoryProvider);
-  final bookRepo = ref.read(bookRepositoryProvider);
+  final resolveBookById = ref.read(resolveBookByIdUseCaseProvider);
   final titles = <String, String>{};
 
   await Future.wait(
@@ -165,7 +165,7 @@ Future<Map<String, String>> _resolveBookTitles(
     await Future.wait(
       chunk.map((bookId) async {
         try {
-          titles[bookId] = (await bookRepo.getBookByWorkId(bookId)).title;
+          titles[bookId] = (await resolveBookById.call(bookId)).title;
         } catch (_) {
           // Leave unresolved; UI omits subtitle rather than showing raw id.
         }
@@ -201,11 +201,11 @@ final habitBookChoicesProvider =
   }
   if (ids.isEmpty) return const <({String id, String label})>[];
 
-  final bookRepo = ref.watch(bookRepositoryProvider);
+  final resolveBookById = ref.watch(resolveBookByIdUseCaseProvider);
   final out = <({String id, String label})>[];
   for (final id in ids.take(24)) {
     try {
-      final book = await bookRepo.getBookByWorkId(id);
+      final book = await resolveBookById.call(id);
       out.add((id: id, label: book.title));
     } catch (_) {
       out.add((id: id, label: id));

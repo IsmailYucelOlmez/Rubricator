@@ -4,6 +4,10 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 const GOOGLE_BOOKS_BASE = "https://www.googleapis.com/books/v1";
 const TABLE = "genre_books_cache";
 const MAX_RESULTS = 15;
+/// Larger request size for non-English langs, so there's still a healthy
+/// pool left after `filterByLanguage` discards items Google mistakenly
+/// included despite `langRestrict`.
+const FETCH_POOL_SIZE = 40;
 
 const GENRE_KEYS = [
   "popular_fiction",
@@ -16,6 +20,29 @@ const GENRE_KEYS = [
 ] as const;
 
 const LANGS = ["en", "tr"] as const;
+
+/// Google Books' `subject:` taxonomy is effectively English-only (LCSH-style
+/// headings), so `subject:fantasy&langRestrict=tr` still matches the same
+/// English catalog and `langRestrict` quietly fails to narrow it down —
+/// Turkish genre rows end up identical to the English ones. Anding the
+/// English subject with the Turkish genre word as a plain keyword (below)
+/// keeps genre precision while biasing toward actually-Turkish matches;
+/// `filterByLanguage` then double-checks each result's own language field.
+///
+/// A bare Turkish keyword alone (no `subject:` anchor) was tried first and
+/// made results *worse*, not better: single generic words like "roman" or
+/// "korku" match Google's full-text index broadly (any book that merely
+/// mentions the word), pulling in unrelated non-fiction, dictionaries, and
+/// books about unrelated senses of the word (e.g. "roman" ~ "Roman/Romani").
+const TURKISH_GENRE_QUERIES: Record<string, string> = {
+  popular_fiction: "roman",
+  fantasy: "fantastik",
+  science_fiction: "bilim kurgu",
+  romance: "aşk romanı",
+  mystery: "polisiye",
+  thriller: "gerilim",
+  horror: "korku",
+};
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -85,16 +112,29 @@ function parseVolume(item: Record<string, unknown>): CachedBook | null {
   };
 }
 
+/// Keeps only books whose own `volumeInfo.language` actually matches [lang]
+/// — `langRestrict` alone isn't trustworthy for subject-taxonomy queries, so
+/// this is the real language gate. Falls back to the unfiltered list only if
+/// filtering would empty it out entirely (better a few off-language results
+/// than a permanently-erroring cache row).
+function filterByLanguage(books: CachedBook[], lang: string): CachedBook[] {
+  const relevant = books.filter((b) =>
+    b.languages.some((l) => l.startsWith(lang))
+  );
+  return relevant.length > 0 ? relevant : books;
+}
+
 async function fetchGoogleBooks(
   apiKey: string,
   q: string,
   lang: string,
 ): Promise<CachedBook[]> {
+  const requestSize = lang === "en" ? MAX_RESULTS : FETCH_POOL_SIZE;
   const url = new URL(`${GOOGLE_BOOKS_BASE}/volumes`);
   url.searchParams.set("q", q);
   url.searchParams.set("printType", "books");
   url.searchParams.set("langRestrict", lang);
-  url.searchParams.set("maxResults", String(MAX_RESULTS));
+  url.searchParams.set("maxResults", String(requestSize));
   url.searchParams.set("key", apiKey);
 
   const upstream = await fetch(url.toString(), {
@@ -113,14 +153,19 @@ async function fetchGoogleBooks(
       if (parsed) books.push(parsed);
     }
   }
-  return books;
+  return filterByLanguage(books, lang).slice(0, MAX_RESULTS);
 }
 
-function queryForGenreKey(genreKey: string): string {
-  if (genreKey === "popular_fiction") {
-    return buildSubjectQuery("fiction");
+function queryForGenreKey(genreKey: string, lang: string): string {
+  const englishSubject = genreKey === "popular_fiction"
+    ? "fiction"
+    : subjectQueryTerm(genreKey);
+  const subjectQuery = buildSubjectQuery(englishSubject);
+  const turkishTerm = TURKISH_GENRE_QUERIES[genreKey];
+  if (lang === "tr" && turkishTerm) {
+    return `${subjectQuery} ${turkishTerm}`;
   }
-  return buildSubjectQuery(subjectQueryTerm(genreKey));
+  return subjectQuery;
 }
 
 Deno.serve(async (req: Request) => {
@@ -150,7 +195,7 @@ Deno.serve(async (req: Request) => {
     for (const lang of LANGS) {
       const resultKey = `${genreKey}:${lang}`;
       try {
-        const books = await fetchGoogleBooks(apiKey, queryForGenreKey(genreKey), lang);
+        const books = await fetchGoogleBooks(apiKey, queryForGenreKey(genreKey, lang), lang);
         if (books.length === 0) {
           throw new Error(`No books returned for ${genreKey} (${lang})`);
         }

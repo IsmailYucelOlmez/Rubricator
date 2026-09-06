@@ -4,6 +4,7 @@ import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../../books/data/services/api_service.dart';
 import '../../../books/presentation/providers/books_providers.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
@@ -53,6 +54,23 @@ final homePageSnapshotProvider = FutureProvider<HomePageSnapshot>((ref) {
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
   ref,
   genreKey,
-) {
+) async {
+  final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
+  final keyword = HomeRemoteDataSource.turkishGenreQueries[genreKey];
+  if (isTurkish && keyword != null) {
+    final trbooks = await ref.watch(trbooksByKeywordUseCaseProvider).call(keyword);
+    if (trbooks.isNotEmpty) {
+      return trbooks
+          .map(
+            (book) => HomeBookEntity(
+              id: book.id,
+              title: book.title,
+              coverImageUrl: book.coverImageUrl,
+              authorNames: book.author,
+            ),
+          )
+          .toList();
+    }
+  }
   return ref.watch(homeRepositoryProvider).getBooksByGenre(genreKey);
 });

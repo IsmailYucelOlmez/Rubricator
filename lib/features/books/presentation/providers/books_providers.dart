@@ -5,6 +5,8 @@ import '../../../lists/presentation/providers/lists_providers.dart';
 import '../../../profile_stats/presentation/providers/profile_stats_revision.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/supabase_service.dart';
+import '../../../trbooks/domain/usecases/trbooks_usecases.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../data/datasources/google_books_cache_datasource.dart';
 import '../../data/services/ai_service.dart';
 import '../../data/services/api_service.dart';
@@ -31,12 +33,27 @@ final bookRepositoryProvider = Provider<BookRepository>(
 
 final _aiServiceProvider = Provider<AiService>((ref) => AiService());
 
-final trendingBooksProvider = FutureProvider<List<Book>>((ref) {
+final trendingBooksProvider = FutureProvider<List<Book>>((ref) async {
+  final localeCode = ref.watch(localeProvider).languageCode;
+  if (localeCode == 'tr') {
+    final trbooks = await ref.watch(popularTrbooksUseCaseProvider).call();
+    if (trbooks.isNotEmpty) return trbooks;
+  }
   return ref.watch(bookRepositoryProvider).trendingBooks();
 });
 
 final bookDetailRepositoryProvider = Provider<BookDetailRepository>(
   (ref) => BookDetailRepositoryImpl(ref.watch(_apiProvider)),
+);
+
+/// Resolves a stored book id (Google volume id or `trbooks:`-prefixed) to a
+/// [Book]. Shared by favorites/notes/habits/profile-stats so they don't each
+/// need to know about the two catalogs.
+final resolveBookByIdUseCaseProvider = Provider<ResolveBookByIdUseCase>(
+  (ref) => ResolveBookByIdUseCase(
+    ref.watch(trbooksRepositoryProvider),
+    ref.watch(bookRepositoryProvider),
+  ),
 );
 
 final currentUserIdProvider = Provider<String?>((ref) {
@@ -48,7 +65,11 @@ final currentUserIdProvider = Provider<String?>((ref) {
 
 final bookDetailProvider =
     FutureProvider.family<BookEntity, Book>((ref, book) async {
-      final b = await ref.watch(bookRepositoryProvider).getBookDetail(book);
+      // trbooks entries carry all the detail the catalog has already;
+      // there's no Google volume id to enrich them further with.
+      final b = book.id.startsWith('trbooks:')
+          ? book
+          : await ref.watch(bookRepositoryProvider).getBookDetail(book);
       return BookEntity(
         id: b.id,
         title: b.title,
@@ -76,10 +97,17 @@ final aiSummaryProvider = FutureProvider.family<String, BookEntity>((
   return ref.watch(_aiServiceProvider).summarize(source);
 });
 
+/// trbooks has no author entity (no bio/dates) — author ids for
+/// trbooks-sourced books use a `tr:`-prefixed encoded name instead of a
+/// Google author id, so the page still opens with just a name and book list.
 final authorDetailProvider = FutureProvider.family<Author, String>((
   ref,
   authorId,
 ) {
+  if (authorId.startsWith('tr:')) {
+    final name = Uri.decodeComponent(authorId.substring(3));
+    return Future.value(Author(id: authorId, name: name, bio: ''));
+  }
   return ref.watch(bookRepositoryProvider).getAuthor(authorId);
 });
 
@@ -87,6 +115,12 @@ final authorBooksProvider = FutureProvider.family<List<Book>, String>((
   ref,
   authorId,
 ) async {
+  if (authorId.startsWith('tr:')) {
+    final name = Uri.decodeComponent(authorId.substring(3));
+    final trbooks = await ref.watch(trbooksRepositoryProvider).byAuthor(name);
+    if (trbooks.isNotEmpty) return trbooks;
+    return ref.watch(bookRepositoryProvider).getBooksByAuthorName(name);
+  }
   final repository = ref.watch(bookRepositoryProvider);
   final author = await ref.watch(authorDetailProvider(authorId).future);
   final booksFromName = await repository.getBooksByAuthorName(author.name);
@@ -100,6 +134,14 @@ final relatedBooksProvider =
       List<Book>,
       ({String workId, List<String> subjects, String author})
     >((ref, arg) async {
+      if (arg.workId.startsWith('trbooks:')) {
+        final trbooks = await ref.watch(trbooksRepositoryProvider).related(
+          excludeId: arg.workId,
+          category: arg.subjects.isNotEmpty ? arg.subjects.first : null,
+          author: arg.author,
+        );
+        if (trbooks.isNotEmpty) return trbooks;
+      }
       final book = Book(
         id: arg.workId,
         title: '',

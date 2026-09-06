@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -11,6 +12,7 @@ import '../../../auth/presentation/auth_provider.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/widgets/book_cover_leading.dart';
 import '../../../books/presentation/providers/books_providers.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 
@@ -385,11 +387,30 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
     if (query.length < 2 || _searching || _saving) return;
     setState(() => _searching = true);
     try {
+      final isTurkish = ref.read(localeProvider).languageCode == 'tr';
       final result = await ref
           .read(bookRepositoryProvider)
           .searchBooks(query: query, page: 1);
+      var books = result.books;
+      if (isTurkish) {
+        // Turkish locale: trbooks is the primary catalog, Google Books fills
+        // in around/after it (and is the only source when trbooks has no match).
+        List<Book> trbooks = const <Book>[];
+        try {
+          trbooks = await ref.read(searchTrbooksUseCaseProvider).call(query);
+        } catch (_) {
+          // Fall back to Google-only results if the local catalog is unreachable.
+        }
+        if (trbooks.isNotEmpty) {
+          final seen = <String>{};
+          books = [...trbooks, ...books].where((book) {
+            final key = '${book.title.toLowerCase()}|${book.author.toLowerCase()}';
+            return seen.add(key);
+          }).toList();
+        }
+      }
       if (!mounted) return;
-      setState(() => _searchResults = result.books.take(20).toList());
+      setState(() => _searchResults = books.take(20).toList());
     } catch (e) {
       if (mounted) AppFeedback.showErrorSnackBar(context, e);
     } finally {

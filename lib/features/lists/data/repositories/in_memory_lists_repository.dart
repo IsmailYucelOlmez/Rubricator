@@ -197,6 +197,21 @@ class InMemoryListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> searchLists(String query, {int limit = 30}) async {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return const <ListEntity>[];
+    return _lists
+        .where(
+          (l) =>
+              l.isPublic &&
+              (l.title.toLowerCase().contains(q) ||
+                  l.description.toLowerCase().contains(q)),
+        )
+        .take(limit)
+        .toList();
+  }
+
+  @override
   Future<void> likeList(String userId, String listId) async {
     final liked = _likesByList.putIfAbsent(listId, () => <String>{});
     if (liked.add(userId)) {

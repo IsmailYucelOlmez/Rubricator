@@ -46,7 +46,7 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
   final userBooks = await rows;
   if (userBooks.isEmpty) return const [];
 
-  final bookRepo = ref.read(bookRepositoryProvider);
+  final resolveBookById = ref.read(resolveBookByIdUseCaseProvider);
   final bookById = <String, Book>{};
 
   for (final userBook in userBooks) {
@@ -69,8 +69,7 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
     await Future.wait(
       chunk.map((userBook) async {
         try {
-          final fetched =
-              await bookRepo.getBookByWorkId(userBook.bookId);
+          final fetched = await resolveBookById.call(userBook.bookId);
           final existing = bookById[userBook.bookId];
           if (existing != null) {
             bookById[userBook.bookId] = existing.copyWith(

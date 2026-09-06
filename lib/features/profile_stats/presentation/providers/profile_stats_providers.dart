@@ -22,7 +22,7 @@ final profileStatsRepositoryProvider = Provider<ProfileStatsRepository>((ref) {
   ref.watch(authStateProvider.select((a) => a.valueOrNull?.id));
   return ProfileStatsRepositoryImpl(
     ref.watch(profileStatsRemoteProvider),
-    ref.watch(bookRepositoryProvider),
+    ref.watch(resolveBookByIdUseCaseProvider),
     () => ref.watch(authStateProvider).valueOrNull?.id,
   );
 });

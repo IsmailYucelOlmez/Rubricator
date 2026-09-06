@@ -1,16 +1,16 @@
-import '../../../books/data/repositories/book_repository.dart';
 import '../../../books/data/utils/google_books_utils.dart';
 import '../../../books/domain/entities/book.dart';
+import '../../../trbooks/domain/usecases/trbooks_usecases.dart';
 import '../../domain/entities/profile_stats_entities.dart';
 import '../../domain/repositories/profile_stats_repository.dart';
 import '../datasources/profile_stats_remote_datasource.dart'
     show CompletedUserBookRecord, ProfileStatsRemoteDataSource;
 
 class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
-  ProfileStatsRepositoryImpl(this._remote, this._books, this._currentUserId);
+  ProfileStatsRepositoryImpl(this._remote, this._resolveBookById, this._currentUserId);
 
   final ProfileStatsRemoteDataSource _remote;
-  final BookRepository _books;
+  final ResolveBookByIdUseCase _resolveBookById;
   final String? Function() _currentUserId;
 
   /// Single in-flight load for [getGenreStats] + [getAuthorStats] (same repo instance).
@@ -61,7 +61,7 @@ class ProfileStatsRepositoryImpl implements ProfileStatsRepository {
       await Future.wait(
         chunk.map((id) async {
           try {
-            fetchedById[id] = await _books.getBookByWorkId(id);
+            fetchedById[id] = await _resolveBookById.call(id);
           } catch (_) {
             // Skip missing or API errors.
           }

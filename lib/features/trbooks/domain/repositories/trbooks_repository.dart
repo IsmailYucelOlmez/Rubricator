@@ -27,4 +27,10 @@ abstract class TrbooksRepository {
   /// ranked by rating/reviews_count rather than text similarity, for use as
   /// a Google-Books genre-browse substitute.
   Future<List<Book>> byKeyword(String keyword, {int limit = 20});
+
+  /// Exact match on the home page's own genre taxonomy (e.g. "fantasy",
+  /// "popular_fiction") — only matches rows tagged at scrape time by
+  /// scrape-tr-books, unlike [byKeyword]'s fuzzy ILIKE fallback over the
+  /// whole (mostly untagged) catalog.
+  Future<List<Book>> byGenreKey(String genreKey, {int limit = 20});
 }

@@ -1,4 +1,6 @@
 import '../../../books/data/repositories/book_repository.dart';
+import '../../../books/domain/entities/book.dart';
+import '../../../trbooks/domain/repositories/trbooks_repository.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/entities/home_genre_section.dart';
 import '../../domain/entities/home_page_snapshot.dart';
@@ -11,13 +13,15 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(
     this._remoteDataSource,
     this._cacheDataSource,
-    this._bookRepository, {
+    this._bookRepository,
+    this._trbooksRepository, {
     required this.lang,
   });
 
   final HomeRemoteDataSource _remoteDataSource;
   final HomeCacheDataSource _cacheDataSource;
   final BookRepository _bookRepository;
+  final TrbooksRepository _trbooksRepository;
   final String lang;
 
   static const int _maxBooksPerHomeSection = 10;
@@ -216,6 +220,31 @@ class HomeRepositoryImpl implements HomeRepository {
     return merged;
   }
 
+  /// Turkish home sections prefer live-scraped `trbooks` rows tagged with
+  /// the app's own genre taxonomy (see `search_trbooks_by_genre_key`) over
+  /// the Google-Books-based cache; a genre with no scraped rows yet falls
+  /// back to the cache row exactly as it did before this existed. English
+  /// stays entirely on the cache path.
+  Future<List<HomeBookEntity>> _trbooksHomeBooks(String genreKey) async {
+    if (lang != 'tr') return const <HomeBookEntity>[];
+    try {
+      final books = await _trbooksRepository.byGenreKey(genreKey);
+      return books.take(_maxBooksPerHomeSection).map(_homeBookFromBook).toList();
+    } catch (_) {
+      // A trbooks RPC failure must not break the home page; fall back below.
+      return const <HomeBookEntity>[];
+    }
+  }
+
+  HomeBookEntity _homeBookFromBook(Book book) {
+    return HomeBookEntity(
+      id: book.id,
+      title: book.title,
+      coverImageUrl: book.coverImageUrl,
+      authorNames: book.author,
+    );
+  }
+
   @override
   Future<HomePageSnapshot> loadHomePage(List<String> genreKeys) async {
     final cacheKeys = <String>[
@@ -224,16 +253,27 @@ class HomeRepositoryImpl implements HomeRepository {
     ];
     final cacheMap = await _loadHomeCacheWithFallback(cacheKeys);
 
-    final popularBooks = _homeBooksFromModels(
-      _cacheDataSource.parseCachedBooks(
-        cacheMap[HomeCacheDataSource.popularCacheKey],
-      ),
+    var popularBooks = await _trbooksHomeBooks(
+      HomeCacheDataSource.popularCacheKey,
     );
+    if (popularBooks.isEmpty) {
+      popularBooks = _homeBooksFromModels(
+        _cacheDataSource.parseCachedBooks(
+          cacheMap[HomeCacheDataSource.popularCacheKey],
+        ),
+      );
+    }
 
-    final genreSections = <String, HomeGenreSection>{
-      for (final genreKey in genreKeys)
-        genreKey: _homeSectionFromCacheRow(cacheMap[genreKey]),
-    };
+    final genreSections = <String, HomeGenreSection>{};
+    for (final genreKey in genreKeys) {
+      final trbooksBooks = await _trbooksHomeBooks(genreKey);
+      genreSections[genreKey] = trbooksBooks.isNotEmpty
+          ? HomeGenreSection(
+              books: trbooksBooks,
+              loadState: HomeGenreSectionLoadState.ready,
+            )
+          : _homeSectionFromCacheRow(cacheMap[genreKey]);
+    }
 
     return HomePageSnapshot(
       popularBooks: popularBooks,

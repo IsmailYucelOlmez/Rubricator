@@ -30,6 +30,7 @@ final homeRepositoryProvider = Provider<HomeRepository>(
     ref.watch(_homeRemoteDataSourceProvider),
     ref.watch(_homeCacheDataSourceProvider),
     ref.watch(bookRepositoryProvider),
+    ref.watch(trbooksRepositoryProvider),
     lang: ref.watch(localeProvider).languageCode,
   ),
 );

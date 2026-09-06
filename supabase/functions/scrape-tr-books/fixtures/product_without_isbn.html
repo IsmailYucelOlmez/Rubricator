@@ -1,0 +1,49 @@
+<!--
+  Same shape as product_with_isbn.html but with the ISBN row entirely absent
+  from the `.attributes` spec table — reproduces pre-release/campaign
+  listings on Kitapyurdu that don't carry an ISBN yet. parseProductPage()
+  must return null for this page rather than throwing or fabricating a key.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta property="og:title" content="Yayımlanacak Bir Kitap">
+    <meta
+      property="og:image"
+      content="https://img.kitapyurdu.com/v1/getImage/fn:99999/wh:00000000"
+    >
+    <meta
+      property="og:description"
+      content="Yayımlanacak Bir Kitap - Örnek Yayınevi - Örnek Yazar - kısa özet metni."
+    >
+  </head>
+  <body>
+    <h1 class="pr_header__heading">Yayımlanacak Bir Kitap</h1>
+    <div>
+      <a
+        href="https://www.kitapyurdu.com/yazar/ornek-yazar/1.html"
+        class="pr_producers__link"
+      >Örnek Yazar</a>
+      <a
+        href="https://www.kitapyurdu.com/yayinevi/ornek-yayinevi/1.html"
+        class="pr_producers__link"
+      >Örnek Yayınevi</a>
+    </div>
+    <div class="attributes">
+      <table>
+        <tr>
+          <td>Liste Fiyatı:</td>
+          <td>0,00</td>
+        </tr>
+        <tr>
+          <td>Yayın Tarihi:</td>
+          <td>Yayımlanacak</td>
+        </tr>
+        <tr>
+          <td>Dil:</td>
+          <td>TÜRKÇE</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

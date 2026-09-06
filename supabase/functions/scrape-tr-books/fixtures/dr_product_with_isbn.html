@@ -1,0 +1,70 @@
+<!--
+  Trimmed-down reproduction of a real D&R product detail page
+  (/kitap/evelyn-hardcastlein-yedi-olumu/.../urunno=0001877095001), fetched
+  and inspected 2026-09-06. Keeps the exact `schema.org/Book` JSON-LD block
+  parseDrProductPage() depends on — INCLUDING a real quirk found on the live
+  page: the `description` value contains literal (unescaped) newlines,
+  which makes this block technically invalid JSON (`JSON.parse` throws
+  "Bad control character in string literal" without sanitizeJsonLd()'s fix).
+  A second, unrelated BreadcrumbList JSON-LD block is also kept, matching
+  the real page, to verify parseDrProductPage() skips non-Book blocks.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<script type="application/ld+json">
+        {
+        "@context": "http://schema.org",
+        "@type":  ["Product", "Book"],
+        "bookFormat": "http://schema.org/Paperback",
+        "datePublished": "2020",
+            "image":[
+                    "https://i.dr.com.tr/cache/600x600-0/originals/0001877095001-1.jpg"
+            ],
+        "inLanguage": "Turkish",
+        "sku": "0001877095001",
+        "gtin13": "9786257913478",
+        "name": "Evelyn Hardcastleın Yedi Ölümü",
+        "description":"Varlıklı, mazisi karanlık bir ailenin genç ve güzel kızı olan Evelyn Hardcastle bu gece ölecek.
+Yarın da. Ertesi gün de.
+Blackheath Malikânesi'nde bir kutlama için toplanan kalabalık.",
+        "numberOfPages": "456",
+        "author":
+        {
+        "@type":"Person",
+        "name":"Stuart Turton"
+        },
+        "publisher":
+        {
+        "@type":"Organization",
+        "name":"İthaki Yayınları"
+        },
+        "offers": {
+        "@type": "Offer",
+        "availability": "http://schema.org/InStock",
+        "price": "289.34",
+        "priceCurrency": "TRY"
+        }
+        }
+</script>
+<script type="application/ld+json">
+    {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+        "itemListElement":
+        [
+                    {
+                    "@type": "ListItem",
+                    "position":"1" ,
+                    "item":
+                    {
+                    "@id":"https://www.dr.com.tr/kategori/kitap",
+                    "name": "Kitap"
+                    }
+                    }
+        ]
+    }
+</script>
+</head>
+<body></body>
+</html>

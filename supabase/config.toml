@@ -28,3 +28,7 @@ verify_jwt = false
 [functions.warm-genre-cache]
 # Invoked by pg_cron with service role; no end-user JWT.
 verify_jwt = false
+
+[functions.scrape-tr-books]
+# Invoked by pg_cron with service role; no end-user JWT.
+verify_jwt = false

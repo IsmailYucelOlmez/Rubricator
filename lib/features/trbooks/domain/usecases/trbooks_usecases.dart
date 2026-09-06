@@ -29,6 +29,15 @@ class TrbooksByKeywordUseCase {
   }
 }
 
+class TrbooksByGenreKeyUseCase {
+  const TrbooksByGenreKeyUseCase(this._repository);
+  final TrbooksRepository _repository;
+
+  Future<List<Book>> call(String genreKey, {int limit = 20}) {
+    return _repository.byGenreKey(genreKey, limit: limit);
+  }
+}
+
 /// Resolves a stored book id to a [Book], regardless of which catalog it
 /// came from: `trbooks:`-prefixed ids go to the local Turkish catalog,
 /// everything else goes to Google Books.

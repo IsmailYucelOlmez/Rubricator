@@ -1,0 +1,47 @@
+<!--
+  Trimmed-down reproduction of a real D&R category listing page
+  (/kategori/kitap/edebiyat/roman/fantastik/grupno=00451?SortType=0&SortOrder=1),
+  fetched and inspected 2026-09-06. Keeps the exact markup shape
+  parseDrListingPage() depends on: `.prd` cards with a plain `<a href>` to
+  the product detail page (relative, no tracking params — unlike
+  Kitapyurdu's listing links).
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <body>
+    <div class="product-list">
+      <div class="product-card prd js-prd-item" data-id="0001877095001">
+        <a
+          href="/kitap/evelyn-hardcastle’in-yedi-olumu/stuart-turton/edebiyat/roman/fantastik/urunno=0001877095001"
+        >
+          <img
+            src="https://i.dr.com.tr/cache/200x200-0/originals/0001877095001-1.jpg"
+            alt="Evelyn Hardcastleın Yedi Ölümü"
+          >
+        </a>
+      </div>
+      <div class="product-card prd js-prd-item" data-id="0001836978001">
+        <a
+          href="/kitap/ben-kirke/madeline-miller/edebiyat/roman/fantastik/urunno=0001836978001"
+        >
+          <img
+            src="https://i.dr.com.tr/cache/200x200-0/originals/0001836978001-1.jpg"
+            alt="Ben, Kirke"
+          >
+        </a>
+      </div>
+      <!-- Duplicate card linking to the same product — parseDrListingPage()
+         must dedupe this. -->
+      <div class="product-card prd js-prd-item" data-id="0001836978001">
+        <a
+          href="/kitap/ben-kirke/madeline-miller/edebiyat/roman/fantastik/urunno=0001836978001"
+        >
+          <img
+            src="https://i.dr.com.tr/cache/200x200-0/originals/0001836978001-1.jpg"
+            alt="Ben, Kirke"
+          >
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -132,6 +132,20 @@ class SupabaseTrbooksRepository implements TrbooksRepository {
         .toList();
   }
 
+  @override
+  Future<List<Book>> byGenreKey(String genreKey, {int limit = 20}) async {
+    final trimmed = genreKey.trim();
+    if (trimmed.isEmpty) return const <Book>[];
+    final rows = await _client.rpc(
+      'search_trbooks_by_genre_key',
+      params: <String, dynamic>{'p_genre_key': trimmed, 'p_limit': limit},
+    );
+    return (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map(mapRowToBook)
+        .toList();
+  }
+
   /// Namespaced with `trbooks:` so ids never collide with Google Books volume
   /// ids elsewhere in the app (book detail lookups assume a Google volume id).
   /// `authorIds` uses a parallel `tr:`-prefixed scheme (a plain encoded name,

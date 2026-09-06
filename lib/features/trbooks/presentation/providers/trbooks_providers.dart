@@ -19,3 +19,7 @@ final popularTrbooksUseCaseProvider = Provider<PopularTrbooksUseCase>(
 final trbooksByKeywordUseCaseProvider = Provider<TrbooksByKeywordUseCase>(
   (ref) => TrbooksByKeywordUseCase(ref.watch(trbooksRepositoryProvider)),
 );
+
+final trbooksByGenreKeyUseCaseProvider = Provider<TrbooksByGenreKeyUseCase>(
+  (ref) => TrbooksByGenreKeyUseCase(ref.watch(trbooksRepositoryProvider)),
+);

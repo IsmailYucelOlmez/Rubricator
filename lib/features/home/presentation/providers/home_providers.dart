@@ -45,11 +45,26 @@ const kHomePageGenreKeys = <String>[
   'horror',
 ];
 
+/// D&R (the trbooks source) has no separate thriller/horror category — both
+/// map to its single "Korku Gerilim" category, so the two sections would
+/// show identical books for Turkish users. Drop `horror` there and keep
+/// `thriller` as the one combined section.
+List<String> homePageGenreKeysFor(String languageCode) {
+  if (languageCode == 'tr') {
+    return kHomePageGenreKeys.where((key) => key != 'horror').toList();
+  }
+  return kHomePageGenreKeys;
+}
+
+final homePageGenreKeysProvider = Provider<List<String>>(
+  (ref) => homePageGenreKeysFor(ref.watch(localeProvider).languageCode),
+);
+
 final homePageSnapshotProvider = FutureProvider<HomePageSnapshot>((ref) {
   ref.keepAlive();
   return ref
       .watch(homeRepositoryProvider)
-      .loadHomePage(kHomePageGenreKeys);
+      .loadHomePage(ref.watch(homePageGenreKeysProvider));
 });
 
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((

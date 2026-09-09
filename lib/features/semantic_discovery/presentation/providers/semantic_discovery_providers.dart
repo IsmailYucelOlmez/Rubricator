@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/i18n/locale_provider.dart';
 import '../../data/datasources/semantic_api_datasource.dart';
 import '../../data/datasources/semantic_search_log_remote_datasource.dart';
 import '../../data/repositories/semantic_discovery_repository_impl.dart';
@@ -80,12 +81,14 @@ final semanticSearchResultsProvider =
   if (trimmed.length < 3) return const [];
 
   final filters = ref.watch(semanticSearchFiltersProvider);
+  final languageCode = ref.watch(localeProvider).languageCode;
   return ref.read(searchSemanticBooksUseCaseProvider).call(
         SemanticSearchRequest(
           query: trimmed,
           mode: filters.mode,
           category: filters.category,
           tone: filters.tone,
+          language: languageCode,
         ),
       );
 });

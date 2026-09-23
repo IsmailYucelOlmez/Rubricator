@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/i18n/locale_provider.dart';
 import 'core/i18n/l10n/app_localizations.dart';
 import 'core/navigation/app_route_observer.dart';
+import 'core/navigation/web_page_title.dart';
 import 'core/network/connectivity_provider.dart';
 import 'core/layout/app_breakpoints.dart';
 import 'core/layout/responsive_scaffold_body.dart';
@@ -17,6 +18,7 @@ import 'core/theme/app_spacing.dart';
 import 'features/lists/presentation/pages/lists_feed_page.dart';
 import 'features/home/presentation/pages/home_page.dart';
 import 'features/search/presentation/pages/search_page.dart';
+import 'features/search/presentation/providers/search_notifier.dart';
 import 'features/auth/presentation/profile_page.dart';
 import 'features/habit/presentation/widgets/habit_offline_sync_listener.dart';
 import 'core/notification/reading_reminder_bootstrap.dart';
@@ -26,7 +28,10 @@ import 'features/virgil/presentation/widgets/bottom_tab_icon.dart';
 /// App-wide default; home & search tabs override to 1.0.
 const double _kAppBodyFontSizeFactor = 1.2;
 
-ThemeData _themeWithBodyFontFactor(BuildContext context, double bodyFontSizeFactor) {
+ThemeData _themeWithBodyFontFactor(
+  BuildContext context,
+  double bodyFontSizeFactor,
+) {
   return Theme.of(context).brightness == Brightness.dark
       ? AppTheme.dark(bodyFontSizeFactor: bodyFontSizeFactor)
       : AppTheme.light(bodyFontSizeFactor: bodyFontSizeFactor);
@@ -84,6 +89,25 @@ class _BookAppState extends ConsumerState<BookApp> {
       _currentIndex = index;
       _visitedTabIndices.add(index);
     });
+  }
+
+  /// Browser tab title for the active bottom-tab (web only — see
+  /// [WebPageTitle]). Search includes the current query when there is one.
+  String _webTabTitle(AppLocalizations l10n) {
+    switch (_currentIndex) {
+      case 1:
+        final query = ref.watch(searchQueryProvider).trim();
+        return query.isEmpty ? l10n.navSearch : query;
+      case 2:
+        return l10n.navVirgil;
+      case 3:
+        return l10n.navLists;
+      case 4:
+        return l10n.profile;
+      case 0:
+      default:
+        return l10n.navHome;
+    }
   }
 
   List<NavigationDestination> _navDestinations(AppLocalizations l10n) {
@@ -166,8 +190,12 @@ class _BookAppState extends ConsumerState<BookApp> {
       ],
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
-      theme: _webPageTransitions(AppTheme.light(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
-      darkTheme: _webPageTransitions(AppTheme.dark(bodyFontSizeFactor: _kAppBodyFontSizeFactor)),
+      theme: _webPageTransitions(
+        AppTheme.light(bodyFontSizeFactor: _kAppBodyFontSizeFactor),
+      ),
+      darkTheme: _webPageTransitions(
+        AppTheme.dark(bodyFontSizeFactor: _kAppBodyFontSizeFactor),
+      ),
       themeMode: themeMode,
       navigatorObservers: [appRouteObserver],
       builder: (context, child) {
@@ -180,90 +208,93 @@ class _BookAppState extends ConsumerState<BookApp> {
         child: _maybeWithHabitOfflineSync(
           Builder(
             builder: (context) {
-          final l10n = AppLocalizations.of(context)!;
-          final tablet = context.isTabletLayout;
-          final offlineBanner = Consumer(
-            builder: (context, ref, _) {
-              final offline = ref.watch(isOfflineProvider);
-              if (!offline) return const SizedBox.shrink();
-              final scheme = Theme.of(context).colorScheme;
-              return Material(
-                color: scheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: SafeArea(
-                    bottom: false,
-                    child: Row(
-                      children: [
-                        Icon(Icons.wifi_off, size: 18, color: scheme.onErrorContainer),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            l10n.uxOfflineBanner,
-                            style: TextStyle(color: scheme.onErrorContainer),
-                          ),
+              final l10n = AppLocalizations.of(context)!;
+              final tablet = context.isTabletLayout;
+              final offlineBanner = Consumer(
+                builder: (context, ref, _) {
+                  final offline = ref.watch(isOfflineProvider);
+                  if (!offline) return const SizedBox.shrink();
+                  final scheme = Theme.of(context).colorScheme;
+                  return Material(
+                    color: scheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.wifi_off,
+                              size: 18,
+                              color: scheme.onErrorContainer,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                l10n.uxOfflineBanner,
+                                style: TextStyle(
+                                  color: scheme.onErrorContainer,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  );
+                },
+              );
+              final tabPane = Expanded(
+                child: WebPageTitle(
+                  label: '${_webTabTitle(l10n)} · Rubricator',
+                  child: ResponsiveScaffoldBody(child: _tabBody(context)),
                 ),
               );
+              return Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: tablet
+                    ? SafeArea(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            NavigationRail(
+                              extended: false,
+                              labelType: NavigationRailLabelType.all,
+                              selectedIndex: _currentIndex,
+                              onDestinationSelected: _selectTab,
+                              destinations: _railDestinations(l10n),
+                            ),
+                            const VerticalDivider(width: 1, thickness: 1),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [offlineBanner, tabPane],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [offlineBanner, tabPane],
+                      ),
+                bottomNavigationBar: tablet
+                    ? null
+                    : BottomTabNavBar(
+                        selectedIndex: _currentIndex,
+                        onDestinationSelected: (index) {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          _selectTab(index);
+                        },
+                        destinations: _navDestinations(l10n),
+                      ),
+              );
             },
-          );
-          final tabPane = Expanded(
-            child: ResponsiveScaffoldBody(child: _tabBody(context)),
-          );
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: tablet
-                ? SafeArea(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        NavigationRail(
-                          extended: false,
-                          labelType: NavigationRailLabelType.all,
-                          selectedIndex: _currentIndex,
-                          onDestinationSelected: _selectTab,
-                          destinations: _railDestinations(l10n),
-                        ),
-                        const VerticalDivider(width: 1, thickness: 1),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              offlineBanner,
-                              tabPane,
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      offlineBanner,
-                      tabPane,
-                    ],
-                  ),
-            bottomNavigationBar: tablet
-                ? null
-                : BottomTabNavBar(
-                    selectedIndex: _currentIndex,
-                    onDestinationSelected: (index) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      _selectTab(index);
-                    },
-                    destinations: _navDestinations(l10n),
-                  ),
-          );
-        },
+          ),
         ),
-      ),
       ),
     );
   }

@@ -1,12 +1,15 @@
 {
-    "name": "Rubricator",
+    "name": "Rubricator — Book Tracking & Recommendations",
     "short_name": "Rubricator",
     "start_url": ".",
+    "scope": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Rubricator",
-    "orientation": "portrait-primary",
+    "lang": "en",
+    "dir": "ltr",
+    "background_color": "#F5F3F4",
+    "theme_color": "#BA181B",
+    "description": "Track your reading habit, organize book lists, and get personalized recommendations from Virgil AI.",
+    "categories": ["books", "productivity", "lifestyle"],
     "prefer_related_applications": false,
     "icons": [
         {

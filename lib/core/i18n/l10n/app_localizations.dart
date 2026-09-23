@@ -176,6 +176,12 @@ abstract class AppLocalizations {
   /// **'BETA'**
   String get virgilBetaBadge;
 
+  /// No description provided for @virgilAboutBookUnavailableOnWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Q&A is not available on the web. Please use the mobile app.'**
+  String get virgilAboutBookUnavailableOnWeb;
+
   /// No description provided for @virgilRecommendationEmptyBody.
   ///
   /// In en, this message translates to:
@@ -1082,6 +1088,18 @@ abstract class AppLocalizations {
   /// **'Could not open browser.'**
   String get couldNotOpenBrowser;
 
+  /// No description provided for @openInDr.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in D&R'**
+  String get openInDr;
+
+  /// No description provided for @openInKitapyurdu.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Kitapyurdu'**
+  String get openInKitapyurdu;
+
   /// No description provided for @quoteAdded.
   ///
   /// In en, this message translates to:
@@ -1471,6 +1489,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This note will be permanently deleted.'**
   String get deleteNoteMessage;
+
+  /// No description provided for @addTurkishBookBannerText.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t find a Turkish book? Add it yourself.'**
+  String get addTurkishBookBannerText;
+
+  /// No description provided for @addTurkishBookBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add book'**
+  String get addTurkishBookBannerAction;
+
+  /// No description provided for @addTurkishBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a Turkish book'**
+  String get addTurkishBookTitle;
+
+  /// No description provided for @addTurkishBookTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get addTurkishBookTitleHint;
+
+  /// No description provided for @addTurkishBookAuthorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get addTurkishBookAuthorHint;
+
+  /// No description provided for @addTurkishBookIsbnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ISBN (10 or 13 digits)'**
+  String get addTurkishBookIsbnHint;
+
+  /// No description provided for @addTurkishBookIsbnInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'ISBN must be 10 or 13 digits.'**
+  String get addTurkishBookIsbnInvalid;
+
+  /// No description provided for @addTurkishBookMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details (optional)'**
+  String get addTurkishBookMoreDetails;
+
+  /// No description provided for @addTurkishBookDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get addTurkishBookDescriptionHint;
+
+  /// No description provided for @addTurkishBookGenerateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate description with AI'**
+  String get addTurkishBookGenerateDescription;
+
+  /// No description provided for @addTurkishBookImageUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover image URL (optional)'**
+  String get addTurkishBookImageUrlHint;
+
+  /// No description provided for @addTurkishBookImagePreviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview — check that the link points to a real image.'**
+  String get addTurkishBookImagePreviewHint;
+
+  /// No description provided for @addTurkishBookPublisherHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Publisher (optional)'**
+  String get addTurkishBookPublisherHint;
+
+  /// No description provided for @addTurkishBookCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Category (optional)'**
+  String get addTurkishBookCategoryHint;
+
+  /// No description provided for @addTurkishBookSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add book'**
+  String get addTurkishBookSubmit;
+
+  /// No description provided for @addTurkishBookDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'This book is already in the catalog.'**
+  String get addTurkishBookDuplicate;
+
+  /// No description provided for @addTurkishBookOpenExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Open it'**
+  String get addTurkishBookOpenExisting;
+
+  /// No description provided for @userSubmittedBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'User contribution'**
+  String get userSubmittedBadgeLabel;
 
   /// No description provided for @allTags.
   ///

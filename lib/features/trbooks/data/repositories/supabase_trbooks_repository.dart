@@ -4,9 +4,10 @@ import '../../../../core/i18n/fallback_strings.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../domain/repositories/trbooks_repository.dart';
+import '../../domain/usecases/trbooks_submission_exceptions.dart';
 
 const _trbooksSelectColumns =
-    'id, title, author, category, description, image_url, isbn';
+    'id, title, author, category, description, image_url, isbn, source_url, source';
 
 class SupabaseTrbooksRepository implements TrbooksRepository {
   SupabaseClient get _client => SupabaseService.client;
@@ -16,12 +17,20 @@ class SupabaseTrbooksRepository implements TrbooksRepository {
   );
 
   @override
-  Future<List<Book>> searchTrbooks(String query, {int limit = 20}) async {
+  Future<List<Book>> searchTrbooks(
+    String query, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const <Book>[];
     final rows = await _client.rpc(
       'search_trbooks',
-      params: <String, dynamic>{'p_query': trimmed, 'p_limit': limit},
+      params: <String, dynamic>{
+        'p_query': trimmed,
+        'p_limit': limit,
+        'p_offset': offset,
+      },
     );
     return (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
@@ -151,6 +160,11 @@ class SupabaseTrbooksRepository implements TrbooksRepository {
   /// `authorIds` uses a parallel `tr:`-prefixed scheme (a plain encoded name,
   /// since trbooks has no author entity) so author-page navigation can branch
   /// on it the same way book ids branch on `trbooks:`.
+  static String? _nonEmpty(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+
   static Book mapRowToBook(Map<String, dynamic> row) {
     final isbn = (row['isbn'] as String?)?.trim();
     final rowId = row['id']?.toString() ?? '';
@@ -166,6 +180,48 @@ class SupabaseTrbooksRepository implements TrbooksRepository {
           ? ['tr:${Uri.encodeComponent(author)}']
           : const [],
       subjectKeys: (category != null && category.isNotEmpty) ? [category] : const [],
+      sourceUrl: _nonEmpty(row['source_url'] as String?),
+      isUserSubmitted: row['source'] == 'user_submitted',
     );
+  }
+
+  @override
+  Future<Book> submitUserBook({
+    required String title,
+    required String author,
+    required String isbn,
+    String? description,
+    String? imageUrl,
+    String? publisher,
+    String? category,
+    int? pageCount,
+    int? releasedYear,
+  }) async {
+    try {
+      final row = await _client.rpc(
+        'submit_user_trbook',
+        params: <String, dynamic>{
+          'p_title': title,
+          'p_author': author,
+          'p_isbn': isbn,
+          'p_description': description,
+          'p_image_url': imageUrl,
+          'p_publisher': publisher,
+          'p_category': category,
+          'p_page_count': pageCount,
+          'p_released_year': releasedYear,
+        },
+      );
+      return mapRowToBook(row as Map<String, dynamic>);
+    } on PostgrestException catch (e) {
+      final duplicateMatch = RegExp(r'DUPLICATE_ISBN:(\S+)').firstMatch(e.message);
+      if (duplicateMatch != null) {
+        throw TrbooksDuplicateIsbnException('trbooks:${duplicateMatch.group(1)}');
+      }
+      if (e.message.toLowerCase().contains('not authenticated')) {
+        throw Exception('Sign in required.');
+      }
+      rethrow;
+    }
   }
 }

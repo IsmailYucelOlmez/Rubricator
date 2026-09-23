@@ -49,6 +49,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get virgilBetaBadge => 'BETA';
 
   @override
+  String get virgilAboutBookUnavailableOnWeb =>
+      'Belge ile sohbet web\'de kullanılamıyor. Lütfen mobil uygulamayı kullanın.';
+
+  @override
   String get virgilRecommendationEmptyBody =>
       'Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.';
 
@@ -568,6 +572,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get couldNotOpenBrowser => 'Tarayıcı açılamadı.';
 
   @override
+  String get openInDr => 'D&R\'da Aç';
+
+  @override
+  String get openInKitapyurdu => 'Kitapyurdu\'nda Aç';
+
+  @override
   String get quoteAdded => 'Alıntı eklendi.';
 
   @override
@@ -783,6 +793,64 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deleteNoteMessage => 'Bu not kalıcı olarak silinecek.';
+
+  @override
+  String get addTurkishBookBannerText =>
+      'Aradığınız Türkçe kitabı bulamadınız mı? Siz ekleyin.';
+
+  @override
+  String get addTurkishBookBannerAction => 'Kitap ekle';
+
+  @override
+  String get addTurkishBookTitle => 'Türkçe kitap ekle';
+
+  @override
+  String get addTurkishBookTitleHint => 'Başlık';
+
+  @override
+  String get addTurkishBookAuthorHint => 'Yazar';
+
+  @override
+  String get addTurkishBookIsbnHint => 'ISBN (10 veya 13 haneli)';
+
+  @override
+  String get addTurkishBookIsbnInvalid => 'ISBN 10 veya 13 haneli olmalı.';
+
+  @override
+  String get addTurkishBookMoreDetails => 'Daha fazla detay (opsiyonel)';
+
+  @override
+  String get addTurkishBookDescriptionHint => 'Açıklama (opsiyonel)';
+
+  @override
+  String get addTurkishBookGenerateDescription =>
+      'Yapay zekâ ile açıklama üret';
+
+  @override
+  String get addTurkishBookImageUrlHint =>
+      'Kapak görseli bağlantısı (opsiyonel)';
+
+  @override
+  String get addTurkishBookImagePreviewHint =>
+      'Önizleme — bağlantının gerçek bir görsele işaret ettiğini kontrol edin.';
+
+  @override
+  String get addTurkishBookPublisherHint => 'Yayınevi (opsiyonel)';
+
+  @override
+  String get addTurkishBookCategoryHint => 'Kategori (opsiyonel)';
+
+  @override
+  String get addTurkishBookSubmit => 'Kitap ekle';
+
+  @override
+  String get addTurkishBookDuplicate => 'Bu kitap zaten katalogda mevcut.';
+
+  @override
+  String get addTurkishBookOpenExisting => 'Kitabı aç';
+
+  @override
+  String get userSubmittedBadgeLabel => 'Kullanıcı katkısı';
 
   @override
   String get allTags => 'Tümü';

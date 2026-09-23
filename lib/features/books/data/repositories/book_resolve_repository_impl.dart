@@ -30,7 +30,8 @@ class BookResolveRepositoryImpl implements BookResolveRepository {
 
     final cached = await _cache.lookup(isbn13);
     if (cached != null) {
-      return _books.getBookByWorkId(cached.googleVolumeId);
+      final byWorkId = await _books.getBookByWorkId(cached.googleVolumeId);
+      return _withSeedFallback(byWorkId, seed: unresolved);
     }
 
     final byIsbn = await _searchBestMatch('isbn:$isbn13', seed: unresolved);
@@ -41,7 +42,7 @@ class BookResolveRepositoryImpl implements BookResolveRepository {
         resolvedTitle: byIsbn.title,
         resolveMethod: 'isbn',
       );
-      return byIsbn;
+      return _withSeedFallback(byIsbn, seed: unresolved);
     }
 
     final byMetadata = await _resolveByTitleAuthor(
@@ -80,9 +81,21 @@ class BookResolveRepositoryImpl implements BookResolveRepository {
           resolveMethod: resolveMethod,
         );
       }
-      return match;
+      return _withSeedFallback(match, seed: seed);
     }
     return seed;
+  }
+
+  /// Google's volume data wins when present, but a resolved match sometimes
+  /// carries no description (missing upstream, or a search snippet that
+  /// omitted it) even though the unresolved seed already had one -- e.g. the
+  /// Virgil recommendation flow seeds a description before the Google volume
+  /// id is known. Falling back to the seed avoids losing a description the
+  /// user already saw.
+  Book _withSeedFallback(Book resolved, {required Book seed}) {
+    if (resolved.description.trim().isNotEmpty) return resolved;
+    if (seed.description.trim().isEmpty) return resolved;
+    return resolved.copyWith(description: seed.description);
   }
 
   Future<Book?> _searchBestMatch(String query, {required Book seed}) async {

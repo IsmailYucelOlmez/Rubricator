@@ -42,30 +42,48 @@ class BookApp extends ConsumerStatefulWidget {
 class _BookAppState extends ConsumerState<BookApp> {
   int _currentIndex = 0;
 
+  // Tabs are built lazily on first visit. Building all 5 up front made every
+  // tab's own eager provider fetches (search's popular lists, lists' three
+  // feed tabs, etc.) run concurrently with the home tab's load, slowing down
+  // the very first thing the user sees. Once a tab has been visited its
+  // widget stays in the IndexedStack so its state (and in-flight uploads)
+  // still survives switching away, same as before.
+  final Set<int> _visitedTabIndices = {0};
+
   static const _homeIcon = 'assets/bottomtab/homeicon.svg';
   static const _searchIcon = 'assets/bottomtab/Search.svg';
   static const _booksIcon = 'assets/bottomtab/Books.svg';
   static const _userIcon = 'assets/bottomtab/user.svg';
 
   Widget _tabBody(BuildContext context) {
-    // IndexedStack keeps tab state (and in-flight document uploads) alive.
+    final pages = <Widget>[
+      Theme(
+        data: _themeWithBodyFontFactor(context, 1.0),
+        child: const HomePage(),
+      ),
+      Theme(
+        data: _themeWithBodyFontFactor(context, 1.0),
+        child: const SearchPage(),
+      ),
+      const VirgilHubPage(),
+      const ListsPage(),
+      const ProfilePage(),
+    ];
     return IndexedStack(
       index: _currentIndex,
       sizing: StackFit.expand,
       children: [
-        Theme(
-          data: _themeWithBodyFontFactor(context, 1.0),
-          child: const HomePage(),
-        ),
-        Theme(
-          data: _themeWithBodyFontFactor(context, 1.0),
-          child: const SearchPage(),
-        ),
-        const VirgilHubPage(),
-        const ListsPage(),
-        const ProfilePage(),
+        for (var i = 0; i < pages.length; i++)
+          _visitedTabIndices.contains(i) ? pages[i] : const SizedBox.shrink(),
       ],
     );
+  }
+
+  void _selectTab(int index) {
+    setState(() {
+      _currentIndex = index;
+      _visitedTabIndices.add(index);
+    });
   }
 
   List<NavigationDestination> _navDestinations(AppLocalizations l10n) {
@@ -159,8 +177,8 @@ class _BookAppState extends ConsumerState<BookApp> {
         );
       },
       home: ReadingReminderBootstrap(
-        child: HabitOfflineSyncListener(
-          child: Builder(
+        child: _maybeWithHabitOfflineSync(
+          Builder(
             builder: (context) {
           final l10n = AppLocalizations.of(context)!;
           final tablet = context.isTabletLayout;
@@ -209,8 +227,7 @@ class _BookAppState extends ConsumerState<BookApp> {
                           extended: false,
                           labelType: NavigationRailLabelType.all,
                           selectedIndex: _currentIndex,
-                          onDestinationSelected: (index) =>
-                              setState(() => _currentIndex = index),
+                          onDestinationSelected: _selectTab,
                           destinations: _railDestinations(l10n),
                         ),
                         const VerticalDivider(width: 1, thickness: 1),
@@ -239,7 +256,7 @@ class _BookAppState extends ConsumerState<BookApp> {
                     selectedIndex: _currentIndex,
                     onDestinationSelected: (index) {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      setState(() => _currentIndex = index);
+                      _selectTab(index);
                     },
                     destinations: _navDestinations(l10n),
                   ),
@@ -250,6 +267,14 @@ class _BookAppState extends ConsumerState<BookApp> {
       ),
     );
   }
+}
+
+/// Web has no offline data-adding (reading logs write straight through to
+/// Supabase there), so there is nothing for [HabitOfflineSyncListener] to
+/// sync on web either.
+Widget _maybeWithHabitOfflineSync(Widget child) {
+  if (kIsWeb) return child;
+  return HabitOfflineSyncListener(child: child);
 }
 
 /// On web, default Material route transitions apply opacity to the outgoing

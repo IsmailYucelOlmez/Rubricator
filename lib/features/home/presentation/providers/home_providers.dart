@@ -83,6 +83,8 @@ final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
               title: book.title,
               coverImageUrl: book.coverImageUrl,
               authorNames: book.author,
+              description: book.description,
+              sourceUrl: book.sourceUrl,
             ),
           )
           .toList();

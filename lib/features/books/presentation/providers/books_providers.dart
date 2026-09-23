@@ -78,6 +78,8 @@ final bookDetailProvider =
         description: b.description,
         authorIds: b.authorIds,
         subjectKeys: b.subjectKeys,
+        sourceUrl: b.sourceUrl,
+        isUserSubmitted: b.isUserSubmitted,
       );
     });
 

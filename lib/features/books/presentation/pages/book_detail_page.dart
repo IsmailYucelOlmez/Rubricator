@@ -107,6 +107,23 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  /// trbooks only scrapes two stores; the product page host tells them apart.
+  bool _isDrUrl(String url) =>
+      (Uri.tryParse(url)?.host ?? '').toLowerCase().contains('dr.com');
+
+  Future<void> _openSourceUrl(String url) async {
+    final l10n = AppLocalizations.of(context)!;
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      _showMessage(l10n.invalidUrl);
+      return;
+    }
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      _showMessage(l10n.couldNotOpenBrowser);
+    }
+  }
+
   UserBookSnapshot _snapshotFor({
     required String title,
     required String author,
@@ -330,6 +347,14 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
       appBar: AppBar(
         title: Text(l10n.bookDetails),
         actions: [
+          if (!isPendingId && detailedBook.sourceUrl != null)
+            IconButton(
+              tooltip: _isDrUrl(detailedBook.sourceUrl!)
+                  ? l10n.openInDr
+                  : l10n.openInKitapyurdu,
+              onPressed: () => _openSourceUrl(detailedBook.sourceUrl!),
+              icon: const Icon(Icons.storefront_outlined),
+            ),
           IconButton(
             onPressed: isPendingId
                 ? null
@@ -478,6 +503,17 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   detailedBook.title,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
+                if (detailedBook.isUserSubmitted) ...[
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Chip(
+                      label: Text(AppLocalizations.of(context)!.userSubmittedBadgeLabel),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 4),
                 if (detailedBook.authorIds.isNotEmpty)
                   InkWell(

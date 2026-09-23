@@ -1,0 +1,6 @@
+Bu sürümde:
+• Türkçe kitaplar için içerik ve öneriler geliştirildi
+• Listeler içinde arama özelliği eklendi
+• Eksik olan Türkçe kitapları artık uygulama içinden bildirebilirsiniz
+• Ana sayfa içerikleri zenginleştirildi
+• Çeşitli hata düzeltmeleri ve performans iyileştirmeleri yapıldı

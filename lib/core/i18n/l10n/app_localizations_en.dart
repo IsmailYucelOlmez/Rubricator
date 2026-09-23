@@ -49,6 +49,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get virgilBetaBadge => 'BETA';
 
   @override
+  String get virgilAboutBookUnavailableOnWeb =>
+      'Document Q&A is not available on the web. Please use the mobile app.';
+
+  @override
   String get virgilRecommendationEmptyBody =>
       'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.';
 
@@ -570,6 +574,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotOpenBrowser => 'Could not open browser.';
 
   @override
+  String get openInDr => 'Open in D&R';
+
+  @override
+  String get openInKitapyurdu => 'Open in Kitapyurdu';
+
+  @override
   String get quoteAdded => 'Quote added.';
 
   @override
@@ -797,6 +807,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteNoteMessage => 'This note will be permanently deleted.';
+
+  @override
+  String get addTurkishBookBannerText =>
+      'Can\'t find a Turkish book? Add it yourself.';
+
+  @override
+  String get addTurkishBookBannerAction => 'Add book';
+
+  @override
+  String get addTurkishBookTitle => 'Add a Turkish book';
+
+  @override
+  String get addTurkishBookTitleHint => 'Title';
+
+  @override
+  String get addTurkishBookAuthorHint => 'Author';
+
+  @override
+  String get addTurkishBookIsbnHint => 'ISBN (10 or 13 digits)';
+
+  @override
+  String get addTurkishBookIsbnInvalid => 'ISBN must be 10 or 13 digits.';
+
+  @override
+  String get addTurkishBookMoreDetails => 'More details (optional)';
+
+  @override
+  String get addTurkishBookDescriptionHint => 'Description (optional)';
+
+  @override
+  String get addTurkishBookGenerateDescription =>
+      'Generate description with AI';
+
+  @override
+  String get addTurkishBookImageUrlHint => 'Cover image URL (optional)';
+
+  @override
+  String get addTurkishBookImagePreviewHint =>
+      'Preview — check that the link points to a real image.';
+
+  @override
+  String get addTurkishBookPublisherHint => 'Publisher (optional)';
+
+  @override
+  String get addTurkishBookCategoryHint => 'Category (optional)';
+
+  @override
+  String get addTurkishBookSubmit => 'Add book';
+
+  @override
+  String get addTurkishBookDuplicate => 'This book is already in the catalog.';
+
+  @override
+  String get addTurkishBookOpenExisting => 'Open it';
+
+  @override
+  String get userSubmittedBadgeLabel => 'User contribution';
 
   @override
   String get allTags => 'All';

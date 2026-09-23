@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../virgil/data/datasources/virgil_usage_remote_datasource.dart';
@@ -150,6 +151,18 @@ class DocumentChatNotifier extends StateNotifier<DocumentChatState> {
   }
 
   Future<void> pickAndUpload() async {
+    // Document Q&A is mobile-only: it relies on file_picker's native `path`
+    // and Dio's `MultipartFile.fromFile`, neither of which work on web
+    // (entry point is already hidden there — see VirgilHubPage._openAboutBook).
+    if (kIsWeb) {
+      _setState(state.copyWith(
+        isUploading: false,
+        error: 'unsupported_platform',
+        errorKind: DocumentChatErrorKind.generic,
+      ));
+      return;
+    }
+
     _setState(state.copyWith(
       isUploading: true,
       clearError: true,

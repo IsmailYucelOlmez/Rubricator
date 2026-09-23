@@ -66,11 +66,19 @@ final searchProvider =
     );
 
 class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPaginationState> {
+  static const _trPageSize = 20;
+
   int _page = 1;
+  // Which source the current query's pages come from; fixed per query.
+  bool _useTrbooks = false;
+  // Raw rows consumed from trbooks (pre-dedup), used as the RPC offset.
+  int _trOffset = 0;
 
   @override
   Future<SearchPaginationState> build() async {
     _page = 1;
+    _useTrbooks = false;
+    _trOffset = 0;
     final query = ref.watch(searchQueryProvider).trim();
     if (query.length < 2) {
       return const SearchPaginationState(
@@ -81,34 +89,39 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
       );
     }
     final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
+    // Turkish locale: trbooks only; Google Books is queried solely as a
+    // fallback when trbooks has no match (or fails).
+    if (isTurkish) {
+      final trbooks = await _searchTrbooks(query, offset: 0);
+      if (trbooks.isNotEmpty) {
+        _useTrbooks = true;
+        _trOffset = trbooks.length > _trPageSize ? _trPageSize : trbooks.length;
+        return SearchPaginationState(
+          books: _deduplicateBooks(trbooks.take(_trPageSize).toList()),
+          hasMore: trbooks.length > _trPageSize,
+          isLoadingMore: false,
+          query: query,
+        );
+      }
+    }
     final result = await ref
         .read(bookRepositoryProvider)
         .searchBooks(query: query, page: 1);
-    if (!isTurkish) {
-      return SearchPaginationState(
-        books: _deduplicateBooks(result.books),
-        hasMore: result.hasMore,
-        isLoadingMore: false,
-        query: query,
-      );
-    }
-    // Turkish locale: trbooks is the primary catalog, Google Books fills in
-    // around/after it (and is the only source when trbooks has no match).
-    final trbooks = await _searchTrbooks(query);
-    final combined = trbooks.isNotEmpty
-        ? <Book>[...trbooks, ...result.books]
-        : result.books;
     return SearchPaginationState(
-      books: _deduplicateBooks(combined),
+      books: _deduplicateBooks(result.books),
       hasMore: result.hasMore,
       isLoadingMore: false,
       query: query,
     );
   }
 
-  Future<List<Book>> _searchTrbooks(String query) async {
+  /// Fetches one extra row beyond [_trPageSize] so callers can tell whether
+  /// another page exists without a separate count query.
+  Future<List<Book>> _searchTrbooks(String query, {required int offset}) async {
     try {
-      return await ref.read(searchTrbooksUseCaseProvider).call(query);
+      return await ref
+          .read(searchTrbooksUseCaseProvider)
+          .call(query, limit: _trPageSize + 1, offset: offset);
     } catch (_) {
       // Local Turkish catalog is a supplemental source; Google Books results
       // alone are still a valid search outcome if this fails.
@@ -134,6 +147,27 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
         query: current.query,
       ),
     );
+
+    if (_useTrbooks) {
+      try {
+        final rows = await ref
+            .read(searchTrbooksUseCaseProvider)
+            .call(current.query, limit: _trPageSize + 1, offset: _trOffset);
+        final pageRows = rows.take(_trPageSize).toList();
+        _trOffset += pageRows.length;
+        state = AsyncData(
+          SearchPaginationState(
+            books: _deduplicateBooks(<Book>[...current.books, ...pageRows]),
+            hasMore: rows.length > _trPageSize,
+            isLoadingMore: false,
+            query: current.query,
+          ),
+        );
+      } catch (e, stackTrace) {
+        state = AsyncError(e, stackTrace);
+      }
+      return;
+    }
 
     try {
       final result = await ref

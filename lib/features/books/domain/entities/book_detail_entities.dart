@@ -7,6 +7,8 @@ class BookEntity {
     required this.description,
     this.authorIds = const [],
     this.subjectKeys = const [],
+    this.sourceUrl,
+    this.isUserSubmitted = false,
   });
 
   final String id;
@@ -16,6 +18,13 @@ class BookEntity {
   final String description;
   final List<String> authorIds;
   final List<String> subjectKeys;
+
+  /// Retailer product page this book was scraped from (trbooks only);
+  /// `null` for Google Books-origin books.
+  final String? sourceUrl;
+
+  /// True for trbooks rows with `source = 'user_submitted'`.
+  final bool isUserSubmitted;
 }
 
 class ReviewEntity {

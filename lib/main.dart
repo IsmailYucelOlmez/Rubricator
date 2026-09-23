@@ -46,11 +46,13 @@ Future<void> main() async {
     AppLogger.info('startup', 'Initializing Supabase');
     await SupabaseService.initialize();
 
-    AppLogger.info('startup', 'Initializing notifications');
-    await NotificationService.instance.initialize();
+    if (!kIsWeb) {
+      AppLogger.info('startup', 'Initializing notifications');
+      await NotificationService.instance.initialize();
 
-    AppLogger.info('startup', 'Scheduling reading reminders');
-    await ReadingReminderScheduler.ensureScheduledFromPrefs();
+      AppLogger.info('startup', 'Scheduling reading reminders');
+      await ReadingReminderScheduler.ensureScheduledFromPrefs();
+    }
 
     _bindSentryUserContext();
 

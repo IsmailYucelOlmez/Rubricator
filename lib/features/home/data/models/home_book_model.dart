@@ -9,6 +9,7 @@ class HomeBookModel {
     required this.authorNames,
     this.languages,
     this.categories,
+    this.description,
   });
 
   final String id;
@@ -18,6 +19,7 @@ class HomeBookModel {
   final List<String>? languages;
   /// Google `volumeInfo.categories` when present.
   final List<String>? categories;
+  final String? description;
 
   HomeBookEntity toEntity() {
     return HomeBookEntity(
@@ -25,6 +27,7 @@ class HomeBookModel {
       title: title,
       coverImageUrl: coverImageUrl,
       authorNames: authorNames,
+      description: description,
     );
   }
 
@@ -59,6 +62,7 @@ class HomeBookModel {
     final volumeInfo =
         json['volumeInfo'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final titleRaw = (volumeInfo['title'] as String?)?.trim();
+    final descriptionRaw = (volumeInfo['description'] as String?)?.trim();
     final categoriesRaw = volumeInfo['categories'];
     List<String>? categories;
     if (categoriesRaw is List<dynamic>) {
@@ -80,6 +84,9 @@ class HomeBookModel {
       authorNames: _authorNames(volumeInfo),
       languages: _languages(volumeInfo),
       categories: categories,
+      description: descriptionRaw != null && descriptionRaw.isNotEmpty
+          ? descriptionRaw
+          : null,
     );
   }
 }

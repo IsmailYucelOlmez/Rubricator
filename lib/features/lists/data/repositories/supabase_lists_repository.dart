@@ -443,7 +443,10 @@ class SupabaseListsRepository implements ListsRepository {
   ListEntity _mapEnrichedRow(Map<String, dynamic> row) {
     final previewsRaw = row['preview_cover_image_urls'];
     final previewCoverImageUrls = previewsRaw is List
-        ? previewsRaw.map((e) => e?.toString()).toList()
+        ? previewsRaw
+              .map((e) => e?.toString().trim())
+              .where((e) => e != null && e.isNotEmpty)
+              .toList()
         : const <String?>[];
 
     return ListEntity(

@@ -1,7 +1,7 @@
 import '../../../books/domain/entities/book.dart';
 
 abstract class TrbooksRepository {
-  Future<List<Book>> searchTrbooks(String query, {int limit = 20});
+  Future<List<Book>> searchTrbooks(String query, {int limit = 20, int offset = 0});
 
   /// Highest rated/most-reviewed catalog entries, for use as a Turkish
   /// "popular books" substitute where Google Books trending is normally shown.
@@ -33,4 +33,21 @@ abstract class TrbooksRepository {
   /// scrape-tr-books, unlike [byKeyword]'s fuzzy ILIKE fallback over the
   /// whole (mostly untagged) catalog.
   Future<List<Book>> byGenreKey(String genreKey, {int limit = 20});
+
+  /// Inserts a new user-submitted trbooks row (Turkish locale only), via the
+  /// `submit_user_trbook` RPC. Requires a signed-in user.
+  ///
+  /// Throws a [TrbooksDuplicateIsbnException] when [isbn] already exists, or
+  /// an `Exception('Sign in required.')`-style error when unauthenticated.
+  Future<Book> submitUserBook({
+    required String title,
+    required String author,
+    required String isbn,
+    String? description,
+    String? imageUrl,
+    String? publisher,
+    String? category,
+    int? pageCount,
+    int? releasedYear,
+  });
 }

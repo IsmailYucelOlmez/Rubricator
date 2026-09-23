@@ -317,7 +317,11 @@ class InMemoryListsRepository implements ListsRepository {
     _updateList(
       listId,
       (l) => l.copyWith(
-        previewCoverImageUrls: items.take(4).map((e) => e.coverImageUrl).toList(),
+        previewCoverImageUrls: items
+            .map((e) => e.coverImageUrl)
+            .where((u) => u != null && u.trim().isNotEmpty)
+            .take(4)
+            .toList(),
       ),
     );
     return entity;

@@ -13,6 +13,8 @@ class Book {
     required this.description,
     this.authorIds = const [],
     this.subjectKeys = const [],
+    this.sourceUrl,
+    this.isUserSubmitted = false,
   });
 
   final String id;
@@ -30,6 +32,14 @@ class Book {
   /// Categories / subjects for related-book search.
   final List<String> subjectKeys;
 
+  /// Retailer product page this book was scraped from (trbooks only, e.g.
+  /// D&R/Kitapyurdu); `null` for Google Books-origin books.
+  final String? sourceUrl;
+
+  /// True for trbooks rows with `source = 'user_submitted'` — surfaced as a
+  /// "user contribution" badge to distinguish from scraped/verified data.
+  final bool isUserSubmitted;
+
   Book copyWith({
     String? id,
     String? title,
@@ -38,6 +48,8 @@ class Book {
     String? description,
     List<String>? authorIds,
     List<String>? subjectKeys,
+    String? sourceUrl,
+    bool? isUserSubmitted,
   }) {
     return Book(
       id: id ?? this.id,
@@ -47,6 +59,8 @@ class Book {
       description: description ?? this.description,
       authorIds: authorIds ?? this.authorIds,
       subjectKeys: subjectKeys ?? this.subjectKeys,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      isUserSubmitted: isUserSubmitted ?? this.isUserSubmitted,
     );
   }
 
@@ -59,6 +73,8 @@ class Book {
       'description': description,
       'authorIds': authorIds,
       'subjectKeys': subjectKeys,
+      'sourceUrl': sourceUrl,
+      'isUserSubmitted': isUserSubmitted,
     };
   }
 
@@ -87,6 +103,8 @@ class Book {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      sourceUrl: json['sourceUrl'] as String?,
+      isUserSubmitted: json['isUserSubmitted'] as bool? ?? false,
     );
   }
 }

@@ -242,6 +242,8 @@ class HomeRepositoryImpl implements HomeRepository {
       title: book.title,
       coverImageUrl: book.coverImageUrl,
       authorNames: book.author,
+      description: book.description,
+      sourceUrl: book.sourceUrl,
     );
   }
 
@@ -251,11 +253,22 @@ class HomeRepositoryImpl implements HomeRepository {
       HomeCacheDataSource.popularCacheKey,
       ...genreKeys,
     ];
-    final cacheMap = await _loadHomeCacheWithFallback(cacheKeys);
 
-    var popularBooks = await _trbooksHomeBooks(
+    // Kick off the cache read and every trbooks RPC (popular + each genre)
+    // together so they run concurrently instead of one-after-another — with
+    // 5-6 network round trips, sequential awaits made the home page load as
+    // slow as the sum of all of them instead of the slowest one.
+    final cacheMapFuture = _loadHomeCacheWithFallback(cacheKeys);
+    final popularTrbooksFuture = _trbooksHomeBooks(
       HomeCacheDataSource.popularCacheKey,
     );
+    final genreTrbooksFutures = <String, Future<List<HomeBookEntity>>>{
+      for (final genreKey in genreKeys) genreKey: _trbooksHomeBooks(genreKey),
+    };
+
+    final cacheMap = await cacheMapFuture;
+
+    var popularBooks = await popularTrbooksFuture;
     if (popularBooks.isEmpty) {
       popularBooks = _homeBooksFromModels(
         _cacheDataSource.parseCachedBooks(
@@ -266,7 +279,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     final genreSections = <String, HomeGenreSection>{};
     for (final genreKey in genreKeys) {
-      final trbooksBooks = await _trbooksHomeBooks(genreKey);
+      final trbooksBooks = await genreTrbooksFutures[genreKey]!;
       genreSections[genreKey] = trbooksBooks.isNotEmpty
           ? HomeGenreSection(
               books: trbooksBooks,
@@ -306,6 +319,8 @@ class HomeRepositoryImpl implements HomeRepository {
             title: book.title,
             coverImageUrl: book.coverImageUrl,
             authorNames: book.author,
+            description: book.description,
+            sourceUrl: book.sourceUrl,
           ),
         )
         .toList();

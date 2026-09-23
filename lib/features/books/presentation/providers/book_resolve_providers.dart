@@ -38,6 +38,8 @@ BookEntity bookEntityFromBook(Book book) => BookEntity(
       description: book.description,
       authorIds: book.authorIds,
       subjectKeys: book.subjectKeys,
+      sourceUrl: book.sourceUrl,
+      isUserSubmitted: book.isUserSubmitted,
     );
 
 /// Resolves `pending:` books and maps the Google-hydrated result to [BookEntity]

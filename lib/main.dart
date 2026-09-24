@@ -90,7 +90,9 @@ void _bindSentryUserContext() {
         scope.setUser(null);
         return;
       }
-      scope.setUser(SentryUser(id: user.id, email: user.email));
+      // id only: the privacy policy promises error reports carry no direct
+      // identifiers like name/email.
+      scope.setUser(SentryUser(id: user.id));
     });
     AppLogger.info(
       'auth',

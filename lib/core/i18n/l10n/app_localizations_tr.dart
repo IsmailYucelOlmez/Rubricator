@@ -212,6 +212,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signOut => 'Çıkış yap';
 
   @override
+  String get webLocalDataNotice =>
+      'Bu tarayıcının site verilerini temizlemek oturumunuzu kapatır ve buradaki dil/tema tercihlerinizi sıfırlar. Okuma kayıtlarınız, listeleriniz ve puanlamalarınız hesabınızda güvende kalır.';
+
+  @override
   String loadSessionError(Object error) {
     return 'Oturum yüklenemedi. $error';
   }
@@ -1407,7 +1411,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyPolicyTitle => 'Rubricator Gizlilik Politikası';
 
   @override
-  String get privacyPolicyLastUpdated => 'Son güncelleme: 28.07.2026';
+  String get privacyPolicyLastUpdated => 'Son güncelleme: 24.09.2026';
 
   @override
   String get privacyPolicyMeta =>
@@ -1418,7 +1422,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Rubricator (\"uygulama\", \"biz\", \"bizim\"), kitap keşfi, kişisel okuma takibi, kitap notları/incelemeleri, okuma listeleri ve yapay zekâ destekli kitap özellikleri sunan bir mobil/masaüstü uygulamasıdır.';
+      'Rubricator (\"uygulama\", \"biz\", \"bizim\"), kitap keşfi, kişisel okuma takibi, kitap notları/incelemeleri, okuma listeleri ve yapay zekâ destekli kitap özellikleri sunan bir mobil, masaüstü ve web uygulamasıdır.';
 
   @override
   String get privacyPolicySection1Body2 =>
@@ -1516,7 +1520,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection24Item2 =>
-      '- Belge Sohbeti (PDF/EPUB): Yüklediğiniz PDF veya EPUB dosyaları geçici olarak sunucumuza aktarılır, parçalara ayrılıp vektörleştirilir ve Google Gemini\'ye gönderilir. Belgeler ve oturum verileri kalıcı olarak kaydedilmez; oturum süresi sonunda veya siz sonlandırdığınızda silinir.';
+      '- Belge Sohbeti (PDF/EPUB): Yüklediğiniz PDF veya EPUB dosyaları geçici olarak sunucumuza aktarılır, parçalara ayrılıp vektörleştirilir ve Google Gemini\'ye gönderilir. Belgeler ve oturum verileri kalıcı olarak kaydedilmez; oturum süresi sonunda veya siz sonlandırdığınızda silinir. Belge Sohbeti yalnızca mobil uygulamada sunulur; web sürümünde bulunmaz.';
 
   @override
   String get privacyPolicySection24Item3 =>
@@ -1532,7 +1536,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection25Body =>
-      'Kitap arama, kapak görseli, açıklama ve yazar bilgileri Google Books API\'sinden, sunucumuz üzerinden bir vekil (proxy) aracılığıyla çekilir. Bu veriler kitaplara aittir, sizinle ilgili kişisel veri içermez.';
+      'Kitap arama, kapak görseli, açıklama ve yazar bilgileri Google Books API\'sinden, sunucumuz üzerinden bir vekil (proxy) aracılığıyla çekilir. Bu veriler kitaplara aittir, sizinle ilgili kişisel veri içermez. Kapak görselleri, ilgili katalog kaynağının (ör. Google Books, Kitapyurdu veya D&R) sunucularından doğrudan yüklenir; bu nedenle bir kapak gösterilirken bu sunucular IP adresinizi ve cihaz/tarayıcı bilginizi alabilir.';
 
   @override
   String get privacyPolicySection26Title =>
@@ -1548,7 +1552,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection26Item3 =>
-      '- Yerel bildirim verileri: Okuma hatırlatıcıları tamamen cihazınızda planlanır; sunucularımıza aktarılmaz.';
+      '- Yerel bildirim verileri: Okuma hatırlatıcıları tamamen cihazınızda planlanır; sunucularımıza aktarılmaz. Bildirimler yalnızca mobil uygulamada bulunur; web sürümü bildirim göndermez.';
+
+  @override
+  String get privacyPolicySection26Item4 =>
+      '- Web sürümü: Web sürümünü kullandığınızda, siteyi sunan web barındırma/CDN sağlayıcısı ve uygulamanın çizim motorunu ve yedek yazı tiplerini ileten Google içerik dağıtım ağı (www.gstatic.com, fonts.gstatic.com), IP adresiniz, tarayıcı bilginiz ve istenen adres gibi standart istek verilerini alır.';
 
   @override
   String get privacyPolicySection27Title => '2.7 Cihaz İzinleri';
@@ -1563,15 +1571,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection27Item2 =>
-      '- Bildirim gönderme: Okuma hatırlatıcıları ve uygulama içi bildirimler';
+      '- Bildirim gönderme: Okuma hatırlatıcıları ve uygulama içi bildirimler (yalnızca mobil uygulama)';
 
   @override
   String get privacyPolicySection27Item3 =>
-      '- Tam zamanlı alarm / zamanlayıcı: Belirlediğiniz saatte okuma hatırlatıcısı gösterebilmek';
+      '- Tam zamanlı alarm / zamanlayıcı: Belirlediğiniz saatte okuma hatırlatıcısı gösterebilmek (yalnızca mobil uygulama)';
 
   @override
   String get privacyPolicySection27Item4 =>
-      '- Galeri / dosya erişimi: Profil fotoğrafı yükleme, belge sohbeti için PDF/EPUB seçme';
+      '- Galeri / dosya erişimi: Profil fotoğrafı yükleme (web sürümünde tarayıcınızın dosya seçicisi kullanılır), belge sohbeti için PDF/EPUB seçme (yalnızca mobil uygulama)';
 
   @override
   String get privacyPolicySection3Title => '3. Verilerinizi Neden İşliyoruz';
@@ -1618,7 +1626,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection4Body =>
-      'Verileriniz şu altyapılarda barındırılır: Supabase (veritabanı, kimlik doğrulama, dosya depolama); kendi API sunucumuz (FastAPI — semantik arama ve belge sohbeti; belge oturumları geçicidir); Google Gemini API; Sentry (hata raporları).';
+      'Verileriniz şu altyapılarda barındırılır: Supabase (veritabanı, kimlik doğrulama, dosya depolama); kendi API sunucumuz (FastAPI — semantik arama ve belge sohbeti; belge oturumları geçicidir); Google Gemini API; Sentry (hata raporları); web sürümünü sunan web barındırma/CDN sağlayıcısı.';
 
   @override
   String get privacyPolicySection4Item1 =>
@@ -1787,14 +1795,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection11Body =>
-      'Uygulama, bazı tercihlerinizi ve önbellek verilerini (ör. oturum bilgisi, tema tercihi, geçici içerik önbelleği) doğrudan cihazınızda yerel olarak saklar. Bu veriler uygulamayı kaldırdığınızda cihazınızdan silinir ve sunucularımıza otomatik olarak aktarılmaz.';
+      'Uygulama, bazı tercihlerinizi ve önbellek verilerini (ör. oturum bilgisi, dil ve tema tercihi, geçici içerik önbelleği) cihazınızda yerel olarak saklar. Mobil uygulamada bu veriler uygulamayı kaldırdığınızda silinir. Web sürümünde ise çerezlerde değil, tarayıcınızın yerel depolama alanında tutulur; tarayıcınızda bu sitenin verilerini temizlediğinizde veya gizli pencere kapandığında silinir. Uygulamanın kendisi reklam veya analiz çerezi ayarlamaz. Bu veriler sunucularımıza otomatik olarak aktarılmaz; yalnızca oturumunuzun açık kalması için oturum bilgisi (token) isteklerle birlikte gönderilir. Bu verileri temizlemek oturumunuzu kapatır; hesabınızdaki içerikler sunucularımızda güvende kalır.';
 
   @override
   String get privacyPolicySection12Title => '12. Uluslararası Veri Aktarımı';
 
   @override
   String get privacyPolicySection12Body =>
-      'Kullandığımız altyapı sağlayıcıları (Supabase, Google, Sentry) verilerinizi Türkiye dışındaki sunucularda (ör. Avrupa Birliği veya Amerika Birleşik Devletleri) işleyebilir. Bu tür aktarımlarda, ilgili sağlayıcıların sunduğu güvenlik ve uyumluluk mekanizmalarına (standart sözleşme hükümleri, veri işleme anlaşmaları vb.) güveniyoruz.';
+      'Kullandığımız altyapı sağlayıcıları (Supabase, Google, Sentry ve web barındırma sağlayıcımız) verilerinizi Türkiye dışındaki sunucularda (ör. Avrupa Birliği veya Amerika Birleşik Devletleri) işleyebilir. Bu tür aktarımlarda, ilgili sağlayıcıların sunduğu güvenlik ve uyumluluk mekanizmalarına (standart sözleşme hükümleri, veri işleme anlaşmaları vb.) güveniyoruz.';
 
   @override
   String get privacyPolicySection13Title =>

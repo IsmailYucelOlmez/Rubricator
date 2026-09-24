@@ -26,7 +26,10 @@ class PrivacyPolicyPage extends StatelessWidget {
               children: [
                 Text(
                   l10n.privacyPolicyTitle,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
@@ -98,6 +101,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                         l10n.privacyPolicySection26Item1,
                         l10n.privacyPolicySection26Item2,
                         l10n.privacyPolicySection26Item3,
+                        l10n.privacyPolicySection26Item4,
                       ],
                     ),
                     _PolicySubsection(
@@ -258,8 +262,12 @@ class _PolicySection extends StatelessWidget {
         children: [
           Text(title, style: PrivacyPolicyPage._sectionTitleStyle),
           const SizedBox(height: AppSpacing.sm),
-          ..._intersperse(paragraphs.map(Text.new).toList(), const SizedBox(height: AppSpacing.sm)),
-          if (paragraphs.isNotEmpty && items.isNotEmpty) const SizedBox(height: AppSpacing.sm),
+          ..._intersperse(
+            paragraphs.map(Text.new).toList(),
+            const SizedBox(height: AppSpacing.sm),
+          ),
+          if (paragraphs.isNotEmpty && items.isNotEmpty)
+            const SizedBox(height: AppSpacing.sm),
           ...items.map(Text.new),
           if ((paragraphs.isNotEmpty || items.isNotEmpty) && content.isNotEmpty)
             const SizedBox(height: AppSpacing.sm),
@@ -298,12 +306,18 @@ class _PolicySubsection extends StatelessWidget {
         Text(title),
         if (paragraphs.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.xs),
-          ..._intersperse(paragraphs.map(Text.new).toList(), const SizedBox(height: AppSpacing.xs)),
+          ..._intersperse(
+            paragraphs.map(Text.new).toList(),
+            const SizedBox(height: AppSpacing.xs),
+          ),
         ],
         ...items.map(Text.new),
         if (footnotes.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.xs),
-          ..._intersperse(footnotes.map(Text.new).toList(), const SizedBox(height: AppSpacing.xs)),
+          ..._intersperse(
+            footnotes.map(Text.new).toList(),
+            const SizedBox(height: AppSpacing.xs),
+          ),
         ],
       ],
     );

@@ -464,6 +464,12 @@ abstract class AppLocalizations {
   /// **'Sign out'**
   String get signOut;
 
+  /// No description provided for @webLocalDataNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Clearing this browser\'s site data will sign you out and reset your language/theme preferences here. Your reading logs, lists, and ratings stay safe in your account.'**
+  String get webLocalDataNotice;
+
   /// No description provided for @loadSessionError.
   ///
   /// In en, this message translates to:
@@ -2537,7 +2543,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyLastUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Last updated: 28.07.2026'**
+  /// **'Last updated: 24.09.2026'**
   String get privacyPolicyLastUpdated;
 
   /// No description provided for @privacyPolicyMeta.
@@ -2555,7 +2561,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection1Body1.
   ///
   /// In en, this message translates to:
-  /// **'Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.'**
+  /// **'Rubricator (\"the app\", \"we\", \"our\") is a mobile, desktop, and web application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.'**
   String get privacyPolicySection1Body1;
 
   /// No description provided for @privacyPolicySection1Body2.
@@ -2711,7 +2717,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection24Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out.'**
+  /// **'- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out. Document Chat is available in the mobile app only; it is not offered in the web version.'**
   String get privacyPolicySection24Item2;
 
   /// No description provided for @privacyPolicySection24Item3.
@@ -2735,7 +2741,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection25Body.
   ///
   /// In en, this message translates to:
-  /// **'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you.'**
+  /// **'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you. Cover images are loaded directly from the servers of the catalog source (for example Google Books, Kitapyurdu, or D&R), which may therefore receive your IP address and device/browser information when a cover is displayed.'**
   String get privacyPolicySection25Body;
 
   /// No description provided for @privacyPolicySection26Title.
@@ -2759,8 +2765,14 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection26Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers.'**
+  /// **'- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers. Notifications are available in the mobile app only; the web version does not send notifications.'**
   String get privacyPolicySection26Item3;
+
+  /// No description provided for @privacyPolicySection26Item4.
+  ///
+  /// In en, this message translates to:
+  /// **'- Web version: When you use the web version, the web hosting/CDN provider that serves the site and Google\'s content delivery network (www.gstatic.com and fonts.gstatic.com, which deliver the app\'s rendering engine and fallback fonts) receive standard request data such as your IP address, browser information, and the requested address.'**
+  String get privacyPolicySection26Item4;
 
   /// No description provided for @privacyPolicySection27Title.
   ///
@@ -2783,19 +2795,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection27Item2.
   ///
   /// In en, this message translates to:
-  /// **'- Send notifications: Reading reminders and in-app notifications'**
+  /// **'- Send notifications: Reading reminders and in-app notifications (mobile app only)'**
   String get privacyPolicySection27Item2;
 
   /// No description provided for @privacyPolicySection27Item3.
   ///
   /// In en, this message translates to:
-  /// **'- Exact alarm / timer: Show reading reminders at the time you set'**
+  /// **'- Exact alarm / timer: Show reading reminders at the time you set (mobile app only)'**
   String get privacyPolicySection27Item3;
 
   /// No description provided for @privacyPolicySection27Item4.
   ///
   /// In en, this message translates to:
-  /// **'- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat'**
+  /// **'- Gallery / file access: Upload a profile photo (the web version uses your browser\'s file picker); select PDF/EPUB for Document Chat (mobile app only)'**
   String get privacyPolicySection27Item4;
 
   /// No description provided for @privacyPolicySection3Title.
@@ -2867,7 +2879,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection4Body.
   ///
   /// In en, this message translates to:
-  /// **'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports).'**
+  /// **'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports); and the web hosting/CDN provider that serves the web version.'**
   String get privacyPolicySection4Body;
 
   /// No description provided for @privacyPolicySection4Item1.
@@ -3131,7 +3143,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection11Body.
   ///
   /// In en, this message translates to:
-  /// **'The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.'**
+  /// **'The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser\'s local storage (not in cookies) and is removed when you clear this site\'s data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers.'**
   String get privacyPolicySection11Body;
 
   /// No description provided for @privacyPolicySection12Title.
@@ -3143,7 +3155,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection12Body.
   ///
   /// In en, this message translates to:
-  /// **'Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).'**
+  /// **'Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).'**
   String get privacyPolicySection12Body;
 
   /// No description provided for @privacyPolicySection13Title.

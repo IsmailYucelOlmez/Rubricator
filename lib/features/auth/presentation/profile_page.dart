@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,80 +37,84 @@ class ProfilePage extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: authAsync.when(
-          data: (user) => SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              Text(
-                user == null ? l10n.profile : l10n.profileZoneTitle,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontFamily: 'Nouveau',
-                ),
-              ),
-              if (user != null) ...[
-                const SizedBox(height: AppSpacing.md),
-                _ProfileHeader(user: user),
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton.tonalIcon(
-                        onPressed: () => _showEditProfileDialog(context, user),
-                        icon: const Icon(Icons.edit_outlined),
-                        label: Text(
-                          l10n.editProfile,
-                          overflow: TextOverflow.ellipsis,
+            data: (user) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user == null ? l10n.profile : l10n.profileZoneTitle,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineSmall?.copyWith(fontFamily: 'Nouveau'),
+                  ),
+                  if (user != null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _ProfileHeader(user: user),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.tonalIcon(
+                            onPressed: () =>
+                                _showEditProfileDialog(context, user),
+                            icon: const Icon(Icons.edit_outlined),
+                            label: Text(
+                              l10n.editProfile,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: _SignOutButton(),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(child: _SignOutButton()),
+                      ],
                     ),
                   ],
-                ),
-              ],
-              const SizedBox(height: AppSpacing.md),
-              const LanguageSelector(),
-              const ThemeSelector(),
-              if (user != null) const NotificationSelector(),
-              if (user != null) const _ProfileReadingListsSection(),
-              if (user == null) ...[
-                const SizedBox(height: AppSpacing.md),
-                Text(l10n.signInPrompt),
-                const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<bool>(builder: (_) => const LoginPage()),
-                    );
-                  },
-                  child: Text(l10n.signIn),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<bool>(builder: (_) => const RegisterPage()),
-                    );
-                  },
-                  child: Text(l10n.createAccount),
-                ),
-              ] else ...[
-                const HabitProfileSummary(),
-                const MyNotesEntryCard(),
-                const StatsPreviewCard(),
-              ],
-              ],
+                  const SizedBox(height: AppSpacing.md),
+                  const LanguageSelector(),
+                  const ThemeSelector(),
+                  if (user != null) const NotificationSelector(),
+                  if (kIsWeb) const _WebLocalDataNotice(),
+                  if (user != null) const _ProfileReadingListsSection(),
+                  if (user == null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    Text(l10n.signInPrompt),
+                    const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<bool>(
+                            builder: (_) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      child: Text(l10n.signIn),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<bool>(
+                            builder: (_) => const RegisterPage(),
+                          ),
+                        );
+                      },
+                      child: Text(l10n.createAccount),
+                    ),
+                  ] else ...[
+                    const HabitProfileSummary(),
+                    const MyNotesEntryCard(),
+                    const StatsPreviewCard(),
+                  ],
+                ],
+              ),
+            ),
+            loading: () => const AppLoadingIndicator(),
+            error: (error, stackTrace) => AsyncErrorView(
+              error: error,
+              compact: true,
+              onRetry: () => ref.invalidate(authStateProvider),
             ),
           ),
-          loading: () => const AppLoadingIndicator(),
-          error: (error, stackTrace) => AsyncErrorView(
-            error: error,
-            compact: true,
-            onRetry: () => ref.invalidate(authStateProvider),
-          ),
-        ),
         ),
       ),
     );
@@ -138,10 +143,44 @@ class ProfilePage extends ConsumerWidget {
     if (s.contains('Bucket not found') || s.contains('profile-photos')) {
       return l10n.uxProfilePhotoStorageNotReady;
     }
-    if (s.contains('row-level security') || s.contains('new row violates row-level security policy')) {
+    if (s.contains('row-level security') ||
+        s.contains('new row violates row-level security policy')) {
       return l10n.uxProfilePhotoPermissionDenied;
     }
     return l10n.userFacingMessage(e);
+  }
+}
+
+/// Web-only: the Supabase session and the language/theme prefs above live in
+/// this browser's local storage, not in the account itself, so wiping site
+/// data (or a private window) resets them. Actual reading data is unaffected:
+/// reading logs write straight through to Supabase on web instead of
+/// queuing locally (there's no offline queue there — see app.dart).
+class _WebLocalDataNotice extends StatelessWidget {
+  const _WebLocalDataNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 16, color: scheme.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              l10n.webLocalDataNotice,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -178,10 +217,7 @@ class _SignOutButtonState extends ConsumerState<_SignOutButton> {
               ),
             )
           : const Icon(Icons.logout_outlined),
-      label: Text(
-        l10n.signOut,
-        overflow: TextOverflow.ellipsis,
-      ),
+      label: Text(l10n.signOut, overflow: TextOverflow.ellipsis),
     );
   }
 }
@@ -207,52 +243,46 @@ class _ProfileReadingListsSection extends StatelessWidget {
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
-            _buttonRow(
-              context,
-              [
-                _ReadingListButtonSpec(
-                  label: l10n.toRead,
-                  icon: Icons.menu_book_outlined,
-                  onPressed: () => _openStatus(context, ReadingStatus.toRead),
-                ),
-                _ReadingListButtonSpec(
-                  label: l10n.reading,
-                  icon: Icons.menu_book_outlined,
-                  onPressed: () => _openStatus(context, ReadingStatus.reading),
-                ),
-                _ReadingListButtonSpec(
-                  label: l10n.reReading,
-                  icon: Icons.menu_book_outlined,
-                  onPressed: () => _openStatus(context, ReadingStatus.reReading),
-                ),
-              ],
-            ),
+            _buttonRow(context, [
+              _ReadingListButtonSpec(
+                label: l10n.toRead,
+                icon: Icons.menu_book_outlined,
+                onPressed: () => _openStatus(context, ReadingStatus.toRead),
+              ),
+              _ReadingListButtonSpec(
+                label: l10n.reading,
+                icon: Icons.menu_book_outlined,
+                onPressed: () => _openStatus(context, ReadingStatus.reading),
+              ),
+              _ReadingListButtonSpec(
+                label: l10n.reReading,
+                icon: Icons.menu_book_outlined,
+                onPressed: () => _openStatus(context, ReadingStatus.reReading),
+              ),
+            ]),
             const SizedBox(height: AppSpacing.sm),
-            _buttonRow(
-              context,
-              [
-                _ReadingListButtonSpec(
-                  label: l10n.completed,
-                  icon: Icons.menu_book_outlined,
-                  onPressed: () => _openStatus(context, ReadingStatus.completed),
-                ),
-                _ReadingListButtonSpec(
-                  label: l10n.dropped,
-                  icon: Icons.menu_book_outlined,
-                  onPressed: () => _openStatus(context, ReadingStatus.dropped),
-                ),
-                _ReadingListButtonSpec(
-                  label: l10n.favorites,
-                  icon: Icons.favorite_outline,
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          const ReadingStatusListPage(showFavoritesOnly: true),
-                    ),
+            _buttonRow(context, [
+              _ReadingListButtonSpec(
+                label: l10n.completed,
+                icon: Icons.menu_book_outlined,
+                onPressed: () => _openStatus(context, ReadingStatus.completed),
+              ),
+              _ReadingListButtonSpec(
+                label: l10n.dropped,
+                icon: Icons.menu_book_outlined,
+                onPressed: () => _openStatus(context, ReadingStatus.dropped),
+              ),
+              _ReadingListButtonSpec(
+                label: l10n.favorites,
+                icon: Icons.favorite_outline,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        const ReadingStatusListPage(showFavoritesOnly: true),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ]),
           ],
         ),
       ),
@@ -280,9 +310,9 @@ class _ProfileReadingListsSection extends StatelessWidget {
 
   Widget _fixedListButton(BuildContext context, _ReadingListButtonSpec spec) {
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final labelStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-      color: isLight ? Colors.white : null,
-    );
+    final labelStyle = Theme.of(
+      context,
+    ).textTheme.labelSmall?.copyWith(color: isLight ? Colors.white : null);
     return SizedBox(
       height: _buttonHeight,
       width: double.infinity,
@@ -296,7 +326,11 @@ class _ProfileReadingListsSection extends StatelessWidget {
           textStyle: labelStyle,
         ),
         onPressed: spec.onPressed,
-        icon: Icon(spec.icon, size: _iconSize, color: isLight ? Colors.white : null),
+        icon: Icon(
+          spec.icon,
+          size: _iconSize,
+          color: isLight ? Colors.white : null,
+        ),
         label: Text(
           spec.label,
           maxLines: 1,
@@ -418,10 +452,7 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
             label: Text(l10n.pickPhotoFromGallery),
           ),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
-          AppInput(
-            controller: _userName,
-            labelText: l10n.displayNameLabel,
-          ),
+          AppInput(controller: _userName, labelText: l10n.displayNameLabel),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           AppInput(
             controller: _avatarUrl,
@@ -451,8 +482,10 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                     String? avatarUrl = avatar.isEmpty ? null : avatar;
                     final pickedAvatar = _selectedAvatar;
                     if (pickedAvatar != null) {
-                      final userId =
-                          container.read(authServiceProvider).currentUser?.id;
+                      final userId = container
+                          .read(authServiceProvider)
+                          .currentUser
+                          ?.id;
                       if (userId == null) {
                         throw StateError('No signed-in user found.');
                       }
@@ -465,10 +498,9 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
                             fileName: pickedAvatar.name,
                           );
                     }
-                    await container.read(authServiceProvider).updateProfile(
-                          displayName: name,
-                          avatarUrl: avatarUrl,
-                        );
+                    await container
+                        .read(authServiceProvider)
+                        .updateProfile(displayName: name, avatarUrl: avatarUrl);
                     if (!mounted) return;
                     navigator.pop();
                   } catch (e) {
@@ -510,14 +542,14 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
       });
     } on MissingPluginException {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.uxGalleryPluginError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.uxGalleryPluginError)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(ProfilePage.authMessage(e, l10n))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(ProfilePage.authMessage(e, l10n))));
     }
   }
 }

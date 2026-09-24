@@ -1,6 +1,6 @@
 # Rubricator Privacy Policy
 
-**Last updated:** 28.07.2026  
+**Last updated:** 24.09.2026  
 **App:** Rubricator (Flutter-based, iOS/Android/Web/Desktop)  
 **Developer / Data Controller:** İsmail Yücel Ölmez  
 **Contact:** support@rubricator.app
@@ -9,7 +9,7 @@
 
 ## 1. Introduction
 
-Rubricator ("the app", "we", "our") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.
+Rubricator ("the app", "we", "our") is a mobile, desktop, and web application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.
 
 This Privacy Policy explains which data is collected when you use Rubricator, how that data is used, with whom and why it is shared, how long it is retained, and your rights over your data. The policy was prepared by reviewing the app’s actual technical architecture (including Supabase, a custom API server, and Google Gemini–based AI features).
 
@@ -57,6 +57,7 @@ Natural-language search queries (e.g. “suggest a short novel about loneliness�
 If you use this feature, **PDF or EPUB files** you upload from your device are temporarily transferred to our server, chunked, vectorized (embedding), and sent to Google Gemini models to answer your questions.
 - Uploaded documents and related session data are **not permanently stored in our database**; they are held temporarily (in memory/cache) for the session and deleted after a timeout (TTL) or when you end the session.
 - This feature is entirely optional; this processing does not occur unless you upload a document.
+- Document Chat is available in the **mobile app only**; it is not offered in the web version.
 
 **c) Book Chat / Recommendations (Virgil):**  
 Questions and recommendations about books are likewise sent to the AI provider. Usage may be limited by daily quotas; anonymous usage counters (e.g. daily request counts) may be kept for this purpose.
@@ -65,13 +66,14 @@ Questions and recommendations about books are likewise sent to the AI provider. 
 
 ### 2.5 Book Catalog Data (Third-Party Sources)
 
-Book search, cover images, descriptions, and author information are fetched from the **Google Books API** via a proxy on our server. This data belongs to books and does not contain personal data about you.
+Book search, cover images, descriptions, and author information are fetched from the **Google Books API** via a proxy on our server. This data belongs to books and does not contain personal data about you. Cover images are loaded **directly from the servers of the catalog source** (for example Google Books, Kitapyurdu, or D&R), which may therefore receive your IP address and device/browser information when a cover is displayed.
 
 ### 2.6 Automatically Collected Technical Data
 
 - **Crash/error reports:** We use **Sentry** to monitor app stability. When an error occurs, device/OS info, app version, stack trace, and context (e.g. which screen you were on) are sent to Sentry. These reports do not, by default, include direct identifiers such as name or email.
 - **Connectivity status:** Whether you have an internet connection is checked only on-device; this information is not sent to our servers.
-- **Local notification data:** Reading reminders are scheduled entirely on your device using the OS notification/timer infrastructure; this data is not sent to our servers.
+- **Local notification data:** Reading reminders are scheduled entirely on your device using the OS notification/timer infrastructure; this data is not sent to our servers. Notifications are available in the mobile app only; the web version does not send notifications.
+- **Web version:** When you use the web version, the web hosting/CDN provider that serves the site and Google’s content delivery network (`www.gstatic.com` and `fonts.gstatic.com`, which deliver the app’s rendering engine and fallback fonts) receive standard request data such as your IP address, browser information, and the requested address.
 
 ### 2.7 Device Permissions
 
@@ -80,9 +82,9 @@ Rubricator may request the following permissions:
 | Permission | Purpose |
 |---|---|
 | Internet access | Communicate with our servers and third-party services |
-| Send notifications | Reading reminders and in-app notifications |
-| Exact alarm / timer | Show reading reminders at the time you set |
-| Gallery / file access | Upload a profile photo; select PDF/EPUB for Document Chat |
+| Send notifications | Reading reminders and in-app notifications (mobile app only) |
+| Exact alarm / timer | Show reading reminders at the time you set (mobile app only) |
+| Gallery / file access | Upload a profile photo (the web version uses your browser’s file picker); select PDF/EPUB for Document Chat (mobile app only) |
 
 Location, camera, contacts, microphone, and similar permissions are **not** requested by the app.
 
@@ -113,6 +115,7 @@ Your data is hosted on the following infrastructure:
 - Our own **API server (FastAPI)** — processes semantic search and Document Chat requests; Document Chat session data is held non-persistently (temporarily).
 - **Google Gemini API** — used to process AI-based search, recommendation, and Document Chat requests.
 - **Sentry** — used to collect crash/error reports.
+- **Web hosting / CDN provider** — serves the web version.
 
 Measures we take to protect your data include:
 
@@ -202,13 +205,13 @@ Rubricator is **not directed at children under 13** and does not knowingly colle
 
 ## 11. Local Storage (Data Stored on Device)
 
-The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.
+The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser's local storage (not in cookies) and is removed when you clear this site's data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers.
 
 ---
 
 ## 12. International Data Transfers
 
-Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).
+Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).
 
 ---
 

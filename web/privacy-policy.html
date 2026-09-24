@@ -65,7 +65,7 @@
   <body>
     <main>
       <h1>Rubricator Privacy Policy</h1>
-      <p class="muted"><strong>Last updated:</strong> 28.07.2026</p>
+      <p class="muted"><strong>Last updated:</strong> 24.09.2026</p>
       <p class="muted">
         App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)<br />
         Developer / Data Controller: İsmail Yücel Ölmez<br />
@@ -74,7 +74,7 @@
 
       <h2>1. Introduction</h2>
       <p>
-        Rubricator ("the app", "we", "our") is a mobile/desktop application that
+        Rubricator ("the app", "we", "our") is a mobile, desktop, and web application that
         offers book discovery, personal reading tracking, book notes/reviews,
         reading lists, and AI-assisted book features.
       </p>
@@ -176,6 +176,10 @@
           This feature is entirely optional; this processing does not occur
           unless you upload a document.
         </li>
+        <li>
+          Document Chat is available in the <strong>mobile app only</strong>; it
+          is not offered in the web version.
+        </li>
       </ul>
       <p>
         <strong>c) Book Chat / Recommendations (Virgil):</strong>
@@ -196,7 +200,10 @@
         Book search, cover images, descriptions, and author information are
         fetched from the <strong>Google Books API</strong> via a proxy on our
         server. This data belongs to books and does not contain personal data
-        about you.
+        about you. Cover images are loaded <strong>directly from the servers of
+        the catalog source</strong> (for example Google Books, Kitapyurdu, or
+        D&amp;R), which may therefore receive your IP address and device/browser
+        information when a cover is displayed.
       </p>
 
       <h3>2.6 Automatically Collected Technical Data</h3>
@@ -216,7 +223,14 @@
         <li>
           <strong>Local notification data:</strong> Reading reminders are
           scheduled entirely on your device using the OS notification/timer
-          infrastructure; this data is not sent to our servers.
+          infrastructure; this data is not sent to our servers. Notifications are available in the
+          mobile app only; the web version does not send notifications.
+        </li>
+        <li>
+          <strong>Web version:</strong> When you use the web version, the web
+          hosting/CDN provider that serves the site and Google’s content
+          delivery network (<code>www.gstatic.com</code> and <code>fonts.gstatic.com</code>, which deliver the app’s rendering engine and fallback fonts) receive standard request data such as your IP
+          address, browser information, and the requested address.
         </li>
       </ul>
 
@@ -236,16 +250,16 @@
           </tr>
           <tr>
             <td>Send notifications</td>
-            <td>Reading reminders and in-app notifications</td>
+            <td>Reading reminders and in-app notifications (mobile app only)</td>
           </tr>
           <tr>
             <td>Exact alarm / timer</td>
-            <td>Show reading reminders at the time you set</td>
+            <td>Show reading reminders at the time you set (mobile app only)</td>
           </tr>
           <tr>
             <td>Gallery / file access</td>
             <td>
-              Upload a profile photo; select PDF/EPUB for Document Chat
+              Upload a profile photo (the web version uses your browser’s file picker); select PDF/EPUB for Document Chat (mobile app only)
             </td>
           </tr>
         </tbody>
@@ -312,6 +326,9 @@
         </li>
         <li>
           <strong>Sentry</strong> — used to collect crash/error reports.
+        </li>
+        <li>
+          <strong>Web hosting / CDN provider</strong> — serves the web version.
         </li>
       </ul>
       <p>Measures we take to protect your data include:</p>
@@ -505,17 +522,14 @@
 
       <h2>11. Local Storage (Data Stored on Device)</h2>
       <p>
-        The app stores some preferences and cache data (e.g. session info, theme
-        preference, temporary content cache) locally on your device. This data is
-        removed when you uninstall the app and is not automatically sent to our
-        servers.
+        The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser's local storage (not in cookies) and is removed when you clear this site's data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers.
       </p>
 
       <hr />
 
       <h2>12. International Data Transfers</h2>
       <p>
-        Our infrastructure providers (Supabase, Google, Sentry) may process your
+        Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your
         data on servers outside Türkiye (e.g. the European Union or the United
         States). For such transfers, we rely on the security and compliance
         mechanisms offered by those providers (standard contractual clauses, data

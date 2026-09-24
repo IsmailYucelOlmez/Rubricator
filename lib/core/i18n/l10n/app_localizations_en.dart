@@ -211,6 +211,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOut => 'Sign out';
 
   @override
+  String get webLocalDataNotice =>
+      'Clearing this browser\'s site data will sign you out and reset your language/theme preferences here. Your reading logs, lists, and ratings stay safe in your account.';
+
+  @override
   String loadSessionError(Object error) {
     return 'Could not load session: $error';
   }
@@ -1419,7 +1423,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicyTitle => 'Rubricator Privacy Policy';
 
   @override
-  String get privacyPolicyLastUpdated => 'Last updated: 28.07.2026';
+  String get privacyPolicyLastUpdated => 'Last updated: 24.09.2026';
 
   @override
   String get privacyPolicyMeta =>
@@ -1430,7 +1434,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.';
+      'Rubricator (\"the app\", \"we\", \"our\") is a mobile, desktop, and web application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.';
 
   @override
   String get privacyPolicySection1Body2 =>
@@ -1527,7 +1531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection24Item2 =>
-      '- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out.';
+      '- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out. Document Chat is available in the mobile app only; it is not offered in the web version.';
 
   @override
   String get privacyPolicySection24Item3 =>
@@ -1543,7 +1547,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection25Body =>
-      'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you.';
+      'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you. Cover images are loaded directly from the servers of the catalog source (for example Google Books, Kitapyurdu, or D&R), which may therefore receive your IP address and device/browser information when a cover is displayed.';
 
   @override
   String get privacyPolicySection26Title =>
@@ -1559,7 +1563,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection26Item3 =>
-      '- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers.';
+      '- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers. Notifications are available in the mobile app only; the web version does not send notifications.';
+
+  @override
+  String get privacyPolicySection26Item4 =>
+      '- Web version: When you use the web version, the web hosting/CDN provider that serves the site and Google\'s content delivery network (www.gstatic.com and fonts.gstatic.com, which deliver the app\'s rendering engine and fallback fonts) receive standard request data such as your IP address, browser information, and the requested address.';
 
   @override
   String get privacyPolicySection27Title => '2.7 Device Permissions';
@@ -1574,15 +1582,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection27Item2 =>
-      '- Send notifications: Reading reminders and in-app notifications';
+      '- Send notifications: Reading reminders and in-app notifications (mobile app only)';
 
   @override
   String get privacyPolicySection27Item3 =>
-      '- Exact alarm / timer: Show reading reminders at the time you set';
+      '- Exact alarm / timer: Show reading reminders at the time you set (mobile app only)';
 
   @override
   String get privacyPolicySection27Item4 =>
-      '- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat';
+      '- Gallery / file access: Upload a profile photo (the web version uses your browser\'s file picker); select PDF/EPUB for Document Chat (mobile app only)';
 
   @override
   String get privacyPolicySection3Title => '3. Why We Process Your Data';
@@ -1629,7 +1637,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection4Body =>
-      'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports).';
+      'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports); and the web hosting/CDN provider that serves the web version.';
 
   @override
   String get privacyPolicySection4Item1 =>
@@ -1796,14 +1804,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection11Body =>
-      'The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.';
+      'The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser\'s local storage (not in cookies) and is removed when you clear this site\'s data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers.';
 
   @override
   String get privacyPolicySection12Title => '12. International Data Transfers';
 
   @override
   String get privacyPolicySection12Body =>
-      'Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).';
+      'Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).';
 
   @override
   String get privacyPolicySection13Title =>

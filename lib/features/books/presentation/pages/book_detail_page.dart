@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -481,9 +482,13 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     final selectedRatingForUi = _selectedRating > 0
         ? _selectedRating
         : (userRating ?? 0);
-    final coverUrl = AppConstants.bookDetailCoverUrl(
-      detailedBook.coverImageUrl,
-    );
+    // Web can't tell Google's blank high-zoom "title page" fallback (zoom=2/3
+    // for books without a scanned cover) from a real cover, so it keeps the
+    // thumbnail the lists already show; native detects it by pixels and
+    // upgrades to zoom=3 only when that image is a real cover.
+    final coverUrl = kIsWeb
+        ? AppConstants.bookThumbnailUrl(detailedBook.coverImageUrl)
+        : AppConstants.bookDetailCoverUrl(detailedBook.coverImageUrl);
     final related = isPendingId
         ? const AsyncValue<List<Book>>.loading()
         : ref.watch(
@@ -939,6 +944,16 @@ class _BookDetailCoverState extends State<_BookDetailCover> {
 
   void _precheckCover() {
     _removeListener();
+    // The pixel-based placeholder check needs the image bytes, which on web
+    // means an XHR — blocked by CORS for every cover host we use (Google
+    // Books, kitapyurdu, dr), so it always "failed" and hid every cover.
+    // Web can't read pixels at all, so it skips the check and shows the
+    // cover through the HTML <img> path (see the URL choice in
+    // _buildDetailBody); a genuinely broken image collapses via errorBuilder.
+    if (kIsWeb) {
+      _showCover = true;
+      return;
+    }
     final provider = NetworkImage(widget.url);
     _stream = provider.resolve(createLocalImageConfiguration(context));
     _listener = ImageStreamListener(
@@ -969,7 +984,9 @@ class _BookDetailCoverState extends State<_BookDetailCover> {
             webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
             height: 320,
             width: double.infinity,
-            fit: BoxFit.cover,
+            // Web shows the small list thumbnail, so fit it whole instead of
+            // cropping a heavily upscaled slice.
+            fit: kIsWeb ? BoxFit.contain : BoxFit.cover,
             errorBuilder: (context, error, stackTrace) =>
                 const SizedBox.shrink(),
           ),

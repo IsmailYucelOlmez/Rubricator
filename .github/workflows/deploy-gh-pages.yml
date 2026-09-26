@@ -1,13 +1,25 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy static site to GitHub Pages
 
+# The public web presence is a static site (site/): landing page, About,
+# Contact, privacy policy, account deletion. There is no Flutter web build.
 on:
   push:
     branches:
       - main
+  pull_request:
+    paths:
+      - "site/**"
+      - "web/icons/**"
+      - "web/favicon.png"
+      - ".github/workflows/deploy-gh-pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -17,50 +29,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
         with:
-          channel: stable
+          deno-version: v2.x
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Create env.production.json for CI build
+      - name: Test site generator
         run: |
-          SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
-          cat > env.production.json <<EOF
-          {
-            "API_URL": "${SUPABASE_URL}/functions/v1",
-            "SUPABASE_URL": "${SUPABASE_URL}",
-            "SUPABASE_ANON_KEY": "${{ secrets.SUPABASE_ANON_KEY }}"
-          }
-          EOF
+          deno lint site
+          deno test --allow-read --allow-write --allow-env site/
 
-      - name: Build web
+      - name: Build site
+        env:
+          # Repository variables (Settings > Secrets and variables > Actions >
+          # Variables). Leave both unset until a domain is chosen: the site then
+          # builds for https://<owner>.github.io/<repo>. Once the domain is
+          # connected, set SITE_DOMAIN (e.g. rubricator.app).
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+          # Public values (the same ones the mobile app ships with): the project
+          # URL and publishable key the Virgil page signs in and searches with.
+          # Without them the page builds as "not available".
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          if [[ "$REPO_NAME" == *.github.io ]]; then
-            BASE_HREF="/"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [ -n "$SITE_DOMAIN" ]; then
+            export SITE_URL="https://${SITE_DOMAIN}"
+          elif [[ "$REPO" == *.github.io ]]; then
+            export SITE_URL="https://${REPO}"
           else
-            BASE_HREF="/${REPO_NAME}/"
+            export SITE_URL="https://${OWNER,,}.github.io/${REPO}"
           fi
-          flutter build web --release \
-            --dart-define-from-file=env.production.json \
-            --base-href "${BASE_HREF}" \
-            --no-wasm-dry-run
-
-      - name: Preserve static Pages routes
-        run: |
-          mkdir -p build/web/account-deletion
-          mkdir -p build/web/privacy-policy
-          cp web/account-deletion/index.html build/web/account-deletion/index.html
-          cp web/privacy-policy/index.html build/web/privacy-policy/index.html
-          cp web/privacy-policy.html build/web/privacy-policy.html
+          echo "SITE_URL=$SITE_URL"
+          deno run --allow-read --allow-write --allow-env site/build.ts
 
       - name: Deploy to gh-pages
+        if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: build/web
-          keep_files: true
+          publish_dir: site/dist
+          # Replace the whole branch: the old Flutter web build must not linger.
+          keep_files: false
+          force_orphan: true

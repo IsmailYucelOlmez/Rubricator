@@ -1,3 +1,4 @@
+import '../../../../core/logging/app_logger.dart';
 import '../../../books/data/repositories/book_repository.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../trbooks/domain/repositories/trbooks_repository.dart';
@@ -132,10 +133,12 @@ class HomeRepositoryImpl implements HomeRepository {
         if (prioritized.isEmpty) {
           throw StateError('No books returned for genre: $genreKey');
         }
-        await _cacheDataSource.saveFetchSuccess(
-          genreKey: genreKey,
-          lang: lang,
-          books: prioritized,
+        await _bestEffortCacheWrite(
+          () => _cacheDataSource.saveFetchSuccess(
+            genreKey: genreKey,
+            lang: lang,
+            books: prioritized,
+          ),
         );
         return (
           models: prioritized,
@@ -147,10 +150,12 @@ class HomeRepositoryImpl implements HomeRepository {
     }
 
     if (lastError != null) {
-      await _cacheDataSource.saveFetchFailure(
-        genreKey: genreKey,
-        lang: lang,
-        error: lastError,
+      await _bestEffortCacheWrite(
+        () => _cacheDataSource.saveFetchFailure(
+          genreKey: genreKey,
+          lang: lang,
+          error: lastError!,
+        ),
       );
     }
     return (
@@ -160,16 +165,13 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   List<HomeBookEntity> _homeBooksFromModels(List<HomeBookModel> models) {
-    return _prioritizeModels(models)
-        .take(_maxBooksPerHomeSection)
-        .map((item) => item.toEntity())
-        .toList();
+    return _prioritizeModels(
+      models,
+    ).take(_maxBooksPerHomeSection).map((item) => item.toEntity()).toList();
   }
 
   HomeGenreSection _homeSectionFromCacheRow(GenreCacheSnapshot? row) {
-    final books = _homeBooksFromModels(
-      _cacheDataSource.parseCachedBooks(row),
-    );
+    final books = _homeBooksFromModels(_cacheDataSource.parseCachedBooks(row));
     if (books.isNotEmpty) {
       return HomeGenreSection(
         books: books,
@@ -201,7 +203,9 @@ class HomeRepositoryImpl implements HomeRepository {
     if (lang == _fallbackLang) return cacheMap;
 
     final emptyKeys = cacheKeys
-        .where((key) => _cacheDataSource.parseCachedBooks(cacheMap[key]).isEmpty)
+        .where(
+          (key) => _cacheDataSource.parseCachedBooks(cacheMap[key]).isEmpty,
+        )
         .toList();
     if (emptyKeys.isEmpty) return cacheMap;
 
@@ -229,7 +233,10 @@ class HomeRepositoryImpl implements HomeRepository {
     if (lang != 'tr') return const <HomeBookEntity>[];
     try {
       final books = await _trbooksRepository.byGenreKey(genreKey);
-      return books.take(_maxBooksPerHomeSection).map(_homeBookFromBook).toList();
+      return books
+          .take(_maxBooksPerHomeSection)
+          .map(_homeBookFromBook)
+          .toList();
     } catch (_) {
       // A trbooks RPC failure must not break the home page; fall back below.
       return const <HomeBookEntity>[];
@@ -324,6 +331,22 @@ class HomeRepositoryImpl implements HomeRepository {
           ),
         )
         .toList();
+  }
+
+  /// The genre cache is an optimisation: a rejected or failed write (RLS on the
+  /// cache table, offline, ...) must not turn a successful fetch into a failed
+  /// section, nor trigger the retry loop. Server-side, writes to this table are
+  /// being moved to the service role (supabase/deferred/cache_write_lockdown.sql).
+  Future<void> _bestEffortCacheWrite(Future<void> Function() write) async {
+    try {
+      await write();
+    } catch (error) {
+      AppLogger.warning(
+        'home',
+        'Genre cache write skipped',
+        data: {'error': error.toString()},
+      );
+    }
   }
 }
 

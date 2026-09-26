@@ -11,20 +11,20 @@ import '../../../../core/network/supabase_service.dart';
 /// [SemanticApiDataSource] for the identical proxy pattern.
 class TrbookDescriptionApiDataSource {
   TrbookDescriptionApiDataSource({Dio? dio})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: '${SupabaseService.url}/functions/v1/rubricatorApi',
-                connectTimeout: const Duration(seconds: 20),
-                receiveTimeout: const Duration(seconds: 30),
-                sendTimeout: const Duration(seconds: 20),
-                headers: {
-                  ...SupabaseService.edgeFunctionHeaders(),
-                  'Content-Type': 'application/json',
-                },
-                validateStatus: (code) => code != null && code < 500,
-              ),
-            );
+    : _dio =
+          dio ??
+                Dio(
+                  BaseOptions(
+                    baseUrl:
+                        '${SupabaseService.url}/functions/v1/rubricatorApi',
+                    connectTimeout: const Duration(seconds: 20),
+                    receiveTimeout: const Duration(seconds: 30),
+                    sendTimeout: const Duration(seconds: 20),
+                    headers: {'Content-Type': 'application/json'},
+                    validateStatus: (code) => code != null && code < 500,
+                  ),
+                )
+            ..interceptors.add(SupabaseService.edgeFunctionAuthInterceptor());
 
   final Dio _dio;
 
@@ -56,7 +56,9 @@ class TrbookDescriptionApiDataSource {
         data: payload,
       );
       if (response.statusCode != null && response.statusCode! >= 400) {
-        throw Exception('Description generation returned ${response.statusCode}');
+        throw Exception(
+          'Description generation returned ${response.statusCode}',
+        );
       }
       final description = response.data?['description'] as String?;
       if (description == null || description.trim().isEmpty) {
@@ -64,7 +66,12 @@ class TrbookDescriptionApiDataSource {
       }
       return description.trim();
     } on DioException catch (error, stackTrace) {
-      await AppLogger.error('trbooks', 'Description generation failed', error, stackTrace);
+      await AppLogger.error(
+        'trbooks',
+        'Description generation failed',
+        error,
+        stackTrace,
+      );
       rethrow;
     }
   }

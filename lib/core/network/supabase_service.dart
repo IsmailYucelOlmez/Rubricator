@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../env.dart';
@@ -21,6 +22,23 @@ class SupabaseService {
   static String get url => Env.supabaseUrl.trim();
 
   static String get anonKey => Env.supabaseAnonKey.trim();
+
+  /// Dio interceptor that stamps every request with *fresh* [edgeFunctionHeaders].
+  ///
+  /// A `Dio` built once with static `headers:` bakes in the session access
+  /// token as it was at construction; that token expires after about an hour
+  /// (or was absent because the user hadn't signed in yet), and the
+  /// `rubricatorApi` edge function verifies it. Reading the current session per
+  /// request keeps the token valid for as long as supabase_flutter keeps
+  /// refreshing it.
+  static Interceptor edgeFunctionAuthInterceptor() {
+    return InterceptorsWrapper(
+      onRequest: (options, handler) {
+        options.headers.addAll(edgeFunctionHeaders());
+        handler.next(options);
+      },
+    );
+  }
 
   /// Headers for Edge Function HTTP calls.
   ///

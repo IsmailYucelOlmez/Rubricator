@@ -1,121 +1,85 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "jsr:@supabase/functions-js@2/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-};
-
-function jsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-function firstEnv(...keys: string[]): string | undefined {
-  for (const key of keys) {
-    const value = Deno.env.get(key)?.trim();
-    if (value) return value;
-  }
-  return undefined;
-}
+import { createHandler, type Deps } from "./handler.ts";
 
 /**
- * Resolve the FastAPI path from the incoming edge URL.
- * Supports deployed name `rubricatorApi` and legacy `semantic-api`.
+ * Authenticated, quota-enforcing proxy to the FastAPI (semantic search,
+ * document chat, Turkish-book descriptions). See handler.ts for the rules and
+ * migration 20260925000000_virgil_server_side_quota.sql for the quota RPC.
+ *
+ * `verify_jwt` stays false in config.toml because the apps use `sb_publishable_*`
+ * keys, which are not JWTs; the handler verifies the user's session JWT itself.
+ *
+ * Secrets: SEMANTIC_API_BASE_URL / SEMANTIC_API_KEY (upstream),
+ * optional ALLOWED_ORIGINS (comma-separated browser origins) and
+ * AUTH_MODE ("enforce" by default; "monitor" is a temporary opt-in).
+ * SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are provided by
+ * the platform.
  */
-function upstreamPath(pathname: string): string {
-  for (const prefix of [
-    "/functions/v1/rubricatorApi",
-    "/functions/v1/semantic-api",
-    "/rubricatorApi",
-    "/semantic-api",
-  ]) {
-    const idx = pathname.indexOf(prefix);
-    if (idx >= 0) {
-      const suffix = pathname.slice(idx + prefix.length);
-      return suffix.length > 0 ? suffix : "/";
-    }
-  }
 
-  // Fallback: forward from `/api/...` if present.
-  const apiIdx = pathname.indexOf("/api/");
-  if (apiIdx >= 0) {
-    return pathname.slice(apiIdx);
-  }
+const auth = { persistSession: false, autoRefreshToken: false };
 
-  return pathname || "/";
+function requireEnv(name: string): string {
+  const value = Deno.env.get(name)?.trim();
+  if (!value) throw new Error(`Missing env ${name}`);
+  return value;
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
-  const baseUrl = firstEnv(
-    "SEMANTIC_API_BASE_URL",
-    "RUBRICATOR_API_BASE_URL",
-    "API_BASE_URL",
-  )?.replace(/\/$/, "");
-  const apiKey = firstEnv(
-    "SEMANTIC_API_KEY",
-    "RUBRICATOR_API_KEY",
-    "API_KEY",
+function adminClient() {
+  return createClient(
+    requireEnv("SUPABASE_URL"),
+    requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+    { auth },
   );
+}
 
-  if (!baseUrl) {
-    return jsonResponse({
-      error:
-        "Upstream base URL secret missing (tried SEMANTIC_API_BASE_URL, RUBRICATOR_API_BASE_URL, API_BASE_URL)",
-    }, 500);
-  }
-  if (!apiKey) {
-    return jsonResponse({
-      error:
-        "Upstream API key secret missing (tried SEMANTIC_API_KEY, RUBRICATOR_API_KEY, API_KEY)",
-    }, 500);
-  }
+const deps: Deps = {
+  env: Deno.env,
 
-  const incoming = new URL(req.url);
-  const path = upstreamPath(incoming.pathname);
-  const target = new URL(`${baseUrl}${path}`);
-  target.search = incoming.search;
+  async getUserId(token, apikey) {
+    // GoTrue needs an API key alongside the token; prefer the platform's anon
+    // key and fall back to the one the caller sent (only a valid project key
+    // gets an answer, so this does not widen access).
+    const key = Deno.env.get("SUPABASE_ANON_KEY")?.trim() || apikey?.trim();
+    if (!key) return null;
+    const client = createClient(requireEnv("SUPABASE_URL"), key, { auth });
+    const { data, error } = await client.auth.getUser(token);
+    return error || !data.user ? null : data.user.id;
+  },
 
-  const headers = new Headers();
-  headers.set("Authorization", `Bearer ${apiKey}`);
-  headers.set("Accept", req.headers.get("Accept") ?? "application/json");
+  async authorize(userId, action, queryHash) {
+    const { data, error } = await adminClient().rpc(
+      "authorize_virgil_action_ex",
+      { p_uid: userId, p_action: action, p_query_hash: queryHash },
+    );
+    if (error) throw new Error(error.message);
+    return data === "unit" || data === "ticket" ? data : "denied";
+  },
 
-  const contentType = req.headers.get("Content-Type");
-  if (contentType) {
-    headers.set("Content-Type", contentType);
-  }
-
-  const hasBody = req.method !== "GET" && req.method !== "HEAD";
-
-  try {
-    const body = hasBody ? await req.arrayBuffer() : undefined;
-    const upstream = await fetch(target.toString(), {
-      method: req.method,
-      headers,
-      body,
+  async refund(userId, action, charge, queryHash) {
+    const { error } = await adminClient().rpc("refund_virgil_action", {
+      p_uid: userId,
+      p_action: action,
+      p_kind: charge,
+      p_query_hash: queryHash,
     });
+    if (error) throw new Error(error.message);
+  },
 
-    const responseHeaders = new Headers(corsHeaders);
-    const upstreamContentType = upstream.headers.get("Content-Type");
-    if (upstreamContentType) {
-      responseHeaders.set("Content-Type", upstreamContentType);
-    } else {
-      responseHeaders.set("Content-Type", "application/json");
-    }
+  fetchUpstream: (url, init) => fetch(url, init),
 
-    return new Response(upstream.body, {
-      status: upstream.status,
-      headers: responseHeaders,
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return jsonResponse({ error: `Upstream request failed: ${message}` }, 502);
-  }
-});
+  warn: (message, data) => console.warn(message, JSON.stringify(data ?? {})),
+
+  async sha256Hex(text) {
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(text),
+    );
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  },
+};
+
+Deno.serve(createHandler(deps));

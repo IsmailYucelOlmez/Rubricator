@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { isServiceRequest } from "../_shared/service_auth.ts";
 
 const GOOGLE_BOOKS_BASE = "https://www.googleapis.com/books/v1";
 const TABLE = "genre_books_cache";
@@ -175,6 +176,12 @@ Deno.serve(async (req: Request) => {
 
   if (req.method !== "POST" && req.method !== "GET") {
     return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  // Runs with the service role and is only meant for pg_cron / admins: without
+  // this check anyone on the internet could trigger it (verify_jwt is off).
+  if (!isServiceRequest(req, Deno.env)) {
+    return jsonResponse({ error: "unauthorized" }, 401);
   }
 
   const apiKey = Deno.env.get("GOOGLE_BOOKS_API_KEY")?.trim();

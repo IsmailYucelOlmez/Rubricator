@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 import { DOMParser } from "jsr:@b-fuze/deno-dom@0.1.49";
+import { isServiceRequest } from "../_shared/service_auth.ts";
 
 // ---------------------------------------------------------------------------
 // Everything for this function lives in this single file on purpose: the
@@ -705,6 +706,12 @@ async function handleRequest(req: Request): Promise<Response> {
   }
   if (req.method !== "POST" && req.method !== "GET") {
     return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  // Runs with the service role and is only meant for pg_cron / admins: without
+  // this check anyone on the internet could trigger it (verify_jwt is off).
+  if (!isServiceRequest(req, Deno.env)) {
+    return jsonResponse({ error: "unauthorized" }, 401);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();

@@ -22,7 +22,10 @@ verify_jwt = false
 
 [functions.rubricatorApi]
 # Proxies FastAPI (semantic + document chat). API key comes from edge secrets.
-# Clients send apikey / session JWT (see SupabaseService.edgeFunctionHeaders).
+# verify_jwt stays false because the apps use sb_publishable_* keys (not JWTs);
+# the function verifies the user's session JWT itself, allow-lists routes,
+# restricts CORS origins and enforces the Virgil quota server-side
+# (see xdocs/rubricator_api_security.md).
 verify_jwt = false
 
 [functions.warm-genre-cache]

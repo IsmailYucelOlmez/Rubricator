@@ -12,7 +12,6 @@ class HomeCacheDataSource {
   static const String popularCacheKey = 'popular_fiction';
   static const List<int> _defaultAllowedWeekdays = <int>[1, 3, 5];
   static const int _maxRetryAttempts = 2;
-  static const Duration staleAfter = Duration(hours: 192);
 
   static const _cacheSelectColumns =
       'genre_key, books_json, allowed_weekdays, fetch_completed, is_active, last_fetch_at, last_fetch_status';
@@ -47,13 +46,6 @@ class HomeCacheDataSource {
       map[key] = GenreCacheSnapshot.fromJson(json);
     }
     return map;
-  }
-
-  bool isStale(GenreCacheSnapshot? row, {DateTime? now}) {
-    if (row == null) return true;
-    final lastFetchAt = row.lastFetchAt;
-    if (lastFetchAt == null) return true;
-    return (now ?? DateTime.now()).difference(lastFetchAt) > staleAfter;
   }
 
   bool canAttemptFetchToday(GenreCacheSnapshot? row, {DateTime? now}) {

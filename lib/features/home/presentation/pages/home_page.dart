@@ -1,11 +1,14 @@
 import 'dart:math' as math;
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
+import '../../../../core/network/book_cover_cache_manager.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -253,6 +256,11 @@ class _ContinueReadingList extends StatelessWidget {
         separatorBuilder: (_, index) =>
             const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
         itemBuilder: (context, index) {
+          for (var i = index + 1;
+              i <= index + kBookCoverPrefetchAhead && i < entries.length;
+              i++) {
+            precacheBookCover(context, entries[i].book.coverImageUrl);
+          }
           final entry = entries[index];
           return _ContinueReadingCard(
             book: entry.book,
@@ -427,36 +435,61 @@ class _ContinueReadingCover extends StatelessWidget {
         ),
       );
     }
-    return Image.network(
-      url,
-      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-      width: double.infinity,
-      height: double.infinity,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => ColoredBox(
-        color: cs.surfaceContainerHighest,
-        child: Center(
-          child: Icon(
-            Icons.broken_image_outlined,
-            color: cs.onSurfaceVariant,
+    final errorWidget = ColoredBox(
+      color: cs.surfaceContainerHighest,
+      child: Center(
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: cs.onSurfaceVariant,
+        ),
+      ),
+    );
+    final loadingWidget = ColoredBox(
+      color: cs.surfaceContainer,
+      child: const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: AppLoadingIndicator(
+            size: 24,
+            strokeWidth: 2,
+            centered: false,
           ),
         ),
       ),
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return ColoredBox(
-          color: cs.surfaceContainer,
-          child: const Center(
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: AppLoadingIndicator(
-                size: 24,
-                strokeWidth: 2,
-                centered: false,
-              ),
-            ),
-          ),
+    );
+    // See _BookCoverFillImage (vertical_book_card.dart) for why web stays on
+    // Image.network while native platforms use CachedNetworkImage, and for
+    // decodePixels (caps decode cost for oversized source images).
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final decodeWidth = decodePixels(constraints.maxWidth, dpr);
+        final decodeHeight = decodePixels(constraints.maxHeight, dpr);
+        if (kIsWeb) {
+          return Image.network(
+            url,
+            webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            cacheWidth: decodeWidth,
+            cacheHeight: decodeHeight,
+            errorBuilder: (context, error, stackTrace) => errorWidget,
+            loadingBuilder: (context, child, progress) =>
+                progress == null ? child : loadingWidget,
+          );
+        }
+        return CachedNetworkImage(
+          imageUrl: url,
+          cacheManager: BookCoverCacheManager(),
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          memCacheWidth: decodeWidth,
+          memCacheHeight: decodeHeight,
+          errorWidget: (context, url, error) => errorWidget,
+          placeholder: (context, url) => loadingWidget,
         );
       },
     );
@@ -812,6 +845,11 @@ class _HorizontalBookList extends StatelessWidget {
         itemCount: books.length,
         separatorBuilder: (_, index) => const SizedBox(width: AppSpacing.lg),
         itemBuilder: (context, index) {
+          for (var i = index + 1;
+              i <= index + kBookCoverPrefetchAhead && i < books.length;
+              i++) {
+            precacheBookCover(context, books[i].coverImageUrl);
+          }
           final book = books[index];
           final entity = book.toBook();
           return VerticalBookCard(

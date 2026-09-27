@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/network/book_cover_cache_manager.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../domain/entities/book.dart';
@@ -173,31 +176,85 @@ class _BookCoverFillImage extends StatelessWidget {
         ),
       );
     }
-    return Image.network(
-      url,
-      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-      errorBuilder: (context, error, stackTrace) => ColoredBox(
-        color: cs.surfaceContainerHighest,
-        child: Center(
-          child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
+    final errorWidget = ColoredBox(
+      color: cs.surfaceContainerHighest,
+      child: Center(
+        child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
+      ),
+    );
+    final loadingWidget = ColoredBox(
+      color: cs.surfaceContainer,
+      child: const Center(
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
         ),
       ),
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return ColoredBox(
-          color: cs.surfaceContainer,
-          child: const Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
-            ),
-          ),
+    );
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    // Web keeps plain Image.network: it can render via the HTML <img> path
+    // (webHtmlElementStrategy), which cached_network_image cannot do and
+    // which avoids canvas same-origin errors for cross-origin covers (see
+    // _webPageTransitions in app.dart). Native platforms get disk caching
+    // via CachedNetworkImage so covers don't refetch on every cold start.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final decodeWidth = decodePixels(constraints.maxWidth, dpr);
+        final decodeHeight = decodePixels(constraints.maxHeight, dpr);
+        if (kIsWeb) {
+          return Image.network(
+            url,
+            webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            cacheWidth: decodeWidth,
+            cacheHeight: decodeHeight,
+            errorBuilder: (context, error, stackTrace) => errorWidget,
+            loadingBuilder: (context, child, progress) =>
+                progress == null ? child : loadingWidget,
+          );
+        }
+        return CachedNetworkImage(
+          imageUrl: url,
+          cacheManager: BookCoverCacheManager(),
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          memCacheWidth: decodeWidth,
+          memCacheHeight: decodeHeight,
+          errorWidget: (context, url, error) => errorWidget,
+          placeholder: (context, url) => loadingWidget,
         );
       },
     );
   }
+}
+
+/// Target decode resolution for a box of [logicalExtent] on a screen with
+/// device pixel ratio [dpr] — caps decode cost for oversized source images
+/// (e.g. hotlinked trbooks covers of unknown/uncontrolled dimensions)
+/// without softening covers that are already small enough.
+int? decodePixels(double logicalExtent, double dpr) {
+  if (!logicalExtent.isFinite || logicalExtent <= 0) return null;
+  return (logicalExtent * dpr).round();
+}
+
+/// How many not-yet-visible list items to prefetch covers for, so a cover is
+/// often already downloading (or done) by the time its card scrolls into
+/// view. Call from a horizontal list's itemBuilder for the next few indices.
+const int kBookCoverPrefetchAhead = 3;
+
+/// Starts loading [coverImageUrl] into the image cache ahead of time. Native
+/// only: on web, precacheImage would force the canvas-decode path that
+/// _BookCoverFillImage avoids for cross-origin covers (see its comment).
+void precacheBookCover(BuildContext context, String? coverImageUrl) {
+  if (kIsWeb) return;
+  final url = AppConstants.bookThumbnailUrl(coverImageUrl);
+  if (url == null) return;
+  precacheImage(
+    CachedNetworkImageProvider(url, cacheManager: BookCoverCacheManager()),
+    context,
+  ).catchError((_) {});
 }

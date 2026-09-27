@@ -1415,7 +1415,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicyMeta =>
-      'Uygulama: Rubricator (Flutter tabanlı, iOS/Android/Web/Masaüstü)\nGeliştirici/Veri Sorumlusu: İsmail Yücel Ölmez\nİletişim: support@rubricator.app';
+      'Uygulama: Rubricator (Flutter tabanlı, iOS/Android/Web/Masaüstü)\nGeliştirici/Veri Sorumlusu: İsmail Yücel Ölmez\nİletişim: support@rubricator.site';
 
   @override
   String get privacyPolicySection1Title => '1. Giriş';
@@ -1757,7 +1757,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection8Body2 =>
-      'Bu haklarınızı kullanmak için support@rubricator.app adresinden bizimle iletişime geçebilirsiniz.';
+      'Bu haklarınızı kullanmak için support@rubricator.site adresinden bizimle iletişime geçebilirsiniz.';
 
   @override
   String get privacyPolicySection9Title => '9. Hesap ve Veri Silme';
@@ -1768,7 +1768,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection9Item1 =>
-      '1. support@rubricator.app adresine e-posta gönderin.';
+      '1. support@rubricator.site adresine e-posta gönderin.';
 
   @override
   String get privacyPolicySection9Item2 =>
@@ -1787,7 +1787,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection10Body =>
-      'Rubricator, 13 yaşın altındaki çocuklara yönelik değildir ve bu yaş grubundaki kullanıcılardan bilerek veri toplamaz. 13 yaşın altındaki bir çocuğun bize kişisel veri sağladığını fark edersek, bu veriyi makul süre içinde sileriz. Bir ebeveyn veya vasi olarak çocuğunuzun bize veri sağladığını düşünüyorsanız lütfen support@rubricator.app adresinden bizimle iletişime geçin.';
+      'Rubricator, 13 yaşın altındaki çocuklara yönelik değildir ve bu yaş grubundaki kullanıcılardan bilerek veri toplamaz. 13 yaşın altındaki bir çocuğun bize kişisel veri sağladığını fark edersek, bu veriyi makul süre içinde sileriz. Bir ebeveyn veya vasi olarak çocuğunuzun bize veri sağladığını düşünüyorsanız lütfen support@rubricator.site adresinden bizimle iletişime geçin.';
 
   @override
   String get privacyPolicySection11Title =>
@@ -1840,7 +1840,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyPolicySection15Contact =>
-      'Rubricator\nE-posta: support@rubricator.app\nGeliştirici: İsmail Yücel Ölmez';
+      'Rubricator\nE-posta: support@rubricator.site\nGeliştirici: İsmail Yücel Ölmez';
 
   @override
   String get privacyPolicyFooter =>

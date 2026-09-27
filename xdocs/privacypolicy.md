@@ -3,7 +3,7 @@
 **Last updated:** 24.09.2026  
 **App:** Rubricator (Flutter-based, iOS/Android/Web/Desktop)  
 **Developer / Data Controller:** İsmail Yücel Ölmez  
-**Contact:** support@rubricator.app
+**Contact:** support@rubricator.site
 
 ---
 
@@ -189,7 +189,7 @@ You may exercise these rights via the contact channel below.
 
 To delete your account and associated data:
 
-1. Email **support@rubricator.app**.
+1. Email **support@rubricator.site**.
 2. Use the subject line **"Account Deletion Request"**.
 3. Include the email address registered with Rubricator in the message body.
 
@@ -199,7 +199,7 @@ After your request is verified, your account profile and personal data are delet
 
 ## 10. Children’s Privacy
 
-Rubricator is **not directed at children under 13** and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.
+Rubricator is **not directed at children under 13** and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.site.
 
 ---
 
@@ -238,7 +238,7 @@ We may update this Privacy Policy from time to time. For material changes, we ma
 For questions, requests, or complaints about this Privacy Policy or the processing of your personal data:
 
 **Rubricator**  
-Email: **support@rubricator.app**  
+Email: **support@rubricator.site**  
 Developer: İsmail Yücel Ölmez
 
 By using Rubricator, you agree to this Privacy Policy.

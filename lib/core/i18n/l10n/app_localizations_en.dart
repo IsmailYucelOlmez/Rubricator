@@ -1427,7 +1427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicyMeta =>
-      'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app';
+      'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.site';
 
   @override
   String get privacyPolicySection1Title => '1. Introduction';
@@ -1767,7 +1767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection8Body2 =>
-      'To exercise these rights, contact us at support@rubricator.app.';
+      'To exercise these rights, contact us at support@rubricator.site.';
 
   @override
   String get privacyPolicySection9Title => '9. Account and Data Deletion';
@@ -1777,7 +1777,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'To delete your account and associated data:';
 
   @override
-  String get privacyPolicySection9Item1 => '1. Email support@rubricator.app.';
+  String get privacyPolicySection9Item1 => '1. Email support@rubricator.site.';
 
   @override
   String get privacyPolicySection9Item2 =>
@@ -1796,7 +1796,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection10Body =>
-      'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.';
+      'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.site.';
 
   @override
   String get privacyPolicySection11Title =>
@@ -1849,7 +1849,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection15Contact =>
-      'Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez';
+      'Rubricator\nEmail: support@rubricator.site\nDeveloper: İsmail Yücel Ölmez';
 
   @override
   String get privacyPolicyFooter =>

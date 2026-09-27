@@ -2549,7 +2549,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyMeta.
   ///
   /// In en, this message translates to:
-  /// **'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app'**
+  /// **'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.site'**
   String get privacyPolicyMeta;
 
   /// No description provided for @privacyPolicySection1Title.
@@ -3083,7 +3083,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection8Body2.
   ///
   /// In en, this message translates to:
-  /// **'To exercise these rights, contact us at support@rubricator.app.'**
+  /// **'To exercise these rights, contact us at support@rubricator.site.'**
   String get privacyPolicySection8Body2;
 
   /// No description provided for @privacyPolicySection9Title.
@@ -3101,7 +3101,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection9Item1.
   ///
   /// In en, this message translates to:
-  /// **'1. Email support@rubricator.app.'**
+  /// **'1. Email support@rubricator.site.'**
   String get privacyPolicySection9Item1;
 
   /// No description provided for @privacyPolicySection9Item2.
@@ -3131,7 +3131,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection10Body.
   ///
   /// In en, this message translates to:
-  /// **'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.'**
+  /// **'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.site.'**
   String get privacyPolicySection10Body;
 
   /// No description provided for @privacyPolicySection11Title.
@@ -3215,7 +3215,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicySection15Contact.
   ///
   /// In en, this message translates to:
-  /// **'Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez'**
+  /// **'Rubricator\nEmail: support@rubricator.site\nDeveloper: İsmail Yücel Ölmez'**
   String get privacyPolicySection15Contact;
 
   /// No description provided for @privacyPolicyFooter.

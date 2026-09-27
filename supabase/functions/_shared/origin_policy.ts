@@ -10,8 +10,16 @@ export interface EnvLike {
   get(name: string): string | undefined;
 }
 
-/** Browser origins always allowed, in addition to ALLOWED_ORIGINS. */
+/**
+ * Browser origins always allowed, in addition to ALLOWED_ORIGINS.
+ *
+ * `ismailyucelolmez.github.io` stays here during the migration to the custom
+ * domain (GitHub Pages 301s it there, but caches and old links may still
+ * resolve it directly for a while) — remove once traffic there is gone.
+ */
 export const DEFAULT_ALLOWED_ORIGINS = [
+  "https://rubricator.site",
+  "https://www.rubricator.site",
   "https://ismailyucelolmez.github.io",
   "http://localhost:*",
   "http://127.0.0.1:*",

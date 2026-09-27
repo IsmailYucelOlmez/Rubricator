@@ -196,8 +196,9 @@ Deno.test("each page: lang, unique title/description, one h1, CSP, no scripts, n
       /http-equiv="Content-Security-Policy" content="default-src 'none'/,
       file,
     );
-    // Only the Virgil page runs code: one module script plus a JSON data block.
-    const interactive = /(^|\/)virgil\/index\.html$/.test(file);
+    // Only pages that need it run code: one module script plus a JSON data block.
+    const interactive = /(^|\/)(virgil|auth\/(confirmed|onay))\/index\.html$/
+      .test(file);
     const scripts = html.match(/<script[^>]*>/gi) ?? [];
     assertEquals(scripts.length, interactive ? 2 : 0, `${file}: script count`);
     assert(

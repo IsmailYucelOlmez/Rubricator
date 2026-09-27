@@ -7,7 +7,7 @@ export type Lang = "en" | "tr";
 export const LANGS: Lang[] = ["en", "tr"];
 
 /** Public contact address (also used in the privacy policy). */
-export const CONTACT_EMAIL = "support@rubricator.app";
+export const CONTACT_EMAIL = "support@rubricator.site";
 
 /**
  * Version of the privacy policy, recorded with each web sign-up. Must equal the

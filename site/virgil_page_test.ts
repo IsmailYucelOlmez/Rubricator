@@ -11,12 +11,17 @@ const SUPABASE = {
 };
 
 async function buildTo(
-  options: { supabaseUrl?: string; supabaseAnonKey?: string } = {},
+  options: {
+    supabaseUrl?: string;
+    supabaseAnonKey?: string;
+    siteUrl?: string;
+  } = {},
 ) {
   const dir = await Deno.makeTempDir({ prefix: "virgil-test-" });
   // Empty strings (not undefined) so the developer's environment never leaks in.
   await build({
     outPath: dir,
+    siteUrl: "",
     supabaseUrl: "",
     supabaseAnonKey: "",
     ...options,
@@ -95,7 +100,12 @@ Deno.test("the browser scripts are published, import only each other and avoid u
   for await (const e of Deno.readDir(join(dir, "assets/js"))) {
     files.push(e.name);
   }
-  assertEquals(files.sort(), ["app.js", "auth.js", "virgil.js"]);
+  assertEquals(files.sort(), [
+    "app.js",
+    "auth.js",
+    "confirmed.js",
+    "virgil.js",
+  ]);
   for (const f of files) {
     const code = await read(dir, `assets/js/${f}`);
     for (const m of code.matchAll(/from\s+"([^"]+)"/g)) {
@@ -192,5 +202,114 @@ Deno.test("navigation offers Virgil and the home page links to it", async () => 
   assertMatch(
     await read(dir, "tr/index.html"),
     /class="btn" href="virgil\/">Virgil'i dene</,
+  );
+});
+
+// --- the "you're confirmed" page (site/src/confirmed.ts) --------------------
+
+const SITE_URL = "https://rubricator.site";
+
+Deno.test("the confirmed page exists in both languages, out of the nav, noindex, own CSP", async () => {
+  const dir = await buildTo({ ...SUPABASE, siteUrl: SITE_URL });
+  for (
+    const [file, lang] of [
+      ["auth/confirmed/index.html", "en"],
+      ["tr/auth/onay/index.html", "tr"],
+    ] as const
+  ) {
+    const html = await read(dir, file);
+    assertMatch(html, new RegExp(`<html lang="${lang}">`));
+    assertMatch(html, /name="robots" content="noindex"/);
+    assert(
+      !html.includes('aria-current="page"'),
+      `${file}: must not be a nav item`,
+    );
+    assertMatch(
+      html,
+      /<script type="module" src="(\.\.\/)*assets\/js\/confirmed\.js"><\/script>/,
+    );
+    assertMatch(
+      html,
+      /Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src https:\/\/proj\.supabase\.co; base-uri 'self'; form-action 'none'"/,
+    );
+  }
+});
+
+Deno.test("the confirmed page is not in the sitemap", async () => {
+  const dir = await buildTo({ ...SUPABASE, siteUrl: SITE_URL });
+  const sitemap = await read(dir, "sitemap.xml");
+  assert(
+    !sitemap.includes("/auth/confirmed/") && !sitemap.includes("/auth/onay/"),
+  );
+});
+
+Deno.test("the Virgil page points redirect_to at the confirmed page of the same language, absolute URL", async () => {
+  const dir = await buildTo({ ...SUPABASE, siteUrl: SITE_URL });
+  assertMatch(
+    await read(dir, "virgil/index.html"),
+    new RegExp(`data-confirm-url="${SITE_URL}/auth/confirmed/"`),
+  );
+  assertMatch(
+    await read(dir, "tr/virgil/index.html"),
+    new RegExp(`data-confirm-url="${SITE_URL}/tr/auth/onay/"`),
+  );
+});
+
+Deno.test("without a site URL, the Virgil page carries no confirm-url (redirect_to is simply omitted)", async () => {
+  const html = await read(await buildTo(SUPABASE), "virgil/index.html");
+  assert(!html.includes("data-confirm-url"));
+});
+
+Deno.test("the confirmed page's i18n block is valid, script-tag-safe JSON with matching keys", async () => {
+  const dir = await buildTo({ ...SUPABASE, siteUrl: SITE_URL });
+  for (const file of ["auth/confirmed/index.html", "tr/auth/onay/index.html"]) {
+    const html = await read(dir, file);
+    const block = html.match(
+      /<script type="application\/json" id="i18n">([\s\S]*?)<\/script>/,
+    )![1];
+    assert(!block.includes("<"));
+    const strings = JSON.parse(block);
+    assertEquals(Object.keys(strings).sort(), [
+      "continueLabel",
+      "error",
+      "generic",
+      "h1",
+      "signedIn",
+    ]);
+    assert(strings.signedIn.includes("{email}"));
+  }
+});
+
+Deno.test("the confirmed page's own text is correct without JavaScript (no 'hidden' gating it)", async () => {
+  const dir = await buildTo({ ...SUPABASE, siteUrl: SITE_URL });
+  const html = await read(dir, "auth/confirmed/index.html");
+  assertMatch(
+    html,
+    /id="status"[^>]*>Your email address is confirmed\. Sign in below to continue\.</,
+  );
+  assert(
+    !/id="status"[^>]*\shidden/.test(html),
+    "the status text must be visible without JS",
+  );
+});
+
+Deno.test("without Supabase settings the confirmed page still renders (no script, no data attrs)", async () => {
+  const html = await read(
+    await buildTo({ siteUrl: SITE_URL }),
+    "auth/confirmed/index.html",
+  );
+  assert(
+    !html.includes("data-supabase-url") && !html.includes("data-anon-key"),
+  );
+  // The script still loads (like the Virgil page); it self-guards at runtime
+  // on the missing data attributes, same as app.js.
+  assertMatch(
+    html,
+    /<script type="module" src="[^"]*confirmed\.js"><\/script>/,
+  );
+  assertMatch(html, /connect-src 'none'/);
+  assertMatch(
+    html,
+    /Your email address is confirmed\. Sign in below to continue\./,
   );
 });

@@ -4,13 +4,13 @@
  *   deno run --allow-read --allow-write --allow-env site/build.ts
  *
  * Optional environment:
- *   SITE_URL     absolute URL without trailing slash, e.g. https://rubricator.app
+ *   SITE_URL     absolute URL without trailing slash, e.g. https://rubricator.site
  *                or https://<user>.github.io/<repo>. Enables canonical/hreflang,
  *                og:image, sitemap.xml and an absolute-URL 404 page.
  *   SUPABASE_URL, SUPABASE_ANON_KEY
  *                public project URL and publishable key for the Virgil page. Without
  *                them the page builds but shows "not available".
- *   SITE_DOMAIN  custom domain (e.g. rubricator.app); writes the CNAME file
+ *   SITE_DOMAIN  custom domain (e.g. rubricator.site); writes the CNAME file
  *                GitHub Pages needs.
  *   OUT_DIR      output directory (default site/dist).
  */

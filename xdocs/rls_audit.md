@@ -68,3 +68,20 @@ Tüm migration değişiklikleri yayındaki uygulamalarla uyumlu (istemcinin okud
 
 ## Genel öneri (henüz yapılmadı)
 `alter default privileges in schema public revoke execute on functions from public, anon, authenticated;` — bundan sonra oluşturulan her fonksiyon varsayılan olarak API'ye kapalı olur ve açıkça `grant` gerekir. Bu, #2'deki sınıf hatayı (grant ekleyip revoke unutmak) yapısal olarak engeller; ama gelecekte yazılacak migration'ların davranışını değiştirdiği için ayrıca karar verilmeli.
+
+## Faz 4: alan adı bağlı ayarlar (rubricator.site)
+
+Kod olarak tamamlandı, canlıya henüz uygulanmadı (bkz. sırayla yapılacaklar):
+
+- **CORS:** `_shared/origin_policy.ts`'in `DEFAULT_ALLOWED_ORIGINS` listesine `https://rubricator.site` ve `https://www.rubricator.site` eklendi. `ismailyucelolmez.github.io` geçiş süresi boyunca listede kaldı (GitHub Pages oraya gelen isteği 301 ile yeni alan adına yönlendiriyor, ama önbellek/eski link riski var); trafiği kesilince kaldırılmalı.
+- **"Onaylandı" sayfası** (`/auth/confirmed/`, `/tr/auth/onay/`, `site/src/confirmed.ts`): Supabase'in e-posta onay bağlantısının indiği sayfa. JavaScript olmadan bile doğru metni gösteriyor ("e-postan onaylandı, aşağıdan giriş yap"); JavaScript varsa fragment'taki jetonları okuyup bu cihazda oturum açıyor ve 1.5 sn sonra Virgil sayfasına yönlendiriyor. `#error=…` (süresi dolmuş/geçersiz bağlantı) ayrı bir mesaj gösteriyor. `noindex`, nav'da değil, sitemap'te yok.
+- **`redirect_to`:** Web kaydı (`auth.js` `signUp`/`sendRecoveryCode`) artık bu sayfanın mutlak URL'sini `redirect_to` olarak gönderiyor (yalnızca `SITE_URL` build'e verildiğinde; yerel/dev build'lerde parametre hiç eklenmiyor, GoTrue proje Site URL'sine düşer).
+- **`supabase/config.toml`**: `[auth]` altında `site_url = "https://rubricator.site"` ve `additional_redirect_urls = ["https://rubricator.site/**"]` **tanımlandı ama henüz `push` edilmedi**. `supabase config diff` şu an yalnızca bu iki alanı `update` olarak işaretliyor (otp_length, mfa, sms, db sürümü vb. `remote_only`/`declared:false` kaldığı için `push` onlara dokunmaz).
+- **Canlı `site_url` bulundu:** `supabase config diff` ile bakıldığında canlı `auth.site_url` hâlâ CLI'nin yerel geliştirme varsayılanı `http://localhost:3000` — hiç ayarlanmamış. Muhtemelen mobil uygulamadaki e-posta onay bağlantısı da şu ana kadar buna gidiyordu (uygulamada özel URL şeması/derin bağlantı yok).
+
+### Sıra (yapılacaklar, bu depo hazır olduğunda)
+1. `main`'e merge + push → statik site (onay sayfası dahil) `rubricator.site`'ta yayına girer.
+2. `ALLOWED_ORIGINS` ve `AUTH_MODE` secret'ları zaten canlıda; ek bir şey gerekmiyor (varsayılan liste kodda güncellendi, fonksiyonları yeniden deploy etmek yeterli: `supabase functions deploy rubricatorApi google-books --use-api`).
+3. Uçtan uca dene: `rubricator.site/virgil/`'de yeni hesap aç → e-postadaki bağlantıya tıkla → `/auth/confirmed/`'de oturum açtığını ve Virgil'e yönlendiğini doğrula.
+4. Yukarıdaki akış çalışınca: `supabase config push` (yalnızca `site_url` + `additional_redirect_urls`'ı uygular).
+5. SMTP sağlayıcısı (dashboard → Auth → SMTP Settings) elle kontrol edilmeli — CLI bu alanı göremiyor; Supabase'in yerleşik postası üretim için önerilmiyor.

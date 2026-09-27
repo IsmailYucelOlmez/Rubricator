@@ -16,6 +16,17 @@ major_version = 15
 enabled = true
 port = 54323
 
+[auth]
+# Declared here, but NOT applied automatically -- `supabase config diff` showed
+# this project's remote site_url was still the CLI's local-dev default
+# (http://localhost:3000), which the "you're confirmed" page depends on being
+# correct (see site/src/confirmed.ts). Deploy the site with the confirmation
+# page live FIRST, then run `supabase config push` to apply these two values;
+# `push` only touches what's declared here, everything else (OTP length, MFA,
+# SMS...) is left alone. See xdocs/rls_audit.md, "Faz 4".
+site_url = "https://rubricator.site"
+additional_redirect_urls = ["https://rubricator.site/**"]
+
 [functions.google-books]
 # Anonymous + publishable-key clients send apikey only (see ApiService).
 verify_jwt = false

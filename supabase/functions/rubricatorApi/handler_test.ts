@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "jsr:@std/assert@1";
 
+import { allowedOrigins } from "../_shared/origin_policy.ts";
 import {
   authMode,
   bearerJwt,
@@ -573,6 +574,14 @@ Deno.test("ALLOWED_ORIGINS adds a custom domain", async () => {
 });
 
 // --- helpers ----------------------------------------------------------------
+
+Deno.test("the production domain is allowed by default, no ALLOWED_ORIGINS needed", () => {
+  const allowed = allowedOrigins({ get: () => undefined });
+  assert(isAllowedOrigin("https://rubricator.site", allowed));
+  assert(isAllowedOrigin("https://www.rubricator.site", allowed));
+  assert(!isAllowedOrigin("https://rubricator.site.evil.io", allowed));
+  assert(!isAllowedOrigin("http://rubricator.site", allowed), "must be https");
+});
 
 Deno.test("isAllowedOrigin: exact, any-port localhost, lookalikes rejected", () => {
   const allowed = ["https://a.com", "http://localhost:*"];

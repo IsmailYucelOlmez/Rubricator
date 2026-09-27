@@ -44,7 +44,7 @@ jobs:
           # Repository variables (Settings > Secrets and variables > Actions >
           # Variables). Leave both unset until a domain is chosen: the site then
           # builds for https://<owner>.github.io/<repo>. Once the domain is
-          # connected, set SITE_DOMAIN (e.g. rubricator.app).
+          # connected, set SITE_DOMAIN (e.g. rubricator.site).
           SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
           # Public values (the same ones the mobile app ships with): the project
           # URL and publishable key the Virgil page signs in and searches with.

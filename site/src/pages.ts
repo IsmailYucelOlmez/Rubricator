@@ -6,6 +6,7 @@
  */
 import { CONTACT_EMAIL, type Lang, type PageRef } from "./layout.ts";
 import { VIRGIL_SCRIPTS, virgilBody } from "./virgil.ts";
+import { CONFIRMED_SCRIPTS, confirmedBody } from "./confirmed.ts";
 
 // Filled in by build.ts (reads content/privacy-policy.<lang>.html).
 export const privacyFragment: Record<Lang, string> = { en: "", tr: "" };
@@ -455,6 +456,25 @@ export const PAGES: PageRef[] = [
       tr: "Rubricator hesabının ve verilerinin silinmesi nasıl talep edilir.",
     },
     body: deletion,
+  },
+  {
+    // Where Supabase sends the visitor after they click the signup
+    // confirmation link (see auth.site_url / additional_redirect_urls in
+    // supabase/config.toml). Not in the nav; kept out of the sitemap since it
+    // only makes sense arrived at from that email.
+    id: "confirmed",
+    dir: { en: "auth/confirmed", tr: "auth/onay" },
+    noindex: true,
+    scripts: CONFIRMED_SCRIPTS,
+    title: {
+      en: "You're confirmed | Rubricator",
+      tr: "Onaylandı | Rubricator",
+    },
+    description: {
+      en: "Your Rubricator email address is confirmed.",
+      tr: "Rubricator e-posta adresin onaylandı.",
+    },
+    body: confirmedBody,
   },
   {
     id: "notfound",

@@ -1,8 +1,18 @@
 // Wires the Virgil page (site/src/virgil.ts) to the auth and API modules.
 // All text is inserted with textContent / createElement: results come from a
 // third-party catalog, so they are never treated as HTML.
-import { AuthError, createAuth, isValidEmail, validatePassword } from "./auth.js";
-import { createVirgil, MAX_QUERY_LENGTH, MIN_QUERY_LENGTH, VirgilError } from "./virgil.js";
+import {
+  AuthError,
+  createAuth,
+  isValidEmail,
+  validatePassword,
+} from "./auth.js";
+import {
+  createVirgil,
+  MAX_QUERY_LENGTH,
+  MIN_QUERY_LENGTH,
+  VirgilError,
+} from "./virgil.js";
 
 const root = document.getElementById("virgil");
 
@@ -19,8 +29,17 @@ function main() {
     storage = globalThis.localStorage;
   } catch { /* blocked: the auth client falls back to memory */ }
 
-  const auth = createAuth({ url, anonKey, storage });
-  const virgil = createVirgil({ url, anonKey, getToken: (force) => auth.getAccessToken(force) });
+  const auth = createAuth({
+    url,
+    anonKey,
+    storage,
+    redirectTo: root.dataset.confirmUrl,
+  });
+  const virgil = createVirgil({
+    url,
+    anonKey,
+    getToken: (force) => auth.getAccessToken(force),
+  });
 
   const views = { auth: $("auth-view"), search: $("search-view") };
   const forms = {
@@ -53,7 +72,9 @@ function main() {
   }
 
   function setBusy(form, busy) {
-    for (const el of form.querySelectorAll("button, input, textarea, select")) el.disabled = busy;
+    for (const el of form.querySelectorAll("button, input, textarea, select")) {
+      el.disabled = busy;
+    }
     form.setAttribute("aria-busy", String(busy));
   }
 
@@ -226,7 +247,8 @@ function main() {
   forms.signin.addEventListener("submit", (event) => {
     const email = forms.signin.email.value;
     const password = forms.signin.password.value;
-    const problem = emailError(email) ?? (password ? null : t.errPasswordRequired);
+    const problem = emailError(email) ??
+      (password ? null : t.errPasswordRequired);
     if (problem) {
       event.preventDefault();
       say(problem, "error");
@@ -296,7 +318,11 @@ function main() {
       return;
     }
     submit(f, event, async () => {
-      await auth.resetPassword({ email: resetEmail, code, newPassword: f.password.value });
+      await auth.resetPassword({
+        email: resetEmail,
+        code,
+        newPassword: f.password.value,
+      });
       f.reset();
       say(t.msgResetDone, "ok");
     }, authMessage);
@@ -331,7 +357,9 @@ function main() {
     }).catch((error) => {
       if (seq !== searchSeq) return;
       say(virgilMessage(error), "error");
-      if (error instanceof VirgilError && error.code === "unauthorized") auth.reload();
+      if (error instanceof VirgilError && error.code === "unauthorized") {
+        auth.reload();
+      }
       refreshUsage();
     }).finally(() => {
       if (seq === searchSeq) button.disabled = false;
@@ -340,7 +368,9 @@ function main() {
 
   // Keep several tabs in sync (sign in / out, refreshed tokens).
   addEventListener("storage", (event) => {
-    if (event.key === null || event.key.startsWith("rubricator.web.")) auth.reload();
+    if (event.key === null || event.key.startsWith("rubricator.web.")) {
+      auth.reload();
+    }
   });
   auth.onChange((session) => render(session));
 

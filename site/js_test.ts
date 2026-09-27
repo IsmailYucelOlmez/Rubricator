@@ -508,3 +508,128 @@ Deno.test("usage: reads the quota row, and is null when it can't", async () => {
     null,
   );
 });
+
+// --- redirect_to (email confirmation landing) -------------------------------
+
+Deno.test("signUp/sendRecoveryCode attach redirect_to when configured, omit it otherwise", async () => {
+  const redirectTo = "https://rubricator.site/auth/confirmed/";
+  const f = fakeFetch([
+    json({ id: "new", email: "a@b.co", identities: [{}] }),
+    json({}),
+  ]);
+  const auth = createAuth({
+    url: URL_,
+    anonKey: KEY,
+    fetchFn: f.fn,
+    now: () => NOW,
+    redirectTo,
+  });
+  await auth.signUp({
+    email: "a@b.co",
+    password: "Abcdef!",
+    username: "Ada",
+    policyVersion: "v",
+  });
+  await auth.sendRecoveryCode("a@b.co");
+  assertEquals(
+    f.calls[0].url,
+    `${URL_}/auth/v1/signup?redirect_to=${encodeURIComponent(redirectTo)}`,
+  );
+  assertEquals(
+    f.calls[1].url,
+    `${URL_}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`,
+  );
+
+  const bare = fakeFetch([
+    json({ id: "new", email: "a@b.co", identities: [{}] }),
+  ]);
+  const noRedirect = createAuth({
+    url: URL_,
+    anonKey: KEY,
+    fetchFn: bare.fn,
+    now: () => NOW,
+  });
+  await noRedirect.signUp({
+    email: "a@b.co",
+    password: "Abcdef!",
+    username: "Ada",
+    policyVersion: "v",
+  });
+  assertEquals(bare.calls[0].url, `${URL_}/auth/v1/signup`);
+});
+
+// --- consumeRedirectFragment (the "you're confirmed" page) ------------------
+
+Deno.test("consumeRedirectFragment: valid tokens fetch the user and store the session", async () => {
+  const f = fakeFetch([
+    json({ id: "u9", email: "new@b.co", user_metadata: { username: "New" } }),
+  ]);
+  const auth = createAuth({
+    url: URL_,
+    anonKey: KEY,
+    fetchFn: f.fn,
+    now: () => NOW,
+  });
+  const session = await auth.consumeRedirectFragment(
+    "#access_token=tok-1&refresh_token=ref-1&expires_in=3600&type=signup",
+  );
+  assertEquals(session?.accessToken, "tok-1");
+  assertEquals(session?.refreshToken, "ref-1");
+  assertEquals(session?.user, { id: "u9", email: "new@b.co", username: "New" });
+  assertEquals(auth.getSession()?.accessToken, "tok-1");
+  assertEquals(f.calls[0].url, `${URL_}/auth/v1/user`);
+  assertEquals(f.calls[0].method, "GET");
+  assertEquals(f.calls[0].headers.Authorization, "Bearer tok-1");
+});
+
+Deno.test("consumeRedirectFragment: uses expires_at from the fragment when GoTrue sends one", async () => {
+  const f = fakeFetch([json({ id: "u9", email: "a@b.co" })]);
+  const auth = createAuth({
+    url: URL_,
+    anonKey: KEY,
+    fetchFn: f.fn,
+    now: () => NOW,
+  });
+  const expiresAt = NOW / 1000 + 999;
+  const session = await auth.consumeRedirectFragment(
+    `#access_token=tok&refresh_token=ref&expires_at=${expiresAt}`,
+  );
+  assertEquals(session?.expiresAt, expiresAt);
+});
+
+Deno.test("consumeRedirectFragment: no tokens (a direct visit) resolves to null without a request", async () => {
+  const f = fakeFetch([]);
+  const auth = createAuth({ url: URL_, anonKey: KEY, fetchFn: f.fn });
+  assertEquals(await auth.consumeRedirectFragment(""), null);
+  assertEquals(await auth.consumeRedirectFragment("#type=signup"), null);
+  assertEquals(f.calls.length, 0);
+});
+
+Deno.test("consumeRedirectFragment: an #error=… fragment (expired/invalid link) resolves to null without a request", async () => {
+  const f = fakeFetch([]);
+  const auth = createAuth({ url: URL_, anonKey: KEY, fetchFn: f.fn });
+  const session = await auth.consumeRedirectFragment(
+    "#error=access_denied&error_description=Email+link+is+invalid",
+  );
+  assertEquals(session, null);
+  assertEquals(f.calls.length, 0);
+});
+
+Deno.test("consumeRedirectFragment: the user fetch failing resolves to null, not a thrown error", async () => {
+  const f = fakeFetch([new TypeError("offline")]);
+  const auth = createAuth({ url: URL_, anonKey: KEY, fetchFn: f.fn });
+  const session = await auth.consumeRedirectFragment(
+    "#access_token=tok-1&refresh_token=ref-1",
+  );
+  assertEquals(session, null);
+  assertEquals(auth.getSession(), null);
+});
+
+Deno.test("consumeRedirectFragment: the default (no explicit hash) never throws outside a browser", async () => {
+  const auth = createAuth({
+    url: URL_,
+    anonKey: KEY,
+    fetchFn: fakeFetch([]).fn,
+  });
+  assertEquals(await auth.consumeRedirectFragment(), null);
+});

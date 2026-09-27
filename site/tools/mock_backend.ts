@@ -122,7 +122,13 @@ Deno.serve({ port: PORT }, async (req) => {
       msg: "Token has expired or is invalid",
     }, 403);
   }
-  if (path === "/auth/v1/user" && req.method === "PUT") return json(USER);
+  if (
+    path === "/auth/v1/user" && (req.method === "PUT" || req.method === "GET")
+  ) {
+    return issued.has(bearer)
+      ? json(USER)
+      : json({ error: "unauthorized" }, 401);
+  }
   if (path === "/auth/v1/logout") return json({});
 
   if (!issued.has(bearer)) return json({ error: "unauthorized" }, 401);

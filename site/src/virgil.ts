@@ -9,6 +9,7 @@ import {
   type Lang,
   PRIVACY_POLICY_VERSION,
 } from "./layout.ts";
+import { confirmedUrl } from "./confirmed.ts";
 
 export const VIRGIL_SCRIPTS = ["assets/js/app.js"];
 
@@ -206,10 +207,11 @@ const jsonIsland = (value: unknown) =>
 export function virgilBody(lang: Lang, ctx: BuildContext): string {
   const t = VIRGIL_STRINGS[lang];
   const configured = Boolean(ctx.supabaseUrl && ctx.supabaseAnonKey);
+  const confirm = confirmedUrl(lang, ctx);
   const config = configured
     ? ` data-supabase-url="${esc(ctx.supabaseUrl!)}" data-anon-key="${
       esc(ctx.supabaseAnonKey!)
-    }"`
+    }"${confirm ? ` data-confirm-url="${esc(confirm)}"` : ""}`
     : "";
   // The genre filter is English-only: its BISAC-style values don't match the
   // Turkish catalog, so filtering by one would return nothing (same as the app).

@@ -44,7 +44,7 @@ function toSession(data, nowMs) {
 }
 
 /**
- * @param {{url: string, anonKey: string,
+ * @param {{url: string, anonKey: string, redirectTo?: string,
  *   storage?: Pick<Storage, "getItem" | "setItem" | "removeItem">,
  *   fetchFn?: typeof fetch, now?: () => number}} options
  */
@@ -55,6 +55,17 @@ export function createAuth(options) {
   const now = options.now ?? (() => Date.now());
   const memory = new Map();
   const listeners = new Set();
+
+  // Where GoTrue sends the visitor after they click the email link (signup
+  // confirmation; harmless to also attach to the recovery email). Absolute
+  // URL, set by the site build from SITE_URL — omitted otherwise, in which
+  // case GoTrue falls back to the project's configured Site URL.
+  const withRedirect = (path) =>
+    options.redirectTo
+      ? `${path}${path.includes("?") ? "&" : "?"}redirect_to=${
+        encodeURIComponent(options.redirectTo)
+      }`
+      : path;
 
   // Storage can throw (blocked site data, private windows): fall back to memory
   // so signing in still works for this page load.
@@ -145,7 +156,10 @@ export function createAuth(options) {
     } catch (error) {
       // A rejected refresh token means the session is over; a network error
       // keeps it so the user can simply retry.
-      if (error instanceof AuthError && error.status >= 400 && error.status < 500 && error.status !== 429) {
+      if (
+        error instanceof AuthError && error.status >= 400 &&
+        error.status < 500 && error.status !== 429
+      ) {
         store.clear();
         notify();
         return null;
@@ -195,7 +209,7 @@ export function createAuth(options) {
      * account still has to be confirmed by email.
      */
     async signUp({ email, password, username, policyVersion }) {
-      const data = await request("/auth/v1/signup", {
+      const data = await request(withRedirect("/auth/v1/signup"), {
         body: {
           email: email.trim(),
           password,
@@ -211,7 +225,55 @@ export function createAuth(options) {
 
     /** Emails an 8-digit recovery code (same flow as the mobile app). */
     async sendRecoveryCode(email) {
-      await request("/auth/v1/recover", { body: { email: email.trim() } });
+      await request(withRedirect("/auth/v1/recover"), {
+        body: { email: email.trim() },
+      });
+    },
+
+    /**
+     * Picks up the session GoTrue attaches as `#access_token=…&refresh_token=…`
+     * after the visitor clicks the confirmation link, stores it and (when
+     * reading from the real page URL) strips the fragment. Pass an explicit
+     * `hash` in tests; production calls take it from `location.hash`.
+     * Resolves to the session, or null (no tokens present, or the fetch to
+     * confirm them failed — an `#error=…` fragment always resolves to null).
+     */
+    async consumeRedirectFragment(hash) {
+      const fromLocation = hash === undefined;
+      const raw = fromLocation
+        ? (typeof location === "undefined" ? "" : location.hash)
+        : hash;
+      const params = new URLSearchParams(raw.replace(/^#/, ""));
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+      const strip = () => {
+        if (fromLocation && typeof history !== "undefined") {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+      };
+      if (!accessToken || !refreshToken) {
+        if (params.has("error")) strip();
+        return null;
+      }
+      try {
+        const user = await request("/auth/v1/user", {
+          method: "GET",
+          token: accessToken,
+        });
+        const session = save({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expires_in: Number(params.get("expires_in")) || 3600,
+          expires_at: params.has("expires_at")
+            ? Number(params.get("expires_at"))
+            : undefined,
+          user,
+        });
+        strip();
+        return session;
+      } catch {
+        return null;
+      }
     },
 
     /** Verifies the emailed code, sets the new password and signs in. */

@@ -4,6 +4,7 @@ import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/supabase_service.dart';
 import '../../../books/data/services/api_service.dart';
 import '../../../books/presentation/providers/books_providers.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../data/datasources/home_cache_datasource.dart';
 import '../../data/datasources/home_remote_datasource.dart';
 import '../../data/repositories/home_repository_impl.dart';
@@ -29,6 +30,7 @@ final homeRepositoryProvider = Provider<HomeRepository>(
     ref.watch(_homeRemoteDataSourceProvider),
     ref.watch(_homeCacheDataSourceProvider),
     ref.watch(bookRepositoryProvider),
+    ref.watch(trbooksRepositoryProvider),
     lang: ref.watch(localeProvider).languageCode,
   ),
 );
@@ -43,16 +45,50 @@ const kHomePageGenreKeys = <String>[
   'horror',
 ];
 
+/// D&R (the trbooks source) has no separate thriller/horror category — both
+/// map to its single "Korku Gerilim" category, so the two sections would
+/// show identical books for Turkish users. Drop `horror` there and keep
+/// `thriller` as the one combined section.
+List<String> homePageGenreKeysFor(String languageCode) {
+  if (languageCode == 'tr') {
+    return kHomePageGenreKeys.where((key) => key != 'horror').toList();
+  }
+  return kHomePageGenreKeys;
+}
+
+final homePageGenreKeysProvider = Provider<List<String>>(
+  (ref) => homePageGenreKeysFor(ref.watch(localeProvider).languageCode),
+);
+
 final homePageSnapshotProvider = FutureProvider<HomePageSnapshot>((ref) {
   ref.keepAlive();
   return ref
       .watch(homeRepositoryProvider)
-      .loadHomePage(kHomePageGenreKeys);
+      .loadHomePage(ref.watch(homePageGenreKeysProvider));
 });
 
 final genreBooksProvider = FutureProvider.family<List<HomeBookEntity>, String>((
   ref,
   genreKey,
-) {
+) async {
+  final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
+  final keyword = HomeRemoteDataSource.turkishGenreQueries[genreKey];
+  if (isTurkish && keyword != null) {
+    final trbooks = await ref.watch(trbooksByKeywordUseCaseProvider).call(keyword);
+    if (trbooks.isNotEmpty) {
+      return trbooks
+          .map(
+            (book) => HomeBookEntity(
+              id: book.id,
+              title: book.title,
+              coverImageUrl: book.coverImageUrl,
+              authorNames: book.author,
+              description: book.description,
+              sourceUrl: book.sourceUrl,
+            ),
+          )
+          .toList();
+    }
+  }
   return ref.watch(homeRepositoryProvider).getBooksByGenre(genreKey);
 });

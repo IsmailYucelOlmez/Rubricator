@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/providers/books_providers.dart';
+import '../../../trbooks/presentation/providers/trbooks_providers.dart';
 import '../../data/datasources/search_remote_datasource.dart';
 import '../../data/repositories/search_repository_impl.dart';
 import '../../domain/entities/search_log_entity.dart';
@@ -17,6 +19,7 @@ final searchRepositoryProvider = Provider<SearchRepository>((ref) {
   return SearchRepositoryImpl(
     ref.watch(bookRepositoryProvider),
     ref.watch(_searchRemoteDataSourceProvider),
+    ref.watch(resolveBookByIdUseCaseProvider),
   );
 });
 
@@ -63,11 +66,19 @@ final searchProvider =
     );
 
 class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPaginationState> {
+  static const _trPageSize = 20;
+
   int _page = 1;
+  // Which source the current query's pages come from; fixed per query.
+  bool _useTrbooks = false;
+  // Raw rows consumed from trbooks (pre-dedup), used as the RPC offset.
+  int _trOffset = 0;
 
   @override
   Future<SearchPaginationState> build() async {
     _page = 1;
+    _useTrbooks = false;
+    _trOffset = 0;
     final query = ref.watch(searchQueryProvider).trim();
     if (query.length < 2) {
       return const SearchPaginationState(
@@ -76,6 +87,22 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
         isLoadingMore: false,
         query: '',
       );
+    }
+    final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
+    // Turkish locale: trbooks only; Google Books is queried solely as a
+    // fallback when trbooks has no match (or fails).
+    if (isTurkish) {
+      final trbooks = await _searchTrbooks(query, offset: 0);
+      if (trbooks.isNotEmpty) {
+        _useTrbooks = true;
+        _trOffset = trbooks.length > _trPageSize ? _trPageSize : trbooks.length;
+        return SearchPaginationState(
+          books: _deduplicateBooks(trbooks.take(_trPageSize).toList()),
+          hasMore: trbooks.length > _trPageSize,
+          isLoadingMore: false,
+          query: query,
+        );
+      }
     }
     final result = await ref
         .read(bookRepositoryProvider)
@@ -86,6 +113,20 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
       isLoadingMore: false,
       query: query,
     );
+  }
+
+  /// Fetches one extra row beyond [_trPageSize] so callers can tell whether
+  /// another page exists without a separate count query.
+  Future<List<Book>> _searchTrbooks(String query, {required int offset}) async {
+    try {
+      return await ref
+          .read(searchTrbooksUseCaseProvider)
+          .call(query, limit: _trPageSize + 1, offset: offset);
+    } catch (_) {
+      // Local Turkish catalog is a supplemental source; Google Books results
+      // alone are still a valid search outcome if this fails.
+      return const <Book>[];
+    }
   }
 
   Future<void> loadMore() async {
@@ -106,6 +147,27 @@ class SearchPaginationNotifier extends AutoDisposeAsyncNotifier<SearchPagination
         query: current.query,
       ),
     );
+
+    if (_useTrbooks) {
+      try {
+        final rows = await ref
+            .read(searchTrbooksUseCaseProvider)
+            .call(current.query, limit: _trPageSize + 1, offset: _trOffset);
+        final pageRows = rows.take(_trPageSize).toList();
+        _trOffset += pageRows.length;
+        state = AsyncData(
+          SearchPaginationState(
+            books: _deduplicateBooks(<Book>[...current.books, ...pageRows]),
+            hasMore: rows.length > _trPageSize,
+            isLoadingMore: false,
+            query: current.query,
+          ),
+        );
+      } catch (e, stackTrace) {
+        state = AsyncError(e, stackTrace);
+      }
+      return;
+    }
 
     try {
       final result = await ref

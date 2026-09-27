@@ -1,14 +1,16 @@
 import '../../../books/data/repositories/book_repository.dart';
 import '../../../books/domain/entities/book.dart';
+import '../../../trbooks/domain/usecases/trbooks_usecases.dart';
 import '../../domain/entities/search_log_entity.dart';
 import '../../domain/repositories/search_repository.dart';
 import '../datasources/search_remote_datasource.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
-  SearchRepositoryImpl(this._bookRepository, this._remote);
+  SearchRepositoryImpl(this._bookRepository, this._remote, this._resolveBookById);
 
   final BookRepository _bookRepository;
   final SearchRemoteDataSource _remote;
+  final ResolveBookByIdUseCase _resolveBookById;
 
   @override
   Future<List<Book>> searchBooks(String query) async {
@@ -43,7 +45,7 @@ class SearchRepositoryImpl implements SearchRepository {
     final books = await Future.wait<Book?>(
       topIds.map((id) async {
         try {
-          return await _bookRepository.getBookByWorkId(id);
+          return await _resolveBookById.call(id);
         } catch (_) {
           // Some ids intermittently fail on upstream API (e.g. 503).
           // Skip failing ids so other popular books can still be shown.

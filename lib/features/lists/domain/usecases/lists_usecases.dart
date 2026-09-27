@@ -38,3 +38,10 @@ class GetSavedListsUseCase {
   final ListsRepository _repo;
   Future<List<ListEntity>> call(String userId) => _repo.getSavedLists(userId);
 }
+
+class SearchListsUseCase {
+  const SearchListsUseCase(this._repo);
+  final ListsRepository _repo;
+  Future<List<ListEntity>> call(String query, {int limit = 30}) =>
+      _repo.searchLists(query, limit: limit);
+}

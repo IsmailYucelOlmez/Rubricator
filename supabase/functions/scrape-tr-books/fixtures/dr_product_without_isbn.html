@@ -1,0 +1,21 @@
+<!--
+  Same shape as dr_product_with_isbn.html but the Book JSON-LD block has no
+  `gtin13` field (pre-order/campaign listings on D&R sometimes lack one).
+  parseDrProductPage() must return null for this page.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": ["Product", "Book"],
+      "name": "Yayımlanacak Bir Kitap",
+      "description": "Kısa özet metni.",
+      "author": { "@type": "Person", "name": "Örnek Yazar" },
+      "publisher": { "@type": "Organization", "name": "Örnek Yayınevi" }
+    }
+    </script>
+  </head>
+  <body></body>
+</html>

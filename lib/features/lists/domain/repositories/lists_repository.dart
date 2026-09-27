@@ -8,6 +8,9 @@ abstract class ListsRepository {
   Future<List<ListEntity>> getFollowingLists();
   Future<List<ListEntity>> getUserLists(String userId);
   Future<List<ListEntity>> getSavedLists(String userId);
+
+  /// Searches all public lists in the database by title or description.
+  Future<List<ListEntity>> searchLists(String query, {int limit = 30});
   Future<ListItemEntity> addBookToList({
     required String listId,
     required String bookId,

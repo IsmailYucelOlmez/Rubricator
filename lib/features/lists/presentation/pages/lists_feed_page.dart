@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/app_breakpoints.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_empty_state.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -14,6 +15,7 @@ import '../providers/lists_providers.dart';
 import '../widgets/list_card.dart';
 import 'create_edit_list_page.dart';
 import 'list_detail_page.dart';
+import 'list_search_page.dart';
 import 'user_lists_page.dart';
 
 class ListsPage extends ConsumerStatefulWidget {
@@ -26,15 +28,6 @@ class ListsPage extends ConsumerStatefulWidget {
 }
 
 class _ListsPageState extends ConsumerState<ListsPage> {
-  final _searchController = TextEditingController();
-  String _query = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final embedded = widget.embedded;
@@ -110,6 +103,48 @@ class _ListsPageState extends ConsumerState<ListsPage> {
             ),
           ),
           Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.xs,
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const ListSearchPage()),
+              ),
+              child: Container(
+                height: 36,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      size: 18,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        l10n.searchListsHint,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: TabBar(
               isScrollable: false,
@@ -125,29 +160,6 @@ class _ListsPageState extends ConsumerState<ListsPage> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.xs,
-            ),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: l10n.searchListsHint,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _query = '');
-                        },
-                      ),
-              ),
-              onChanged: (value) => setState(() => _query = value),
-            ),
-          ),
           Expanded(
             child: ScrollConfiguration(
               behavior: const _NoTabViewEdgeGlowScrollBehavior(),
@@ -156,19 +168,16 @@ class _ListsPageState extends ConsumerState<ListsPage> {
                 children: [
                   _FeedTab(
                     async: ref.watch(forYouListsProvider),
-                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(forYouListsProvider),
                   ),
                   _FeedTab(
                     async: ref.watch(popularListsProvider),
-                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(popularListsProvider),
                   ),
                   _FeedTab(
                     async: ref.watch(topListsProvider),
-                    query: _query,
                     onChanged: invalidateAll,
                     onRetry: () => ref.invalidate(topListsProvider),
                   ),
@@ -200,40 +209,22 @@ class _NoTabViewEdgeGlowScrollBehavior extends MaterialScrollBehavior {
 class _FeedTab extends ConsumerWidget {
   const _FeedTab({
     required this.async,
-    required this.query,
     required this.onChanged,
     required this.onRetry,
   });
   final AsyncValue<List<ListEntity>> async;
-  final String query;
   final VoidCallback onChanged;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return async.when(
-      data: (allLists) {
+      data: (lists) {
         final l10n = AppLocalizations.of(context)!;
-        if (allLists.isEmpty) {
+        if (lists.isEmpty) {
           return AppEmptyState(
             icon: Icons.menu_book_outlined,
             title: l10n.noListsYet,
-          );
-        }
-        final normalizedQuery = query.trim().toLowerCase();
-        final lists = normalizedQuery.isEmpty
-            ? allLists
-            : allLists
-                .where(
-                  (list) =>
-                      list.title.toLowerCase().contains(normalizedQuery) ||
-                      list.description.toLowerCase().contains(normalizedQuery),
-                )
-                .toList();
-        if (lists.isEmpty) {
-          return AppEmptyState(
-            icon: Icons.search_off,
-            title: l10n.noListsFound,
           );
         }
         final userId = ref.watch(authStateProvider).valueOrNull?.id;

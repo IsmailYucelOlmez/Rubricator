@@ -1,0 +1,67 @@
+<!--
+  Trimmed-down reproduction of a real Kitapyurdu search-results page
+  (`route=product/search&filter_name=fantastik`), fetched and inspected
+  2026-09-06. Only the markup shape parseListingPage() depends on is kept:
+  `.ky-product` cards with an `a.ky-product-cover[href]` pointing at the
+  product detail page, including the tracking query params Kitapyurdu
+  appends (`s_token`, `s_time`) that parseListingPage() must strip.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <body>
+    <div class="ky-products-container ky-products-container--grid">
+      <div class="ky-product" data-product-id="763865">
+        <div class="position-relative">
+          <a
+            href="https://www.kitapyurdu.com/kitap/sana-anlatacak-fantastik-seylerim-olacak/763865.html?filter_name=fantastik&amp;s_token=abc123&amp;s_time=1788697679"
+            class="ky-product-cover"
+          >
+            <img
+              src="https://img.kitapyurdu.com/v1/getImage/fn:12275654/wi:200"
+              alt="Sana Anlatacak Fantastik Şeylerim Olacak"
+            >
+          </a>
+        </div>
+        <a
+          href="https://www.kitapyurdu.com/kitap/sana-anlatacak-fantastik-seylerim-olacak/763865.html?filter_name=fantastik&amp;s_token=abc123&amp;s_time=1788697679"
+          class="text-decoration-none text-gray-900"
+        >
+          <span class="ky-product-title"
+          >Sana Anlatacak Fantastik Şeylerim Olacak</span>
+        </a>
+      </div>
+      <div class="ky-product" data-product-id="10139">
+        <div class="position-relative">
+          <a
+            href="https://www.kitapyurdu.com/kitap/seker-portakali-ciltsiz/10139.html?filter_name=fantastik&amp;s_token=def456&amp;s_time=1788697680"
+            class="ky-product-cover"
+          >
+            <img
+              src="https://img.kitapyurdu.com/v1/getImage/fn:10101/wi:200"
+              alt="Şeker Portakalı"
+            >
+          </a>
+        </div>
+        <a
+          href="https://www.kitapyurdu.com/kitap/seker-portakali-ciltsiz/10139.html?filter_name=fantastik&amp;s_token=def456&amp;s_time=1788697680"
+          class="text-decoration-none text-gray-900"
+        >
+          <span class="ky-product-title">Şeker Portakalı (Ciltsiz)</span>
+        </a>
+      </div>
+      <!-- Duplicate card linking to the same product (same canonical URL,
+         different tracking params) — parseListingPage() must dedupe this. -->
+      <div class="ky-product" data-product-id="10139">
+        <a
+          href="https://www.kitapyurdu.com/kitap/seker-portakali-ciltsiz/10139.html?filter_name=fantastik&amp;s_token=ghi789&amp;s_time=1788697681"
+          class="ky-product-cover"
+        >
+          <img
+            src="https://img.kitapyurdu.com/v1/getImage/fn:10101/wi:200"
+            alt="Şeker Portakalı"
+          >
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

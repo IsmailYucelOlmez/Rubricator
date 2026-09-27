@@ -1,3 +1,4 @@
+import '../../../../core/logging/app_logger.dart';
 import '../datasources/google_books_cache_datasource.dart';
 import '../datasources/google_books_remote_datasource.dart';
 import '../services/api_service.dart';
@@ -13,10 +14,7 @@ class BookRepository {
     String preferredLanguageCode = 'en',
   }) : _cache = cache,
        _preferredLanguageCode = preferredLanguageCode,
-       _ds = GoogleBooksRemoteDataSource(
-         api,
-         lang: preferredLanguageCode,
-       );
+       _ds = GoogleBooksRemoteDataSource(api, lang: preferredLanguageCode);
 
   final GoogleBooksRemoteDataSource _ds;
   final GoogleBooksCacheDataSource _cache;
@@ -57,11 +55,7 @@ class BookRepository {
 
     final scored = List<_ScoredBookModel>.generate(models.length, (i) {
       final m = models[i];
-      return _ScoredBookModel(
-        model: m,
-        score: _getLanguageScore(m),
-        index: i,
-      );
+      return _ScoredBookModel(model: m, score: _getLanguageScore(m), index: i);
     });
 
     scored.sort((a, b) {
@@ -118,7 +112,7 @@ class BookRepository {
     );
     final prioritized = _prioritizeModels(raw.docs);
     if (prioritized.isNotEmpty) {
-      await _cache.saveBooks(
+      await _saveToCache(
         cacheKey: cacheKey,
         cacheType: 'search',
         books: prioritized,
@@ -176,13 +170,37 @@ class BookRepository {
     );
     final prioritized = _prioritizeModels(models);
     if (prioritized.isNotEmpty) {
-      await _cache.saveBooks(
+      await _saveToCache(
         cacheKey: cacheKey,
         cacheType: 'author',
         books: prioritized,
       );
     }
     return prioritized.map((m) => m.toEntity()).toList();
+  }
+
+  /// Cache writes are an optimisation: a rejected or failed write (RLS on the
+  /// cache table, offline, ...) must never fail the search that produced the
+  /// results. Server-side, writes to this table are being moved to the service
+  /// role (see supabase/deferred/cache_write_lockdown.sql).
+  Future<void> _saveToCache({
+    required String cacheKey,
+    required String cacheType,
+    required List<BookModel> books,
+  }) async {
+    try {
+      await _cache.saveBooks(
+        cacheKey: cacheKey,
+        cacheType: cacheType,
+        books: books,
+      );
+    } catch (error) {
+      AppLogger.warning(
+        'books',
+        'Cache write skipped',
+        data: {'cacheType': cacheType, 'error': error.toString()},
+      );
+    }
   }
 
   String _authorNameFromId(String authorId) {

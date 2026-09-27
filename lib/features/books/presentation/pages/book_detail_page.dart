@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
+import '../../../../core/navigation/web_page_title.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -105,6 +107,23 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// trbooks only scrapes two stores; the product page host tells them apart.
+  bool _isDrUrl(String url) =>
+      (Uri.tryParse(url)?.host ?? '').toLowerCase().contains('dr.com');
+
+  Future<void> _openSourceUrl(String url) async {
+    final l10n = AppLocalizations.of(context)!;
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      _showMessage(l10n.invalidUrl);
+      return;
+    }
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      _showMessage(l10n.couldNotOpenBrowser);
+    }
   }
 
   UserBookSnapshot _snapshotFor({
@@ -326,101 +345,113 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     final isFavorite = userBook?.isFavorite ?? false;
     final status = userBook?.status;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.bookDetails),
-        actions: [
-          IconButton(
-            onPressed: isPendingId
-                ? null
-                : () async {
-                    try {
-                      await showModalBottomSheet<void>(
-                        context: context,
-                        builder: (context) => _StatusBottomSheet(
-                          current: status,
-                          onSelect: (selected) async {
-                            await _setReadingStatus(
-                              selected,
-                              bookId: detailedBook.id,
-                              isFavorite: isFavorite,
-                              title: detailedBook.title,
-                              author: detailedBook.author,
-                              categories: detailedBook.subjectKeys,
+    return WebPageTitle(
+      label: '${detailedBook.title} · Rubricator',
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.bookDetails),
+          actions: [
+            if (!isPendingId && detailedBook.sourceUrl != null)
+              IconButton(
+                tooltip: _isDrUrl(detailedBook.sourceUrl!)
+                    ? l10n.openInDr
+                    : l10n.openInKitapyurdu,
+                onPressed: () => _openSourceUrl(detailedBook.sourceUrl!),
+                icon: const Icon(Icons.storefront_outlined),
+              ),
+            IconButton(
+              onPressed: isPendingId
+                  ? null
+                  : () async {
+                      try {
+                        await showModalBottomSheet<void>(
+                          context: context,
+                          builder: (context) => _StatusBottomSheet(
+                            current: status,
+                            onSelect: (selected) async {
+                              await _setReadingStatus(
+                                selected,
+                                bookId: detailedBook.id,
+                                isFavorite: isFavorite,
+                                title: detailedBook.title,
+                                author: detailedBook.author,
+                                categories: detailedBook.subjectKeys,
+                              );
+                              if (!context.mounted) return;
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        _feedbackError(e);
+                      }
+                    },
+              icon: const Icon(Icons.menu_book_outlined),
+            ),
+            IconButton(
+              onPressed: isPendingId || _favoriteBusy
+                  ? null
+                  : () async {
+                      setState(() => _favoriteBusy = true);
+                      try {
+                        await ref
+                            .read(userBookProvider(detailedBook.id).notifier)
+                            .toggleFavorite(
+                              snapshot: _snapshotFor(
+                                title: detailedBook.title,
+                                author: detailedBook.author,
+                                categories: detailedBook.subjectKeys,
+                              ),
                             );
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-            icon: const Icon(Icons.menu_book_outlined),
-          ),
-          IconButton(
-            onPressed: isPendingId || _favoriteBusy
-                ? null
-                : () async {
-                    setState(() => _favoriteBusy = true);
-                    try {
-                      await ref
-                          .read(userBookProvider(detailedBook.id).notifier)
-                          .toggleFavorite(
-                            snapshot: _snapshotFor(
-                              title: detailedBook.title,
-                              author: detailedBook.author,
-                              categories: detailedBook.subjectKeys,
-                            ),
-                          );
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    } finally {
-                      if (mounted) setState(() => _favoriteBusy = false);
-                    }
-                  },
-            icon: _favoriteBusy
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: AppLoadingIndicator(
-                      size: 18,
-                      strokeWidth: 2,
-                      centered: false,
-                    ),
-                  )
-                : Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
-          ),
-        ],
-      ),
-      floatingActionButton: !isPendingId
-          ? FloatingActionButton(
-              onPressed: () => _showAddContentSheet(
-                context,
-                bookId: detailedBook.id,
-                initialTabIndex: _contentTabController.index,
-              ),
-              child: const Icon(Icons.add),
-            )
-          : null,
-      body: ResponsiveScaffoldBody(
-        child: detailFailed
-            ? AsyncErrorView(
-                error: detailedBookAsync.error!,
-                onRetry: () => ref.invalidate(bookDetailProvider(widget.book)),
+                      } catch (e) {
+                        if (!mounted) return;
+                        _feedbackError(e);
+                      } finally {
+                        if (mounted) setState(() => _favoriteBusy = false);
+                      }
+                    },
+              icon: _favoriteBusy
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: AppLoadingIndicator(
+                        size: 18,
+                        strokeWidth: 2,
+                        centered: false,
+                      ),
+                    )
+                  : Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
+            ),
+          ],
+        ),
+        floatingActionButton: !isPendingId
+            ? FloatingActionButton(
+                onPressed: () => _showAddContentSheet(
+                  context,
+                  bookId: detailedBook.id,
+                  initialTabIndex: _contentTabController.index,
+                ),
+                child: const Icon(Icons.add),
               )
-            : _buildDetailBody(
-                context: context,
-                l10n: l10n,
-                detailedBook: detailedBook,
-                isPendingId: isPendingId,
-                userBook: userBook,
-                isFavorite: isFavorite,
-                status: status,
-              ),
+            : null,
+        body: ResponsiveScaffoldBody(
+          child: detailFailed
+              ? AsyncErrorView(
+                  error: detailedBookAsync.error!,
+                  onRetry: () =>
+                      ref.invalidate(bookDetailProvider(widget.book)),
+                )
+              : _buildDetailBody(
+                  context: context,
+                  l10n: l10n,
+                  detailedBook: detailedBook,
+                  isPendingId: isPendingId,
+                  userBook: userBook,
+                  isFavorite: isFavorite,
+                  status: status,
+                ),
+        ),
       ),
     );
   }
@@ -434,443 +465,437 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
     required bool isFavorite,
     required ReadingStatus? status,
   }) {
-            final reviews = isPendingId
-                ? const AsyncValue<List<ReviewEntity>>.data([])
-                : ref.watch(reviewListProvider(detailedBook.id));
-            final externalReviews = isPendingId
-                ? const AsyncValue<List<ExternalReviewEntity>>.data([])
-                : ref.watch(externalReviewProvider(detailedBook.id));
-            final quotes = isPendingId
-                ? const AsyncValue<List<QuoteEntity>>.data([])
-                : ref.watch(quoteProvider(detailedBook.id));
-            final rating = isPendingId
-                ? const AsyncValue<RatingState>.loading()
-                : ref.watch(ratingProvider(detailedBook.id));
-            final hasUserRated = rating.valueOrNull?.userRating != null;
-            final userRating = rating.valueOrNull?.userRating;
-            final selectedRatingForUi = _selectedRating > 0
-                ? _selectedRating
-                : (userRating ?? 0);
-            final coverUrl = AppConstants.bookDetailCoverUrl(
-              detailedBook.coverImageUrl,
-            );
-            final related = isPendingId
-                ? const AsyncValue<List<Book>>.loading()
-                : ref.watch(
-                    relatedBooksProvider((
-                      workId: detailedBook.id,
-                      subjects: detailedBook.subjectKeys,
-                      author: detailedBook.author,
-                    )),
-                  );
-            final bookDescription = stripHtmlTags(detailedBook.description);
+    final reviews = isPendingId
+        ? const AsyncValue<List<ReviewEntity>>.data([])
+        : ref.watch(reviewListProvider(detailedBook.id));
+    final externalReviews = isPendingId
+        ? const AsyncValue<List<ExternalReviewEntity>>.data([])
+        : ref.watch(externalReviewProvider(detailedBook.id));
+    final quotes = isPendingId
+        ? const AsyncValue<List<QuoteEntity>>.data([])
+        : ref.watch(quoteProvider(detailedBook.id));
+    final rating = isPendingId
+        ? const AsyncValue<RatingState>.loading()
+        : ref.watch(ratingProvider(detailedBook.id));
+    final hasUserRated = rating.valueOrNull?.userRating != null;
+    final userRating = rating.valueOrNull?.userRating;
+    final selectedRatingForUi = _selectedRating > 0
+        ? _selectedRating
+        : (userRating ?? 0);
+    // Web can't tell Google's blank high-zoom "title page" fallback (zoom=2/3
+    // for books without a scanned cover) from a real cover, so it keeps the
+    // thumbnail the lists already show; native detects it by pixels and
+    // upgrades to zoom=3 only when that image is a real cover.
+    final coverUrl = kIsWeb
+        ? AppConstants.bookThumbnailUrl(detailedBook.coverImageUrl)
+        : AppConstants.bookDetailCoverUrl(detailedBook.coverImageUrl);
+    final related = isPendingId
+        ? const AsyncValue<List<Book>>.loading()
+        : ref.watch(
+            relatedBooksProvider((
+              workId: detailedBook.id,
+              subjects: detailedBook.subjectKeys,
+              author: detailedBook.author,
+            )),
+          );
+    final bookDescription = stripHtmlTags(detailedBook.description);
 
-            return ListView(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.md + 72 + MediaQuery.paddingOf(context).bottom,
+    return ListView(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md + 72 + MediaQuery.paddingOf(context).bottom,
+      ),
+      children: [
+        if (coverUrl != null) _BookDetailCover(url: coverUrl),
+        Text(
+          detailedBook.title,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        if (detailedBook.isUserSubmitted) ...[
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Chip(
+              label: Text(
+                AppLocalizations.of(context)!.userSubmittedBadgeLabel,
               ),
-              children: [
-                if (coverUrl != null) _BookDetailCover(url: coverUrl),
-                Text(
-                  detailedBook.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
+        const SizedBox(height: 4),
+        if (detailedBook.authorIds.isNotEmpty)
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) =>
+                      AuthorDetailPage(authorId: detailedBook.authorIds.first),
                 ),
-                const SizedBox(height: 4),
-                if (detailedBook.authorIds.isNotEmpty)
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => AuthorDetailPage(
-                            authorId: detailedBook.authorIds.first,
-                          ),
-                        ),
+              );
+            },
+            child: Text(
+              detailedBook.author,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          )
+        else
+          Text(
+            detailedBook.author,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        const SizedBox(height: 12),
+        if (isPendingId)
+          const AppSkeletonBox(height: 72)
+        else
+          _ReadingStatusCard(
+            userBook: userBook,
+            onTapSelectStatus: () async {
+              try {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (context) => _StatusBottomSheet(
+                    current: status,
+                    onSelect: (selected) async {
+                      await _setReadingStatus(
+                        selected,
+                        bookId: detailedBook.id,
+                        isFavorite: isFavorite,
+                        title: detailedBook.title,
+                        author: detailedBook.author,
+                        categories: detailedBook.subjectKeys,
                       );
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
                     },
-                    child: Text(
-                      detailedBook.author,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  )
-                else
-                  Text(
-                    detailedBook.author,
-                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                const SizedBox(height: 12),
-                if (isPendingId)
-                  const AppSkeletonBox(height: 72)
-                else
-                  _ReadingStatusCard(
-                  userBook: userBook,
-                  onTapSelectStatus: () async {
-                    try {
-                      await showModalBottomSheet<void>(
-                        context: context,
-                        builder: (context) => _StatusBottomSheet(
-                          current: status,
-                          onSelect: (selected) async {
-                            await _setReadingStatus(
-                              selected,
-                              bookId: detailedBook.id,
-                              isFavorite: isFavorite,
-                              title: detailedBook.title,
-                              author: detailedBook.author,
-                              categories: detailedBook.subjectKeys,
-                            );
-                            if (!context.mounted) return;
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  onProgressChanged: (value) async {
-                    final current = userBook?.status ?? ReadingStatus.toRead;
-                    final completed = value >= 100;
-                    final status = completed
-                        ? ReadingStatus.completed
-                        : current;
-                    try {
-                      await ref
-                          .read(userBookProvider(detailedBook.id).notifier)
-                          .upsert(
-                            status: status,
-                            isFavorite: isFavorite,
-                            progress: completed ? null : value,
-                            snapshot: _snapshotFor(
-                              title: detailedBook.title,
-                              author: detailedBook.author,
-                              categories: detailedBook.subjectKeys,
-                            ),
-                          );
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                if (isPendingId)
-                  const AppSkeletonBox(height: 48)
-                else
-                  _RatingSection(
-                  state: rating,
-                  selectedRating: selectedRatingForUi,
-                  onRetry: () =>
-                      ref.invalidate(ratingProvider(detailedBook.id)),
-                  onChanged: (value) => setState(() => _selectedRating = value),
-                  onSubmit: () async {
-                    try {
-                      await ref
-                          .read(ratingProvider(detailedBook.id).notifier)
-                          .submit(_selectedRating);
-                      _showMessage(l10n.ratingSubmitted);
-                      if (mounted) {
-                        setState(() {
-                          _selectedRating = 0;
-                          _isEditingRating = false;
-                        });
-                      }
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  canEdit: !hasUserRated || _isEditingRating,
-                  hasUserRated: hasUserRated,
-                  isEditing: _isEditingRating,
-                  onTapEdit: () {
-                    if (userRating == null) return;
-                    setState(() {
-                      _isEditingRating = true;
-                      _selectedRating = userRating;
-                    });
-                  },
-                  onCancelEdit: () {
-                    setState(() {
-                      _isEditingRating = false;
-                      _selectedRating = 0;
-                    });
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Text(
-                  bookDescription.isEmpty
-                      ? l10n.noDescriptionAvailable
-                      : bookDescription,
-                  style: _bookDetailBodyStyle(context),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  l10n.relatedBooks,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                related.when(
-                  data: (list) {
-                    if (list.isEmpty) {
-                      return Text(
-                        l10n.noRelatedTitlesFound,
-                        style: _bookDetailBodyStyle(context),
-                      );
-                    }
-                    return SizedBox(
-                      height: 200,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: list.length,
-                        separatorBuilder: (context, index) => const SizedBox(
-                          width: AppSpacing.sm + AppSpacing.xs,
-                        ),
-                        itemBuilder: (context, i) {
-                          final b = list[i];
-                          final u = AppConstants.bookThumbnailUrl(
-                            b.coverImageUrl,
-                          );
-                          return SizedBox(
-                            width: 110,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => BookDetailPage(book: b),
-                                  ),
-                                );
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: BookCoverWithFavoriteButton(
-                                      bookId: b.id,
-                                      title: b.title,
-                                      author: b.author,
-                                      categories: b.subjectKeys,
-                                      compact: true,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadius.sm,
-                                        ),
-                                        child: u != null
-                                            ? Image.network(
-                                                u,
-                                                webHtmlElementStrategy:
-                                                    WebHtmlElementStrategy
-                                                        .prefer,
-                                                width: 110,
-                                                fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) => ColoredBox(
-                                                      color: Colors.white,
-                                                      child: Icon(
-                                                        Icons
-                                                            .menu_book_outlined,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurfaceVariant,
-                                                      ),
-                                                    ),
-                                              )
-                                            : ColoredBox(
-                                                color: Colors.white,
-                                                child: Icon(
-                                                  Icons.menu_book_outlined,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurfaceVariant,
+                );
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            onProgressChanged: (value) async {
+              final current = userBook?.status ?? ReadingStatus.toRead;
+              final completed = value >= 100;
+              final status = completed ? ReadingStatus.completed : current;
+              try {
+                await ref
+                    .read(userBookProvider(detailedBook.id).notifier)
+                    .upsert(
+                      status: status,
+                      isFavorite: isFavorite,
+                      progress: completed ? null : value,
+                      snapshot: _snapshotFor(
+                        title: detailedBook.title,
+                        author: detailedBook.author,
+                        categories: detailedBook.subjectKeys,
+                      ),
+                    );
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+          ),
+        const SizedBox(height: AppSpacing.sm),
+        if (isPendingId)
+          const AppSkeletonBox(height: 48)
+        else
+          _RatingSection(
+            state: rating,
+            selectedRating: selectedRatingForUi,
+            onRetry: () => ref.invalidate(ratingProvider(detailedBook.id)),
+            onChanged: (value) => setState(() => _selectedRating = value),
+            onSubmit: () async {
+              try {
+                await ref
+                    .read(ratingProvider(detailedBook.id).notifier)
+                    .submit(_selectedRating);
+                _showMessage(l10n.ratingSubmitted);
+                if (mounted) {
+                  setState(() {
+                    _selectedRating = 0;
+                    _isEditingRating = false;
+                  });
+                }
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            canEdit: !hasUserRated || _isEditingRating,
+            hasUserRated: hasUserRated,
+            isEditing: _isEditingRating,
+            onTapEdit: () {
+              if (userRating == null) return;
+              setState(() {
+                _isEditingRating = true;
+                _selectedRating = userRating;
+              });
+            },
+            onCancelEdit: () {
+              setState(() {
+                _isEditingRating = false;
+                _selectedRating = 0;
+              });
+            },
+          ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          bookDescription.isEmpty
+              ? l10n.noDescriptionAvailable
+              : bookDescription,
+          style: _bookDetailBodyStyle(context),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(l10n.relatedBooks, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: AppSpacing.sm),
+        related.when(
+          data: (list) {
+            if (list.isEmpty) {
+              return Text(
+                l10n.noRelatedTitlesFound,
+                style: _bookDetailBodyStyle(context),
+              );
+            }
+            return SizedBox(
+              height: 200,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: list.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(width: AppSpacing.sm + AppSpacing.xs),
+                itemBuilder: (context, i) {
+                  final b = list[i];
+                  final u = AppConstants.bookThumbnailUrl(b.coverImageUrl);
+                  return SizedBox(
+                    width: 110,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BookDetailPage(book: b),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: BookCoverWithFavoriteButton(
+                              bookId: b.id,
+                              title: b.title,
+                              author: b.author,
+                              categories: b.subjectKeys,
+                              compact: true,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
+                                child: u != null
+                                    ? Image.network(
+                                        u,
+                                        webHtmlElementStrategy:
+                                            WebHtmlElementStrategy.prefer,
+                                        width: 110,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                ColoredBox(
+                                                  color: Colors.white,
+                                                  child: Icon(
+                                                    Icons.menu_book_outlined,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
                                                 ),
-                                              ),
+                                      )
+                                    : ColoredBox(
+                                        color: Colors.white,
+                                        child: Icon(
+                                          Icons.menu_book_outlined,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: AppSpacing.sm),
-                                  Text(
-                                    b.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                ],
                               ),
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            b.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  loading: () =>
-                      const AppSkeletonBox(height: 4, borderRadius: 2),
-                  error: (error, stackTrace) => AsyncErrorView(
-                    error: error,
-                    compact: true,
-                    onRetry: () => ref.invalidate(
-                      relatedBooksProvider((
-                        workId: detailedBook.id,
-                        subjects: detailedBook.subjectKeys,
-                        author: detailedBook.author,
-                      )),
                     ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                if (isPendingId)
-                  const AppSkeletonBox(height: 180)
-                else
-                  _ReviewsAndQuotesSection(
-                  bookId: detailedBook.id,
-                  tabController: _contentTabController,
-                  reviews: reviews,
-                  externalReviews: externalReviews,
-                  preferExternalReviews: _preferExternalReviews,
-                  currentUserId: ref.watch(currentUserIdProvider),
-                  currentUserDisplayName: ref.watch(
-                    currentUserDisplayNameProvider,
-                  ),
-                  onRetryReviews: () =>
-                      ref.invalidate(reviewListProvider(detailedBook.id)),
-                  onRetryExternalReviews: () =>
-                      ref.invalidate(externalReviewProvider(detailedBook.id)),
-                  onEditReview: (review) async {
-                    _reviewController.text = review.content;
-                    final edited =
-                        await showDialog<({String content, bool isSpoiler})>(
-                      context: context,
-                      builder: (dialogContext) => _EditReviewDialog(
-                        initialValue: review.content,
-                        initialIsSpoiler: review.isSpoiler,
-                      ),
-                    );
-                    if (edited == null) return;
-                    try {
-                      await ref
-                          .read(reviewListProvider(detailedBook.id).notifier)
-                          .editReview(
-                            review,
-                            edited.content,
-                            isSpoiler: edited.isSpoiler,
-                          );
-                      _showMessage(l10n.reviewUpdated);
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  onDeleteReview: (review) async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: Text(l10n.uxDeleteReviewTitle),
-                        content: Text(l10n.uxDeleteReviewMessage),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: Text(l10n.cancel),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: Text(l10n.delete),
-                          ),
-                        ],
-                      ),
-                    );
-                    if (confirm != true || !mounted) return;
-                    try {
-                      await ref
-                          .read(reviewListProvider(detailedBook.id).notifier)
-                          .remove(review);
-                      _showMessage(l10n.reviewDeleted);
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  onOpenExternalReview: (url) async {
-                    final uri = Uri.tryParse(url);
-                    if (uri == null) {
-                      _showMessage(l10n.invalidUrl);
-                      return;
-                    }
-                    final ok = await launchUrl(
-                      uri,
-                      mode: LaunchMode.externalApplication,
-                    );
-                    if (!ok && mounted) {
-                      _showMessage(l10n.couldNotOpenBrowser);
-                    }
-                  },
-                  onDeleteExternalReview: (review) async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: Text(l10n.uxDeleteExternalReviewTitle),
-                        content: Text(l10n.uxDeleteExternalReviewMessage),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: Text(l10n.cancel),
-                          ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: Text(l10n.delete),
-                          ),
-                        ],
-                      ),
-                    );
-                    if (confirm != true || !mounted) return;
-                    try {
-                      await ref
-                          .read(
-                            externalReviewProvider(detailedBook.id).notifier,
-                          )
-                          .remove(review);
-                      _showMessage(l10n.externalReviewDeleted);
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  quotes: quotes,
-                  onRetryQuotes: () =>
-                      ref.invalidate(quoteProvider(detailedBook.id)),
-                  onLikeQuote: (quoteId) async {
-                    try {
-                      await ref
-                          .read(quoteProvider(detailedBook.id).notifier)
-                          .toggleLike(quoteId);
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                  onLikeReview: (reviewId) async {
-                    try {
-                      await ref
-                          .read(reviewListProvider(detailedBook.id).notifier)
-                          .toggleLike(reviewId);
-                    } catch (e) {
-                      if (!mounted) return;
-                      _feedbackError(e);
-                    }
-                  },
-                ),
-              ],
+                  );
+                },
+              ),
             );
+          },
+          loading: () => const AppSkeletonBox(height: 4, borderRadius: 2),
+          error: (error, stackTrace) => AsyncErrorView(
+            error: error,
+            compact: true,
+            onRetry: () => ref.invalidate(
+              relatedBooksProvider((
+                workId: detailedBook.id,
+                subjects: detailedBook.subjectKeys,
+                author: detailedBook.author,
+              )),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        if (isPendingId)
+          const AppSkeletonBox(height: 180)
+        else
+          _ReviewsAndQuotesSection(
+            bookId: detailedBook.id,
+            tabController: _contentTabController,
+            reviews: reviews,
+            externalReviews: externalReviews,
+            preferExternalReviews: _preferExternalReviews,
+            currentUserId: ref.watch(currentUserIdProvider),
+            currentUserDisplayName: ref.watch(currentUserDisplayNameProvider),
+            onRetryReviews: () =>
+                ref.invalidate(reviewListProvider(detailedBook.id)),
+            onRetryExternalReviews: () =>
+                ref.invalidate(externalReviewProvider(detailedBook.id)),
+            onEditReview: (review) async {
+              _reviewController.text = review.content;
+              final edited =
+                  await showDialog<({String content, bool isSpoiler})>(
+                    context: context,
+                    builder: (dialogContext) => _EditReviewDialog(
+                      initialValue: review.content,
+                      initialIsSpoiler: review.isSpoiler,
+                    ),
+                  );
+              if (edited == null) return;
+              try {
+                await ref
+                    .read(reviewListProvider(detailedBook.id).notifier)
+                    .editReview(
+                      review,
+                      edited.content,
+                      isSpoiler: edited.isSpoiler,
+                    );
+                _showMessage(l10n.reviewUpdated);
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            onDeleteReview: (review) async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(l10n.uxDeleteReviewTitle),
+                  content: Text(l10n.uxDeleteReviewMessage),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(l10n.cancel),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: Text(l10n.delete),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm != true || !mounted) return;
+              try {
+                await ref
+                    .read(reviewListProvider(detailedBook.id).notifier)
+                    .remove(review);
+                _showMessage(l10n.reviewDeleted);
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            onOpenExternalReview: (url) async {
+              final uri = Uri.tryParse(url);
+              if (uri == null) {
+                _showMessage(l10n.invalidUrl);
+                return;
+              }
+              final ok = await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+              if (!ok && mounted) {
+                _showMessage(l10n.couldNotOpenBrowser);
+              }
+            },
+            onDeleteExternalReview: (review) async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(l10n.uxDeleteExternalReviewTitle),
+                  content: Text(l10n.uxDeleteExternalReviewMessage),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(l10n.cancel),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: Text(l10n.delete),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm != true || !mounted) return;
+              try {
+                await ref
+                    .read(externalReviewProvider(detailedBook.id).notifier)
+                    .remove(review);
+                _showMessage(l10n.externalReviewDeleted);
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            quotes: quotes,
+            onRetryQuotes: () => ref.invalidate(quoteProvider(detailedBook.id)),
+            onLikeQuote: (quoteId) async {
+              try {
+                await ref
+                    .read(quoteProvider(detailedBook.id).notifier)
+                    .toggleLike(quoteId);
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+            onLikeReview: (reviewId) async {
+              try {
+                await ref
+                    .read(reviewListProvider(detailedBook.id).notifier)
+                    .toggleLike(reviewId);
+              } catch (e) {
+                if (!mounted) return;
+                _feedbackError(e);
+              }
+            },
+          ),
+      ],
+    );
   }
 }
 
@@ -919,6 +944,16 @@ class _BookDetailCoverState extends State<_BookDetailCover> {
 
   void _precheckCover() {
     _removeListener();
+    // The pixel-based placeholder check needs the image bytes, which on web
+    // means an XHR — blocked by CORS for every cover host we use (Google
+    // Books, kitapyurdu, dr), so it always "failed" and hid every cover.
+    // Web can't read pixels at all, so it skips the check and shows the
+    // cover through the HTML <img> path (see the URL choice in
+    // _buildDetailBody); a genuinely broken image collapses via errorBuilder.
+    if (kIsWeb) {
+      _showCover = true;
+      return;
+    }
     final provider = NetworkImage(widget.url);
     _stream = provider.resolve(createLocalImageConfiguration(context));
     _listener = ImageStreamListener(
@@ -949,7 +984,9 @@ class _BookDetailCoverState extends State<_BookDetailCover> {
             webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
             height: 320,
             width: double.infinity,
-            fit: BoxFit.cover,
+            // Web shows the small list thumbnail, so fit it whole instead of
+            // cropping a heavily upscaled slice.
+            fit: kIsWeb ? BoxFit.contain : BoxFit.cover,
             errorBuilder: (context, error, stackTrace) =>
                 const SizedBox.shrink(),
           ),
@@ -1106,9 +1143,7 @@ class _StatusBottomSheetState extends State<_StatusBottomSheet> {
                     ? Icons.radio_button_checked
                     : Icons.radio_button_unchecked,
               ),
-              title: Text(
-                _statusLabel(status, AppLocalizations.of(context)!),
-              ),
+              title: Text(_statusLabel(status, AppLocalizations.of(context)!)),
               onTap: _selecting
                   ? null
                   : () async {
@@ -1855,9 +1890,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                 if (widget.own) ...[
                   IconButton(
                     tooltip: l10n.editReview,
-                    onPressed: _actionBusy
-                        ? null
-                        : () => _run(widget.onEdit),
+                    onPressed: _actionBusy ? null : () => _run(widget.onEdit),
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.zero,
@@ -1868,9 +1901,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                   ),
                   IconButton(
                     tooltip: l10n.delete,
-                    onPressed: _actionBusy
-                        ? null
-                        : () => _run(widget.onDelete),
+                    onPressed: _actionBusy ? null : () => _run(widget.onDelete),
                     icon: _actionBusy
                         ? const AppLoadingIndicator(
                             size: 16,
@@ -2098,10 +2129,9 @@ class _QuoteCard extends StatelessWidget {
             Text(
               quote.content,
               textAlign: TextAlign.start,
-              style: _bookDetailBodyStyle(context).copyWith(
-                height: 1.42,
-                fontStyle: FontStyle.italic,
-              ),
+              style: _bookDetailBodyStyle(
+                context,
+              ).copyWith(height: 1.42, fontStyle: FontStyle.italic),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -2170,11 +2200,7 @@ class _ContentLikeButtonState extends State<_ContentLikeButton> {
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       icon: _busy
-          ? const AppLoadingIndicator(
-              size: 16,
-              strokeWidth: 2,
-              centered: false,
-            )
+          ? const AppLoadingIndicator(size: 16, strokeWidth: 2, centered: false)
           : Icon(
               widget.liked ? Icons.thumb_up : Icons.thumb_up_outlined,
               size: 18,
@@ -2330,8 +2356,7 @@ class _AddContentBottomSheetState extends State<_AddContentBottomSheet> {
                   showExternalReview: _showExternalReview,
                   onExternalReviewChanged: _submitting
                       ? null
-                      : (value) =>
-                          setState(() => _showExternalReview = value),
+                      : (value) => setState(() => _showExternalReview = value),
                   reviewController: widget.reviewController,
                   externalTitleController: widget.externalTitleController,
                   externalUrlController: widget.externalUrlController,
@@ -2342,9 +2367,8 @@ class _AddContentBottomSheetState extends State<_AddContentBottomSheet> {
                       ? null
                       : (value) => setState(() => _isSpoilerReview = value),
                   submitting: _submitting,
-                  onAddReview: () => _runSubmit(
-                    () => widget.onAddReview(_isSpoilerReview),
-                  ),
+                  onAddReview: () =>
+                      _runSubmit(() => widget.onAddReview(_isSpoilerReview)),
                   onAddExternalReview: () =>
                       _runSubmit(widget.onAddExternalReview),
                   colorScheme: cs,
@@ -2724,10 +2748,9 @@ class _EditReviewDialogState extends State<_EditReviewDialog> {
           child: Text(l10n.cancel),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(context).pop((
-            content: _controller.text.trim(),
-            isSpoiler: _isSpoiler,
-          )),
+          onPressed: () => Navigator.of(
+            context,
+          ).pop((content: _controller.text.trim(), isSpoiler: _isSpoiler)),
           child: Text(l10n.save),
         ),
       ],

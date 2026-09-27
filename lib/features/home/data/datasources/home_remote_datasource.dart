@@ -8,6 +8,26 @@ class HomeRemoteDataSource {
   final ApiService _api;
   final String lang;
 
+  /// Google Books' `subject:` taxonomy is effectively English-only, so
+  /// `subject:fantasy&langRestrict=tr` still matches the English catalog and
+  /// `langRestrict` doesn't meaningfully narrow it — Turkish results end up
+  /// identical to English ones. Anding the English subject with the Turkish
+  /// genre word as a plain keyword keeps genre precision while biasing
+  /// toward actually-Turkish matches; [_filterByLanguage] then double-checks
+  /// each result's own language field. A bare Turkish keyword alone (no
+  /// `subject:` anchor) matches Google's full-text index too broadly —
+  /// generic single words like "roman" or "korku" pull in unrelated
+  /// non-fiction and other senses of the word.
+  static const Map<String, String> turkishGenreQueries = <String, String>{
+    'popular_fiction': 'roman',
+    'fantasy': 'fantastik',
+    'science_fiction': 'bilim kurgu',
+    'romance': 'aşk romanı',
+    'mystery': 'polisiye',
+    'thriller': 'gerilim',
+    'horror': 'korku',
+  };
+
   static String subjectQueryTerm(String genreKey) {
     return genreKey.trim().replaceAll('"', ' ').replaceAll('_', ' ');
   }
@@ -41,29 +61,51 @@ class HomeRemoteDataSource {
     return parsed;
   }
 
+  /// Keeps only books whose own `volumeInfo.language` actually matches
+  /// [lang] — `langRestrict` alone isn't trustworthy for subject-taxonomy
+  /// queries, so this is the real language gate. Falls back to the
+  /// unfiltered list only if filtering would empty it out entirely.
+  List<HomeBookModel> _filterByLanguage(List<HomeBookModel> models) {
+    final relevant = models
+        .where((m) => m.languages?.any((l) => l.startsWith(lang)) ?? false)
+        .toList();
+    return relevant.isNotEmpty ? relevant : models;
+  }
+
+  String _genreQuery(String genre) {
+    final safeGenre = subjectQueryTerm(genre);
+    if (safeGenre.isEmpty) return '';
+    final subjectQuery = GoogleBooksUtils.buildSubjectSearchQuery(safeGenre);
+    final turkishTerm = turkishGenreQueries[genre];
+    if (lang == 'tr' && turkishTerm != null) {
+      return '$subjectQuery $turkishTerm';
+    }
+    return subjectQuery;
+  }
+
   Future<List<HomeBookModel>> fetchBooksByGenre(
     String genre, {
     int maxResults = 30,
   }) async {
-    final safeGenre = subjectQueryTerm(genre);
-    if (safeGenre.isEmpty) return const <HomeBookModel>[];
-    final q = GoogleBooksUtils.buildSubjectSearchQuery(safeGenre);
+    final q = _genreQuery(genre);
+    if (q.isEmpty) return const <HomeBookModel>[];
     final json = await _api.getJsonWithRetry(
       '/volumes',
       queryParameters: _listParams(q: q, maxResults: maxResults),
     );
-    return _parseVolumeItems(json);
+    return _filterByLanguage(_parseVolumeItems(json));
   }
 
   Future<List<HomeBookModel>> fetchPopularBooks({int maxResults = 30}) async {
+    final turkishTerm = turkishGenreQueries['popular_fiction'];
+    final q = lang == 'tr' && turkishTerm != null
+        ? 'subject:fiction $turkishTerm'
+        : 'subject:fiction';
     final json = await _api.getJsonWithRetry(
       '/volumes',
-      queryParameters: _listParams(
-        q: 'subject:fiction',
-        maxResults: maxResults,
-      ),
+      queryParameters: _listParams(q: q, maxResults: maxResults),
     );
-    return _parseVolumeItems(json);
+    return _filterByLanguage(_parseVolumeItems(json));
   }
 
   Future<List<HomeBookModel>> searchBooks(String query) async {

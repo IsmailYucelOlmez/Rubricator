@@ -6,12 +6,16 @@ class HomeBookEntity {
     required this.title,
     this.coverImageUrl,
     required this.authorNames,
+    this.description,
+    this.sourceUrl,
   });
 
   final String id;
   final String title;
   final String? coverImageUrl;
   final String authorNames;
+  final String? description;
+  final String? sourceUrl;
 
   Book toBook() {
     return Book(
@@ -19,7 +23,8 @@ class HomeBookEntity {
       title: title,
       author: authorNames,
       coverImageUrl: coverImageUrl,
-      description: '',
+      description: description ?? '',
+      sourceUrl: sourceUrl,
     );
   }
 }

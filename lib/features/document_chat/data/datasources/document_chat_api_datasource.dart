@@ -12,17 +12,19 @@ import 'document_chat_exception.dart';
 /// so the API key stays a Supabase secret, not a client bundle value.
 class DocumentChatApiDataSource {
   DocumentChatApiDataSource({Dio? dio})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: '${SupabaseService.url}/functions/v1/rubricatorApi',
-                connectTimeout: const Duration(seconds: 30),
-                receiveTimeout: const Duration(seconds: 90),
-                sendTimeout: const Duration(seconds: 60),
-                headers: SupabaseService.edgeFunctionHeaders(),
-                validateStatus: (code) => code != null && code < 500,
-              ),
-            );
+    : _dio =
+          dio ??
+                Dio(
+                  BaseOptions(
+                    baseUrl:
+                        '${SupabaseService.url}/functions/v1/rubricatorApi',
+                    connectTimeout: const Duration(seconds: 30),
+                    receiveTimeout: const Duration(seconds: 90),
+                    sendTimeout: const Duration(seconds: 60),
+                    validateStatus: (code) => code != null && code < 500,
+                  ),
+                )
+            ..interceptors.add(SupabaseService.edgeFunctionAuthInterceptor());
 
   final Dio _dio;
 
@@ -39,10 +41,11 @@ class DocumentChatApiDataSource {
     required String filename,
   }) async {
     _ensureConfigured();
-    AppLogger.info('document_chat', 'POST /api/v1/sessions', data: {
-      'filename': filename,
-      'baseUrl': _dio.options.baseUrl,
-    });
+    AppLogger.info(
+      'document_chat',
+      'POST /api/v1/sessions',
+      data: {'filename': filename, 'baseUrl': _dio.options.baseUrl},
+    );
 
     try {
       final formData = FormData.fromMap({
@@ -67,19 +70,33 @@ class DocumentChatApiDataSource {
           ? raw
           : Map<String, dynamic>.from(raw as Map? ?? const {});
       final model = CreateSessionResponseModel.fromJson(json);
-      AppLogger.info('document_chat', 'Session created', data: {
-        'sessionId': model.sessionId,
-        'status': model.status.name,
-        'filename': model.filename,
-      });
+      AppLogger.info(
+        'document_chat',
+        'Session created',
+        data: {
+          'sessionId': model.sessionId,
+          'status': model.status.name,
+          'filename': model.filename,
+        },
+      );
       return model;
     } on DocumentChatException {
       rethrow;
     } on DioException catch (error, stackTrace) {
-      await AppLogger.error('document_chat', 'Create session failed', error, stackTrace);
+      await AppLogger.error(
+        'document_chat',
+        'Create session failed',
+        error,
+        stackTrace,
+      );
       throw DocumentChatException.fromDio(error);
     } catch (error, stackTrace) {
-      await AppLogger.error('document_chat', 'Create session failed', error, stackTrace);
+      await AppLogger.error(
+        'document_chat',
+        'Create session failed',
+        error,
+        stackTrace,
+      );
       rethrow;
     }
   }
@@ -99,17 +116,26 @@ class DocumentChatApiDataSource {
           ? raw
           : Map<String, dynamic>.from(raw as Map? ?? const {});
       final model = SessionStatusResponseModel.fromJson(json);
-      AppLogger.info('document_chat', 'Session status', data: {
-        'sessionId': sessionId,
-        'status': model.status.name,
-        'chunksEmbedded': model.chunksEmbedded,
-        'chunksTotal': model.chunksTotal,
-      });
+      AppLogger.info(
+        'document_chat',
+        'Session status',
+        data: {
+          'sessionId': sessionId,
+          'status': model.status.name,
+          'chunksEmbedded': model.chunksEmbedded,
+          'chunksTotal': model.chunksTotal,
+        },
+      );
       return model;
     } on DocumentChatException {
       rethrow;
     } on DioException catch (error, stackTrace) {
-      await AppLogger.error('document_chat', 'Get session failed', error, stackTrace);
+      await AppLogger.error(
+        'document_chat',
+        'Get session failed',
+        error,
+        stackTrace,
+      );
       throw DocumentChatException.fromDio(error);
     }
   }
@@ -145,7 +171,12 @@ class DocumentChatApiDataSource {
     try {
       await _dio.delete('/api/v1/sessions/$sessionId');
     } on DioException catch (error, stackTrace) {
-      await AppLogger.error('document_chat', 'Delete session failed', error, stackTrace);
+      await AppLogger.error(
+        'document_chat',
+        'Delete session failed',
+        error,
+        stackTrace,
+      );
       // Best-effort cleanup; ignore network errors on dispose.
     }
   }

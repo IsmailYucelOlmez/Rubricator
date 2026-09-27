@@ -140,6 +140,38 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> searchLists(String query, {int limit = 30}) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return const <ListEntity>[];
+    final pattern = '%$trimmed%';
+    final titleRows = await _client
+        .from('lists')
+        .select('id')
+        .eq('is_public', true)
+        .ilike('title', pattern)
+        .order('created_at', ascending: false)
+        .limit(limit);
+    final descriptionRows = await _client
+        .from('lists')
+        .select('id')
+        .eq('is_public', true)
+        .ilike('description', pattern)
+        .order('created_at', ascending: false)
+        .limit(limit);
+    final seen = <String>{};
+    final listIds = <String>[];
+    for (final rows in [titleRows, descriptionRows]) {
+      for (final row in (rows as List<dynamic>).whereType<Map<String, dynamic>>()) {
+        final id = row['id']?.toString();
+        if (id != null && seen.add(id)) {
+          listIds.add(id);
+        }
+      }
+    }
+    return _fetchEnrichedByIds(listIds.take(limit).toList());
+  }
+
+  @override
   Future<ListItemEntity> addBookToList({
     required String listId,
     required String bookId,
@@ -411,7 +443,10 @@ class SupabaseListsRepository implements ListsRepository {
   ListEntity _mapEnrichedRow(Map<String, dynamic> row) {
     final previewsRaw = row['preview_cover_image_urls'];
     final previewCoverImageUrls = previewsRaw is List
-        ? previewsRaw.map((e) => e?.toString()).toList()
+        ? previewsRaw
+              .map((e) => e?.toString().trim())
+              .where((e) => e != null && e.isNotEmpty)
+              .toList()
         : const <String?>[];
 
     return ListEntity(

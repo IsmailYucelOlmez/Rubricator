@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,6 +36,15 @@ class VirgilHubPage extends ConsumerWidget {
   }
 
   Future<void> _openAboutBook(BuildContext context, WidgetRef ref) async {
+    // Document Q&A relies on native file access (file_picker paths, multipart
+    // upload) that isn't supported on web; the feature is mobile-only there.
+    if (kIsWeb) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.virgilAboutBookUnavailableOnWeb)),
+      );
+      return;
+    }
     if (!await _ensureSignedIn(context, ref)) return;
     if (!context.mounted) return;
     await Navigator.of(context).push(

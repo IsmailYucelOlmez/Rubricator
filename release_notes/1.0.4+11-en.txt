@@ -1,0 +1,6 @@
+In this release:
+• Improved Turkish book content and recommendations
+• Added search within lists
+• You can now report missing Turkish books directly from the app
+• Enriched home page content
+• Various bug fixes and performance improvements

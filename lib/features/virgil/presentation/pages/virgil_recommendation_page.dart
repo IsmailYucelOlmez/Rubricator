@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/env.dart';
 import '../../../../core/i18n/l10n/app_localizations.dart';
+import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/navigation/app_route_observer.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -24,6 +25,9 @@ import '../widgets/virgil_colors.dart';
 /// Route: `virgil/recommendation`
 ///
 /// Deep-mode semantic recommendations (category filter only — no tone/emotion).
+/// The category filter is hidden for the Turkish locale: its BISAC-style
+/// values (Fiction/Nonfiction/...) don't match the Turkish catalog's
+/// categories, so filtering by one would just return an empty result set.
 class VirgilRecommendationPage extends ConsumerStatefulWidget {
   const VirgilRecommendationPage({super.key});
 
@@ -54,9 +58,14 @@ class _VirgilRecommendationPageState
     // Deep mode only; clear any leftover tone from other entry points.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final current = ref.read(semanticSearchFiltersProvider);
+      // The genre taxonomy (Fiction/Nonfiction/...) is Google Books' BISAC
+      // categories, which the Turkish catalog's simple_category doesn't use
+      // -- so a leftover non-"All" category would silently zero out results.
+      final isTurkish = ref.read(localeProvider).languageCode == 'tr';
       ref.read(semanticSearchFiltersProvider.notifier).state = current.copyWith(
         mode: SemanticSearchMode.advanced,
         tone: 'All',
+        category: isTurkish ? 'All' : current.category,
       );
     });
   }
@@ -112,9 +121,11 @@ class _VirgilRecommendationPageState
       if (!mounted) return;
 
       final filters = ref.read(semanticSearchFiltersProvider);
+      final isTurkish = ref.read(localeProvider).languageCode == 'tr';
       ref.read(semanticSearchFiltersProvider.notifier).state = filters.copyWith(
         mode: SemanticSearchMode.advanced,
         tone: 'All',
+        category: isTurkish ? 'All' : filters.category,
       );
       _clearFocus();
       setState(() {
@@ -167,6 +178,8 @@ class _VirgilRecommendationPageState
     final activeQuery = _activeQuery;
     final searchEnabled =
         _controller.text.trim().length >= 3 && !_submitting;
+    final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
+    final showGenrePanel = _genrePanelOpen && !isTurkish;
 
     return Scaffold(
       backgroundColor: colors.paper,
@@ -209,7 +222,8 @@ class _VirgilRecommendationPageState
                               )
                             : _ResultsBody(
                                 query: activeQuery,
-                                categoryLabel: filters.category == 'All'
+                                categoryLabel: isTurkish ||
+                                        filters.category == 'All'
                                     ? null
                                     : _genreLabel(l10n, filters.category),
                                 onOpen: (result) =>
@@ -217,7 +231,7 @@ class _VirgilRecommendationPageState
                                 onPrefetch: _prefetchResolve,
                               ),
                   ),
-                  if (_genrePanelOpen)
+                  if (showGenrePanel)
                     Positioned(
                       left: 0,
                       right: 0,
@@ -260,7 +274,8 @@ class _VirgilRecommendationPageState
               hintText: l10n.virgilRecommendationInputHint,
               searchEnabled: searchEnabled,
               isSubmitting: _submitting,
-              genrePanelOpen: _genrePanelOpen,
+              genrePanelOpen: showGenrePanel,
+              showGenreButton: !isTurkish,
               onChanged: (_) => setState(() {}),
               onToggleGenre: () =>
                   setState(() => _genrePanelOpen = !_genrePanelOpen),
@@ -719,6 +734,7 @@ class _BottomBar extends StatelessWidget {
     required this.searchEnabled,
     required this.isSubmitting,
     required this.genrePanelOpen,
+    this.showGenreButton = true,
     required this.onChanged,
     required this.onToggleGenre,
     required this.onSubmit,
@@ -730,6 +746,7 @@ class _BottomBar extends StatelessWidget {
   final bool searchEnabled;
   final bool isSubmitting;
   final bool genrePanelOpen;
+  final bool showGenreButton;
   final ValueChanged<String> onChanged;
   final VoidCallback onToggleGenre;
   final VoidCallback onSubmit;
@@ -819,16 +836,18 @@ class _BottomBar extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: _gap),
-            _CircleActionButton(
-              filled: genrePanelOpen,
-              fillColor: colors.ink,
-              borderColor: colors.ink,
-              icon: Icons.tune,
-              iconColor: genrePanelOpen ? colors.paper : colors.ink,
-              paper: colors.paper,
-              onTap: onToggleGenre,
-            ),
+            if (showGenreButton) ...[
+              const SizedBox(width: _gap),
+              _CircleActionButton(
+                filled: genrePanelOpen,
+                fillColor: colors.ink,
+                borderColor: colors.ink,
+                icon: Icons.tune,
+                iconColor: genrePanelOpen ? colors.paper : colors.ink,
+                paper: colors.paper,
+                onTap: onToggleGenre,
+              ),
+            ],
             const SizedBox(width: _gap),
             _RedSubmitButton(
               assetPath: _redBtnAsset,

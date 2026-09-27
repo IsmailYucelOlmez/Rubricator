@@ -197,6 +197,21 @@ class InMemoryListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> searchLists(String query, {int limit = 30}) async {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return const <ListEntity>[];
+    return _lists
+        .where(
+          (l) =>
+              l.isPublic &&
+              (l.title.toLowerCase().contains(q) ||
+                  l.description.toLowerCase().contains(q)),
+        )
+        .take(limit)
+        .toList();
+  }
+
+  @override
   Future<void> likeList(String userId, String listId) async {
     final liked = _likesByList.putIfAbsent(listId, () => <String>{});
     if (liked.add(userId)) {
@@ -302,7 +317,11 @@ class InMemoryListsRepository implements ListsRepository {
     _updateList(
       listId,
       (l) => l.copyWith(
-        previewCoverImageUrls: items.take(4).map((e) => e.coverImageUrl).toList(),
+        previewCoverImageUrls: items
+            .map((e) => e.coverImageUrl)
+            .where((u) => u != null && u.trim().isNotEmpty)
+            .take(4)
+            .toList(),
       ),
     );
     return entity;

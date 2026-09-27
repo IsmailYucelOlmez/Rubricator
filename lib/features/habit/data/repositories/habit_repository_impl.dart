@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import '../../../../core/network/network_errors.dart';
 import '../../domain/entities/reading_log_entity.dart';
 import '../../domain/entities/reading_log_save_outcome.dart';
@@ -66,6 +68,22 @@ class HabitRepositoryImpl implements HabitRepository {
     required int pagesRead,
   }) async {
     final uid = _requireUserId();
+
+    // Web has no offline data-adding: logs aren't queued locally for later
+    // sync there (there's also no HabitOfflineSyncListener on web — see
+    // app.dart). Write straight through to Supabase and surface failures
+    // instead of silently claiming an offline save that will never sync.
+    if (kIsWeb) {
+      await _remote
+          .insertLog(
+            userId: uid,
+            bookId: bookId,
+            minutesRead: minutesRead,
+            pagesRead: pagesRead,
+          )
+          .timeout(const Duration(seconds: 15));
+      return ReadingLogSaveOutcome.synced;
+    }
 
     final localId = await _queueLocally(
       userId: uid,

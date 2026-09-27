@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
@@ -96,7 +97,9 @@ class _ListCardState extends State<ListCard> {
                             children: List.generate(previewCount, (idx) {
                               final imageUrl =
                                   idx < list.previewCoverImageUrls.length
-                                  ? list.previewCoverImageUrls[idx]
+                                  ? AppConstants.bookThumbnailUrl(
+                                      list.previewCoverImageUrls[idx],
+                                    )
                                   : null;
                               return Positioned(
                                 left: idx * (coverWidth - overlap),

@@ -1,0 +1,22 @@
+-- ROLLBACK for 20260926000000_rls_hardening.sql (recreates the policies/grants as they were in prod)
+drop policy if exists "profile_photos_public_read" on storage.objects;
+create policy "profile_photos_public_read" on storage.objects for select to anon, authenticated using ((bucket_id = 'profile-photos'::text));
+drop policy if exists "quotes_insert_own" on public.quotes;
+create policy "quotes_insert_own" on public.quotes for insert to authenticated with check ((user_id = auth.uid()));
+drop policy if exists "quotes_select_all" on public.quotes;
+create policy "quotes_select_all" on public.quotes for select to authenticated using (true);
+drop policy if exists "quotes_update_all_authenticated" on public.quotes;
+create policy "quotes_update_all_authenticated" on public.quotes for update to authenticated using (true) with check (true);
+drop policy if exists "search_logs_insert_own_or_anon" on public.search_logs;
+create policy "search_logs_insert_own_or_anon" on public.search_logs for insert to anon, authenticated with check (((user_id IS NULL) OR (user_id = auth.uid())));
+drop policy if exists "search_logs_select_own_or_anon_rows" on public.search_logs;
+create policy "search_logs_select_own_or_anon_rows" on public.search_logs for select to anon, authenticated using (((user_id IS NULL) OR (user_id = auth.uid())));
+drop policy if exists "trbooks_scrape_runs_select" on public.trbooks_scrape_runs;
+create policy "trbooks_scrape_runs_select" on public.trbooks_scrape_runs for select to anon, authenticated using (true);
+grant execute on function public.compute_list_recommendations_for_user(uuid) to public, anon, authenticated;
+grant execute on function public.process_dirty_list_recommendations_batch() to public, anon, authenticated;
+grant execute on function public.mark_list_recommendation_dirty(uuid) to public, anon, authenticated;
+grant execute on function public.trg_mark_list_recommendation_dirty_from_list_likes() to public, anon, authenticated;
+grant execute on function public.trg_mark_list_recommendation_dirty_from_ratings() to public, anon, authenticated;
+grant execute on function public.trg_mark_list_recommendation_dirty_from_saved_lists() to public, anon, authenticated;
+grant execute on function public.trg_mark_list_recommendation_dirty_from_user_books() to public, anon, authenticated;

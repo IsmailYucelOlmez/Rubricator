@@ -41,6 +41,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authStateProvider).valueOrNull;
     final snapshotAsync = ref.watch(homePageSnapshotProvider);
+    final genreKeys = ref.watch(homePageGenreKeysProvider);
     final favoriteIds = ref.watch(favoriteBookIdsProvider).valueOrNull ??
         const <String>{};
 
@@ -95,12 +96,14 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: snapshotAsync.when(
             data: (snapshot) => _HomeScrollContent(
               l10n: l10n,
+              genreKeys: genreKeys,
               popularBooks: snapshot.popularBooks,
               genreSections: snapshot.genreSections,
               favoriteIds: favoriteIds,
               onRetry: () => ref.invalidate(homePageSnapshotProvider),
             ),
-            loading: () => _HomeScrollContent.loading(l10n: l10n),
+            loading: () =>
+                _HomeScrollContent.loading(l10n: l10n, genreKeys: genreKeys),
             error: (error, stackTrace) => CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
@@ -123,13 +126,14 @@ class _HomePageState extends ConsumerState<HomePage> {
 class _HomeScrollContent extends StatelessWidget {
   const _HomeScrollContent({
     required this.l10n,
+    required this.genreKeys,
     required this.popularBooks,
     required this.genreSections,
     required this.favoriteIds,
     required this.onRetry,
   });
 
-  const _HomeScrollContent.loading({required this.l10n})
+  const _HomeScrollContent.loading({required this.l10n, required this.genreKeys})
       : popularBooks = null,
         genreSections = null,
         favoriteIds = const <String>{},
@@ -138,6 +142,7 @@ class _HomeScrollContent extends StatelessWidget {
   static void _noop() {}
 
   final AppLocalizations l10n;
+  final List<String> genreKeys;
   final List<HomeBookEntity>? popularBooks;
   final Map<String, HomeGenreSection>? genreSections;
   final Set<String> favoriteIds;
@@ -165,7 +170,7 @@ class _HomeScrollContent extends StatelessWidget {
                       ),
           ),
         ),
-        for (final genre in kHomePageGenreKeys)
+        for (final genre in genreKeys)
           SliverToBoxAdapter(
             child: _isLoading
                 ? _Section(

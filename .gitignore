@@ -51,3 +51,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated single-file build of the rubricatorApi edge function (dashboard paste)
+supabase/functions/*/index.single.ts
+
+# Static site build output
+site/dist/

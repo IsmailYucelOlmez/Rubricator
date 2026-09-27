@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bookapp/core/i18n/l10n/app_localizations.dart';
 import 'package:bookapp/features/auth/presentation/auth_provider.dart';
 import 'package:bookapp/features/lists/domain/entities/list_entities.dart';
+import 'package:bookapp/features/lists/presentation/pages/list_search_page.dart';
 import 'package:bookapp/features/lists/presentation/pages/lists_feed_page.dart';
 import 'package:bookapp/features/lists/presentation/providers/lists_providers.dart';
 
@@ -31,12 +32,10 @@ ListEntity _list({
 
 final _lists = [
   _list(id: '1', title: 'Distopik Klasikler', description: '1984 ve benzeri kitaplar'),
-  _list(id: '2', title: 'Yaz Okumaları', description: 'Sahilde okunacak hafif romanlar'),
-  _list(id: '3', title: 'Bilim Kurgu Seçkisi', description: 'Uzay ve teknoloji temalı distopya'),
 ];
 
 void main() {
-  testWidgets('search field filters lists by title or description', (tester) async {
+  testWidgets('search bar sits above the tabs and opens ListSearchPage on tap', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -60,41 +59,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // All three lists render initially (For You tab, first tab).
-    expect(find.text('Distopik Klasikler'), findsOneWidget);
-    expect(find.text('Yaz Okumaları'), findsOneWidget);
-    expect(find.text('Bilim Kurgu Seçkisi'), findsOneWidget);
+    // Search bar renders above the TabBar, not editable inline.
+    final hint = lookupAppLocalizations(const Locale('tr')).searchListsHint;
+    final searchBarFinder = find.text(hint);
+    final tabBarFinder = find.byType(TabBar);
+    expect(searchBarFinder, findsOneWidget);
+    expect(tabBarFinder, findsOneWidget);
+    final searchBarTop = tester.getTopLeft(searchBarFinder).dy;
+    final tabBarTop = tester.getTopLeft(tabBarFinder).dy;
+    expect(searchBarTop, lessThan(tabBarTop));
 
-    // Search by title fragment.
-    await tester.enterText(find.byType(TextField), 'distopik');
+    // Tapping it navigates to the dedicated search page instead of filtering inline.
+    await tester.tap(searchBarFinder);
     await tester.pumpAndSettle();
 
-    expect(find.text('Distopik Klasikler'), findsOneWidget);
-    expect(find.text('Yaz Okumaları'), findsNothing);
-    expect(find.text('Bilim Kurgu Seçkisi'), findsNothing);
-
-    // Search by description fragment (matches a different list than the title search).
-    await tester.enterText(find.byType(TextField), 'distopya');
-    await tester.pumpAndSettle();
-
-    expect(find.text('Bilim Kurgu Seçkisi'), findsOneWidget);
-    expect(find.text('Distopik Klasikler'), findsNothing);
-    expect(find.text('Yaz Okumaları'), findsNothing);
-
-    // No match -> empty state, not the "no lists yet" message.
-    await tester.enterText(find.byType(TextField), 'zzz-no-match-zzz');
-    await tester.pumpAndSettle();
-
-    expect(find.text('Distopik Klasikler'), findsNothing);
-    expect(find.text('Yaz Okumaları'), findsNothing);
-    expect(find.text('Bilim Kurgu Seçkisi'), findsNothing);
-
-    // Clearing the query restores all lists.
-    await tester.enterText(find.byType(TextField), '');
-    await tester.pumpAndSettle();
-
-    expect(find.text('Distopik Klasikler'), findsOneWidget);
-    expect(find.text('Yaz Okumaları'), findsOneWidget);
-    expect(find.text('Bilim Kurgu Seçkisi'), findsOneWidget);
+    expect(find.byType(ListSearchPage), findsOneWidget);
   });
 }

@@ -49,6 +49,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get virgilBetaBadge => 'BETA';
 
   @override
+  String get virgilAboutBookUnavailableOnWeb =>
+      'Document Q&A is not available on the web. Please use the mobile app.';
+
+  @override
   String get virgilRecommendationEmptyBody =>
       'Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.';
 
@@ -205,6 +209,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signOut => 'Sign out';
+
+  @override
+  String get webLocalDataNotice =>
+      'Clearing this browser\'s site data will sign you out and reset your language/theme preferences here. Your reading logs, lists, and ratings stay safe in your account.';
 
   @override
   String loadSessionError(Object error) {
@@ -570,6 +578,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotOpenBrowser => 'Could not open browser.';
 
   @override
+  String get openInDr => 'Open in D&R';
+
+  @override
+  String get openInKitapyurdu => 'Open in Kitapyurdu';
+
+  @override
   String get quoteAdded => 'Quote added.';
 
   @override
@@ -797,6 +811,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteNoteMessage => 'This note will be permanently deleted.';
+
+  @override
+  String get addTurkishBookBannerText =>
+      'Can\'t find a Turkish book? Add it yourself.';
+
+  @override
+  String get addTurkishBookBannerAction => 'Add book';
+
+  @override
+  String get addTurkishBookTitle => 'Add a Turkish book';
+
+  @override
+  String get addTurkishBookTitleHint => 'Title';
+
+  @override
+  String get addTurkishBookAuthorHint => 'Author';
+
+  @override
+  String get addTurkishBookIsbnHint => 'ISBN (10 or 13 digits)';
+
+  @override
+  String get addTurkishBookIsbnInvalid => 'ISBN must be 10 or 13 digits.';
+
+  @override
+  String get addTurkishBookMoreDetails => 'More details (optional)';
+
+  @override
+  String get addTurkishBookDescriptionHint => 'Description (optional)';
+
+  @override
+  String get addTurkishBookGenerateDescription =>
+      'Generate description with AI';
+
+  @override
+  String get addTurkishBookImageUrlHint => 'Cover image URL (optional)';
+
+  @override
+  String get addTurkishBookImagePreviewHint =>
+      'Preview — check that the link points to a real image.';
+
+  @override
+  String get addTurkishBookPublisherHint => 'Publisher (optional)';
+
+  @override
+  String get addTurkishBookCategoryHint => 'Category (optional)';
+
+  @override
+  String get addTurkishBookSubmit => 'Add book';
+
+  @override
+  String get addTurkishBookDuplicate => 'This book is already in the catalog.';
+
+  @override
+  String get addTurkishBookOpenExisting => 'Open it';
+
+  @override
+  String get userSubmittedBadgeLabel => 'User contribution';
 
   @override
   String get allTags => 'All';
@@ -1352,18 +1423,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicyTitle => 'Rubricator Privacy Policy';
 
   @override
-  String get privacyPolicyLastUpdated => 'Last updated: 28.07.2026';
+  String get privacyPolicyLastUpdated => 'Last updated: 24.09.2026';
 
   @override
   String get privacyPolicyMeta =>
-      'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app';
+      'App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.site';
 
   @override
   String get privacyPolicySection1Title => '1. Introduction';
 
   @override
   String get privacyPolicySection1Body1 =>
-      'Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.';
+      'Rubricator (\"the app\", \"we\", \"our\") is a mobile, desktop, and web application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features.';
 
   @override
   String get privacyPolicySection1Body2 =>
@@ -1460,7 +1531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection24Item2 =>
-      '- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out.';
+      '- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out. Document Chat is available in the mobile app only; it is not offered in the web version.';
 
   @override
   String get privacyPolicySection24Item3 =>
@@ -1476,7 +1547,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection25Body =>
-      'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you.';
+      'Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you. Cover images are loaded directly from the servers of the catalog source (for example Google Books, Kitapyurdu, or D&R), which may therefore receive your IP address and device/browser information when a cover is displayed.';
 
   @override
   String get privacyPolicySection26Title =>
@@ -1492,7 +1563,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection26Item3 =>
-      '- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers.';
+      '- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers. Notifications are available in the mobile app only; the web version does not send notifications.';
+
+  @override
+  String get privacyPolicySection26Item4 =>
+      '- Web version: When you use the web version, the web hosting/CDN provider that serves the site and Google\'s content delivery network (www.gstatic.com and fonts.gstatic.com, which deliver the app\'s rendering engine and fallback fonts) receive standard request data such as your IP address, browser information, and the requested address.';
 
   @override
   String get privacyPolicySection27Title => '2.7 Device Permissions';
@@ -1507,15 +1582,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection27Item2 =>
-      '- Send notifications: Reading reminders and in-app notifications';
+      '- Send notifications: Reading reminders and in-app notifications (mobile app only)';
 
   @override
   String get privacyPolicySection27Item3 =>
-      '- Exact alarm / timer: Show reading reminders at the time you set';
+      '- Exact alarm / timer: Show reading reminders at the time you set (mobile app only)';
 
   @override
   String get privacyPolicySection27Item4 =>
-      '- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat';
+      '- Gallery / file access: Upload a profile photo (the web version uses your browser\'s file picker); select PDF/EPUB for Document Chat (mobile app only)';
 
   @override
   String get privacyPolicySection3Title => '3. Why We Process Your Data';
@@ -1562,7 +1637,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection4Body =>
-      'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports).';
+      'Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports); and the web hosting/CDN provider that serves the web version.';
 
   @override
   String get privacyPolicySection4Item1 =>
@@ -1692,7 +1767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection8Body2 =>
-      'To exercise these rights, contact us at support@rubricator.app.';
+      'To exercise these rights, contact us at support@rubricator.site.';
 
   @override
   String get privacyPolicySection9Title => '9. Account and Data Deletion';
@@ -1702,7 +1777,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'To delete your account and associated data:';
 
   @override
-  String get privacyPolicySection9Item1 => '1. Email support@rubricator.app.';
+  String get privacyPolicySection9Item1 => '1. Email support@rubricator.site.';
 
   @override
   String get privacyPolicySection9Item2 =>
@@ -1721,7 +1796,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection10Body =>
-      'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app.';
+      'Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.site.';
 
   @override
   String get privacyPolicySection11Title =>
@@ -1729,14 +1804,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection11Body =>
-      'The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers.';
+      'The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser\'s local storage (not in cookies) and is removed when you clear this site\'s data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers.';
 
   @override
   String get privacyPolicySection12Title => '12. International Data Transfers';
 
   @override
   String get privacyPolicySection12Body =>
-      'Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).';
+      'Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.).';
 
   @override
   String get privacyPolicySection13Title =>
@@ -1774,7 +1849,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySection15Contact =>
-      'Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez';
+      'Rubricator\nEmail: support@rubricator.site\nDeveloper: İsmail Yücel Ölmez';
 
   @override
   String get privacyPolicyFooter =>

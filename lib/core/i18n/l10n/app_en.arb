@@ -12,6 +12,7 @@
   "virgilAboutBookTitle": "About Book",
   "virgilAboutBookHint": "Upload a book and ask questions about",
   "virgilBetaBadge": "BETA",
+  "virgilAboutBookUnavailableOnWeb": "Document Q&A is not available on the web. Please use the mobile app.",
   "virgilRecommendationEmptyBody": "Discover new authors, different genres, and works that might interest you. Virgil makes it easy for you to explore by providing recommendations.",
   "virgilRecommendationInputHint": "Type something...",
   "virgilQaInputHint": "ask question",
@@ -78,6 +79,7 @@
   "createAccount": "Create account",
   "signedInFallback": "You're signed in",
   "signOut": "Sign out",
+  "webLocalDataNotice": "Clearing this browser's site data will sign you out and reset your language/theme preferences here. Your reading logs, lists, and ratings stay safe in your account.",
   "loadSessionError": "Could not load session: {error}",
   "@loadSessionError": {
     "placeholders": {
@@ -263,6 +265,8 @@
   "externalReviewDeleted": "External review deleted.",
   "invalidUrl": "Invalid URL",
   "couldNotOpenBrowser": "Could not open browser.",
+  "openInDr": "Open in D&R",
+  "openInKitapyurdu": "Open in Kitapyurdu",
   "quoteAdded": "Quote added.",
   "relatedBooks": "Related books",
   "noRelatedTitlesFound": "We couldn't find similar books for this title.",
@@ -378,6 +382,24 @@
   "noteDeleted": "Note deleted.",
   "deleteNoteTitle": "Delete note?",
   "deleteNoteMessage": "This note will be permanently deleted.",
+  "addTurkishBookBannerText": "Can't find a Turkish book? Add it yourself.",
+  "addTurkishBookBannerAction": "Add book",
+  "addTurkishBookTitle": "Add a Turkish book",
+  "addTurkishBookTitleHint": "Title",
+  "addTurkishBookAuthorHint": "Author",
+  "addTurkishBookIsbnHint": "ISBN (10 or 13 digits)",
+  "addTurkishBookIsbnInvalid": "ISBN must be 10 or 13 digits.",
+  "addTurkishBookMoreDetails": "More details (optional)",
+  "addTurkishBookDescriptionHint": "Description (optional)",
+  "addTurkishBookGenerateDescription": "Generate description with AI",
+  "addTurkishBookImageUrlHint": "Cover image URL (optional)",
+  "addTurkishBookImagePreviewHint": "Preview — check that the link points to a real image.",
+  "addTurkishBookPublisherHint": "Publisher (optional)",
+  "addTurkishBookCategoryHint": "Category (optional)",
+  "addTurkishBookSubmit": "Add book",
+  "addTurkishBookDuplicate": "This book is already in the catalog.",
+  "addTurkishBookOpenExisting": "Open it",
+  "userSubmittedBadgeLabel": "User contribution",
   "allTags": "All",
   "notePageLabel": "Page {page}",
   "@notePageLabel": {"placeholders": {"page": {"type": "int"}}},
@@ -565,10 +587,10 @@
   ,"uxReviewMinLength":"Reviews must be at least 10 characters."
   ,"privacyPolicyAppBar":"Privacy Policy"
   ,"privacyPolicyTitle":"Rubricator Privacy Policy"
-  ,"privacyPolicyLastUpdated":"Last updated: 28.07.2026"
-  ,"privacyPolicyMeta":"App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.app"
+  ,"privacyPolicyLastUpdated":"Last updated: 24.09.2026"
+  ,"privacyPolicyMeta":"App: Rubricator (Flutter-based, iOS/Android/Web/Desktop)\nDeveloper / Data Controller: İsmail Yücel Ölmez\nContact: support@rubricator.site"
   ,"privacyPolicySection1Title":"1. Introduction"
-  ,"privacyPolicySection1Body1":"Rubricator (\"the app\", \"we\", \"our\") is a mobile/desktop application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features."
+  ,"privacyPolicySection1Body1":"Rubricator (\"the app\", \"we\", \"our\") is a mobile, desktop, and web application that offers book discovery, personal reading tracking, book notes/reviews, reading lists, and AI-assisted book features."
   ,"privacyPolicySection1Body2":"This Privacy Policy explains which data is collected when you use Rubricator, how that data is used, with whom and why it is shared, how long it is retained, and your rights over your data. The policy was prepared by reviewing the app’s actual technical architecture (including Supabase, a custom API server, and Google Gemini–based AI features)."
   ,"privacyPolicySection1Body3":"By using the app, you accept the data processing activities described in this policy. If you do not accept the policy, please do not use the app."
   ,"privacyPolicySection2Title":"2. What Data We Collect"
@@ -594,21 +616,22 @@
   ,"privacyPolicySection24Title":"2.4 Data Processed for AI Features"
   ,"privacyPolicySection24Body":"Rubricator offers the following AI-assisted features. Inputs for these features are sent to Google Gemini models (embedding and gemini-2.5-flash):"
   ,"privacyPolicySection24Item1":"- Semantic Book Discovery (Virgil): Natural-language search queries are sent via our own server (FastAPI) to the Google Gemini API."
-  ,"privacyPolicySection24Item2":"- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out."
+  ,"privacyPolicySection24Item2":"- Document Chat (PDF/EPUB): Uploaded PDF or EPUB files are temporarily transferred to our server, chunked, vectorized, and sent to Google Gemini. Documents and session data are not stored permanently; they are deleted when the session ends or times out. Document Chat is available in the mobile app only; it is not offered in the web version."
   ,"privacyPolicySection24Item3":"- Book Chat / Recommendations (Virgil): Questions and recommendations about books are likewise sent to the AI provider. Anonymous usage counters (e.g. daily request counts) may be kept."
   ,"privacyPolicySection24Note":"Important: Data sent to the AI provider (Google Gemini) is subject to that provider’s own privacy policy and data-processing terms. We advise against uploading documents that contain sensitive personal data to Document Chat."
   ,"privacyPolicySection25Title":"2.5 Book Catalog Data (Third-Party Sources)"
-  ,"privacyPolicySection25Body":"Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you."
+  ,"privacyPolicySection25Body":"Book search, cover images, descriptions, and author information are fetched from the Google Books API via a proxy on our server. This data belongs to books and does not contain personal data about you. Cover images are loaded directly from the servers of the catalog source (for example Google Books, Kitapyurdu, or D&R), which may therefore receive your IP address and device/browser information when a cover is displayed."
   ,"privacyPolicySection26Title":"2.6 Automatically Collected Technical Data"
   ,"privacyPolicySection26Item1":"- Crash/error reports: We use Sentry to monitor stability. Device/OS info, app version, stack trace, and context are sent; direct identifiers such as name/email are not included by default."
   ,"privacyPolicySection26Item2":"- Connectivity status: Checked only on-device; not sent to our servers."
-  ,"privacyPolicySection26Item3":"- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers."
+  ,"privacyPolicySection26Item3":"- Local notification data: Reading reminders are scheduled entirely on your device; not sent to our servers. Notifications are available in the mobile app only; the web version does not send notifications."
+  ,"privacyPolicySection26Item4":"- Web version: When you use the web version, the web hosting/CDN provider that serves the site and Google's content delivery network (www.gstatic.com and fonts.gstatic.com, which deliver the app's rendering engine and fallback fonts) receive standard request data such as your IP address, browser information, and the requested address."
   ,"privacyPolicySection27Title":"2.7 Device Permissions"
   ,"privacyPolicySection27Body":"Location, camera, contacts, microphone, and similar permissions are not requested. Permissions that may be requested:"
   ,"privacyPolicySection27Item1":"- Internet access: Communicate with our servers and third-party services"
-  ,"privacyPolicySection27Item2":"- Send notifications: Reading reminders and in-app notifications"
-  ,"privacyPolicySection27Item3":"- Exact alarm / timer: Show reading reminders at the time you set"
-  ,"privacyPolicySection27Item4":"- Gallery / file access: Upload a profile photo; select PDF/EPUB for Document Chat"
+  ,"privacyPolicySection27Item2":"- Send notifications: Reading reminders and in-app notifications (mobile app only)"
+  ,"privacyPolicySection27Item3":"- Exact alarm / timer: Show reading reminders at the time you set (mobile app only)"
+  ,"privacyPolicySection27Item4":"- Gallery / file access: Upload a profile photo (the web version uses your browser's file picker); select PDF/EPUB for Document Chat (mobile app only)"
   ,"privacyPolicySection3Title":"3. Why We Process Your Data"
   ,"privacyPolicySection3Item1":"- Create your account, verify your identity, and manage your session securely"
   ,"privacyPolicySection3Item2":"- Provide core features such as book discovery, search, favorites, lists, notes, and reviews"
@@ -620,7 +643,7 @@
   ,"privacyPolicySection3Item8":"- Comply with legal obligations and protect user safety"
   ,"privacyPolicySection3Body":"Your data is processed on the legal bases of consent (e.g. choosing to use AI features), performance of a contract (providing your account and the service), and legitimate interest (security, bug fixing, service improvement)."
   ,"privacyPolicySection4Title":"4. Where Data Is Stored and Security"
-  ,"privacyPolicySection4Body":"Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports)."
+  ,"privacyPolicySection4Body":"Your data is hosted on: Supabase (database, authentication, file storage); our API server (FastAPI — semantic search and Document Chat; document sessions are temporary); Google Gemini API; Sentry (error reports); and the web hosting/CDN provider that serves the web version."
   ,"privacyPolicySection4Item1":"- All communication uses encrypted connections (HTTPS/TLS)"
   ,"privacyPolicySection4Item2":"- Passwords are never stored in plain text"
   ,"privacyPolicySection4Item3":"- Database access is scoped to the account owner via Row Level Security (RLS)"
@@ -654,19 +677,19 @@
   ,"privacyPolicySection8Item6":"- Object to processing or withdraw consent"
   ,"privacyPolicySection8Item7":"- Object to adverse outcomes produced solely by automated systems"
   ,"privacyPolicySection8Item8":"- Seek redress if you suffer damage due to unlawful processing"
-  ,"privacyPolicySection8Body2":"To exercise these rights, contact us at support@rubricator.app."
+  ,"privacyPolicySection8Body2":"To exercise these rights, contact us at support@rubricator.site."
   ,"privacyPolicySection9Title":"9. Account and Data Deletion"
   ,"privacyPolicySection9Body1":"To delete your account and associated data:"
-  ,"privacyPolicySection9Item1":"1. Email support@rubricator.app."
+  ,"privacyPolicySection9Item1":"1. Email support@rubricator.site."
   ,"privacyPolicySection9Item2":"2. Use the subject line \"Account Deletion Request\"."
   ,"privacyPolicySection9Item3":"3. Include the email address registered with Rubricator in the message body."
   ,"privacyPolicySection9Body2":"After your request is verified, your account profile and personal data are deleted within 7 days; limited data required for legal retention may be kept for up to 30 additional days."
   ,"privacyPolicySection10Title":"10. Children’s Privacy"
-  ,"privacyPolicySection10Body":"Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.app."
+  ,"privacyPolicySection10Body":"Rubricator is not directed at children under 13 and does not knowingly collect data from that age group. If we learn that a child under 13 has provided us personal data, we will delete it within a reasonable time. If you are a parent or guardian and believe your child has provided us data, please contact us at support@rubricator.site."
   ,"privacyPolicySection11Title":"11. Local Storage (Data Stored on Device)"
-  ,"privacyPolicySection11Body":"The app stores some preferences and cache data (e.g. session info, theme preference, temporary content cache) locally on your device. This data is removed when you uninstall the app and is not automatically sent to our servers."
+  ,"privacyPolicySection11Body":"The app stores some preferences and cache data (e.g. session info, language and theme preferences, temporary content cache) locally on your device. In the mobile app this data is removed when you uninstall the app. In the web version it is kept in your browser's local storage (not in cookies) and is removed when you clear this site's data in your browser or when a private window is closed. The app itself does not set advertising or analytics cookies. This data is not automatically sent to our servers, except that your session token accompanies requests so that you stay signed in. Clearing it signs you out; the content in your account stays on our servers."
   ,"privacyPolicySection12Title":"12. International Data Transfers"
-  ,"privacyPolicySection12Body":"Our infrastructure providers (Supabase, Google, Sentry) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.)."
+  ,"privacyPolicySection12Body":"Our infrastructure providers (Supabase, Google, Sentry, and our web hosting provider) may process your data on servers outside Türkiye (e.g. the European Union or the United States). For such transfers, we rely on the security and compliance mechanisms offered by those providers (standard contractual clauses, data processing agreements, etc.)."
   ,"privacyPolicySection13Title":"13. Third-Party Services and Links"
   ,"privacyPolicySection13Body":"The app may contain links to third-party websites or resources. Those third-party sites have their own privacy policies; this policy covers only Rubricator’s own data processing."
   ,"privacyPolicySection13Item1":"- Supabase Privacy Policy: https://supabase.com/privacy"
@@ -676,6 +699,6 @@
   ,"privacyPolicySection14Body":"We may update this Privacy Policy from time to time. For material changes, we may notify you via an in-app notice or email. The current policy is always published with the \"Last updated\" date at the top of this page. We recommend reviewing the policy regularly."
   ,"privacyPolicySection15Title":"15. Contact"
   ,"privacyPolicySection15Body":"For questions, requests, or complaints about this Privacy Policy or the processing of your personal data:"
-  ,"privacyPolicySection15Contact":"Rubricator\nEmail: support@rubricator.app\nDeveloper: İsmail Yücel Ölmez"
+  ,"privacyPolicySection15Contact":"Rubricator\nEmail: support@rubricator.site\nDeveloper: İsmail Yücel Ölmez"
   ,"privacyPolicyFooter":"By using Rubricator, you agree to this Privacy Policy."
 }

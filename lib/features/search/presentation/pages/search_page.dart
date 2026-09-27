@@ -14,6 +14,7 @@ import '../../../../core/widgets/async_error_view.dart';
 import '../../../books/domain/entities/book.dart';
 import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/widgets/vertical_book_card.dart';
+import '../../../trbooks/presentation/widgets/add_turkish_book_banner.dart';
 import '../providers/search_notifier.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -157,6 +158,7 @@ class _KeywordSearchBody extends ConsumerWidget {
           onSubmitted: (_) => onSubmitSearch(),
         ),
         const SizedBox(height: AppSpacing.md),
+        if (showHint) const AddTurkishBookBanner(),
         Expanded(
           child: showHint
               ? _DiscoveryView(

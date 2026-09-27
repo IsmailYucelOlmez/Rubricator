@@ -387,7 +387,7 @@ Future<Map<String, String>> resolveBookNoteTitles(
   Ref ref,
   Iterable<String> bookIds,
 ) async {
-  final bookRepo = ref.read(bookRepositoryProvider);
+  final resolveBookById = ref.read(resolveBookByIdUseCaseProvider);
   final titles = <String, String>{};
   final ids = bookIds.where((id) => id.trim().isNotEmpty).toSet().toList();
   for (var i = 0; i < ids.length; i += _bookTitleFetchConcurrency) {
@@ -398,7 +398,7 @@ Future<Map<String, String>> resolveBookNoteTitles(
     await Future.wait(
       chunk.map((bookId) async {
         try {
-          titles[bookId] = (await bookRepo.getBookByWorkId(bookId)).title;
+          titles[bookId] = (await resolveBookById.call(bookId)).title;
         } catch (_) {}
       }),
     );

@@ -29,6 +29,9 @@ final getUserListsUseCaseProvider = Provider<GetUserListsUseCase>(
 final getSavedListsUseCaseProvider = Provider<GetSavedListsUseCase>(
   (ref) => GetSavedListsUseCase(ref.watch(listsRepositoryProvider)),
 );
+final searchListsUseCaseProvider = Provider<SearchListsUseCase>(
+  (ref) => SearchListsUseCase(ref.watch(listsRepositoryProvider)),
+);
 
 final listsFeedProvider = FutureProvider<List<ListEntity>>((ref) {
   return ref.read(getFeedListsUseCaseProvider).call();
@@ -77,4 +80,14 @@ final listItemsProvider = FutureProvider.family<List<ListItemEntity>, String>((
 
 final commentsProvider = FutureProvider.family<List<ListComment>, String>((ref, listId) {
   return ref.watch(listsRepositoryProvider).getComments(listId);
+});
+
+/// Current query typed on [ListSearchPage].
+final listSearchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
+
+/// Results for [listSearchQueryProvider], searched across all public lists in the database.
+final listSearchResultsProvider = FutureProvider.autoDispose<List<ListEntity>>((ref) async {
+  final query = ref.watch(listSearchQueryProvider).trim();
+  if (query.isEmpty) return const <ListEntity>[];
+  return ref.read(searchListsUseCaseProvider).call(query);
 });

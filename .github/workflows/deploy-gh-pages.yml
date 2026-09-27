@@ -41,11 +41,16 @@ jobs:
 
       - name: Build site
         env:
-          # Repository variables (Settings > Secrets and variables > Actions >
-          # Variables). Leave both unset until a domain is chosen: the site then
-          # builds for https://<owner>.github.io/<repo>. Once the domain is
-          # connected, set SITE_DOMAIN (e.g. rubricator.site).
-          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+          # Repository variable (Settings > Secrets and variables > Actions >
+          # Variables, NOT Secrets -- a value there wouldn't reach `vars.*`).
+          # The `|| 'rubricator.site'` fallback exists because forgetting or
+          # mis-scoping that variable doesn't just fall back to github.io: on a
+          # force_orphan deploy it also DROPS the CNAME file GitHub silently
+          # generated when the custom domain was first configured, taking down
+          # rubricator.site until it's re-added by hand (Settings > Pages, or a
+          # deploy that writes CNAME again). Happened twice during Phase 4.
+          # Clear the fallback here (back to "") if the domain ever changes.
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN || 'rubricator.site' }}
           # Public values (the same ones the mobile app ships with): the project
           # URL and publishable key the Virgil page signs in and searches with.
           # Without them the page builds as "not available".
@@ -54,6 +59,7 @@ jobs:
         run: |
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
+          echo "vars.SITE_DOMAIN was: '${{ vars.SITE_DOMAIN }}' (empty means the repo variable isn't set, or is set as a Secret instead of a Variable)"
           if [ -n "$SITE_DOMAIN" ]; then
             export SITE_URL="https://${SITE_DOMAIN}"
           elif [[ "$REPO" == *.github.io ]]; then

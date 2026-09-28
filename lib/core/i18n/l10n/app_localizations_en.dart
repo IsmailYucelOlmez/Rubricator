@@ -1854,4 +1854,69 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyPolicyFooter =>
       'By using Rubricator, you agree to this Privacy Policy.';
+
+  @override
+  String get readMore => 'Read more';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String ratingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ratings',
+      one: '1 rating',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get yourRating => 'Your rating';
+
+  @override
+  String get signInToRateAndTrack =>
+      'Sign in to track your reading and rate this book.';
+
+  @override
+  String get signInToJoinDiscussion =>
+      'Sign in to write reviews, add quotes and like posts.';
+
+  @override
+  String get editQuote => 'Edit quote';
+
+  @override
+  String get quoteUpdated => 'Quote updated.';
+
+  @override
+  String get quoteDeleted => 'Quote deleted.';
+
+  @override
+  String get uxDeleteQuoteTitle => 'Delete quote?';
+
+  @override
+  String get uxDeleteQuoteMessage => 'This quote will be permanently removed.';
+
+  @override
+  String get uxQuoteRequired => 'Quote can\'t be empty.';
+
+  @override
+  String get removeFromListTitle => 'Remove from your list?';
+
+  @override
+  String get removeFavoriteFromListMessage =>
+      'This book is also in your favorites. Removing it from your list removes it from your favorites too.';
+
+  @override
+  String get removedFromList => 'Removed from your list.';
+
+  @override
+  String get anonymousReader => 'Reader';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get remove => 'Remove';
 }

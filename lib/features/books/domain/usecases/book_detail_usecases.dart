@@ -60,8 +60,9 @@ class RateBookUseCase {
   Future<void> call(RatingEntity rating) => _repository.rateBook(rating);
 }
 
-class GetAverageRatingUseCase {
-  const GetAverageRatingUseCase(this._repository);
+class GetRatingSummaryUseCase {
+  const GetRatingSummaryUseCase(this._repository);
   final BookDetailRepository _repository;
-  Future<double> call(String bookId) => _repository.getAverageRating(bookId);
+  Future<RatingSummary> call(String bookId) =>
+      _repository.getRatingSummary(bookId);
 }

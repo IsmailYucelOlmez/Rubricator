@@ -3223,6 +3223,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By using Rubricator, you agree to this Privacy Policy.'**
   String get privacyPolicyFooter;
+
+  /// No description provided for @readMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMore;
+
+  /// No description provided for @showLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get showLess;
+
+  /// No description provided for @ratingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 rating} other{{count} ratings}}'**
+  String ratingCount(int count);
+
+  /// No description provided for @yourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating'**
+  String get yourRating;
+
+  /// No description provided for @signInToRateAndTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to track your reading and rate this book.'**
+  String get signInToRateAndTrack;
+
+  /// No description provided for @signInToJoinDiscussion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to write reviews, add quotes and like posts.'**
+  String get signInToJoinDiscussion;
+
+  /// No description provided for @editQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit quote'**
+  String get editQuote;
+
+  /// No description provided for @quoteUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote updated.'**
+  String get quoteUpdated;
+
+  /// No description provided for @quoteDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote deleted.'**
+  String get quoteDeleted;
+
+  /// No description provided for @uxDeleteQuoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete quote?'**
+  String get uxDeleteQuoteTitle;
+
+  /// No description provided for @uxDeleteQuoteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This quote will be permanently removed.'**
+  String get uxDeleteQuoteMessage;
+
+  /// No description provided for @uxQuoteRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote can\'t be empty.'**
+  String get uxQuoteRequired;
+
+  /// No description provided for @removeFromListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from your list?'**
+  String get removeFromListTitle;
+
+  /// No description provided for @removeFavoriteFromListMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This book is also in your favorites. Removing it from your list removes it from your favorites too.'**
+  String get removeFavoriteFromListMessage;
+
+  /// No description provided for @removedFromList.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from your list.'**
+  String get removedFromList;
+
+  /// No description provided for @anonymousReader.
+  ///
+  /// In en, this message translates to:
+  /// **'Reader'**
+  String get anonymousReader;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
 }
 
 class _AppLocalizationsDelegate

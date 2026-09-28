@@ -68,6 +68,14 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   }
 
   @override
+  Future<void> updateQuote(QuoteEntity quote) {
+    return _remote.updateQuote(quoteId: quote.id, content: quote.content);
+  }
+
+  @override
+  Future<void> deleteQuote(String quoteId) => _remote.deleteQuote(quoteId);
+
+  @override
   Future<LikeToggleResult> toggleQuoteLike(String quoteId) =>
       _remote.toggleQuoteLike(quoteId);
 
@@ -87,8 +95,8 @@ class BookDetailRepositoryImpl implements BookDetailRepository {
   }
 
   @override
-  Future<double> getAverageRating(String bookId) {
-    return _remote.getAverageRating(bookId);
+  Future<RatingSummary> getRatingSummary(String bookId) {
+    return _remote.getRatingSummary(bookId);
   }
 
   @override

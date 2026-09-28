@@ -5,8 +5,14 @@ import '../domain/entities/user_book_entity.dart';
 import '../domain/entities/user_book_snapshot.dart';
 
 class UserBooksException implements Exception {
-  UserBooksException(this.message);
+  UserBooksException(this.message) : signInRequired = false;
+
+  UserBooksException.signInRequired()
+    : message = 'Sign in to manage your reading list.',
+      signInRequired = true;
+
   final String message;
+  final bool signInRequired;
 
   @override
   String toString() => message;
@@ -18,7 +24,7 @@ class UserBooksRepository {
   String _requireUserId() {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {
-      throw UserBooksException('Sign in to manage your reading list.');
+      throw UserBooksException.signInRequired();
     }
     return userId;
   }
@@ -88,6 +94,17 @@ class UserBooksRepository {
       payload,
       onConflict: 'user_id,book_id',
     );
+  }
+
+  /// Removes the book from the user's reading list entirely (status and
+  /// favorite live on the same row).
+  Future<void> deleteUserBook(String bookId) async {
+    final userId = _requireUserId();
+    await _client
+        .from('user_books')
+        .delete()
+        .eq('user_id', userId)
+        .eq('book_id', bookId);
   }
 
   Future<void> toggleFavorite(

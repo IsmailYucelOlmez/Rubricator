@@ -41,6 +41,7 @@ class VerticalBookCard extends ConsumerWidget {
     this.author,
     this.showFavorite = true,
     this.isFavorite,
+    this.placeholderColor,
   });
 
   final Book book;
@@ -51,6 +52,9 @@ class VerticalBookCard extends ConsumerWidget {
   final bool showFavorite;
   /// When set, skips per-card favorite provider read (home bulk favorites).
   final bool? isFavorite;
+  /// Background behind a missing / loading cover; defaults to the theme's
+  /// surface container.
+  final Color? placeholderColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +62,10 @@ class VerticalBookCard extends ConsumerWidget {
     final authorLine = author ?? book.author;
     final cover = ClipRRect(
       borderRadius: BorderRadius.circular(kBookGridCoverRadius),
-      child: _BookCoverFillImage(coverImageUrl: book.coverImageUrl),
+      child: _BookCoverFillImage(
+        coverImageUrl: book.coverImageUrl,
+        placeholderColor: placeholderColor,
+      ),
     );
 
     final card = InkWell(
@@ -160,9 +167,10 @@ class VerticalBookCardSkeleton extends StatelessWidget {
 }
 
 class _BookCoverFillImage extends StatelessWidget {
-  const _BookCoverFillImage({this.coverImageUrl});
+  const _BookCoverFillImage({this.coverImageUrl, this.placeholderColor});
 
   final String? coverImageUrl;
+  final Color? placeholderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -170,20 +178,20 @@ class _BookCoverFillImage extends StatelessWidget {
     final url = AppConstants.bookThumbnailUrl(coverImageUrl);
     if (url == null) {
       return ColoredBox(
-        color: cs.surfaceContainerHighest,
+        color: placeholderColor ?? cs.surfaceContainerHighest,
         child: Center(
           child: Icon(Icons.menu_book_outlined, color: cs.onSurfaceVariant),
         ),
       );
     }
     final errorWidget = ColoredBox(
-      color: cs.surfaceContainerHighest,
+      color: placeholderColor ?? cs.surfaceContainerHighest,
       child: Center(
         child: Icon(Icons.broken_image_outlined, color: cs.onSurfaceVariant),
       ),
     );
     final loadingWidget = ColoredBox(
-      color: cs.surfaceContainer,
+      color: placeholderColor ?? cs.surfaceContainer,
       child: const Center(
         child: SizedBox(
           width: 20,

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src https://lnlqbrzetaofjwxudord.supabase.co; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Virgil: AI book recommendations | Rubricator</title>
+  <meta name="description" content="Describe the book you're in the mood for and get recommendations from Virgil, Rubricator's AI reading guide.">
+  <meta name="theme-color" content="#ba181b">
+  
+  <link rel="canonical" href="https://rubricator.site/virgil/">
+  <link rel="alternate" hreflang="en" href="https://rubricator.site/virgil/">
+  <link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/virgil/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Rubricator">
+  <meta property="og:title" content="Virgil: AI book recommendations | Rubricator">
+  <meta property="og:description" content="Describe the book you're in the mood for and get recommendations from Virgil, Rubricator's AI reading guide.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://rubricator.site/img/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../img/icon-192.png">
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../">
+        <img src="../img/icon-192.png" width="40" height="40" alt="">
+        <span class="brand-name">Rubricator</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="../">Home</a>
+        <a href="./" aria-current="page">Virgil</a>
+        <a href="../about/">About</a>
+        <a href="../contact/">Contact</a>
+      </nav>
+      <a class="lang-switch" href="../tr/virgil/" hreflang="tr" lang="tr" aria-label="Bu sayfayı Türkçe oku">Türkçe</a>
+    </div>
+  </header>
+  <main id="content">
+    <div class="page container virgil" id="virgil" data-lang="en" data-policy-version="2026-09-27" data-supabase-url="https://lnlqbrzetaofjwxudord.supabase.co" data-anon-key="sb_publishable_2FM7nuxiubl4H5LTGDuCBw_pBBpa2p2" data-confirm-url="https://rubricator.site/auth/confirmed/">
+      <div class="prose">
+        <p class="eyebrow">Virgil</p>
+        <h1>Tell Virgil what you're in the mood for</h1>
+        <p class="lead">Describe a story, a feeling or a topic in your own words and get book recommendations. You'll need a Rubricator account, the same one you use in the app.</p>
+      </div>
+
+      <noscript><div class="note"><p>Virgil on the web needs JavaScript. Please enable it and reload the page.</p></div></noscript>
+      <div class="note" id="unavailable" hidden><p>Virgil isn't available on the website right now. Please try again later or use the mobile app.</p></div>
+
+      <p class="status" id="status" role="status" aria-live="polite" hidden></p>
+
+      <section class="panel" id="auth-view" hidden>
+        <div class="tabs" role="group" aria-label="Sign in / Create account">
+          <button type="button" class="tab" id="tab-signin" aria-pressed="true">Sign in</button>
+          <button type="button" class="tab" id="tab-signup" aria-pressed="false">Create account</button>
+        </div>
+
+        <form id="form-signin" method="post" action="#" novalidate>
+          <div class="field"><label for="signin-email">Email</label>
+            <input id="signin-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="signin-password">Password</label>
+            <input id="signin-password" name="password" type="password" autocomplete="current-password" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Sign in</button>
+            <button class="link-button" type="button" id="open-reset">Forgot your password?</button>
+          </div>
+        </form>
+
+        <form id="form-signup" method="post" action="#" novalidate hidden>
+          <div class="field"><label for="signup-username">Display name</label>
+            <input id="signup-username" name="username" type="text" autocomplete="nickname" maxlength="40" required></div>
+          <div class="field"><label for="signup-email">Email</label>
+            <input id="signup-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="signup-password">Password</label>
+            <input id="signup-password" name="password" type="password" autocomplete="new-password" aria-describedby="password-hint" required>
+            <p class="hint" id="password-hint">At least 6 characters, with an uppercase letter, a lowercase letter and a punctuation mark.</p></div>
+          <div class="field check">
+            <input id="signup-privacy" name="privacy" type="checkbox">
+            <label for="signup-privacy">I have read and accept the <a href="../privacy-policy.html" target="_blank" rel="noopener">privacy policy</a>.</label>
+          </div>
+          <div class="actions"><button class="btn" type="submit">Create account</button></div>
+        </form>
+
+        <form id="form-reset-request" method="post" action="#" novalidate hidden>
+          <h2>Reset your password</h2>
+          <p>We'll email you an 8-digit code.</p>
+          <div class="field"><label for="reset-email">Email</label>
+            <input id="reset-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Send code</button>
+            <button class="link-button" type="button" data-back-to-signin>Back to sign in</button>
+          </div>
+        </form>
+
+        <form id="form-reset" method="post" action="#" novalidate hidden>
+          <h2>Reset your password</h2>
+          <div class="field"><label for="reset-code">8-digit code</label>
+            <input id="reset-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></div>
+          <div class="field"><label for="reset-password">New password</label>
+            <input id="reset-password" name="password" type="password" autocomplete="new-password" required></div>
+          <div class="field"><label for="reset-confirm">Confirm new password</label>
+            <input id="reset-confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Set new password</button>
+            <button class="link-button" type="button" data-back-to-signin>Back to sign in</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="search-view" hidden>
+        <div class="account-bar">
+          <span>Signed in as <strong id="account-email"></strong></span>
+          <button class="link-button" type="button" id="sign-out">Sign out</button>
+        </div>
+        <form id="form-search" method="post" action="#" novalidate>
+          <div class="field"><label for="query">What are you looking for?</label>
+            <textarea id="query" name="query" rows="3" maxlength="500" placeholder="e.g. a slow-burn mystery set in a small coastal town" required></textarea></div>
+          <div class="field field-narrow">
+            <label for="genre">Genre</label>
+            <select id="genre" name="genre">
+              <option value="All">All</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Nonfiction">Nonfiction</option>
+              <option value="Children's Fiction">Children's fiction</option>
+              <option value="Children's Nonfiction">Children's nonfiction</option>
+            </select>
+          </div>
+          <div class="actions"><button class="btn" type="submit" id="search-button" aria-describedby="usage">Get recommendations</button></div>
+        </form>
+        <p class="hint" id="usage" aria-live="polite" hidden></p>
+        <div id="results-wrap" hidden>
+          <h2 id="results-heading" tabindex="-1">Recommendations</h2>
+          <p id="no-results" hidden>Virgil couldn't find a match. Try describing it differently.</p>
+          <ol class="results" id="results"></ol>
+        </div>
+        <p class="hint">Asking questions about your own PDF or EPUB is only available in the mobile app.</p>
+      </section>
+
+      <script type="application/json" id="i18n">{"eyebrow":"Virgil","h1":"Tell Virgil what you're in the mood for","lead":"Describe a story, a feeling or a topic in your own words and get book recommendations. You'll need a Rubricator account, the same one you use in the app.","unavailable":"Virgil isn't available on the website right now. Please try again later or use the mobile app.","noscript":"Virgil on the web needs JavaScript. Please enable it and reload the page.","tabSignIn":"Sign in","tabSignUp":"Create account","email":"Email","password":"Password","username":"Display name","passwordHint":"At least 6 characters, with an uppercase letter, a lowercase letter and a punctuation mark.","privacyPre":"I have read and accept the","privacyLink":"privacy policy","privacyPost":".","signIn":"Sign in","signUp":"Create account","forgot":"Forgot your password?","resetTitle":"Reset your password","resetIntro":"We'll email you an 8-digit code.","sendCode":"Send code","code":"8-digit code","newPassword":"New password","confirmPassword":"Confirm new password","resetSubmit":"Set new password","backToSignIn":"Back to sign in","signOut":"Sign out","signedInAs":"Signed in as","queryLabel":"What are you looking for?","queryPlaceholder":"e.g. a slow-burn mystery set in a small coastal town","genreLabel":"Genre","genres":{"All":"All","Fiction":"Fiction","Nonfiction":"Nonfiction","Children's Fiction":"Children's fiction","Children's Nonfiction":"Children's nonfiction"},"search":"Get recommendations","searching":"Virgil is thinking…","usage":"{left} of {limit} recommendation requests left today.","resultsHeading":"Recommendations","noResults":"Virgil couldn't find a match. Try describing it differently.","mobileNote":"Asking questions about your own PDF or EPUB is only available in the mobile app.","msgSignedIn":"Welcome back.","msgSignUpDone":"Account created. Check your email to confirm it, then sign in.","msgCodeSent":"Check your email for your 8-digit code.","msgResetDone":"Your password was updated and you're signed in.","errEmailRequired":"Email is required.","errEmailInvalid":"Enter a valid email address.","errPasswordRequired":"Password is required.","errPasswordTooShort":"Password must be at least 6 characters.","errPasswordMissingUppercase":"Password must include an uppercase letter.","errPasswordMissingLowercase":"Password must include a lowercase letter.","errPasswordMissingPunctuation":"Password must include a punctuation character.","errUsernameRequired":"Display name is required.","errMismatch":"Passwords do not match.","errAcceptPrivacy":"Please accept the privacy policy to create an account.","errOtpIncomplete":"Please enter the full 8-digit code.","errQueryShort":"Write at least 3 characters.","errQueryLong":"Keep it under 500 characters.","errInvalidCredentials":"Email or password is incorrect.","errEmailNotConfirmed":"Please confirm your email address first: check your inbox.","errUserExists":"An account with this email already exists. Try signing in.","errWeakPassword":"That password is too weak. Choose a stronger one.","errRateLimit":"Too many attempts. Please wait a moment and try again.","errOtp":"That code is wrong or has expired. Request a new one.","errNetwork":"Couldn't reach the server. Check your connection and try again.","errUnknown":"Something went wrong. Please try again.","errSessionExpired":"Your session ended. Please sign in again.","errDailyLimit":"You can request recommendations up to 5 times per day. Try again tomorrow.","errBusy":"Virgil is busy right now. Please try again in a moment.","errTimeout":"That took too long. Please try again.","errServer":"Virgil ran into a problem. Please try again later."}</script>
+    </div>
+  </main>
+  <script type="module" src="../assets/js/app.js"></script>
+  <footer class="site-footer">
+    <div class="container">
+      <span>© 2026 Rubricator. All rights reserved.</span>
+      <nav aria-label="Footer">
+        <a href="../about/">About</a>
+        <a href="../contact/">Contact</a>
+        <a href="../privacy-policy.html">Privacy Policy</a>
+        <a href="../account-deletion/">Account deletion</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

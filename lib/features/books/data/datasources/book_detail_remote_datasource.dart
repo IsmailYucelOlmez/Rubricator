@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/network/supabase_service.dart';
 import '../services/api_service.dart';
+import '../../domain/entities/book_content_exception.dart';
 import '../../domain/entities/book_detail_entities.dart';
 import '../models/book_detail_models.dart';
 import '../models/book_model.dart';
@@ -39,7 +40,7 @@ class BookDetailRemoteDataSource {
   String _requiredUserId() {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {
-      throw Exception('Sign in required.');
+      throw const BookContentException(BookContentError.signInRequired);
     }
     return userId;
   }
@@ -80,6 +81,7 @@ class BookDetailRemoteDataSource {
         .from('reviews')
         .select()
         .eq('book_id', bookId)
+        .order('likes', ascending: false)
         .order('created_at', ascending: false);
     final reviews = (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
@@ -230,6 +232,27 @@ class BookDetailRemoteDataSource {
     });
   }
 
+  Future<void> updateQuote({
+    required String quoteId,
+    required String content,
+  }) async {
+    final userId = _requiredUserId();
+    await _client
+        .from('quotes')
+        .update(<String, dynamic>{'content': content})
+        .eq('id', quoteId)
+        .eq('user_id', userId);
+  }
+
+  Future<void> deleteQuote(String quoteId) async {
+    final userId = _requiredUserId();
+    await _client
+        .from('quotes')
+        .delete()
+        .eq('id', quoteId)
+        .eq('user_id', userId);
+  }
+
   Future<LikeToggleResult> toggleQuoteLike(String quoteId) async {
     _requiredUserId();
     final row = await _client.rpc<dynamic>(
@@ -298,20 +321,19 @@ class BookDetailRemoteDataSource {
     }, onConflict: 'user_id,book_id');
   }
 
-  Future<double> getAverageRating(String bookId) async {
+  Future<RatingSummary> getRatingSummary(String bookId) async {
     final rows = await _client
         .from('ratings')
         .select('rating')
         .eq('book_id', bookId);
-    final list = rows as List<dynamic>;
-    if (list.isEmpty) return 0;
-    final values = list
+    final values = (rows as List<dynamic>)
         .whereType<Map<String, dynamic>>()
-        .map((e) => (e['rating'] as num?)?.toDouble() ?? 0)
+        .map((e) => (e['rating'] as num?)?.toDouble())
+        .whereType<double>()
         .toList();
-    if (values.isEmpty) return 0;
+    if (values.isEmpty) return RatingSummary.empty;
     final total = values.fold<double>(0, (a, b) => a + b);
-    return total / values.length;
+    return RatingSummary(average: total / values.length, count: values.length);
   }
 
   Future<int?> getUserRating(String bookId) async {

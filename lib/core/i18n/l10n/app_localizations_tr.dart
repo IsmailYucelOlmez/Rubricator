@@ -1845,4 +1845,98 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get privacyPolicyFooter =>
       'Rubricator\'ı kullanarak bu Gizlilik Politikasını kabul etmiş olursunuz.';
+
+  @override
+  String get readMore => 'Devamını oku';
+
+  @override
+  String get showLess => 'Daha az göster';
+
+  @override
+  String ratingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oy',
+      one: '1 oy',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get yourRating => 'Senin puanın';
+
+  @override
+  String get signInToRateAndTrack =>
+      'Okuma durumunu takip etmek ve bu kitabı puanlamak için giriş yap.';
+
+  @override
+  String get signInToJoinDiscussion =>
+      'Yorum yazmak, alıntı eklemek ve beğenmek için giriş yap.';
+
+  @override
+  String get editQuote => 'Alıntıyı düzenle';
+
+  @override
+  String get quoteUpdated => 'Alıntı güncellendi.';
+
+  @override
+  String get quoteDeleted => 'Alıntı silindi.';
+
+  @override
+  String get uxDeleteQuoteTitle => 'Alıntı silinsin mi?';
+
+  @override
+  String get uxDeleteQuoteMessage => 'Bu alıntı kalıcı olarak silinecek.';
+
+  @override
+  String get uxQuoteRequired => 'Alıntı boş olamaz.';
+
+  @override
+  String get removeFromListTitle => 'Listenden çıkarılsın mı?';
+
+  @override
+  String get removeFavoriteFromListMessage =>
+      'Bu kitap favorilerinde de var. Listenden çıkarırsan favorilerinden de çıkarılır.';
+
+  @override
+  String get removedFromList => 'Listenden çıkarıldı.';
+
+  @override
+  String get anonymousReader => 'Okur';
+
+  @override
+  String get edit => 'Düzenle';
+
+  @override
+  String get remove => 'Çıkar';
+
+  @override
+  String get addToMyLists => 'Listelerime ekle';
+
+  @override
+  String get inMyLists => 'Listelerinde';
+
+  @override
+  String bookInListsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count listede',
+      one: '1 listede',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listsContainingBook => 'Bu kitabı içeren listeler';
+
+  @override
+  String get noListsContainBook => 'Bu kitap henüz hiçbir listede yok.';
+
+  @override
+  String get createListWithBook => 'Bu kitapla yeni liste oluştur';
+
+  @override
+  String get privateList => 'Gizli';
 }

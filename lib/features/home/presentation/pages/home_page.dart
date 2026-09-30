@@ -151,7 +151,8 @@ class _HomeScrollContent extends StatelessWidget {
   final Set<String> favoriteIds;
   final VoidCallback onRetry;
 
-  bool get _isLoading => popularBooks == null || genreSections == null;
+  /// Null rails are still loading; each rail renders its own skeleton so a
+  /// slow one doesn't hold back the others.
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +164,7 @@ class _HomeScrollContent extends StatelessWidget {
         SliverToBoxAdapter(
           child: _Section(
             title: l10n.popular,
-            child: _isLoading
+            child: popularBooks == null
                 ? const _HorizontalSkeleton()
                 : popularBooks!.isEmpty
                     ? const _HorizontalSkeleton()
@@ -175,7 +176,7 @@ class _HomeScrollContent extends StatelessWidget {
         ),
         for (final genre in genreKeys)
           SliverToBoxAdapter(
-            child: _isLoading
+            child: genreSections?[genre] == null
                 ? _Section(
                     title: _genreLabel(genre, l10n),
                     child: const _HorizontalSkeleton(),

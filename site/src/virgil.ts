@@ -311,9 +311,9 @@ ${
             <textarea id="query" name="query" rows="3" maxlength="500" placeholder="${
     esc(t.queryPlaceholder)
   }" required></textarea></div>${genre}
-          <div class="actions"><button class="btn" type="submit" id="search-button">${t.search}</button></div>
+          <div class="actions"><button class="btn" type="submit" id="search-button" aria-describedby="usage">${t.search}</button></div>
         </form>
-        <p class="hint" id="usage" hidden></p>
+        <p class="hint" id="usage" aria-live="polite" hidden></p>
         <div id="results-wrap" hidden>
           <h2 id="results-heading" tabindex="-1">${t.resultsHeading}</h2>
           <p id="no-results" hidden>${t.noResults}</p>

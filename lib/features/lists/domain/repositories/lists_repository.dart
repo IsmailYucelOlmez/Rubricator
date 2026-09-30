@@ -11,6 +11,24 @@ abstract class ListsRepository {
 
   /// Searches all public lists in the database by title or description.
   Future<List<ListEntity>> searchLists(String query, {int limit = 30});
+  /// Lists the current viewer can see (public ones plus their own) that
+  /// contain [bookId], most liked first.
+  Future<List<ListEntity>> getListsContainingBook(
+    String bookId, {
+    int limit = 100,
+  });
+
+  /// Count for [getListsContainingBook] without loading the lists.
+  Future<int> countListsContainingBook(String bookId);
+
+  /// `listId -> listItemId` for [userId]'s own lists that contain [bookId].
+  Future<Map<String, String>> getListItemIdsForBook({
+    required String userId,
+    required String bookId,
+  });
+
+  /// Adds [bookId] to the end of the list. Adding a book that is already in
+  /// the list returns the existing item instead of failing.
   Future<ListItemEntity> addBookToList({
     required String listId,
     required String bookId,

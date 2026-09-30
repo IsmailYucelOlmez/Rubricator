@@ -1,12 +1,18 @@
+import 'dart:async';
+
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
+
 import '../../../../core/logging/app_logger.dart';
 import '../../../books/data/repositories/book_repository.dart';
 import '../../../books/domain/entities/book.dart';
+import '../../../trbooks/data/repositories/supabase_trbooks_repository.dart';
 import '../../../trbooks/domain/repositories/trbooks_repository.dart';
 import '../../domain/entities/home_book_entity.dart';
 import '../../domain/entities/home_genre_section.dart';
 import '../../domain/entities/home_page_snapshot.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_cache_datasource.dart';
+import '../datasources/home_local_datasource.dart';
 import '../datasources/home_remote_datasource.dart';
 import '../models/home_book_model.dart';
 
@@ -14,6 +20,7 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(
     this._remoteDataSource,
     this._cacheDataSource,
+    this._localDataSource,
     this._bookRepository,
     this._trbooksRepository, {
     required this.lang,
@@ -21,6 +28,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
   final HomeRemoteDataSource _remoteDataSource;
   final HomeCacheDataSource _cacheDataSource;
+  final HomeLocalDataSource _localDataSource;
   final BookRepository _bookRepository;
   final TrbooksRepository _trbooksRepository;
   final String lang;
@@ -255,50 +263,153 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<HomePageSnapshot> loadHomePage(List<String> genreKeys) async {
+  Future<HomePageSnapshot?> readSavedHomePage() => _localDataSource.read();
+
+  @override
+  Future<void> saveHomePage(HomePageSnapshot snapshot) =>
+      _localDataSource.write(snapshot);
+
+  @override
+  Stream<HomePageSnapshot> watchHomePage(List<String> genreKeys) async* {
     final cacheKeys = <String>[
       HomeCacheDataSource.popularCacheKey,
       ...genreKeys,
     ];
 
-    // Kick off the cache read and every trbooks RPC (popular + each genre)
-    // together so they run concurrently instead of one-after-another — with
-    // 5-6 network round trips, sequential awaits made the home page load as
-    // slow as the sum of all of them instead of the slowest one.
-    final cacheMapFuture = _loadHomeCacheWithFallback(cacheKeys);
-    final popularTrbooksFuture = _trbooksHomeBooks(
-      HomeCacheDataSource.popularCacheKey,
-    );
-    final genreTrbooksFutures = <String, Future<List<HomeBookEntity>>>{
-      for (final genreKey in genreKeys) genreKey: _trbooksHomeBooks(genreKey),
-    };
+    final Map<String, HomePageBundleEntry> bundle;
+    try {
+      bundle = await _timed(
+        'get_home_page rpc',
+        _cacheDataSource.getHomePageBundle(
+          cacheKeys,
+          lang: lang,
+          limit: _maxBooksPerHomeSection,
+        ),
+      );
+    } on PostgrestException catch (error) {
+      // PGRST202: function not deployed yet — keep the page working through
+      // the per-section requests until the migration is applied.
+      if (error.code != 'PGRST202') rethrow;
+      AppLogger.warning(
+        'home',
+        'get_home_page RPC missing, falling back to per-section requests',
+      );
+      yield* _watchHomePageLegacy(genreKeys);
+      return;
+    }
+    yield _snapshotFromBundle(bundle, genreKeys);
+  }
 
-    final cacheMap = await cacheMapFuture;
+  HomePageSnapshot _snapshotFromBundle(
+    Map<String, HomePageBundleEntry> bundle,
+    List<String> genreKeys,
+  ) {
+    List<HomeBookEntity> trbooksOf(String key) =>
+        (bundle[key]?.trbooksRows ?? const <Map<String, dynamic>>[])
+            .map(SupabaseTrbooksRepository.mapRowToBook)
+            .take(_maxBooksPerHomeSection)
+            .map(_homeBookFromBook)
+            .toList();
 
-    var popularBooks = await popularTrbooksFuture;
+    const popularKey = HomeCacheDataSource.popularCacheKey;
+    var popularBooks = trbooksOf(popularKey);
     if (popularBooks.isEmpty) {
       popularBooks = _homeBooksFromModels(
-        _cacheDataSource.parseCachedBooks(
-          cacheMap[HomeCacheDataSource.popularCacheKey],
-        ),
+        _cacheDataSource.parseCachedBooks(bundle[popularKey]?.cacheRow),
       );
     }
 
     final genreSections = <String, HomeGenreSection>{};
     for (final genreKey in genreKeys) {
-      final trbooksBooks = await genreTrbooksFutures[genreKey]!;
+      final trbooksBooks = trbooksOf(genreKey);
       genreSections[genreKey] = trbooksBooks.isNotEmpty
           ? HomeGenreSection(
               books: trbooksBooks,
               loadState: HomeGenreSectionLoadState.ready,
             )
-          : _homeSectionFromCacheRow(cacheMap[genreKey]);
+          : _homeSectionFromCacheRow(bundle[genreKey]?.cacheRow);
     }
 
     return HomePageSnapshot(
       popularBooks: popularBooks,
       genreSections: genreSections,
     );
+  }
+
+  /// Pre-`get_home_page` path: one cache read plus one trbooks RPC per rail,
+  /// all started together. Emits after every rail that resolves so a slow
+  /// request only holds back its own rail instead of the whole page.
+  Stream<HomePageSnapshot> _watchHomePageLegacy(List<String> genreKeys) async* {
+    final cacheKeys = <String>[
+      HomeCacheDataSource.popularCacheKey,
+      ...genreKeys,
+    ];
+
+    final cacheMapFuture = _timed(
+      'genre_books_cache read',
+      _loadHomeCacheWithFallback(cacheKeys),
+    );
+    // Rails whose trbooks list is non-empty never await the cache read; keep
+    // its failure from surfacing as an unhandled async error.
+    unawaited(cacheMapFuture.then((_) {}, onError: (Object _) {}));
+
+    Future<_HomeRail> popularRail() async {
+      const key = HomeCacheDataSource.popularCacheKey;
+      final trbooks = await _timed('trbooks $key', _trbooksHomeBooks(key));
+      if (trbooks.isNotEmpty) return _HomeRail.popular(trbooks);
+      final cacheMap = await cacheMapFuture;
+      return _HomeRail.popular(
+        _homeBooksFromModels(_cacheDataSource.parseCachedBooks(cacheMap[key])),
+      );
+    }
+
+    Future<_HomeRail> genreRail(String genreKey) async {
+      final trbooks = await _timed(
+        'trbooks $genreKey',
+        _trbooksHomeBooks(genreKey),
+      );
+      if (trbooks.isNotEmpty) {
+        return _HomeRail.genre(
+          genreKey,
+          HomeGenreSection(
+            books: trbooks,
+            loadState: HomeGenreSectionLoadState.ready,
+          ),
+        );
+      }
+      final cacheMap = await cacheMapFuture;
+      return _HomeRail.genre(
+        genreKey,
+        _homeSectionFromCacheRow(cacheMap[genreKey]),
+      );
+    }
+
+    var current = HomePageSnapshot.empty;
+    await for (final rail in Stream<_HomeRail>.fromFutures(<Future<_HomeRail>>[
+      popularRail(),
+      for (final genreKey in genreKeys) genreRail(genreKey),
+    ])) {
+      current = HomePageSnapshot(
+        popularBooks: rail.popularBooks ?? current.popularBooks,
+        genreSections: <String, HomeGenreSection>{
+          ...current.genreSections,
+          if (rail.genreKey != null) rail.genreKey!: rail.section!,
+        },
+      );
+      yield current;
+    }
+  }
+
+  Future<T> _timed<T>(String label, Future<T> future) async {
+    final stopwatch = Stopwatch()..start();
+    try {
+      return await future;
+    } finally {
+      AppLogger.info(
+        'home.timing',
+        '$label: ${stopwatch.elapsedMilliseconds}ms',
+      );
+    }
   }
 
   @override
@@ -348,6 +459,20 @@ class HomeRepositoryImpl implements HomeRepository {
       );
     }
   }
+}
+
+class _HomeRail {
+  const _HomeRail.popular(List<HomeBookEntity> books)
+    : popularBooks = books,
+      genreKey = null,
+      section = null;
+
+  const _HomeRail.genre(String this.genreKey, HomeGenreSection this.section)
+    : popularBooks = null;
+
+  final List<HomeBookEntity>? popularBooks;
+  final String? genreKey;
+  final HomeGenreSection? section;
 }
 
 class _ScoredHomeBookModel {

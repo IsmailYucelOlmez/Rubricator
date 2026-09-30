@@ -17,9 +17,13 @@ import '../../domain/entities/list_entities.dart';
 import '../providers/lists_providers.dart';
 
 class CreateEditListPage extends ConsumerStatefulWidget {
-  const CreateEditListPage({super.key, this.initialList});
+  const CreateEditListPage({super.key, this.initialList, this.initialBook});
 
   final ListEntity? initialList;
+
+  /// Pre-selected book for a new list (e.g. "new list with this book" from a
+  /// book page). Ignored when editing.
+  final ListBookSnapshot? initialBook;
 
   @override
   ConsumerState<CreateEditListPage> createState() => _CreateEditListPageState();
@@ -62,6 +66,15 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
       _descCtrl.text = initial.description;
       _isPublic = initial.isPublic;
       _loadInitialItems(initial.id);
+    } else if (widget.initialBook case final book?) {
+      _picked = [
+        _PickedBook(
+          bookId: book.bookId,
+          title: book.title,
+          author: book.author,
+          coverImageUrl: book.coverImageUrl,
+        ),
+      ];
     }
   }
 

@@ -169,7 +169,7 @@ function main() {
       refreshUsage();
     } else {
       searchSeq++; // drop in-flight results
-      $("search-button").disabled = false;
+      setLimitReached(false);
       if (ended) {
         showForm("signin");
         say(t.errSessionExpired, "error");
@@ -184,18 +184,38 @@ function main() {
     const usage = await virgil.usage();
     const el = $("usage");
     if (!usage) {
-      el.hidden = true;
+      el.hidden = !limitReached;
       return;
     }
     el.textContent = t.usage
       .replace("{left}", String(Math.max(usage.limit - usage.used, 0)))
       .replace("{limit}", String(usage.limit));
     el.hidden = false;
+    setLimitReached(usage.used >= usage.limit);
+  }
+
+  // With no requests left the button is aria-disabled (still focusable, so its
+  // aria-describedby usage hint is read) and the submit handler refuses. The
+  // hint (aria-live) then says why and when it renews.
+  let limitReached = false;
+  function setLimitReached(reached) {
+    limitReached = reached;
+    const button = $("search-button");
+    if (reached) button.setAttribute("aria-disabled", "true");
+    else button.removeAttribute("aria-disabled");
+    if (reached) {
+      $("usage").textContent = t.errDailyLimit;
+      $("usage").hidden = false;
+    }
   }
 
   function resultCard(book) {
     const item = document.createElement("li");
     item.className = "book";
+    // The placeholder stays when there is no cover or it fails to load.
+    const cover = document.createElement("div");
+    cover.className = "book-cover";
+    item.append(cover);
     if (book.cover) {
       const img = document.createElement("img");
       img.src = book.cover;
@@ -206,7 +226,7 @@ function main() {
       img.decoding = "async";
       img.referrerPolicy = "no-referrer";
       img.addEventListener("error", () => img.remove());
-      item.append(img);
+      cover.append(img);
     }
     const text = document.createElement("div");
     const title = document.createElement("h3");
@@ -337,6 +357,7 @@ function main() {
 
   $("form-search").addEventListener("submit", (event) => {
     event.preventDefault();
+    if (limitReached) return;
     const query = $("query").value.trim();
     if (query.length < MIN_QUERY_LENGTH) return say(t.errQueryShort, "error");
     if (query.length > MAX_QUERY_LENGTH) return say(t.errQueryLong, "error");
@@ -356,7 +377,12 @@ function main() {
       refreshUsage();
     }).catch((error) => {
       if (seq !== searchSeq) return;
-      say(virgilMessage(error), "error");
+      if (error instanceof VirgilError && error.code === "daily_limit_reached") {
+        say("");
+        setLimitReached(true);
+      } else {
+        say(virgilMessage(error), "error");
+      }
       if (error instanceof VirgilError && error.code === "unauthorized") {
         auth.reload();
       }

@@ -25,6 +25,20 @@ class BookEntity {
 
   /// True for trbooks rows with `source = 'user_submitted'`.
   final bool isUserSubmitted;
+
+  /// Retailer behind [sourceUrl]; trbooks only scrapes these two stores.
+  BookStore? get store => bookStoreFromUrl(sourceUrl);
+}
+
+enum BookStore { kitapyurdu, dr }
+
+BookStore? bookStoreFromUrl(String? url) {
+  if (url == null) return null;
+  final host = (Uri.tryParse(url)?.host ?? '').toLowerCase();
+  if (host.isEmpty) return null;
+  if (host.contains('dr.com')) return BookStore.dr;
+  if (host.contains('kitapyurdu')) return BookStore.kitapyurdu;
+  return null;
 }
 
 class ReviewEntity {
@@ -53,6 +67,27 @@ class ReviewEntity {
   final bool isFavorite;
   final String? userName;
   final bool isSpoiler;
+
+  ReviewEntity copyWith({
+    String? content,
+    int? likes,
+    bool? likedByCurrentUser,
+    bool? isSpoiler,
+  }) {
+    return ReviewEntity(
+      id: id,
+      bookId: bookId,
+      userId: userId,
+      content: content ?? this.content,
+      createdAt: createdAt,
+      likes: likes ?? this.likes,
+      likedByCurrentUser: likedByCurrentUser ?? this.likedByCurrentUser,
+      userRating: userRating,
+      isFavorite: isFavorite,
+      userName: userName,
+      isSpoiler: isSpoiler ?? this.isSpoiler,
+    );
+  }
 }
 
 class ExternalReviewEntity {
@@ -97,6 +132,19 @@ class QuoteEntity {
   final DateTime createdAt;
   final bool likedByCurrentUser;
   final String? userName;
+
+  QuoteEntity copyWith({String? content, int? likes, bool? likedByCurrentUser}) {
+    return QuoteEntity(
+      id: id,
+      bookId: bookId,
+      userId: userId,
+      content: content ?? this.content,
+      likes: likes ?? this.likes,
+      createdAt: createdAt,
+      likedByCurrentUser: likedByCurrentUser ?? this.likedByCurrentUser,
+      userName: userName,
+    );
+  }
 }
 
 class LikeToggleResult {
@@ -116,4 +164,14 @@ class RatingEntity {
   final String bookId;
   final String userId;
   final int rating;
+}
+
+class RatingSummary {
+  const RatingSummary({required this.average, required this.count});
+
+  static const empty = RatingSummary(average: 0, count: 0);
+
+  /// Mean on the stored 1-10 scale; meaningless when [count] is 0.
+  final double average;
+  final int count;
 }

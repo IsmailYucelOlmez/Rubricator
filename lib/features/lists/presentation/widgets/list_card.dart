@@ -166,74 +166,65 @@ class _ListCardState extends State<ListCard> {
                           ),
                         ),
                       ),
+                      // The save button keeps its size; like and comment
+                      // share what's left and their counts shrink to fit
+                      // instead of overflowing on narrow cards.
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Expanded(
-                            child: Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    visualDensity: VisualDensity.compact,
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                    onPressed: _likeBusy ? null : _runLike,
-                                    icon: _likeBusy
-                                        ? const AppLoadingIndicator(
-                                            size: 14,
-                                            strokeWidth: 2,
-                                            centered: false,
-                                          )
-                                        : Icon(
-                                            list.isLikedByMe
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            size: 16,
-                                          ),
-                                  ),
-                                  Text('${list.likeCount}', style: statsStyle),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: IconButton(
+                          Flexible(
+                            child: _Stat(
+                              icon: IconButton(
                                 visualDensity: VisualDensity.compact,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                onPressed: _saveBusy ? null : _runSave,
-                                icon: _saveBusy
+                                onPressed: _likeBusy ? null : _runLike,
+                                icon: _likeBusy
                                     ? const AppLoadingIndicator(
                                         size: 14,
                                         strokeWidth: 2,
                                         centered: false,
                                       )
                                     : Icon(
-                                        list.isSavedByMe
-                                            ? Icons.bookmark
-                                            : Icons.bookmark_outline,
+                                        list.isLikedByMe
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
                                         size: 16,
                                       ),
                               ),
+                              count: list.likeCount,
+                              style: statsStyle,
                             ),
                           ),
-                          Expanded(
-                            child: Center(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.mode_comment_outlined,
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: _saveBusy ? null : _runSave,
+                            icon: _saveBusy
+                                ? const AppLoadingIndicator(
+                                    size: 14,
+                                    strokeWidth: 2,
+                                    centered: false,
+                                  )
+                                : Icon(
+                                    list.isSavedByMe
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_outline,
                                     size: 16,
                                   ),
-                                  const SizedBox(width: AppSpacing.xs),
-                                  Text(
-                                    '${list.commentCount}',
-                                    style: statsStyle,
-                                  ),
-                                ],
+                          ),
+                          Flexible(
+                            child: _Stat(
+                              icon: const Padding(
+                                padding: EdgeInsets.only(right: AppSpacing.xs),
+                                child: Icon(
+                                  Icons.mode_comment_outlined,
+                                  size: 16,
+                                ),
                               ),
+                              count: list.commentCount,
+                              style: statsStyle,
                             ),
                           ),
                         ],
@@ -246,6 +237,32 @@ class _ListCardState extends State<ListCard> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Icon (or icon button) followed by a count that scales down rather than
+/// overflow when the space is tight.
+class _Stat extends StatelessWidget {
+  const _Stat({required this.icon, required this.count, this.style});
+
+  final Widget icon;
+  final int count;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        icon,
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text('$count', style: style),
+          ),
+        ),
+      ],
     );
   }
 }

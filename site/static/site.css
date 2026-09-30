@@ -46,8 +46,10 @@
   --primary-text: #ba181b;
   --on-primary: #ffffff;
   --border: rgba(22, 26, 29, 0.14);
+  --border-strong: #7e8286;
   --soft: #f0ebd8;
   --focus: #1a5fd0;
+  --success: #2a8a4a;
   --radius: 14px;
   --maxw: 1080px;
   --prose: 70ch;
@@ -63,8 +65,10 @@
     --primary: #ba181b;
     --primary-text: #ff7a7d;
     --border: rgba(245, 243, 244, 0.16);
+    --border-strong: #787e83;
     --soft: #2a2e31;
     --focus: #7fb0ff;
+    --success: #5cc98a;
   }
 }
 
@@ -148,15 +152,15 @@ a:hover {
 .site-header .container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 0.85rem;
+  gap: 0.25rem 1rem;
+  padding-block: 0.75rem;
   flex-wrap: wrap;
 }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  margin-right: auto;
   color: var(--text);
   text-decoration: none;
 }
@@ -172,30 +176,49 @@ a:hover {
   line-height: 1;
 }
 .nav {
+  order: 3;
+  flex-basis: 100%;
   display: flex;
   align-items: center;
-  gap: 0.25rem 1.1rem;
+  gap: 0 1rem;
   flex-wrap: wrap;
 }
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   color: var(--text);
   text-decoration: none;
   font-weight: 500;
-  padding: 0.35rem 0.15rem;
   border-bottom: 2px solid transparent;
 }
 .nav a:hover {
   border-bottom-color: var(--border);
 }
+/* --primary-text: the brand red is below 3:1 on the dark background. */
 .nav a[aria-current="page"] {
-  border-bottom-color: var(--primary);
+  border-bottom-color: var(--primary-text);
 }
-.nav .lang-switch {
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 0.2rem 0.75rem;
+  color: var(--text);
+  text-decoration: none;
   font-size: 0.92rem;
   font-weight: 600;
+}
+.lang-switch:hover {
+  border-color: var(--text);
+}
+@media (min-width: 48rem) {
+  .nav {
+    order: 0;
+    flex-basis: auto;
+  }
 }
 
 /* ---- hero ---- */
@@ -213,7 +236,7 @@ a:hover {
   }
 }
 .eyebrow {
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.5rem;
   color: var(--primary-text);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -247,15 +270,20 @@ h3 {
   margin: 0 0 1.6rem;
 }
 .hero-art {
-  display: grid;
+  display: none;
   place-items: center;
   background: var(--soft);
   border-radius: 28px;
-  padding: clamp(1.5rem, 5vw, 3rem);
+  padding: 3rem;
 }
 .hero-art img {
   width: min(100%, 320px);
   border-radius: 20px;
+}
+@media (min-width: 900px) {
+  .hero-art {
+    display: grid;
+  }
 }
 
 .actions {
@@ -284,8 +312,11 @@ h3 {
 .btn.secondary:hover {
   border-color: var(--text);
 }
-.btn[aria-disabled="true"] {
-  opacity: 0.6;
+.btn[aria-disabled="true"],
+.btn:disabled {
+  background: var(--soft);
+  border-color: var(--border);
+  color: var(--muted);
   cursor: not-allowed;
   filter: none;
 }
@@ -298,17 +329,34 @@ h3 {
   background: var(--surface);
   border-block: 1px solid var(--border);
 }
+.section .container > h2:first-child {
+  margin-top: 0;
+}
 .cards {
   display: grid;
-  gap: 1.1rem;
+  gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  margin-top: 1.4rem;
+  margin: 1.5rem 0;
+}
+/* Fixed column counts for 3 and 4 cards so no card is left alone on a row. */
+.cards:has(> :nth-child(3):last-child) {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 40rem) {
+  .cards:has(> :nth-child(4):last-child) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 52rem) {
+  .cards:has(> :nth-child(3):last-child) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.3rem 1.3rem 1.1rem;
+  padding: 1.25rem;
 }
 .section.alt .card {
   background: var(--bg);
@@ -324,11 +372,14 @@ h3 {
 .note {
   background: var(--soft);
   border-radius: var(--radius);
-  padding: 1rem 1.2rem;
-  margin: 1.4rem 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
 }
-.note p {
-  margin: 0;
+.note > :last-child {
+  margin-bottom: 0;
+}
+.section .note p {
+  max-width: var(--prose);
 }
 
 /* ---- long-form pages ---- */
@@ -341,7 +392,14 @@ h3 {
 .prose p,
 .prose ul,
 .prose ol {
-  margin: 0 0 1.05em;
+  margin: 0 0 1em;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+.prose h3 {
+  margin-top: 1.5em;
 }
 .prose li {
   margin-bottom: 0.4em;
@@ -382,9 +440,12 @@ h3 {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.4rem;
+  padding: 1.5rem;
   max-width: var(--prose);
-  margin: 1.4rem 0;
+  margin: 1.5rem 0;
+}
+.contact-box dl {
+  margin: 0;
 }
 .contact-box dt {
   font-weight: 600;
@@ -414,12 +475,14 @@ h3 {
 }
 .tabs {
   display: flex;
-  gap: 0.4rem;
-  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
 }
 .tab {
   font: inherit;
   font-weight: 600;
+  min-height: 2.75rem;
   padding: 0.5rem 1rem;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -427,10 +490,12 @@ h3 {
   color: var(--text);
   cursor: pointer;
 }
+.tab:hover {
+  border-color: var(--text);
+}
 .tab[aria-pressed="true"] {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--on-primary);
+  background: var(--soft);
+  border-color: var(--text);
 }
 .field {
   margin-bottom: 1rem;
@@ -452,7 +517,7 @@ select {
   font: inherit;
   color: var(--text);
   background: var(--bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   padding: 0.65rem 0.8rem;
 }
@@ -463,7 +528,7 @@ textarea {
 input:disabled,
 textarea:disabled,
 select:disabled,
-button:disabled {
+button:not(.btn):disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -496,7 +561,8 @@ button.btn {
   font: inherit;
   background: none;
   border: 0;
-  padding: 0.4rem 0.2rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0;
   color: var(--primary-text);
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -514,10 +580,10 @@ button.btn {
   border-left: 4px solid var(--muted);
 }
 .status[data-kind="error"] {
-  border-left-color: var(--primary);
+  border-left-color: var(--primary-text);
 }
 .status[data-kind="ok"] {
-  border-left-color: #2a8a4a;
+  border-left-color: var(--success);
 }
 .account-bar {
   display: flex;
@@ -549,13 +615,23 @@ button.btn {
   padding: 1rem 0;
   border-top: 1px solid var(--border);
 }
-.book img {
+.book-cover {
   flex: none;
   width: 72px;
   height: 108px;
-  object-fit: cover;
   border-radius: 6px;
   background: var(--soft);
+  overflow: hidden;
+}
+.book-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.book > div:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .book h3 {
   margin: 0 0 0.15em;
@@ -568,32 +644,34 @@ button.btn {
   font-weight: 500;
 }
 .book-category {
-  font-size: 0.85rem;
-  color: var(--primary-text);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.92rem;
+  color: var(--muted);
 }
 
 /* ---- footer ---- */
 .site-footer {
   flex-shrink: 0;
   border-top: 1px solid var(--border);
-  padding-block: 1.6rem;
+  padding-block: 1rem;
   color: var(--muted);
   font-size: 0.95rem;
 }
 .site-footer .container {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem 1.6rem;
+  gap: 0 1.5rem;
+  align-items: center;
   justify-content: space-between;
 }
 .site-footer nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1.2rem;
+  gap: 0 1.25rem;
 }
 .site-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   color: var(--muted);
 }
 .site-footer a:hover {

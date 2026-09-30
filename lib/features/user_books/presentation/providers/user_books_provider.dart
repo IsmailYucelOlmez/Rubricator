@@ -35,11 +35,12 @@ final favoriteBookIdsProvider = FutureProvider<Set<String>>((ref) async {
 });
 
 class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
-  late final String _bookId;
+  // Not a `late final` field assigned in build: build re-runs whenever the
+  // auth state changes, and a second assignment would throw.
+  String get _bookId => arg;
 
   @override
   Future<UserBookEntity?> build(String arg) {
-    _bookId = arg;
     ref.watch(authStateProvider);
     return ref.read(userBooksRepositoryProvider).getUserBook(arg);
   }
@@ -52,7 +53,7 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
   }) async {
     final userId = ref.read(authStateProvider).valueOrNull?.id;
     if (userId == null || userId.isEmpty) {
-      throw UserBooksException('Sign in to manage your reading list.');
+      throw UserBooksException.signInRequired();
     }
 
     final previous = state.valueOrNull;
@@ -103,6 +104,29 @@ class UserBookNotifier extends FamilyAsyncNotifier<UserBookEntity?, String> {
       _invalidateForYouListsIfNeeded(previousStatus, status, isFavorite);
       return ref.read(userBooksRepositoryProvider).getUserBook(_bookId);
     });
+  }
+
+  Future<void> remove() async {
+    final previous = state.valueOrNull;
+    if (previous == null) return;
+    state = const AsyncData(null);
+    try {
+      await ref.read(userBooksRepositoryProvider).deleteUserBook(_bookId);
+    } catch (_) {
+      state = AsyncData(previous);
+      rethrow;
+    }
+    ref.invalidate(userBooksByStatusProvider(previous.status));
+    if (previous.isFavorite) {
+      ref.invalidate(favoriteUserBooksProvider);
+      ref.invalidate(favoriteBookIdsProvider);
+    }
+    _invalidateProfileStatsIfNeeded(previous.status, previous.status);
+    _invalidateForYouListsIfNeeded(
+      previous.status,
+      previous.status,
+      previous.isFavorite ? false : null,
+    );
   }
 
   void _invalidateProfileStatsIfNeeded(

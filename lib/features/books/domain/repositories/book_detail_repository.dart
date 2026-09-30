@@ -13,11 +13,13 @@ abstract class BookDetailRepository {
   Future<List<ExternalReviewEntity>> getExternalReviews(String bookId);
 
   Future<void> addQuote(QuoteEntity quote);
+  Future<void> updateQuote(QuoteEntity quote);
+  Future<void> deleteQuote(String quoteId);
   Future<LikeToggleResult> toggleQuoteLike(String quoteId);
   Future<LikeToggleResult> toggleReviewLike(String reviewId);
   Future<List<QuoteEntity>> getQuotes(String bookId);
 
   Future<void> rateBook(RatingEntity rating);
-  Future<double> getAverageRating(String bookId);
+  Future<RatingSummary> getRatingSummary(String bookId);
   Future<int?> getUserRating(String bookId);
 }

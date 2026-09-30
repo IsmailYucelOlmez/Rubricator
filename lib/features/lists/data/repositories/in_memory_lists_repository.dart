@@ -295,6 +295,46 @@ class InMemoryListsRepository implements ListsRepository {
     );
   }
 
+  Iterable<String> _listIdsContaining(String bookId) => _itemsByList.entries
+      .where((e) => e.value.any((item) => item.bookId == bookId))
+      .map((e) => e.key);
+
+  @override
+  Future<List<ListEntity>> getListsContainingBook(
+    String bookId, {
+    int limit = 100,
+  }) async {
+    final ids = _listIdsContaining(bookId).toSet();
+    final lists = _lists.where((l) => ids.contains(l.id)).toList()
+      ..sort((a, b) {
+        final likeCmp = b.likeCount.compareTo(a.likeCount);
+        if (likeCmp != 0) return likeCmp;
+        return b.createdAt.compareTo(a.createdAt);
+      });
+    return lists.take(limit).toList();
+  }
+
+  @override
+  Future<int> countListsContainingBook(String bookId) async =>
+      _listIdsContaining(bookId).length;
+
+  @override
+  Future<Map<String, String>> getListItemIdsForBook({
+    required String userId,
+    required String bookId,
+  }) async {
+    final ownIds = _lists
+        .where((l) => l.userId == userId)
+        .map((l) => l.id)
+        .toSet();
+    return {
+      for (final entry in _itemsByList.entries)
+        if (ownIds.contains(entry.key))
+          for (final item in entry.value)
+            if (item.bookId == bookId) entry.key: item.id,
+    };
+  }
+
   @override
   Future<ListItemEntity> addBookToList({
     required String listId,
@@ -304,6 +344,9 @@ class InMemoryListsRepository implements ListsRepository {
     String? coverImageUrl,
   }) async {
     final items = _itemsByList.putIfAbsent(listId, () => <ListItemEntity>[]);
+    for (final item in items) {
+      if (item.bookId == bookId) return item;
+    }
     final entity = ListItemEntity(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       listId: listId,

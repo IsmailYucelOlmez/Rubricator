@@ -172,6 +172,56 @@ class SupabaseListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> getListsContainingBook(
+    String bookId, {
+    int limit = 100,
+  }) async {
+    // RLS on list_items only returns rows of public lists and the viewer's
+    // own lists, so private lists of other users never show up here.
+    final rows = await _client
+        .from('list_items')
+        .select('list_id')
+        .eq('book_id', bookId)
+        .order('created_at', ascending: false)
+        .limit(limit);
+    final listIds = (rows as List<dynamic>)
+        .whereType<Map<String, dynamic>>()
+        .map((e) => e['list_id']?.toString())
+        .whereType<String>()
+        .toSet()
+        .toList();
+    final lists = await _fetchEnrichedByIds(listIds);
+    return lists..sort(_byLikesThenNewest);
+  }
+
+  @override
+  Future<int> countListsContainingBook(String bookId) async {
+    final response = await _client
+        .from('list_items')
+        .select('id')
+        .eq('book_id', bookId)
+        .limit(1)
+        .count(CountOption.exact);
+    return response.count;
+  }
+
+  @override
+  Future<Map<String, String>> getListItemIdsForBook({
+    required String userId,
+    required String bookId,
+  }) async {
+    final rows = await _client
+        .from('list_items')
+        .select('id, list_id, lists!inner(user_id)')
+        .eq('book_id', bookId)
+        .eq('lists.user_id', userId);
+    return {
+      for (final row in (rows as List<dynamic>).whereType<Map<String, dynamic>>())
+        row['list_id'].toString(): row['id'].toString(),
+    };
+  }
+
+  @override
   Future<ListItemEntity> addBookToList({
     required String listId,
     required String bookId,
@@ -188,20 +238,32 @@ class SupabaseListsRepository implements ListsRepository {
     final maxOrder = (rows as List<dynamic>).isEmpty
         ? -1
         : (((rows.first['order_index'] as num?)?.toInt()) ?? -1);
-    final inserted = await _client
-        .from('list_items')
-        .insert(<String, dynamic>{
-          'list_id': listId,
-          'book_id': bookId,
-          'book_title': title,
-          'book_author': author,
-          'cover_image_url': coverImageUrl,
-          'order_index': maxOrder + 1,
-          'note': null,
-        })
-        .select('*')
-        .single();
-    final row = inserted;
+    Map<String, dynamic> row;
+    try {
+      row = await _client
+          .from('list_items')
+          .insert(<String, dynamic>{
+            'list_id': listId,
+            'book_id': bookId,
+            'book_title': title,
+            'book_author': author,
+            'cover_image_url': coverImageUrl,
+            'order_index': maxOrder + 1,
+            'note': null,
+          })
+          .select('*')
+          .single();
+    } on PostgrestException catch (e) {
+      // unique (list_id, book_id): already in the list (e.g. a double tap or
+      // a second device) — treat as success and return the existing row.
+      if (e.code != '23505') rethrow;
+      row = await _client
+          .from('list_items')
+          .select('*')
+          .eq('list_id', listId)
+          .eq('book_id', bookId)
+          .single();
+    }
     return ListItemEntity(
       id: row['id'].toString(),
       listId: listId,
@@ -463,6 +525,12 @@ class SupabaseListsRepository implements ListsRepository {
       isLikedByMe: row['is_liked_by_me'] as bool? ?? false,
       isSavedByMe: row['is_saved_by_me'] as bool? ?? false,
     );
+  }
+
+  static int _byLikesThenNewest(ListEntity a, ListEntity b) {
+    final likeCmp = b.likeCount.compareTo(a.likeCount);
+    if (likeCmp != 0) return likeCmp;
+    return b.createdAt.compareTo(a.createdAt);
   }
 
   static String? _nonEmptyUrl(String? raw) {

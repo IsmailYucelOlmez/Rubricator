@@ -285,7 +285,7 @@ Deno.test("the confirmed page's own text is correct without JavaScript (no 'hidd
   const html = await read(dir, "auth/confirmed/index.html");
   assertMatch(
     html,
-    /id="status"[^>]*>Your email address is confirmed\. Sign in below to continue\.</,
+    /id="status"[^>]*>Your email address is confirmed\. Continue to Virgil to sign in\.</,
   );
   assert(
     !/id="status"[^>]*\shidden/.test(html),
@@ -310,6 +310,6 @@ Deno.test("without Supabase settings the confirmed page still renders (no script
   assertMatch(html, /connect-src 'none'/);
   assertMatch(
     html,
-    /Your email address is confirmed\. Sign in below to continue\./,
+    /Your email address is confirmed\. Continue to Virgil to sign in\./,
   );
 });

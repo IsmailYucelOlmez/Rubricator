@@ -15,7 +15,7 @@ export const CONFIRMED_SCRIPTS = ["assets/js/confirmed.js"];
 
 const en = {
   h1: "You're confirmed",
-  generic: "Your email address is confirmed. Sign in below to continue.",
+  generic: "Your email address is confirmed. Continue to Virgil to sign in.",
   signedIn: "You're confirmed and signed in as {email}. Taking you to Virgil…",
   error:
     "This confirmation link is invalid or has expired. Try signing up again, or request a new email from the sign-in page.",
@@ -24,7 +24,7 @@ const en = {
 
 const tr: typeof en = {
   h1: "Onaylandı",
-  generic: "E-posta adresin onaylandı. Devam etmek için aşağıdan giriş yap.",
+  generic: "E-posta adresin onaylandı. Giriş yapmak için Virgil'e geç.",
   signedIn:
     "Onaylandın ve {email} olarak giriş yaptın. Virgil'e yönlendiriliyorsun…",
   error:
@@ -55,7 +55,7 @@ export function confirmedBody(lang: Lang, ctx: BuildContext): string {
   return `    <div class="page container" id="confirmed"${config}>
       <article class="prose">
         <h1>${t.h1}</h1>
-        <p class="status" id="status" role="status" aria-live="polite">${t.generic}</p>
+        <p class="status" id="status" data-kind="ok" role="status" aria-live="polite">${t.generic}</p>
         <p><a class="btn" href="{{link:virgil}}">${t.continueLabel}</a></p>
       </article>
       <script type="application/json" id="i18n">${jsonIsland(t)}</script>

@@ -5,6 +5,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'app.dart';
 import 'core/env.dart';
+import 'core/i18n/locale_provider.dart';
+import 'core/i18n/localization_service.dart';
 import 'core/logging/app_logger.dart';
 import 'core/network/supabase_service.dart';
 import 'core/notification/notification_service.dart';
@@ -58,6 +60,9 @@ Future<void> main() async {
 
     AppLogger.info('startup', 'Bootstrap complete');
     final initialTheme = await ThemeModeNotifier.loadInitial();
+    final initialLocale = await LocaleNotifier.loadInitial(
+      LocalizationService(),
+    );
     runApp(
       AppRootRestarter(
         key: _rootRestarterKey,
@@ -65,6 +70,12 @@ Future<void> main() async {
           overrides: [
             themeModeProvider.overrideWith(
               (ref) => ThemeModeNotifier(initial: initialTheme),
+            ),
+            localeProvider.overrideWith(
+              (ref) => LocaleNotifier(
+                ref.read(localizationServiceProvider),
+                initial: initialLocale,
+              ),
             ),
           ],
           child: const BookApp(),

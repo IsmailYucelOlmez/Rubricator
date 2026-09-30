@@ -5,6 +5,10 @@ import 'package:bookapp/features/books/domain/entities/book_detail_entities.dart
 import 'package:bookapp/features/books/domain/repositories/book_detail_repository.dart';
 import 'package:bookapp/features/books/presentation/pages/book_detail_page.dart';
 import 'package:bookapp/features/books/presentation/providers/books_providers.dart';
+import 'package:bookapp/features/lists/data/repositories/in_memory_lists_repository.dart';
+import 'package:bookapp/features/lists/domain/repositories/lists_repository.dart';
+import 'package:bookapp/features/lists/presentation/providers/lists_providers.dart';
+import 'package:bookapp/features/lists/presentation/widgets/list_card.dart';
 import 'package:bookapp/features/user_books/data/user_books_repository.dart';
 import 'package:bookapp/features/user_books/domain/entities/user_book_entity.dart';
 import 'package:bookapp/features/user_books/domain/entities/user_book_snapshot.dart';
@@ -90,10 +94,19 @@ const _book = Book(
   description: 'A long description. ',
 );
 
+const _me = User(
+  id: 'me',
+  appMetadata: {},
+  userMetadata: {},
+  aud: 'authenticated',
+  createdAt: '2026-01-01T00:00:00Z',
+);
+
 Future<void> _pumpPage(
   WidgetTester tester, {
   User? user,
   UserBooksRepository? userBooks,
+  ListsRepository? lists,
 }) async {
   tester.view.physicalSize = const Size(800, 1400);
   tester.view.devicePixelRatio = 2;
@@ -107,6 +120,9 @@ Future<void> _pumpPage(
         if (userBooks != null)
           userBooksRepositoryProvider.overrideWithValue(userBooks),
         relatedBooksProvider.overrideWith((ref, key) async => const <Book>[]),
+        listsRepositoryProvider.overrideWithValue(
+          lists ?? InMemoryListsRepository(),
+        ),
       ],
       child: MaterialApp(
         locale: const Locale('tr'),
@@ -173,17 +189,7 @@ void main() {
         updatedAt: DateTime(2026),
       ),
     );
-    await _pumpPage(
-      tester,
-      user: const User(
-        id: 'me',
-        appMetadata: {},
-        userMetadata: {},
-        aud: 'authenticated',
-        createdAt: '2026-01-01T00:00:00Z',
-      ),
-      userBooks: userBooks,
-    );
+    await _pumpPage(tester, user: _me, userBooks: userBooks);
     await tester.pumpAndSettle();
 
     expect(find.text('İlerleme: %100'), findsOneWidget);
@@ -197,5 +203,70 @@ void main() {
     expect(userBooks.deletes, 1);
     expect(find.text('Listeye Ekle'), findsOneWidget);
     expect(find.text('Listenden çıkarıldı.'), findsOneWidget);
+  });
+
+  testWidgets('adds the book to an own list and lists the lists with it', (
+    tester,
+  ) async {
+    final lists = InMemoryListsRepository();
+    await lists.addBookToList(
+      listId: 'l1',
+      bookId: _book.id,
+      title: _book.title,
+      author: _book.author,
+    );
+    await lists.createList(
+      userId: 'me',
+      userName: 'Me',
+      title: 'Benim listem',
+      description: '',
+      isPublic: true,
+    );
+    await _pumpPage(
+      tester,
+      user: _me,
+      userBooks: _FakeUserBooksRepository(null),
+      lists: lists,
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('1 listede'),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(CustomScrollView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    expect(find.text('1 listede'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.playlist_add));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Benim listem'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<CheckboxListTile>(
+            find.widgetWithText(CheckboxListTile, 'Benim listem'),
+          )
+          .value,
+      isTrue,
+    );
+
+    // Close the sheet.
+    await tester.tapAt(const Offset(20, 20));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.playlist_add_check), findsOneWidget);
+    expect(find.text('2 listede'), findsOneWidget);
+
+    await tester.tap(find.text('2 listede'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widgetList<ListCard>(find.byType(ListCard))
+          .map((card) => card.list.title),
+      unorderedEquals(['Benim listem', 'Comfort Reads for Rainy Days']),
+    );
   });
 }

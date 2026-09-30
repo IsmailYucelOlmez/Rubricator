@@ -3331,6 +3331,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get remove;
+
+  /// No description provided for @addToMyLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to my lists'**
+  String get addToMyLists;
+
+  /// No description provided for @inMyLists.
+  ///
+  /// In en, this message translates to:
+  /// **'In your lists'**
+  String get inMyLists;
+
+  /// No description provided for @bookInListsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{In 1 list} other{In {count} lists}}'**
+  String bookInListsCount(int count);
+
+  /// No description provided for @listsContainingBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Lists with this book'**
+  String get listsContainingBook;
+
+  /// No description provided for @noListsContainBook.
+  ///
+  /// In en, this message translates to:
+  /// **'This book isn\'t in any list yet.'**
+  String get noListsContainBook;
+
+  /// No description provided for @createListWithBook.
+  ///
+  /// In en, this message translates to:
+  /// **'New list with this book'**
+  String get createListWithBook;
+
+  /// No description provided for @privateList.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateList;
 }
 
 class _AppLocalizationsDelegate

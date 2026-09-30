@@ -53,6 +53,22 @@ class _FakeListsRepository implements ListsRepository {
   }
 
   @override
+  Future<List<ListEntity>> getListsContainingBook(
+    String bookId, {
+    int limit = 100,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<int> countListsContainingBook(String bookId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Map<String, String>> getListItemIdsForBook({
+    required String userId,
+    required String bookId,
+  }) => throw UnimplementedError();
+
+  @override
   Future<void> addComment({
     required String userId,
     required String userName,

@@ -1919,4 +1919,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remove => 'Remove';
+
+  @override
+  String get addToMyLists => 'Add to my lists';
+
+  @override
+  String get inMyLists => 'In your lists';
+
+  @override
+  String bookInListsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'In $count lists',
+      one: 'In 1 list',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listsContainingBook => 'Lists with this book';
+
+  @override
+  String get noListsContainBook => 'This book isn\'t in any list yet.';
+
+  @override
+  String get createListWithBook => 'New list with this book';
+
+  @override
+  String get privateList => 'Private';
 }

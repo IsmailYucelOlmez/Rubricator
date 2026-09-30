@@ -18,6 +18,7 @@ import '../widgets/book_detail/book_content_tabs.dart';
 import '../widgets/book_detail/book_description.dart';
 import '../widgets/book_detail/book_detail_common.dart';
 import '../widgets/book_detail/book_detail_header.dart';
+import '../widgets/book_detail/book_lists_widgets.dart';
 import '../widgets/book_detail/reading_status_card.dart';
 import '../widgets/book_detail/related_books_section.dart';
 import '../widgets/book_detail/user_rating_card.dart';
@@ -134,8 +135,11 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                 ),
               ),
               actions: [
-                if (!isPending) _StoreAction(book: book),
-                if (!isPending) _FavoriteAction(book: book),
+                if (!isPending) ...[
+                  _StoreAction(book: book),
+                  AddToListsAction(book: book),
+                  _FavoriteAction(book: book),
+                ],
               ],
             ),
             SliverPadding(
@@ -154,6 +158,7 @@ class _BookDetailPageState extends ConsumerState<BookDetailPage>
                   BookDescription(description: book.description),
                   const SizedBox(height: AppSpacing.lg),
                   RelatedBooksSection(book: book, isPending: isPending),
+                  if (!isPending) BookListsEntry(book: book),
                 ],
               ),
             ),

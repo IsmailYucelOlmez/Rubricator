@@ -57,3 +57,12 @@ supabase/functions/*/index.single.ts
 
 # Static site build output
 site/dist/
+
+# Design agent screenshots
+.screenshots/
+
+.claude/
+Claude outputs
+
+**/.claude
+/Claude outputs

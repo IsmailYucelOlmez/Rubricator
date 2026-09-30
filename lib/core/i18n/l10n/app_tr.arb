@@ -685,4 +685,11 @@
   ,"anonymousReader":"Okur"
   ,"edit":"Düzenle"
   ,"remove":"Çıkar"
+  ,"addToMyLists":"Listelerime ekle"
+  ,"inMyLists":"Listelerinde"
+  ,"bookInListsCount":"{count, plural, =1{1 listede} other{{count} listede}}"
+  ,"listsContainingBook":"Bu kitabı içeren listeler"
+  ,"noListsContainBook":"Bu kitap henüz hiçbir listede yok."
+  ,"createListWithBook":"Bu kitapla yeni liste oluştur"
+  ,"privateList":"Gizli"
 }

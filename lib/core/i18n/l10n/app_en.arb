@@ -720,4 +720,12 @@
   ,"anonymousReader":"Reader"
   ,"edit":"Edit"
   ,"remove":"Remove"
+  ,"addToMyLists":"Add to my lists"
+  ,"inMyLists":"In your lists"
+  ,"bookInListsCount":"{count, plural, =1{In 1 list} other{In {count} lists}}"
+  ,"@bookInListsCount":{"placeholders":{"count":{"type":"int"}}}
+  ,"listsContainingBook":"Lists with this book"
+  ,"noListsContainBook":"This book isn't in any list yet."
+  ,"createListWithBook":"New list with this book"
+  ,"privateList":"Private"
 }

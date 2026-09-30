@@ -1910,4 +1910,33 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get remove => 'Çıkar';
+
+  @override
+  String get addToMyLists => 'Listelerime ekle';
+
+  @override
+  String get inMyLists => 'Listelerinde';
+
+  @override
+  String bookInListsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count listede',
+      one: '1 listede',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listsContainingBook => 'Bu kitabı içeren listeler';
+
+  @override
+  String get noListsContainBook => 'Bu kitap henüz hiçbir listede yok.';
+
+  @override
+  String get createListWithBook => 'Bu kitapla yeni liste oluştur';
+
+  @override
+  String get privateList => 'Gizli';
 }

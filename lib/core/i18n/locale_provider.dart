@@ -16,15 +16,24 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>(
 );
 
 class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier(this._service) : super(const Locale('en')) {
+  /// [initial] should come from [loadInitial] before `runApp`: starting from a
+  /// placeholder and flipping once prefs load rebuilds every locale-dependent
+  /// provider, which fired the whole home page load twice (en, then tr).
+  LocaleNotifier(this._service, {Locale? initial})
+    : super(initial ?? const Locale('en')) {
     Intl.defaultLocale = state.languageCode;
     loadLocale();
   }
 
   final LocalizationService _service;
 
+  static Future<Locale> loadInitial(LocalizationService service) async {
+    final saved = await service.getSavedLocale();
+    return Locale(saved ?? _deviceLanguageCode);
+  }
+
   /// Device language when supported, else the app fallback.
-  String get _deviceLanguageCode {
+  static String get _deviceLanguageCode {
     final deviceCode = PlatformDispatcher.instance.locale.languageCode;
     return LocalizationService.supportedLanguageCodes.contains(deviceCode)
         ? deviceCode
@@ -34,6 +43,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
   Future<void> loadLocale() async {
     final saved = await _service.getSavedLocale();
     final code = saved ?? _deviceLanguageCode;
+    // Same language: keep the existing instance so dependents don't rebuild.
+    if (code == state.languageCode) return;
     state = Locale(code);
     Intl.defaultLocale = code;
   }

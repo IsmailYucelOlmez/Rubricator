@@ -91,3 +91,102 @@ final listSearchResultsProvider = FutureProvider.autoDispose<List<ListEntity>>((
   if (query.isEmpty) return const <ListEntity>[];
   return ref.read(searchListsUseCaseProvider).call(query);
 });
+
+/// Lists (public + the viewer's own) containing a book, for the book's
+/// "lists with this book" page.
+final listsContainingBookProvider = FutureProvider.autoDispose
+    .family<List<ListEntity>, String>((ref, bookId) {
+      ref.watch(authStateProvider);
+      return ref.watch(listsRepositoryProvider).getListsContainingBook(bookId);
+    });
+
+/// Number of lists behind [listsContainingBookProvider], for the book page.
+final listsContainingBookCountProvider = FutureProvider.autoDispose
+    .family<int, String>((ref, bookId) {
+      ref.watch(authStateProvider);
+      return ref.watch(listsRepositoryProvider).countListsContainingBook(bookId);
+    });
+
+/// Book fields copied onto a list item.
+typedef ListBookSnapshot = ({
+  String bookId,
+  String title,
+  String author,
+  String? coverImageUrl,
+});
+
+/// Which of the signed-in user's lists contain a book: `listId -> listItemId`.
+/// A `null` item id marks an add that hasn't been confirmed by the server yet.
+class BookListMembershipNotifier
+    extends AutoDisposeFamilyAsyncNotifier<Map<String, String?>, String> {
+  final _pending = <String>{};
+
+  @override
+  Future<Map<String, String?>> build(String bookId) async {
+    final userId = ref.watch(authStateProvider).valueOrNull?.id;
+    if (userId == null) return const {};
+    return ref
+        .watch(listsRepositoryProvider)
+        .getListItemIdsForBook(userId: userId, bookId: bookId);
+  }
+
+  bool isPending(String listId) => _pending.contains(listId);
+
+  /// Adds the book to [listId] or removes it, showing the change right away
+  /// and rolling back just that list if the request fails. Taps on a list
+  /// whose previous toggle is still running are ignored.
+  Future<void> toggle(String listId, ListBookSnapshot book) async {
+    final current = state.valueOrNull;
+    if (current == null || !_pending.add(listId)) return;
+    final repo = ref.read(listsRepositoryProvider);
+    final wasMember = current.containsKey(listId);
+    final itemId = current[listId];
+
+    void set(String? Function(Map<String, String?> map) update) {
+      final next = Map<String, String?>.of(state.valueOrNull ?? const {});
+      update(next);
+      state = AsyncData(next);
+    }
+
+    try {
+      if (wasMember) {
+        if (itemId == null) return;
+        set((m) => m.remove(listId));
+        await repo.removeBookFromList(itemId);
+      } else {
+        set((m) => m[listId] = null);
+        final item = await repo.addBookToList(
+          listId: listId,
+          bookId: book.bookId,
+          title: book.title,
+          author: book.author,
+          coverImageUrl: book.coverImageUrl,
+        );
+        set((m) => m[listId] = item.id);
+      }
+      _invalidateListViews(listId);
+    } catch (_) {
+      set((m) => wasMember ? m[listId] = itemId : m.remove(listId));
+      rethrow;
+    } finally {
+      _pending.remove(listId);
+    }
+  }
+
+  /// Covers, counts and list contents shown elsewhere changed.
+  void _invalidateListViews(String listId) {
+    ref.invalidate(listItemsProvider(listId));
+    ref.invalidate(userListsProvider);
+    ref.invalidate(listsFeedProvider);
+    ref.invalidate(popularListsProvider);
+    ref.invalidate(topListsProvider);
+    ref.invalidate(savedListsProvider);
+    ref.invalidate(listsContainingBookProvider(arg));
+    ref.invalidate(listsContainingBookCountProvider(arg));
+  }
+}
+
+final bookListMembershipProvider = AsyncNotifierProvider.autoDispose
+    .family<BookListMembershipNotifier, Map<String, String?>, String>(
+      BookListMembershipNotifier.new,
+    );

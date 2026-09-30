@@ -152,13 +152,7 @@ ${
     ).join("\n")
   }
         </div>
-      </div>
-    </section>
-    <section class="section">
-      <div class="container">
-        <div class="prose">
-          <div class="note"><p><strong>${t.appTitle}.</strong> ${t.appBody}</p></div>
-        </div>
+        <div class="note"><p><strong>${t.appTitle}.</strong> ${t.appBody}</p></div>
       </div>
     </section>`;
 };

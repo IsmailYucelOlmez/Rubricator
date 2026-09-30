@@ -48,6 +48,46 @@ class HomeCacheDataSource {
     return map;
   }
 
+  /// Whole home page in one round trip (see `get_home_page` migration):
+  /// per genre key, the top trbooks rows (Turkish only) and the cache row
+  /// after the `en` fallback. Throws [PostgrestException] with code
+  /// `PGRST202` when the function isn't deployed yet.
+  Future<Map<String, HomePageBundleEntry>> getHomePageBundle(
+    List<String> genreKeys, {
+    required String lang,
+    required int limit,
+  }) async {
+    final result = await _client.rpc(
+      'get_home_page',
+      params: <String, dynamic>{
+        'p_lang': lang,
+        'p_genre_keys': genreKeys,
+        'p_limit': limit,
+      },
+    );
+    final map = <String, HomePageBundleEntry>{};
+    if (result is! Map) return map;
+    for (final entry in result.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (key is! String || value is! Map) continue;
+      final trbooks = value['trbooks'];
+      final cache = value['cache'];
+      map[key] = HomePageBundleEntry(
+        trbooksRows: trbooks is List
+            ? trbooks
+                  .whereType<Map>()
+                  .map((row) => Map<String, dynamic>.from(row))
+                  .toList()
+            : const <Map<String, dynamic>>[],
+        cacheRow: cache is Map
+            ? GenreCacheSnapshot.fromJson(Map<String, dynamic>.from(cache))
+            : null,
+      );
+    }
+    return map;
+  }
+
   bool canAttemptFetchToday(GenreCacheSnapshot? row, {DateTime? now}) {
     if (row == null) return true;
     if (row.fetchCompleted) return false;
@@ -137,6 +177,16 @@ class HomeCacheDataSource {
           : null,
     );
   }
+}
+
+class HomePageBundleEntry {
+  const HomePageBundleEntry({
+    required this.trbooksRows,
+    required this.cacheRow,
+  });
+
+  final List<Map<String, dynamic>> trbooksRows;
+  final GenreCacheSnapshot? cacheRow;
 }
 
 class GenreCacheSnapshot {

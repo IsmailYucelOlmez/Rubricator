@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bileşen mockup'ı — 1–4</title>
+<!-- Gerçek token ve bileşenler: font/renk birebir sitedekiyle aynı. -->
+<link rel="stylesheet" href="../../site/static/site.css">
+<style>
+/* ---------- mockup düzeni (siteye taşınmaz) ---------- */
+.mock { padding-block: 2.5rem 4rem; }
+.mock > .container > header { max-width: 46rem; margin-bottom: 2rem; }
+.mock-item { border-top: 1px solid var(--border); padding-block: 2.5rem; }
+.mock-item > h2 { margin-top: 0; }
+.mock-why { color: var(--muted); max-width: 46rem; margin: 0 0 1.5rem; padding-left: 1.25rem; }
+.mock-why li { margin-bottom: 0.25rem; }
+.compare { display: grid; gap: 1.5rem; }
+@media (min-width: 64rem) { .compare { grid-template-columns: 1fr 1fr; align-items: start; } }
+.compare > div > .label {
+  display: inline-block; margin: 0 0 0.75rem; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.compare > div.after > .label { color: var(--primary-text); }
+.compare .panel { max-width: none; }
+.state-label { font-size: 0.85rem; color: var(--muted); margin: 1.25rem 0 0.5rem; font-weight: 500; }
+.state-label:first-of-type { margin-top: 0; }
+/* Örnek kapak (gerçek kapak görseli yerine) */
+.fake-cover {
+  width: 100%; height: 100%; display: grid; place-items: end start; padding: 0.5rem;
+  background: var(--text); color: var(--bg); font-size: 0.7rem; font-weight: 600; line-height: 1.2;
+}
+
+/* =========================================================
+   ÖNERİ — bunlar onaydan sonra site.css'e taşınacak kurallar
+   ========================================================= */
+
+/* 1. Kitap sonucu: kapak öne çıkan kart, kategori çipi, 3 satır açıklama */
+.after .results { gap: 0.75rem; }
+.after .book {
+  display: grid; grid-template-columns: 88px 1fr; gap: 1rem;
+  padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg);
+}
+.after .book-cover {
+  width: 88px; height: 132px; border-radius: 6px; background: var(--soft); overflow: hidden;
+  display: grid; place-items: center; color: var(--muted);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.after .book-cover svg { width: 28px; height: 28px; }
+.after .book h3 { margin: 0 0 0.25rem; font-size: 1.15rem; }
+.after .book-author { margin: 0; color: var(--muted); font-weight: 500; }
+.after .book-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0; }
+.after .chip {
+  display: inline-flex; align-items: center; min-height: 1.75rem; padding: 0 0.75rem;
+  border-radius: 999px; background: var(--soft); color: var(--text);
+  font-size: 0.85rem; font-weight: 500;
+}
+.after .book-desc {
+  margin: 0.75rem 0 0;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+.after .book-desc.open { display: block; }
+.after .book .link-button { min-height: 2.75rem; padding-block: 0; }
+/* Dar ekranda açıklama kapağın altına, tam genişliğe iner */
+@media (max-width: 30rem) {
+  .after .book { grid-template-columns: 72px 1fr; grid-template-rows: auto auto 1fr; column-gap: 0.75rem; row-gap: 0; align-items: start; }
+  .after .book > div:last-child { display: contents; }
+  .after .book-cover { width: 72px; height: 108px; grid-row: 1 / span 3; }
+  .after .book-desc, .after .book .link-button { grid-column: 1 / -1; justify-self: start; }
+}
+/* Yükleniyor: statik iskelet (dekoratif animasyon yok) */
+.after .book.skeleton .line { height: 0.9rem; border-radius: 999px; background: var(--soft); margin-bottom: 0.6rem; }
+.after .book.skeleton .line.w70 { width: 70%; height: 1.15rem; }
+.after .book.skeleton .line.w40 { width: 40%; }
+.after .book.skeleton .line.w90 { width: 90%; margin-top: 1rem; }
+/* Sonuç yok */
+.after .empty {
+  display: grid; justify-items: start; gap: 0.5rem;
+  padding: 1.5rem; border: 1px dashed var(--border-strong); border-radius: var(--radius);
+}
+.after .empty p { margin: 0; }
+.after .empty .hint { margin: 0; }
+
+/* 2. Durum mesajı: ikon + metin; renk tek başına anlam taşımaz */
+.after .status {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  border-left: 0; padding: 0.75rem 1rem;
+}
+.after .status svg { flex: none; width: 1.25rem; height: 1.25rem; margin-top: 0.2rem; color: var(--muted); }
+.after .status[data-kind="ok"] svg { color: var(--success); }
+.after .status[data-kind="error"] svg { color: var(--primary-text); }
+.after .status p { margin: 0; }
+.after .status strong { display: block; }
+
+/* 3. Form alanı: hover/focus/hata durumu, alan altında hata metni */
+.after input[type="email"], .after input[type="password"], .after input[type="text"] {
+  min-height: 2.75rem;
+}
+.after input:hover:not(:disabled) { border-color: var(--text); }
+.after input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--text); }
+.after input[aria-invalid="true"] { border-color: var(--primary-text); border-width: 2px; padding: calc(0.65rem - 1px) calc(0.8rem - 1px); }
+.after .field-error {
+  display: flex; gap: 0.5rem; align-items: center;
+  margin: 0.5rem 0 0; color: var(--primary-text); font-size: 0.92rem; font-weight: 500;
+}
+.after .field-error svg { flex: none; width: 1rem; height: 1rem; }
+
+/* 4. Sekmeler: tek kaplı segmented control */
+.after .tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem;
+  padding: 0.25rem; margin-bottom: 1.5rem;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+}
+.after .tab {
+  min-height: 2.75rem; border: 1px solid transparent; border-radius: 999px;
+  background: transparent; color: var(--muted); font-weight: 600;
+}
+.after .tab:hover { color: var(--text); border-color: transparent; }
+.after .tab[aria-pressed="true"] {
+  background: var(--surface); color: var(--text); border-color: var(--border-strong);
+}
+</style>
+</head>
+<body>
+<main class="mock">
+  <div class="container">
+    <header>
+      <p class="eyebrow">Mockup · 1–4</p>
+      <h1>Bileşen iyileştirmeleri</h1>
+      <p class="lead">Solda sitedeki mevcut hali, sağda öneri. Font ve renkler değişmedi; yalnızca sitedeki token'lar kullanıldı. Tema sistem ayarını izler.</p>
+    </header>
+
+    <!-- 1 -->
+    <section class="mock-item">
+      <h2>1. Kitap sonucu</h2>
+      <ul class="mock-why">
+        <li>Her sonuç kendi kartında; kapak 72→88 px, kapak yoksa kitap ikonlu yer tutucu.</li>
+        <li>Kategori metin yerine çip (kırmızı değil, nötr).</li>
+        <li>Açıklama 3 satırda kesilir, "Devamını göster" ile açılır. Uzun sonuç listeyi uzatmaz.</li>
+        <li>Aranırken iskelet kartlar; sonuç yoksa yönlendiren boş durum.</li>
+      </ul>
+      <div class="compare">
+        <div class="before">
+          <span class="label">Şimdi</span>
+          <div class="panel">
+            <h2>Öneriler</h2>
+            <ul class="results">
+              <li class="book"><div class="book-cover"><div class="fake-cover">Küçük Prens</div></div><div>
+                <h3>Küçük Prens</h3><p class="book-author">Antoine de Saint-Exupéry</p><p class="book-category">Roman</p>
+                <p>Çölde mahsur kalan bir pilot, gezegenden gezegene yolculuk etmiş küçük bir prensle tanışır. Büyüklerin unuttuklarını anlatan yumuşak, komik ve hüzünlü bir hikâye.</p></div></li>
+              <li class="book"><div class="book-cover"></div><div>
+                <h3>Odysseia</h3><p class="book-author">Homeros</p><p class="book-category">Klasik</p>
+                <p>Troya'dan on yıl sonra Odysseus eve dönmeye çalışır. Tanrıların öfkesi, devler, büyücüler ve fırtınalarla dolu bu yolculuk, sadakat ve sabır üzerine yazılmış en eski hikâyelerden biridir. Evde ise Penelope talipleri oyalamaya devam eder ve Telemakhos babasını aramaya çıkar.</p></div></li>
+            </ul>
+            <p class="state-label">Yükleniyor</p>
+            <p class="status" data-kind="info">Virgil düşünüyor…</p>
+            <p class="state-label">Sonuç yok</p>
+            <p>Virgil bir eşleşme bulamadı. Farklı anlatmayı dene.</p>
+          </div>
+        </div>
+        <div class="after">
+          <span class="label">Öneri</span>
+          <div class="panel">
+            <h2>Öneriler</h2>
+            <ul class="results">
+              <li class="book">
+                <div class="book-cover"><div class="fake-cover">Küçük Prens</div></div>
+                <div>
+                  <h3>Küçük Prens</h3>
+                  <p class="book-author">Antoine de Saint-Exupéry</p>
+                  <p class="book-meta"><span class="chip">Roman</span></p>
+                  <p class="book-desc" id="d1">Çölde mahsur kalan bir pilot, gezegenden gezegene yolculuk etmiş küçük bir prensle tanışır. Büyüklerin unuttuklarını anlatan yumuşak, komik ve hüzünlü bir hikâye.</p>
+                  <button class="link-button" type="button" aria-expanded="false" aria-controls="d1" data-more>Devamını göster</button>
+                </div>
+              </li>
+              <li class="book">
+                <div class="book-cover" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>
+                </div>
+                <div>
+                  <h3>Odysseia</h3>
+                  <p class="book-author">Homeros</p>
+                  <p class="book-meta"><span class="chip">Klasik</span></p>
+                  <p class="book-desc" id="d2">Troya'dan on yıl sonra Odysseus eve dönmeye çalışır. Tanrıların öfkesi, devler, büyücüler ve fırtınalarla dolu bu yolculuk, sadakat ve sabır üzerine yazılmış en eski hikâyelerden biridir. Evde ise Penelope talipleri oyalamaya devam eder ve Telemakhos babasını aramaya çıkar.</p>
+                  <button class="link-button" type="button" aria-expanded="false" aria-controls="d2" data-more>Devamını göster</button>
+                </div>
+              </li>
+            </ul>
+            <p class="state-label">Yükleniyor (iskelet, ekran okuyucuya "Virgil düşünüyor…" duyurulur)</p>
+            <ul class="results" aria-hidden="true">
+              <li class="book skeleton"><div class="book-cover"></div><div><div class="line w70"></div><div class="line w40"></div><div class="line w90"></div><div class="line"></div></div></li>
+            </ul>
+            <p class="state-label">Sonuç yok</p>
+            <div class="empty">
+              <p><strong>Virgil bir eşleşme bulamadı.</strong></p>
+              <p class="hint">Bir ruh hali, bir konu ya da sevdiğin bir kitapla anlatmayı dene. Tür seçimini "Tümü" yapmak da işe yarayabilir.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="mock-item">
+      <h2>2. Durum mesajı</h2>
+      <ul class="mock-why">
+        <li>Tür artık yalnızca kenar rengiyle değil, ikonla da ayırt ediliyor (bilgi, başarı, hata).</li>
+        <li>Sol çubuk kalkıyor; ikon rengi aynı token'lar: <code>--muted</code>, <code>--success</code>, <code>--primary-text</code>.</li>
+        <li>Gerekirse kalın bir başlık satırı alabiliyor (örn. limit).</li>
+      </ul>
+      <div class="compare">
+        <div class="before">
+          <span class="label">Şimdi</span>
+          <p class="status" data-kind="info">Virgil düşünüyor…</p>
+          <p class="status" data-kind="ok">Şifre sıfırlama bağlantısı e-posta adresine gönderildi.</p>
+          <p class="status" data-kind="error">E-posta veya şifre hatalı.</p>
+          <p class="status" data-kind="error">Günde en fazla 5 kez öneri isteyebilirsin. Yarın tekrar dene.</p>
+        </div>
+        <div class="after">
+          <span class="label">Öneri</span>
+          <div class="status" data-kind="info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+            <p>Virgil düşünüyor…</p>
+          </div>
+          <div class="status" data-kind="ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
+            <p>Şifre sıfırlama bağlantısı e-posta adresine gönderildi.</p>
+          </div>
+          <div class="status" data-kind="error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+            <p>E-posta veya şifre hatalı.</p>
+          </div>
+          <div class="status" data-kind="info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <p><strong>Bugünkü öneri hakkın doldu.</strong>Günde en fazla 5 kez öneri isteyebilirsin. Hakkın yarın yenilenir.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="mock-item">
+      <h2>3. Form alanları</h2>
+      <ul class="mock-why">
+        <li>Hatalı alan kırmızı kenarla işaretlenir (<code>aria-invalid</code>), hata metni alanın hemen altında ve ikonlu (<code>aria-describedby</code> ile bağlı).</li>
+        <li>Üstteki durum kutusu yalnızca genel hatalar için kalır (örn. "E-posta veya şifre hatalı").</li>
+        <li>Hover'da kenar koyulaşır; odakta halka + koyu kenar. Alan yüksekliği 44 px.</li>
+      </ul>
+      <div class="compare">
+        <div class="before">
+          <span class="label">Şimdi</span>
+          <div class="panel">
+            <p class="status" data-kind="error">Geçerli bir e-posta gir.</p>
+            <div class="field"><label for="b-email">E-posta</label><input id="b-email" type="email" value="okur@ornek"></div>
+            <div class="field"><label for="b-pass">Şifre</label><input id="b-pass" type="password" value=""></div>
+            <div class="actions"><button class="btn" type="button">Giriş yap</button><button class="link-button" type="button">Şifreni mi unuttun?</button></div>
+          </div>
+        </div>
+        <div class="after">
+          <span class="label">Öneri</span>
+          <div class="panel">
+            <div class="field"><label for="a-email">E-posta</label>
+              <input id="a-email" type="email" value="okur@ornek" aria-invalid="true" aria-describedby="a-email-err">
+              <p class="field-error" id="a-email-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Geçerli bir e-posta gir.</p>
+            </div>
+            <div class="field"><label for="a-pass">Şifre</label>
+              <input id="a-pass" type="password" aria-invalid="true" aria-describedby="a-pass-err">
+              <p class="field-error" id="a-pass-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>Şifre gerekli.</p>
+            </div>
+            <div class="actions"><button class="btn" type="button">Giriş yap</button><button class="link-button" type="button">Şifreni mi unuttun?</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="mock-item">
+      <h2>4. Giriş / Kayıt sekmeleri</h2>
+      <ul class="mock-why">
+        <li>İki ayrı pill yerine tek kaplı segmented control: seçim yapılan bir anahtar olduğu buton olmadığı belli.</li>
+        <li>Seçili parça yüzey rengi + güçlü kenar; seçili olmayan <code>--muted</code>. Kırmızı sadece gönder butonunda.</li>
+        <li>İki parça eşit genişlikte; TR'nin uzun etiketlerinde de hizalı. Tıklayarak deneyebilirsin.</li>
+      </ul>
+      <div class="compare">
+        <div class="before">
+          <span class="label">Şimdi</span>
+          <div class="panel">
+            <div class="tabs" role="group" aria-label="Giriş / Hesap oluştur">
+              <button type="button" class="tab" aria-pressed="true">Giriş yap</button>
+              <button type="button" class="tab" aria-pressed="false">Hesap oluştur</button>
+            </div>
+            <div class="field"><label for="b2-email">E-posta</label><input id="b2-email" type="email"></div>
+            <div class="actions"><button class="btn" type="button">Giriş yap</button></div>
+          </div>
+        </div>
+        <div class="after">
+          <span class="label">Öneri</span>
+          <div class="panel">
+            <div class="tabs" role="group" aria-label="Giriş / Hesap oluştur" data-seg>
+              <button type="button" class="tab" aria-pressed="true">Giriş yap</button>
+              <button type="button" class="tab" aria-pressed="false">Hesap oluştur</button>
+            </div>
+            <div class="field"><label for="a2-email">E-posta</label><input id="a2-email" type="email"></div>
+            <div class="actions"><button class="btn" type="button">Giriş yap</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+  for (const b of document.querySelectorAll("[data-more]")) {
+    b.addEventListener("click", () => {
+      const d = document.getElementById(b.getAttribute("aria-controls"));
+      const open = d.classList.toggle("open");
+      b.setAttribute("aria-expanded", String(open));
+      b.textContent = open ? "Daha az göster" : "Devamını göster";
+    });
+  }
+  for (const g of document.querySelectorAll(".tabs")) {
+    g.addEventListener("click", (e) => {
+      const t = e.target.closest(".tab");
+      if (!t) return;
+      for (const b of g.querySelectorAll(".tab")) b.setAttribute("aria-pressed", String(b === t));
+    });
+  }
+</script>
+</body>
+</html>

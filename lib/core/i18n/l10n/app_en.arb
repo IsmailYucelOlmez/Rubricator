@@ -728,4 +728,12 @@
   ,"noListsContainBook":"This book isn't in any list yet."
   ,"createListWithBook":"New list with this book"
   ,"privateList":"Private"
+  ,"virgilFeedbackRelevant":"Relevant"
+  ,"virgilFeedbackIrrelevant":"Not relevant"
+  ,"virgilFeedbackHint":"Mark results as relevant or not, then refine."
+  ,"virgilFeedbackRefine":"Refine"
+  ,"virgilFeedbackRefined":"Refined with your marks."
+  ,"virgilFeedbackReset":"Original"
+  ,"virgilFeedbackFailed":"Couldn't save your mark. Try again."
+  ,"virgilFeedbackRateLimited":"You've marked a lot of results. Try again in a while."
 }

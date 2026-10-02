@@ -148,6 +148,7 @@ Deno.test("only the privacy policy's own third-party links point off-site", asyn
     }
   }
   assertEquals([...hosts].sort(), [
+    "play.google.com", // the landing page's "Get the Android app" button
     "policies.google.com",
     "sentry.io",
     "supabase.com",

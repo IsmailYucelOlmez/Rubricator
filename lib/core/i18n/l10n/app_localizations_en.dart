@@ -1948,4 +1948,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privateList => 'Private';
+
+  @override
+  String get virgilFeedbackRelevant => 'Relevant';
+
+  @override
+  String get virgilFeedbackIrrelevant => 'Not relevant';
+
+  @override
+  String get virgilFeedbackHint =>
+      'Mark results as relevant or not, then refine.';
+
+  @override
+  String get virgilFeedbackRefine => 'Refine';
+
+  @override
+  String get virgilFeedbackRefined => 'Refined with your marks.';
+
+  @override
+  String get virgilFeedbackReset => 'Original';
+
+  @override
+  String get virgilFeedbackFailed => 'Couldn\'t save your mark. Try again.';
+
+  @override
+  String get virgilFeedbackRateLimited =>
+      'You\'ve marked a lot of results. Try again in a while.';
 }

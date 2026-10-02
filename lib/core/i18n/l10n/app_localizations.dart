@@ -3373,6 +3373,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Private'**
   String get privateList;
+
+  /// No description provided for @virgilFeedbackRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Relevant'**
+  String get virgilFeedbackRelevant;
+
+  /// No description provided for @virgilFeedbackIrrelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Not relevant'**
+  String get virgilFeedbackIrrelevant;
+
+  /// No description provided for @virgilFeedbackHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark results as relevant or not, then refine.'**
+  String get virgilFeedbackHint;
+
+  /// No description provided for @virgilFeedbackRefine.
+  ///
+  /// In en, this message translates to:
+  /// **'Refine'**
+  String get virgilFeedbackRefine;
+
+  /// No description provided for @virgilFeedbackRefined.
+  ///
+  /// In en, this message translates to:
+  /// **'Refined with your marks.'**
+  String get virgilFeedbackRefined;
+
+  /// No description provided for @virgilFeedbackReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get virgilFeedbackReset;
+
+  /// No description provided for @virgilFeedbackFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your mark. Try again.'**
+  String get virgilFeedbackFailed;
+
+  /// No description provided for @virgilFeedbackRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve marked a lot of results. Try again in a while.'**
+  String get virgilFeedbackRateLimited;
 }
 
 class _AppLocalizationsDelegate

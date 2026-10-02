@@ -2,7 +2,7 @@
  * Page definitions and copy for the static site (English + Turkish).
  *
  * Only claims the app really supports are made here (see lib/features and the
- * privacy policy). Store links are intentionally absent until they exist.
+ * privacy policy). The app is only on Google Play so far.
  */
 import { CONTACT_EMAIL, type Lang, type PageRef } from "./layout.ts";
 import { VIRGIL_SCRIPTS, virgilBody } from "./virgil.ts";
@@ -12,6 +12,9 @@ import { CONFIRMED_SCRIPTS, confirmedBody } from "./confirmed.ts";
 export const privacyFragment: Record<Lang, string> = { en: "", tr: "" };
 
 const mail = `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`;
+
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.rubricator";
 
 // ---------------------------------------------------------------------------
 // Home (landing)
@@ -23,8 +26,23 @@ const home = (lang: Lang): string => {
       h1: "Find your next book. Remember every one you read.",
       lead:
         "Rubricator helps you discover books, keep track of your reading and get recommendations from Virgil, an AI reading guide.",
+      getApp: "Get the Android app",
       tryVirgil: "Try Virgil",
       about: "About Rubricator",
+      // Hero illustration: a glimpse of the app (sample data, aria-hidden).
+      art: {
+        reading: "Reading",
+        bookTitle: "Foggy Harbour",
+        bookAuthor: "E. Kaya",
+        pages: "Page 142 of 220 · 35 min today",
+        streak: "Reading streak",
+        streakDays: "days",
+        streakWeek: "5 of 7 days this week",
+        list: "List",
+        listName: "Summer reads",
+        listMeta: "8 books · 3 followers",
+        listCover: "Shore",
+      },
       virgilTitle: "Meet Virgil, your reading guide",
       virgilBody:
         "Describe the book you're in the mood for, in your own words, and Virgil suggests what to read next. Try it right here in your browser with your Rubricator account.",
@@ -70,8 +88,22 @@ const home = (lang: Lang): string => {
       h1: "Bir sonraki kitabını bul. Okuduğun her kitabı hatırla.",
       lead:
         "Rubricator; kitap keşfetmene, okumanı takip etmene ve yapay zekâ destekli okuma rehberi Virgil'den öneri almana yardımcı olur.",
+      getApp: "Android uygulamasını indir",
       tryVirgil: "Virgil'i dene",
       about: "Rubricator hakkında",
+      art: {
+        reading: "Okuyorum",
+        bookTitle: "Sisli Liman",
+        bookAuthor: "E. Kaya",
+        pages: "Sayfa 142 / 220 · bugün 35 dk",
+        streak: "Okuma serisi",
+        streakDays: "gün",
+        streakWeek: "Bu hafta 5 / 7 gün",
+        list: "Liste",
+        listName: "Yaz listesi",
+        listMeta: "8 kitap · 3 takipçi",
+        listCover: "Kıyı",
+      },
       virgilTitle: "Okuma rehberin Virgil ile tanış",
       virgilBody:
         "Canın hangi kitabı istiyorsa kendi cümlelerinle anlat, Virgil sıradaki okumanı önersin. Rubricator hesabınla doğrudan tarayıcında dene.",
@@ -119,12 +151,35 @@ const home = (lang: Lang): string => {
           <h1>${t.h1}</h1>
           <p class="lead">${t.lead}</p>
           <div class="actions">
-            <a class="btn" href="{{link:virgil}}">${t.tryVirgil}</a>
-            <a class="btn secondary" href="{{link:about}}">${t.about}</a>
+            <a class="btn store" href="${PLAY_STORE_URL}" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>${t.getApp}</a>
+            <a class="btn secondary" href="{{link:virgil}}">${t.tryVirgil}</a>
           </div>
         </div>
-        <div class="hero-art">
-          <img src="{{asset:img/icon-512.png}}" width="320" height="320" alt="">
+        <div class="hero-art" aria-hidden="true">
+          <div class="tile tile-reading">
+            <p class="tile-label">${t.art.reading}</p>
+            <div class="reading">
+              <div class="tcover tc-ink">${t.art.bookTitle}<small>${t.art.bookAuthor}</small></div>
+              <div>
+                <p class="reading-title">${t.art.bookTitle}</p>
+                <p class="reading-author">${t.art.bookAuthor}</p>
+                <div class="progress"><span></span></div>
+                <p class="reading-pages">${t.art.pages}</p>
+              </div>
+            </div>
+          </div>
+          <div class="tile">
+            <p class="tile-label">${t.art.streak}</p>
+            <p class="streak">12 <small>${t.art.streakDays}</small></p>
+            <div class="week"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+            <p class="tile-note">${t.art.streakWeek}</p>
+          </div>
+          <div class="tile">
+            <p class="tile-label">${t.art.list}</p>
+            <p class="list-name">${t.art.listName}</p>
+            <p class="tile-note">${t.art.listMeta}</p>
+            <div class="fan"><div class="tcover tc-red"></div><div class="tcover tc-soft"></div><div class="tcover tc-ink">${t.art.listCover}</div></div>
+          </div>
         </div>
       </div>
     </section>

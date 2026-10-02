@@ -61,8 +61,76 @@ function main() {
     status.hidden = !message;
   }
 
+  // ---- field errors ---------------------------------------------------------
+  // A validation problem is shown under its own field (aria-invalid + a message
+  // linked with aria-describedby); #status is kept for form-wide errors.
+  function setFieldError(input, message) {
+    const field = input.closest(".field");
+    const id = `${input.id}-error`;
+    let note = document.getElementById(id);
+    if (!note) {
+      note = document.createElement("p");
+      note.className = "field-error";
+      note.id = id;
+      field.append(note);
+    }
+    note.textContent = message;
+    input.dataset.describedby ??= input.getAttribute("aria-describedby") ?? "";
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute(
+      "aria-describedby",
+      `${id} ${input.dataset.describedby}`.trim(),
+    );
+  }
+
+  function clearFieldError(input) {
+    if (input.getAttribute("aria-invalid") !== "true") return;
+    document.getElementById(`${input.id}-error`)?.remove();
+    input.removeAttribute("aria-invalid");
+    if (input.dataset.describedby) {
+      input.setAttribute("aria-describedby", input.dataset.describedby);
+    } else {
+      input.removeAttribute("aria-describedby");
+    }
+  }
+
+  function clearFieldErrors(container) {
+    for (const input of container.querySelectorAll("[aria-invalid=true]")) {
+      clearFieldError(input);
+    }
+  }
+
+  /**
+   * Shows every [input, message] problem under its field and focuses the first
+   * one. Returns true when there was nothing to show.
+   */
+  function checkFields(form, problems) {
+    clearFieldErrors(form);
+    const found = problems.filter(([, message]) => message);
+    for (const [input, message] of found) setFieldError(input, message);
+    if (found.length === 0) return true;
+    say("");
+    found[0][0].focus();
+    return false;
+  }
+
+  // Typing into (or ticking) a field clears its error.
+  for (const type of ["input", "change"]) {
+    document.addEventListener(type, (event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement && target.matches("[aria-invalid=true]")
+      ) {
+        clearFieldError(target);
+      }
+    });
+  }
+
   function showForm(name) {
-    for (const [key, form] of Object.entries(forms)) form.hidden = key !== name;
+    for (const [key, form] of Object.entries(forms)) {
+      form.hidden = key !== name;
+      clearFieldErrors(form);
+    }
     const signin = name === "signin";
     const signup = name === "signup";
     $("tab-signin").setAttribute("aria-pressed", String(signin));
@@ -176,6 +244,7 @@ function main() {
       }
       $("results").replaceChildren();
       $("results-wrap").hidden = true;
+      $("search-intro").hidden = false;
       $("usage").hidden = true;
     }
   }
@@ -209,48 +278,103 @@ function main() {
     }
   }
 
-  function resultCard(book) {
-    const item = document.createElement("li");
-    item.className = "book";
-    // The placeholder stays when there is no cover or it fails to load.
+  /** A cover box that keeps its placeholder (book icon) if the image fails. */
+  function coverBox(book, className) {
     const cover = document.createElement("div");
-    cover.className = "book-cover";
-    item.append(cover);
+    cover.className = className;
     if (book.cover) {
       const img = document.createElement("img");
       img.src = book.cover;
       img.alt = "";
-      img.width = 72;
-      img.height = 108;
       img.loading = "lazy";
       img.decoding = "async";
       img.referrerPolicy = "no-referrer";
       img.addEventListener("error", () => img.remove());
       cover.append(img);
     }
-    const text = document.createElement("div");
-    const title = document.createElement("h3");
+    return cover;
+  }
+
+  // Like the app: a grid of covers with title and author. The description
+  // opens in a dialog (the website has no book page to go to).
+  function resultCard(book) {
+    const item = document.createElement("li");
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "v-card";
+    const title = document.createElement("span");
+    title.className = "v-card-title";
     title.textContent = book.title || book.isbn13;
-    text.append(title);
-    if (book.author) {
-      const author = document.createElement("p");
-      author.className = "book-author";
-      author.textContent = book.author;
-      text.append(author);
-    }
-    if (book.category) {
-      const category = document.createElement("p");
-      category.className = "book-category";
-      category.textContent = book.category;
-      text.append(category);
-    }
-    if (book.description) {
-      const description = document.createElement("p");
-      description.textContent = book.description;
-      text.append(description);
-    }
-    item.append(text);
+    const author = document.createElement("span");
+    author.className = "v-card-author";
+    author.textContent = book.author ?? "";
+    card.append(coverBox(book, "book-cover"), title, author);
+    card.addEventListener("click", () => openBook(book));
+    item.append(card);
     return item;
+  }
+
+  function openBook(book) {
+    $("book-dialog-cover").replaceWith(
+      Object.assign(coverBox(book, "book-cover"), { id: "book-dialog-cover" }),
+    );
+    $("book-dialog-title").textContent = book.title || book.isbn13;
+    $("book-dialog-author").textContent = book.author ?? "";
+    $("book-dialog-author").hidden = !book.author;
+    $("book-dialog-category").textContent = book.category ?? "";
+    $("book-dialog-meta").hidden = !book.category;
+    $("book-dialog-desc").textContent = book.description ?? "";
+    $("book-dialog-desc").hidden = !book.description;
+    $("book-dialog").showModal();
+  }
+
+  // A click on the backdrop (outside the dialog box) closes it too.
+  $("book-dialog").addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) event.currentTarget.close();
+  });
+
+  // Static placeholders while Virgil works; #status announces "thinking".
+  function skeletonCards(count) {
+    return Array.from({ length: count }, () => {
+      const item = document.createElement("li");
+      item.setAttribute("aria-hidden", "true");
+      const card = document.createElement("div");
+      card.className = "v-card skeleton";
+      const cover = document.createElement("div");
+      cover.className = "book-cover";
+      const title = document.createElement("span");
+      title.className = "v-card-title";
+      const author = document.createElement("span");
+      author.className = "v-card-author";
+      card.append(cover, title, author);
+      item.append(card);
+      return item;
+    });
+  }
+
+  // ---- genre (English page only) --------------------------------------------
+  let genre = "All";
+  const genreToggle = $("genre-toggle");
+  function setGenrePanel(open) {
+    $("genre-panel").hidden = !open;
+    genreToggle.setAttribute("aria-expanded", String(open));
+  }
+  if (genreToggle) {
+    genreToggle.addEventListener("click", () => {
+      setGenrePanel(genreToggle.getAttribute("aria-expanded") !== "true");
+    });
+    $("genre-close").addEventListener("click", () => {
+      setGenrePanel(false);
+      genreToggle.focus();
+    });
+    for (const chip of document.querySelectorAll("[data-genre]")) {
+      chip.addEventListener("click", () => {
+        genre = chip.dataset.genre;
+        for (const other of document.querySelectorAll("[data-genre]")) {
+          other.setAttribute("aria-pressed", String(other === chip));
+        }
+      });
+    }
   }
 
   // ---- events -------------------------------------------------------------
@@ -265,13 +389,16 @@ function main() {
   }
 
   forms.signin.addEventListener("submit", (event) => {
-    const email = forms.signin.email.value;
-    const password = forms.signin.password.value;
-    const problem = emailError(email) ??
-      (password ? null : t.errPasswordRequired);
-    if (problem) {
+    const f = forms.signin;
+    const email = f.email.value;
+    const password = f.password.value;
+    if (
+      !checkFields(f, [
+        [f.email, emailError(email)],
+        [f.password, password ? null : t.errPasswordRequired],
+      ])
+    ) {
       event.preventDefault();
-      say(problem, "error");
       return;
     }
     submit(forms.signin, event, async () => {
@@ -283,12 +410,15 @@ function main() {
 
   forms.signup.addEventListener("submit", (event) => {
     const f = forms.signup;
-    const problem = (f.username.value.trim() ? null : t.errUsernameRequired) ??
-      emailError(f.email.value) ?? passwordError(f.password.value) ??
-      (f.privacy.checked ? null : t.errAcceptPrivacy);
-    if (problem) {
+    if (
+      !checkFields(f, [
+        [f.username, f.username.value.trim() ? null : t.errUsernameRequired],
+        [f.email, emailError(f.email.value)],
+        [f.password, passwordError(f.password.value)],
+        [f.privacy, f.privacy.checked ? null : t.errAcceptPrivacy],
+      ])
+    ) {
       event.preventDefault();
-      say(problem, "error");
       return;
     }
     submit(f, event, async () => {
@@ -311,10 +441,12 @@ function main() {
 
   forms.resetRequest.addEventListener("submit", (event) => {
     const email = forms.resetRequest.email.value;
-    const problem = emailError(email);
-    if (problem) {
+    if (
+      !checkFields(forms.resetRequest, [
+        [forms.resetRequest.email, emailError(email)],
+      ])
+    ) {
       event.preventDefault();
-      say(problem, "error");
       return;
     }
     submit(forms.resetRequest, event, async () => {
@@ -329,12 +461,20 @@ function main() {
   forms.reset.addEventListener("submit", (event) => {
     const f = forms.reset;
     const code = f.code.value.trim();
-    const problem = (code.length === 8 ? null : t.errOtpIncomplete) ??
-      passwordError(f.password.value) ??
-      (f.password.value === f.confirm.value ? null : t.errMismatch);
-    if (problem) {
+    const password = passwordError(f.password.value);
+    if (
+      !checkFields(f, [
+        [f.code, code.length === 8 ? null : t.errOtpIncomplete],
+        [f.password, password],
+        [
+          f.confirm,
+          password || f.password.value === f.confirm.value
+            ? null
+            : t.errMismatch,
+        ],
+      ])
+    ) {
       event.preventDefault();
-      say(problem, "error");
       return;
     }
     submit(f, event, async () => {
@@ -359,24 +499,56 @@ function main() {
     event.preventDefault();
     if (limitReached) return;
     const query = $("query").value.trim();
-    if (query.length < MIN_QUERY_LENGTH) return say(t.errQueryShort, "error");
-    if (query.length > MAX_QUERY_LENGTH) return say(t.errQueryLong, "error");
-    const category = lang === "en" ? $("genre").value : "All";
+    const queryProblem = query.length < MIN_QUERY_LENGTH
+      ? t.errQueryShort
+      : query.length > MAX_QUERY_LENGTH
+      ? t.errQueryLong
+      : null;
+    if (!checkFields($("form-search"), [[$("query"), queryProblem]])) return;
+    const category = lang === "en" ? genre : "All";
     const seq = ++searchSeq;
     const button = $("search-button");
+    const list = $("results");
+    const wrap = $("results-wrap");
+    const heading = $("results-query");
+    const categoryLabel = $("results-category");
+    // Kept so an error can put the previous results back.
+    const previous = {
+      items: [...list.children],
+      hidden: wrap.hidden,
+      query: heading.textContent,
+      category: categoryLabel.textContent,
+      categoryHidden: categoryLabel.hidden,
+      intro: $("search-intro").hidden,
+    };
     button.disabled = true;
     say(t.searching);
+    // Like the app: the query becomes the title of the results.
+    heading.textContent = query;
+    categoryLabel.textContent = t.genres[category] ?? category;
+    categoryLabel.hidden = category === "All";
+    $("search-intro").hidden = true;
+    list.replaceChildren(...skeletonCards(6));
+    list.setAttribute("aria-busy", "true");
+    $("no-results").hidden = true;
+    wrap.hidden = false;
     virgil.search({ query, category, language: lang }).then((books) => {
       if (seq !== searchSeq) return;
       say("");
-      const list = $("results");
       list.replaceChildren(...books.map(resultCard));
+      list.removeAttribute("aria-busy");
       $("no-results").hidden = books.length > 0;
-      $("results-wrap").hidden = false;
       $("results-heading").focus();
       refreshUsage();
     }).catch((error) => {
       if (seq !== searchSeq) return;
+      list.replaceChildren(...previous.items);
+      list.removeAttribute("aria-busy");
+      wrap.hidden = previous.hidden;
+      heading.textContent = previous.query;
+      categoryLabel.textContent = previous.category;
+      categoryLabel.hidden = previous.categoryHidden;
+      $("search-intro").hidden = previous.intro;
       if (error instanceof VirgilError && error.code === "daily_limit_reached") {
         say("");
         setLimitReached(true);

@@ -152,8 +152,12 @@ Deno.test("English and Turkish strings cover the same keys and none is empty", (
 
 Deno.test("only the English page offers the genre filter", async () => {
   const dir = await buildTo(SUPABASE);
-  assertMatch(await read(dir, "virgil/index.html"), /<select id="genre"/);
-  assert(!(await read(dir, "tr/virgil/index.html")).includes('id="genre"'));
+  const en = await read(dir, "virgil/index.html");
+  assertMatch(en, /id="genre-toggle"/);
+  assertMatch(en, /data-genre="Fiction"/);
+  const tr = await read(dir, "tr/virgil/index.html");
+  assert(!tr.includes('id="genre-toggle"'));
+  assert(!tr.includes("data-genre"));
 });
 
 Deno.test("the sign-up consent link goes to the privacy policy of the same language", async () => {

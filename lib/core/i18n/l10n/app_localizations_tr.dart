@@ -1939,4 +1939,30 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privateList => 'Gizli';
+
+  @override
+  String get virgilFeedbackRelevant => 'Alakalı';
+
+  @override
+  String get virgilFeedbackIrrelevant => 'Alakasız';
+
+  @override
+  String get virgilFeedbackHint =>
+      'Sonuçları alakalı ya da alakasız diye işaretle, sonra iyileştir.';
+
+  @override
+  String get virgilFeedbackRefine => 'İyileştir';
+
+  @override
+  String get virgilFeedbackRefined => 'İşaretlerine göre iyileştirildi.';
+
+  @override
+  String get virgilFeedbackReset => 'İlk sonuçlar';
+
+  @override
+  String get virgilFeedbackFailed => 'İşaretin kaydedilemedi. Tekrar dene.';
+
+  @override
+  String get virgilFeedbackRateLimited =>
+      'Çok fazla işaretleme yaptın. Biraz sonra tekrar dene.';
 }

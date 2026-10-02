@@ -692,4 +692,12 @@
   ,"noListsContainBook":"Bu kitap henüz hiçbir listede yok."
   ,"createListWithBook":"Bu kitapla yeni liste oluştur"
   ,"privateList":"Gizli"
+  ,"virgilFeedbackRelevant":"Alakalı"
+  ,"virgilFeedbackIrrelevant":"Alakasız"
+  ,"virgilFeedbackHint":"Sonuçları alakalı ya da alakasız diye işaretle, sonra iyileştir."
+  ,"virgilFeedbackRefine":"İyileştir"
+  ,"virgilFeedbackRefined":"İşaretlerine göre iyileştirildi."
+  ,"virgilFeedbackReset":"İlk sonuçlar"
+  ,"virgilFeedbackFailed":"İşaretin kaydedilemedi. Tekrar dene."
+  ,"virgilFeedbackRateLimited":"Çok fazla işaretleme yaptın. Biraz sonra tekrar dene."
 }

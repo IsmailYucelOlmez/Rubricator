@@ -14,6 +14,7 @@ import '../../../books/presentation/pages/book_detail_page.dart';
 import '../../../books/presentation/providers/book_resolve_providers.dart';
 import '../../../books/presentation/widgets/vertical_book_card.dart';
 import '../../../semantic_discovery/domain/entities/semantic_book_result.dart';
+import '../../../semantic_discovery/domain/entities/semantic_feedback.dart';
 import '../../../semantic_discovery/domain/entities/semantic_search_request.dart';
 import '../../../semantic_discovery/presentation/providers/semantic_discovery_providers.dart';
 import '../../data/datasources/virgil_usage_remote_datasource.dart';
@@ -28,6 +29,10 @@ import '../widgets/virgil_colors.dart';
 /// The category filter is hidden for the Turkish locale: its BISAC-style
 /// values (Fiction/Nonfiction/...) don't match the Turkish catalog's
 /// categories, so filtering by one would just return an empty result set.
+///
+/// Signed-in users can mark each result relevant / irrelevant for the query;
+/// the marks are stored as votes and can refine the same search (the API
+/// pulls the query toward relevant books and drops the irrelevant ones).
 class VirgilRecommendationPage extends ConsumerStatefulWidget {
   const VirgilRecommendationPage({super.key});
 
@@ -37,7 +42,8 @@ class VirgilRecommendationPage extends ConsumerStatefulWidget {
 }
 
 class _VirgilRecommendationPageState
-    extends ConsumerState<VirgilRecommendationPage> with RouteAware {
+    extends ConsumerState<VirgilRecommendationPage>
+    with RouteAware {
   static const _apiCategories = [
     'All',
     'Fiction',
@@ -128,6 +134,8 @@ class _VirgilRecommendationPageState
         category: isTurkish ? 'All' : filters.category,
       );
       _clearFocus();
+      // A fresh submit starts from the plain search again.
+      ref.read(semanticSearchRefinementProvider(query).notifier).state = null;
       setState(() {
         _activeQuery = query;
         _genrePanelOpen = false;
@@ -147,9 +155,7 @@ class _VirgilRecommendationPageState
     // Warm / reuse resolve cache; BookDetailPage awaits the same provider.
     ref.read(resolveBookProvider(unresolved));
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => BookDetailPage(book: unresolved),
-      ),
+      MaterialPageRoute<void>(builder: (_) => BookDetailPage(book: unresolved)),
     );
   }
 
@@ -176,8 +182,7 @@ class _VirgilRecommendationPageState
     final colors = VirgilColors.of(context);
     final filters = ref.watch(semanticSearchFiltersProvider);
     final activeQuery = _activeQuery;
-    final searchEnabled =
-        _controller.text.trim().length >= 3 && !_submitting;
+    final searchEnabled = _controller.text.trim().length >= 3 && !_submitting;
     final isTurkish = ref.watch(localeProvider).languageCode == 'tr';
     final showGenrePanel = _genrePanelOpen && !isTurkish;
 
@@ -217,19 +222,16 @@ class _VirgilRecommendationPageState
                             ),
                           )
                         : activeQuery == null
-                            ? _EmptyBody(
-                                body: l10n.virgilRecommendationEmptyBody,
-                              )
-                            : _ResultsBody(
-                                query: activeQuery,
-                                categoryLabel: isTurkish ||
-                                        filters.category == 'All'
-                                    ? null
-                                    : _genreLabel(l10n, filters.category),
-                                onOpen: (result) =>
-                                    _openResult(context, result),
-                                onPrefetch: _prefetchResolve,
-                              ),
+                        ? _EmptyBody(body: l10n.virgilRecommendationEmptyBody)
+                        : _ResultsBody(
+                            query: activeQuery,
+                            categoryLabel:
+                                isTurkish || filters.category == 'All'
+                                ? null
+                                : _genreLabel(l10n, filters.category),
+                            onOpen: (result) => _openResult(context, result),
+                            onPrefetch: _prefetchResolve,
+                          ),
                   ),
                   if (showGenrePanel)
                     Positioned(
@@ -330,11 +332,54 @@ class _ResultsBody extends ConsumerWidget {
 
   static const _prefetchCount = 6;
 
+  Future<void> _vote(
+    BuildContext context,
+    WidgetRef ref,
+    SemanticFeedbackKey key,
+    SemanticBookResult result,
+    int position,
+    SemanticFeedbackVote vote,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final filters = ref.read(semanticSearchFiltersProvider);
+    try {
+      await ref
+          .read(semanticFeedbackVotesProvider(key).notifier)
+          .toggle(
+            result.isbn13,
+            vote,
+            resultPosition: position,
+            similarity: result.similarity,
+            mode: filters.mode.name,
+            category: filters.category,
+            tone: filters.tone,
+          );
+    } on SemanticFeedbackRateLimitException {
+      if (context.mounted) {
+        showVirgilSnackBar(context, l10n.virgilFeedbackRateLimited);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        showVirgilSnackBar(context, l10n.virgilFeedbackFailed);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final colors = VirgilColors.of(context);
     final results = ref.watch(semanticSearchResultsProvider(query));
+    // Same query + language the search sends, so votes land on this query.
+    final feedbackKey = (
+      query: query,
+      language: ref.watch(localeProvider).languageCode,
+    );
+    final votes =
+        ref.watch(semanticFeedbackVotesProvider(feedbackKey)).valueOrNull ??
+        const <String, SemanticFeedbackVote>{};
+    final applied = ref.watch(semanticSearchRefinementProvider(query));
+    final hasResults = results.valueOrNull?.isNotEmpty ?? false;
 
     ref.listen(semanticSearchResultsProvider(query), (previous, next) {
       final books = next.asData?.value;
@@ -385,9 +430,21 @@ class _ResultsBody extends ConsumerWidget {
             ],
           ),
         ),
+        if (hasResults || applied != null)
+          _RefineBar(
+            pending: SemanticSearchRefinement.fromVotes(votes),
+            applied: applied,
+            busy: results.isLoading,
+            onApply: (refinement) =>
+                ref
+                        .read(semanticSearchRefinementProvider(query).notifier)
+                        .state =
+                    refinement,
+          ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: results.when(
+            skipLoadingOnRefresh: false,
             loading: () => GridView.builder(
               padding: const EdgeInsets.fromLTRB(
                 BookGridLayout.horizontalPadding,
@@ -430,8 +487,19 @@ class _ResultsBody extends ConsumerWidget {
                   final result = books[index];
                   return _BookGridCard(
                     result: result,
+                    vote: votes[result.isbn13],
                     onTap: () => onOpen(result),
                     onTapDown: () => onPrefetch(result),
+                    onVote: isVotableIsbn(result.isbn13)
+                        ? (vote) => _vote(
+                            context,
+                            ref,
+                            feedbackKey,
+                            result,
+                            index,
+                            vote,
+                          )
+                        : null,
                   );
                 },
               );
@@ -448,15 +516,34 @@ class _BookGridCard extends StatelessWidget {
     required this.result,
     required this.onTap,
     required this.onTapDown,
+    this.vote,
+    this.onVote,
   });
 
   final SemanticBookResult result;
   final VoidCallback onTap;
   final VoidCallback onTapDown;
 
+  /// The user's current mark on this result for the active query.
+  final SemanticFeedbackVote? vote;
+
+  /// Null hides the relevance buttons (the result has no usable ISBN).
+  final ValueChanged<SemanticFeedbackVote>? onVote;
+
   @override
   Widget build(BuildContext context) {
     final colors = VirgilColors.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final onVote = this.onVote;
+    final cover = ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedOpacity(
+        // Dim what the user called irrelevant so the mark reads at a glance.
+        opacity: vote == SemanticFeedbackVote.irrelevant ? 0.45 : 1,
+        duration: const Duration(milliseconds: 150),
+        child: _CoverFillImage(coverImageUrl: result.coverImageUrl),
+      ),
+    );
     return InkWell(
       onTap: onTap,
       onTapDown: (_) => onTapDown(),
@@ -465,10 +552,40 @@ class _BookGridCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: _CoverFillImage(coverImageUrl: result.coverImageUrl),
-            ),
+            child: onVote == null
+                ? cover
+                : Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      cover,
+                      Positioned(
+                        right: 6,
+                        bottom: 6,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _VoteButton(
+                              icon: Icons.thumb_up_outlined,
+                              selectedIcon: Icons.thumb_up,
+                              label: l10n.virgilFeedbackRelevant,
+                              selected: vote == SemanticFeedbackVote.relevant,
+                              onTap: () =>
+                                  onVote(SemanticFeedbackVote.relevant),
+                            ),
+                            const SizedBox(width: 6),
+                            _VoteButton(
+                              icon: Icons.thumb_down_outlined,
+                              selectedIcon: Icons.thumb_down,
+                              label: l10n.virgilFeedbackIrrelevant,
+                              selected: vote == SemanticFeedbackVote.irrelevant,
+                              onTap: () =>
+                                  onVote(SemanticFeedbackVote.irrelevant),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
@@ -496,6 +613,172 @@ class _BookGridCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Round relevance toggle sitting on the cover.
+class _VoteButton extends StatelessWidget {
+  const _VoteButton({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  static const _size = 32.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = VirgilColors.of(context);
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: label,
+        child: Material(
+          color: selected ? colors.ink : colors.paper.withValues(alpha: 0.92),
+          shape: CircleBorder(
+            side: BorderSide(color: colors.ink.withValues(alpha: 0.2)),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: SizedBox(
+              width: _size,
+              height: _size,
+              child: Icon(
+                selected ? selectedIcon : icon,
+                size: 16,
+                color: selected ? colors.paper : colors.ink,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Explains the marks and turns them into a refined search of the same query.
+class _RefineBar extends StatelessWidget {
+  const _RefineBar({
+    required this.pending,
+    required this.applied,
+    required this.busy,
+    required this.onApply,
+  });
+
+  /// Refinement the current marks would produce.
+  final SemanticSearchRefinement pending;
+
+  /// Refinement the visible results were searched with (null = plain search).
+  final SemanticSearchRefinement? applied;
+  final bool busy;
+  final ValueChanged<SemanticSearchRefinement?> onApply;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = VirgilColors.of(context);
+    final upToDate = applied != null && pending.sameAs(applied);
+    final canRefine = !pending.isEmpty && !upToDate;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              upToDate ? l10n.virgilFeedbackRefined : l10n.virgilFeedbackHint,
+              style: TextStyle(
+                fontFamily: 'Outfit',
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                height: 1.3,
+                color: colors.muted,
+              ),
+            ),
+          ),
+          if (applied != null) ...[
+            const SizedBox(width: AppSpacing.sm),
+            _BarButton(
+              label: l10n.virgilFeedbackReset,
+              filled: false,
+              onTap: busy ? null : () => onApply(null),
+            ),
+          ],
+          if (canRefine) ...[
+            const SizedBox(width: AppSpacing.sm),
+            _BarButton(
+              label: l10n.virgilFeedbackRefine,
+              filled: true,
+              onTap: busy ? null : () => onApply(pending),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _BarButton extends StatelessWidget {
+  const _BarButton({
+    required this.label,
+    required this.filled,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool filled;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = VirgilColors.of(context);
+    return Opacity(
+      opacity: onTap == null ? 0.45 : 1,
+      child: Material(
+        color: filled ? colors.ink : colors.paper,
+        shape: StadiumBorder(side: BorderSide(color: colors.ink)),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const StadiumBorder(),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 32),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Center(
+                widthFactor: 1,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                    height: 1,
+                    color: filled ? colors.paper : colors.ink,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -538,7 +821,11 @@ class _CoverFillImage extends StatelessWidget {
             child: SizedBox(
               width: 20,
               height: 20,
-              child: AppLoadingIndicator(size: 20, strokeWidth: 2, centered: false),
+              child: AppLoadingIndicator(
+                size: 20,
+                strokeWidth: 2,
+                centered: false,
+              ),
             ),
           ),
         );
@@ -563,17 +850,9 @@ class _SkeletonCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          height: 14,
-          width: double.infinity,
-          color: colors.coverBg,
-        ),
+        Container(height: 14, width: double.infinity, color: colors.coverBg),
         const SizedBox(height: 6),
-        Container(
-          height: 12,
-          width: 80,
-          color: colors.coverBg,
-        ),
+        Container(height: 12, width: 80, color: colors.coverBg),
       ],
     );
   }
@@ -633,11 +912,7 @@ class _GenrePanel extends StatelessWidget {
                     child: SizedBox(
                       width: 18,
                       height: 18,
-                      child: Icon(
-                        Icons.close,
-                        size: 18,
-                        color: colors.ink,
-                      ),
+                      child: Icon(Icons.close, size: 18, color: colors.ink),
                     ),
                   ),
                 ],
@@ -788,10 +1063,7 @@ class _BottomBar extends StatelessWidget {
                     color: colors.paper,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
-                      side: BorderSide(
-                        color: colors.ink,
-                        width: 1,
-                      ),
+                      side: BorderSide(color: colors.ink, width: 1),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
@@ -936,11 +1208,7 @@ class _RedSubmitButton extends StatelessWidget {
                     strokeWidth: 2,
                     centered: false,
                   )
-                : SvgPicture.asset(
-                    assetPath,
-                    width: _size,
-                    height: _size,
-                  ),
+                : SvgPicture.asset(assetPath, width: _size, height: _size),
           ),
         ),
       ),

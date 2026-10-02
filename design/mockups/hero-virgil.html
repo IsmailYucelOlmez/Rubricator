@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero ve Virgil mockup'ı</title>
+<link rel="stylesheet" href="../../site/static/site.css">
+<style>
+/* Virgil'in mobil wordmark fontu (assets/Virgil/Megrim, OFL). Siteye woff2 olarak kopyalanır. */
+@font-face {
+  font-family: "Megrim";
+  src: url("../../assets/Virgil/Megrim/Megrim-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* ---------- mockup düzeni (siteye taşınmaz) ---------- */
+.mock { padding-block: 2.5rem 4rem; }
+.mock header.intro { max-width: 46rem; margin-bottom: 1rem; }
+.mock-item { border-top: 1px solid var(--border); padding-block: 2.5rem; }
+.mock-item > .container > h2 { margin-top: 0; }
+.mock-why { color: var(--muted); max-width: 46rem; margin: 0 0 1.5rem; padding-left: 1.25rem; }
+.mock-why li { margin-bottom: 0.25rem; }
+.frame { border: 1px dashed var(--border-strong); border-radius: var(--radius); overflow: hidden; }
+.frame-label {
+  display: block; margin: 0 0 0.75rem; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text);
+}
+.state-label { font-size: 0.85rem; color: var(--muted); margin: 2rem 0 0.75rem; font-weight: 500; }
+
+/* =========================================================
+   HERO SEÇENEKLERİ — hiçbiri logoyu tekrar kullanmaz
+   ========================================================= */
+.hero-x { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
+.hero-x .container { display: grid; gap: 2.5rem; align-items: center; }
+@media (min-width: 900px) { .hero-x .container { grid-template-columns: 1.1fr 0.9fr; } }
+
+/* Tipografik kapak: gerçek kapak görseli yerine token renkleriyle çizilir
+   (telif/marka sorunu yok, iki temada da çalışır). */
+.tcover {
+  aspect-ratio: 2 / 3; border-radius: 6px; padding: 0.75rem;
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-weight: 600; line-height: 1.15; overflow: hidden;
+  outline: 1px solid var(--border); outline-offset: -1px;
+}
+.tcover small { font-weight: 500; font-size: 0.75rem; opacity: 0.8; }
+.tc-ink { background: var(--text); color: var(--bg); }
+.tc-red { background: var(--primary); color: var(--on-primary); }
+.tc-soft { background: var(--soft); color: var(--text); }
+.tc-surface { background: var(--surface); color: var(--text); }
+
+/* A (revize) — uygulamanın tamamı: okuma takibi, seri, liste, Virgil.
+   Kapaklar tipografik; kutucuklar sitenin yüzey/kenar token'ları. */
+.bento {
+  display: grid; gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tile {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 1rem; min-width: 0;
+}
+.tile-label { margin: 0 0 0.75rem; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.tile.wide { grid-column: 1 / -1; }
+.tile .tcover { font-size: 0.75rem; padding: 0.5rem; }
+.tile .tcover small { font-size: 0.65rem; }
+
+/* Okuyorum */
+.reading { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; align-items: center; }
+.reading h3 { margin: 0; font-size: 1.05rem; }
+.reading .by { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.progress { height: 0.5rem; border-radius: 999px; background: var(--soft); margin-top: 0.75rem; overflow: hidden; }
+.progress span { display: block; height: 100%; border-radius: inherit; background: var(--text); }
+.reading .pages { margin: 0.25rem 0 0; font-size: 0.8rem; color: var(--muted); }
+
+/* Seri */
+.streak-n { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1; }
+.streak-n small { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+.week { display: flex; gap: 0.25rem; margin-top: 0.75rem; }
+.week span { flex: 1; height: 0.5rem; border-radius: 999px; background: var(--soft); }
+.week span.on { background: var(--primary); }
+.week-note { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--muted); }
+
+/* Liste */
+.list-name { margin: 0; font-weight: 600; }
+.list-meta { margin: 0 0 0.75rem; font-size: 0.8rem; color: var(--muted); }
+.fan { display: flex; }
+.fan .tcover { width: 3rem; flex: none; }
+.fan .tcover + .tcover { margin-left: -1rem; }
+
+/* Virgil */
+.virgil-tile { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center; }
+.virgil-tile .v-input { font-size: 0.9rem; }
+.virgil-pick { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.virgil-pick .tcover { width: 3.25rem; flex: none; }
+.virgil-pick p { margin: 0; font-size: 0.85rem; }
+.virgil-pick strong { display: block; font-size: 0.9rem; }
+
+@media (min-width: 30rem) {
+  .bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tile.reading-tile { grid-column: span 2; }
+  .tile.virgil-wide { grid-column: span 2; }
+}
+/* Google Play bağlantısı (resmi rozet yerine metin buton: marka kurallarına takılmaz) */
+.store { display: inline-flex; align-items: center; gap: 0.5rem; }
+.store svg { width: 1.1rem; height: 1.1rem; }
+
+/* =========================================================
+   VIRGIL — mobil modülün dili: Megrim wordmark + BETA,
+   çerçevesiz editoryal sayfa, yuvarlak arama çubuğu,
+   kırmızı yuvarlak gönder, sorgu = başlık, kapak ızgarası
+   ========================================================= */
+.v-page { padding-block: 2rem 3rem; }
+.v-brand { display: flex; align-items: flex-end; gap: 0.5rem; margin: 0; color: var(--text); }
+.v-word { font-family: "Megrim", "Outfit", sans-serif; font-weight: 400; font-size: 3rem; line-height: 1; letter-spacing: 0.06em; }
+.v-badge {
+  margin-bottom: 0.4rem; padding: 0.05rem 0.3rem; border: 1px solid currentColor; border-radius: 3px;
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.2;
+}
+.v-tagline { margin: 0.5rem 0 0; color: var(--text); }
+.v-rule { border: 0; border-top: 1px solid var(--text); margin: 1.5rem 0; }
+
+.v-bar { display: flex; align-items: center; gap: 0.75rem; max-width: 44rem; }
+.v-input {
+  flex: 1; min-width: 0; min-height: 2.75rem; padding: 0 1rem;
+  border: 1px solid var(--text); border-radius: 15px; background: var(--bg);
+  display: flex; align-items: center; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.v-input.filled { color: var(--text); }
+.v-round {
+  flex: none; width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  display: grid; place-items: center; border: 1px solid var(--text);
+  background: var(--bg); color: var(--text); cursor: pointer; padding: 0;
+}
+.v-round svg { width: 1.25rem; height: 1.25rem; }
+.v-round[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.v-submit { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.v-submit svg { width: 1.6rem; height: 1.6rem; }
+.v-usage { color: var(--muted); font-size: 0.92rem; margin: 0.5rem 0 0; }
+
+.v-genres { max-width: 44rem; margin-top: 1rem; }
+.v-genres-head { display: flex; justify-content: space-between; align-items: center; }
+.v-genres-head span { font-size: 1.15rem; }
+.v-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.v-chip {
+  min-height: 2.25rem; padding: 0 0.75rem; border-radius: 6px; font: inherit; font-size: 0.92rem;
+  border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); cursor: pointer;
+}
+.v-chip[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+
+.v-empty { max-width: 32rem; margin: 3rem auto; text-align: center; font-size: 1.05rem; }
+
+.v-query { font-size: 1.45rem; font-weight: 700; line-height: 1.2; margin: 2rem 0 0.25rem; }
+.v-category { margin: 0; font-size: 0.92rem; }
+
+.v-grid {
+  list-style: none; padding: 0; margin: 1.25rem 0 0;
+  display: grid; gap: 1.5rem 1rem; grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* Kapaklar ~150px'te kalır: mobilde 2, tablette 4, masaüstünde 6 sütun */
+@media (min-width: 30rem) { .v-grid { grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); } }
+.v-card {
+  display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left;
+  font: inherit; color: inherit; cursor: pointer; border-radius: 10px;
+}
+.v-card .tcover, .v-card .v-cover { border-radius: 10px; }
+.v-cover {
+  aspect-ratio: 2 / 3; background: var(--soft); display: grid; place-items: center; color: var(--muted);
+  outline: 1px solid var(--border); outline-offset: -1px;
+}
+.v-cover svg { width: 1.75rem; height: 1.75rem; }
+.v-card-title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  margin-top: 0.5rem; font-weight: 700; line-height: 1.25;
+}
+.v-card-author { display: block; font-size: 0.85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-card:hover .v-card-title { text-decoration: underline; text-underline-offset: 0.18em; }
+.v-card.skel .v-card-title, .v-card.skel .v-card-author { height: 0.9rem; border-radius: 999px; background: var(--soft); }
+.v-card.skel .v-card-author { width: 60%; margin-top: 0.4rem; }
+
+/* Ayrıntı: web'de kitap sayfası olmadığı için kart <dialog> açar */
+.v-dialog-demo { position: relative; padding: 2rem 1rem; background: rgba(22, 26, 29, 0.45); border-radius: var(--radius); }
+.v-dialog {
+  max-width: 36rem; margin: 0 auto; background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem;
+  display: grid; grid-template-columns: 7.5rem 1fr; gap: 1.25rem;
+}
+.v-dialog h3 { margin: 0 0 0.25rem; font-size: 1.35rem; }
+.v-dialog .book-author { margin: 0; color: var(--muted); font-weight: 500; }
+.v-dialog .chip { margin-top: 0.75rem; }
+.v-dialog .desc { grid-column: 1 / -1; margin: 0; }
+.v-dialog .close { grid-column: 1 / -1; justify-self: start; }
+@media (max-width: 30rem) { .v-dialog { grid-template-columns: 5.5rem 1fr; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="quill" viewBox="6 6 24 24"><path d="M10.64 23.18c-.27-2.9-.53-5.04.48-6.84.1.75.22 1.64.38 2.47.13.71.29 1.4.46 1.91.08.26.18.5.29.69.2.34.5.46.63.47.43.04.8-.11 1.07-.43.23-.28.35-.66.42-1.04.14-.75.13-1.79.13-2.85-.01-1.09-.01-2.24.13-3.3.14-1.07.41-2 .91-2.66.5-.66 1.53-1.2 2.8-1.66.62-.23 1.27-.43 1.9-.62-.45.61-.86 1.28-1.18 1.92-.3.59-.53 1.19-.6 1.69-.03.24-.03.52.06.77.1.24.28.43.53.53.26.08.44.02.54-.03.3-.14.6-.4.95-.75.48-.46 1.1-1.12 1.7-1.7.6-.6 1.22-1.17 1.75-1.54.27-.18.5-.3.67-.35.17-.06.24-.03.26-.02 1.3.66 3.2 2.3 3.88 2.97.18.17.23.34.21.53-.02.21-.12.47-.33.77-.42.59-1.12 1.14-1.7 1.42-.46.22-1.03.31-1.66.33-.64.01-1.29-.05-1.92-.12-.6-.07-1.22-.14-1.69-.12-.23.02-.49.05-.71.17-.22.11-.39.29-.47.54-.08.38-.09 1.12.61 1.75.51.46 1.34.8 2.67.94-1.31.91-2.57 1.06-3.68 1.03-.35-.01-.69-.04-1.01-.07-.32-.03-.65-.06-.94-.07-.57-.02-1.21.02-1.69.42-.42.36-.33.88-.2 1.2.13.35.39.7.69 1.01.3.31.68.6 1.07.8l.22.1c-.99.9-1.67 1.14-2.29 1.15-.4.01-.83-.08-1.36-.2-.51-.13-1.13-.29-1.85-.4l-.44-.06-1.29 4.8a1 1 0 0 1-1.93-.51z"/></symbol></svg>
+<main class="mock">
+  <div class="container">
+    <header class="intro">
+      <p class="eyebrow">Mockup</p>
+      <h1>Hero (A, revize) ve Virgil sayfası</h1>
+      <p class="lead">Hero'da logo tekrar edilmiyor; seçilen A yönü uygulamanın tamamını anlatacak şekilde revize edildi. Virgil sayfası mobil uygulamadaki Virgil modülünün diline yaklaştırıldı. Renk ve fontlar sitedeki token'lar; tek ek, Virgil wordmark'ı için mobildeki Megrim fontu.</p>
+    </header>
+  </div>
+
+  <!-- ================= HERO A (revize) ================= -->
+  <section class="mock-item">
+    <div class="container">
+      <h2>Hero A (revize): Rubricator'ın tamamı</h2>
+      <ul class="mock-why">
+        <li>Sağ taraf artık tek bir Virgil ekranı değil, uygulamanın dört parçası: <strong>okuduğun kitap ve ilerleme</strong>, <strong>okuma serisi</strong>, <strong>listeler</strong>, <strong>Virgil önerisi</strong>.</li>
+        <li>A'daki tipografik kapaklar korunuyor; kutucuklar sitenin kart diliyle (yüzey + ince kenar, 20px köşe).</li>
+        <li>Eylemler de uygulamanın tamamına göre: birincil "Android uygulamasını indir" (Google Play), ikincil "Virgil'i web'de dene".</li>
+        <li>Mobilde: okuma kutusu tam genişlik, seri ve liste yan yana, Virgil tam genişlik.</li>
+      </ul>
+      <span class="frame-label">Öneri A (revize)</span>
+    </div>
+    <div class="frame container" style="padding:0">
+      <div class="hero-x">
+        <div class="container">
+          <div>
+            <p class="eyebrow">Kitaplar, takip edilir ve keşfedilir</p>
+            <h1>Bir sonraki kitabını bul. Okuduğun her kitabı hatırla.</h1>
+            <p class="lead">Rubricator; kitap keşfetmene, okumanı takip etmene ve yapay zekâ destekli okuma rehberi Virgil'den öneri almana yardımcı olur.</p>
+            <div class="actions">
+              <a class="btn store" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Android uygulamasını indir</a>
+              <a class="btn secondary" href="#">Virgil'i web'de dene</a>
+            </div>
+          </div>
+          <div class="bento" aria-hidden="true">
+            <div class="tile wide reading-tile">
+              <p class="tile-label">Okuyorum</p>
+              <div class="reading">
+                <div class="tcover tc-ink">Sisli Liman<small>E. Kaya</small></div>
+                <div>
+                  <h3>Sisli Liman</h3>
+                  <p class="by">E. Kaya</p>
+                  <div class="progress"><span style="width:64%"></span></div>
+                  <p class="pages">Sayfa 142 / 220 · bugün 35 dk</p>
+                </div>
+              </div>
+            </div>
+            <div class="tile">
+              <p class="tile-label">Okuma serisi</p>
+              <p class="streak-n">12 <small>gün</small></p>
+              <div class="week"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+              <p class="week-note">Bu hafta 5 / 7 gün</p>
+            </div>
+            <div class="tile">
+              <p class="tile-label">Liste</p>
+              <p class="list-name">Yaz listesi</p>
+              <p class="list-meta">8 kitap · 3 takipçi</p>
+              <div class="fan">
+                <div class="tcover tc-red"></div>
+                <div class="tcover tc-soft"></div>
+                <div class="tcover tc-ink">Kıyı</div>
+              </div>
+            </div>
+            <div class="tile wide virgil-wide">
+              <p class="tile-label">Virgil önerdi</p>
+              <div class="virgil-tile">
+                <div class="v-input filled">sahil kasabasında polisiye</div>
+                <span class="v-round v-submit"><svg viewBox="6 6 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><use href="#quill"/></svg></span>
+              </div>
+              <div class="virgil-pick">
+                <div class="tcover tc-soft">Deniz Feneri<small>M. Aras</small></div>
+                <p><strong>Deniz Feneri Cinayeti</strong>M. Aras · Polisiye</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= VIRGIL ================= -->
+  <section class="mock-item">
+    <div class="container">
+      <h2>Virgil sayfası — mobil modüle yakın</h2>
+      <ul class="mock-why">
+        <li><strong>Başlık:</strong> mobildeki gibi Megrim "Virgil" wordmark'ı + BETA rozeti ve tek satır slogan. Sayfanın <code>h1</code>'i wordmark.</li>
+        <li><strong>Çerçeve yok:</strong> panel kartı kalkıyor; mobildeki gibi düz "kâğıt" sayfa, bölümler ince koyu çizgiyle ayrılıyor.</li>
+        <li><strong>Arama çubuğu:</strong> 15px yuvarlatılmış tek satır giriş + yuvarlak tür düğmesi (yalnızca EN) + kırmızı yuvarlak gönder (mobildeki tüy kalem ikonu). Mobilde çubuk altta, web'de üstte.</li>
+        <li><strong>Tür seçimi:</strong> select yerine mobildeki gibi açılır çip paneli.</li>
+        <li><strong>Sonuçlar:</strong> sorgu kalın başlık olur, altında kapak ızgarası (mobilde 2, masaüstünde 6 sütun), kartta başlık + yazar. Açıklama, karta tıklayınca açılan pencerede (web'de kitap sayfası yok).</li>
+        <li><strong>Değişmeyen:</strong> giriş/kayıt formları, alan hataları, durum mesajları, limit davranışı (yalnızca görünümleri yeni sayfaya uyar).</li>
+      </ul>
+      <span class="frame-label">Öneri — giriş yapılmış, arama öncesi</span>
+      <div class="frame">
+        <div class="v-page container">
+          <h1 class="v-brand"><span class="v-word">Virgil</span><span class="v-badge">BETA</span></h1>
+          <p class="v-tagline">Virgil okuma yolculuğuna rehberlik eder.</p>
+          <hr class="v-rule">
+          <div class="account-bar"><span>Giriş yapan: <strong>okur@ornek.com</strong></span><button class="link-button" type="button">Çıkış yap</button></div>
+          <div class="v-bar">
+            <div class="v-input">Canının ne istediğini anlat…</div>
+            <button class="v-round" type="button" aria-pressed="false" aria-label="Tür"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+            <button class="v-round v-submit" type="button" aria-label="Öneri al"><svg viewBox="6 6 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><use href="#quill"/></svg></button>
+          </div>
+          <p class="v-usage">Bugün 5/5 öneri hakkın kaldı.</p>
+          <p class="v-empty">Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.</p>
+        </div>
+      </div>
+
+      <p class="state-label">Öneri — sonuçlar (EN'de tür paneli açık)</p>
+      <div class="frame">
+        <div class="v-page container">
+          <h1 class="v-brand"><span class="v-word">Virgil</span><span class="v-badge">BETA</span></h1>
+          <p class="v-tagline">Virgil okuma yolculuğuna rehberlik eder.</p>
+          <hr class="v-rule">
+          <div class="v-bar">
+            <div class="v-input filled">A gentle story about growing up</div>
+            <button class="v-round" type="button" aria-pressed="true" aria-label="Genre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+            <button class="v-round v-submit" type="button" aria-label="Get recommendations"><svg viewBox="6 6 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><use href="#quill"/></svg></button>
+          </div>
+          <div class="v-genres">
+            <div class="v-genres-head"><span>Genre</span><button class="link-button" type="button">Close</button></div>
+            <div class="v-chips" role="group" aria-label="Genre">
+              <button class="v-chip" type="button" aria-pressed="false">All</button>
+              <button class="v-chip" type="button" aria-pressed="true">Fiction</button>
+              <button class="v-chip" type="button" aria-pressed="false">Nonfiction</button>
+              <button class="v-chip" type="button" aria-pressed="false">Children's fiction</button>
+              <button class="v-chip" type="button" aria-pressed="false">Children's nonfiction</button>
+            </div>
+          </div>
+          <p class="v-query">A gentle story about growing up</p>
+          <p class="v-category">Fiction</p>
+          <ul class="v-grid">
+            <li><button class="v-card" type="button"><div class="tcover tc-ink">The Little Prince<small>Saint-Exupéry</small></div><span class="v-card-title">The Little Prince</span><span class="v-card-author">Antoine de Saint-Exupéry</span></button></li>
+            <li><button class="v-card" type="button"><div class="tcover tc-red">Anne of Green Gables<small>L. M. Montgomery</small></div><span class="v-card-title">Anne of Green Gables</span><span class="v-card-author">L. M. Montgomery</span></button></li>
+            <li><button class="v-card" type="button"><div class="v-cover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></svg></div><span class="v-card-title">To Kill a Mockingbird</span><span class="v-card-author">Harper Lee</span></button></li>
+            <li><button class="v-card" type="button"><div class="tcover tc-soft">Little Women<small>L. M. Alcott</small></div><span class="v-card-title">Little Women</span><span class="v-card-author">Louisa May Alcott</span></button></li>
+            <li><div class="v-card skel"><div class="v-cover"></div><span class="v-card-title"></span><span class="v-card-author"></span></div></li>
+            <li><div class="v-card skel"><div class="v-cover"></div><span class="v-card-title"></span><span class="v-card-author"></span></div></li>
+          </ul>
+          <p class="v-usage">Son iki kart: yükleniyor iskeleti örneği.</p>
+        </div>
+      </div>
+
+      <p class="state-label">Öneri — karta tıklayınca ayrıntı penceresi (<code>&lt;dialog&gt;</code>)</p>
+      <div class="v-dialog-demo">
+        <div class="v-dialog" role="dialog" aria-label="The Little Prince">
+          <div class="tcover tc-ink">The Little Prince<small>Saint-Exupéry</small></div>
+          <div>
+            <h3>The Little Prince</h3>
+            <p class="book-author">Antoine de Saint-Exupéry</p>
+            <span class="chip">Fiction</span>
+          </div>
+          <p class="desc">A pilot stranded in the desert meets a small prince who has travelled from planet to planet. A gentle, funny and sad story about what grown-ups forget.</p>
+          <button class="btn secondary close" type="button">Kapat</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+  for (const b of document.querySelectorAll(".v-chip")) {
+    b.addEventListener("click", () => {
+      for (const o of b.parentElement.querySelectorAll(".v-chip")) o.setAttribute("aria-pressed", String(o === b));
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <h1>Rubricator Gizlilik Politikası</h1>
-<p class="muted"><strong>Son güncelleme:</strong> 27.09.2026</p>
+<p class="muted"><strong>Son güncelleme:</strong> 03.10.2026</p>
 <p class="muted">
   Hizmet: Rubricator mobil uygulaması (iOS/Android) ve bu web sitesi<br />
   Geliştirici / Veri Sorumlusu: İsmail Yücel Ölmez<br />
@@ -204,6 +204,16 @@
     katalog kaynaklarından kitap kapakları gösterir. Web sitesinde Sentry veya
     başka bir çökme raporlama aracı kullanmıyoruz.
   </li>
+  <li>
+    <strong>İletişim formu:</strong> İletişim sayfasındaki formu kullanırsanız
+    girdiğiniz ad (isteğe bağlı), e-posta adresiniz ve mesajınız Supabase edge
+    fonksiyonumuza gönderilir; bu fonksiyon onları e-posta sağlayıcımız Resend
+    aracılığıyla destek gelen kutumuza e-postayla iletir. Bu bilgileri yalnızca
+    size yanıt vermek için kullanırız ve bize gönderdiğiniz her e-posta gibi
+    destek posta kutumuzda saklanırlar. Kötüye kullanımı sınırlamak için IP
+    adresinizin kendisini değil, tuzlanmış bir özetini (hash) en fazla bir gün
+    tutarız; mesajın kendisi veritabanımızda saklanmaz.
+  </li>
 </ul>
 
 <h3>2.7 Cihaz İzinleri</h3>
@@ -307,6 +317,10 @@
     <strong>Sentry</strong> — çökme/hata raporlarını toplamak için kullanılır.
   </li>
   <li>
+    <strong>Resend</strong> — web sitesindeki iletişim formuyla gönderilen
+    mesajları destek gelen kutumuza iletir.
+  </li>
+  <li>
     <strong>Web sitesi barındırma sağlayıcısı</strong> (şu an GitHub Pages) —
     web sitesini sunar.
   </li>
@@ -370,6 +384,11 @@
         Cihaz/uygulama teknik bilgileri, hata izleri (yalnızca mobil uygulama)
       </td>
       <td>Hata ayıklama ve kararlılık izleme</td>
+    </tr>
+    <tr>
+      <td>Resend</td>
+      <td>İletişim formu: ad (isteğe bağlı), e-posta adresi, mesaj</td>
+      <td>Mesajın destek gelen kutumuza iletilmesi</td>
     </tr>
     <tr>
       <td>Web sitesi barındırma sağlayıcısı</td>
@@ -532,8 +551,8 @@
 
 <h2>12. Uluslararası Veri Aktarımları</h2>
 <p>
-  Altyapı sağlayıcılarımız (Supabase, Google, Sentry ve web sitesi barındırma
-  sağlayıcımız) verilerinizi Türkiye dışındaki sunucularda (ör. Avrupa Birliği
+  Altyapı sağlayıcılarımız (Supabase, Google, Sentry, Resend ve web sitesi
+  barındırma sağlayıcımız) verilerinizi Türkiye dışındaki sunucularda (ör. Avrupa Birliği
   veya Amerika Birleşik Devletleri) işleyebilir. Bu tür aktarımlarda söz konusu
   sağlayıcıların sunduğu güvenlik ve uyum mekanizmalarına (standart sözleşme
   maddeleri, veri işleme sözleşmeleri vb.) dayanıyoruz.
@@ -565,6 +584,14 @@
   <li>
     <a href="https://sentry.io/privacy/" target="_blank" rel="noopener"
     >Sentry Gizlilik Politikası</a>
+  </li>
+  <li>
+    <a
+      href="https://resend.com/legal/privacy-policy"
+      target="_blank"
+      rel="noopener"
+    >Resend Gizlilik Politikası</a>
+    (web sitesindeki iletişim formu için)
   </li>
 </ul>
 

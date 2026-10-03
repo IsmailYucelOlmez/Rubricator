@@ -1,9 +1,24 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/logging/app_logger.dart';
 import '../../../../core/network/supabase_service.dart';
+import '../../../habit/data/datasources/habit_pending_logs_local_datasource.dart';
+
+/// Thrown by [AuthService.deleteAccount]; [code] is the edge function's
+/// `error` field (`invalid_code`, `unauthorized`, `delete_failed`, …).
+class AccountDeletionException implements Exception {
+  const AccountDeletionException(this.code);
+
+  final String code;
+
+  bool get isInvalidCode => code == 'invalid_code';
+
+  @override
+  String toString() => 'AccountDeletionException($code)';
+}
 
 /// All Supabase Auth calls live here — UI uses [authStateProvider] / this via Riverpod.
 class AuthService {
@@ -104,6 +119,53 @@ class AuthService {
       throw StateError('Password recovery verification failed.');
     }
     await _client.auth.updateUser(UserAttributes(password: newPassword));
+  }
+
+  /// Emails the signed-in user a one-time code that [deleteAccount] requires.
+  /// Uses the "Magic Link" template, which must show `{{ .Token }}`.
+  Future<void> sendAccountDeletionOtp() async {
+    final email = currentUser?.email?.trim();
+    if (email == null || email.isEmpty) {
+      throw StateError('No signed-in user with an email.');
+    }
+    await _client.auth.signInWithOtp(email: email, shouldCreateUser: false);
+  }
+
+  /// Permanently deletes the signed-in user's account and all their data via
+  /// the `delete-account` edge function (which verifies [otpCode] itself),
+  /// then clears the local session and this user's queued offline logs.
+  Future<void> deleteAccount(String otpCode) async {
+    final userId = currentUser?.id;
+    if (userId == null) throw StateError('No signed-in user found.');
+    AppLogger.info('auth', 'Delete account attempt');
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: '${SupabaseService.url}/functions/v1/delete-account',
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 60),
+        validateStatus: (_) => true,
+      ),
+    )..interceptors.add(SupabaseService.edgeFunctionAuthInterceptor());
+
+    final response = await dio.post<Map<String, dynamic>>(
+      '',
+      data: <String, dynamic>{'code': otpCode.trim()},
+    );
+    if (response.statusCode != 200) {
+      final code = response.data?['error'] as String? ?? 'delete_failed';
+      AppLogger.warning(
+        'auth',
+        'Delete account failed',
+        data: {'status': response.statusCode, 'error': code},
+      );
+      throw AccountDeletionException(code);
+    }
+
+    AppLogger.info('auth', 'Delete account success', data: {'userId': userId});
+    await HabitPendingLogsLocalDataSource().removeForUser(userId);
+    // The user no longer exists server-side; only drop the local session.
+    await _client.auth.signOut(scope: SignOutScope.local);
   }
 
   Future<void> updateProfile({

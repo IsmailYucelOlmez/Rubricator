@@ -1939,4 +1939,60 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privateList => 'Gizli';
+
+  @override
+  String get virgilFeedbackRelevant => 'Alakalı';
+
+  @override
+  String get virgilFeedbackIrrelevant => 'Alakasız';
+
+  @override
+  String get virgilFeedbackHint =>
+      'Sonuçları alakalı ya da alakasız diye işaretle, sonra iyileştir.';
+
+  @override
+  String get virgilFeedbackRefine => 'İyileştir';
+
+  @override
+  String get virgilFeedbackRefined => 'İşaretlerine göre iyileştirildi.';
+
+  @override
+  String get virgilFeedbackReset => 'İlk sonuçlar';
+
+  @override
+  String get virgilFeedbackFailed => 'İşaretin kaydedilemedi. Tekrar dene.';
+
+  @override
+  String get virgilFeedbackRateLimited =>
+      'Çok fazla işaretleme yaptın. Biraz sonra tekrar dene.';
+
+  @override
+  String get deleteAccount => 'Hesabı sil';
+
+  @override
+  String get deleteAccountTitle => 'Hesabı sil';
+
+  @override
+  String get deleteAccountWarning =>
+      'Bu işlem hesabını ve içindeki her şeyi kalıcı olarak siler: kitapların ve okuma durumların, okuma kayıtların ve serilerin, notların, alıntıların, incelemelerin, listelerin ve profil fotoğrafın. Bu işlem geri alınamaz.';
+
+  @override
+  String deleteAccountOtpExplain(String email) {
+    return 'Bunun sen olduğunu doğrulamak için $email adresine bir doğrulama kodu göndereceğiz.';
+  }
+
+  @override
+  String get deleteAccountSendCode => 'Kod gönder';
+
+  @override
+  String get deleteAccountCodeSent => 'Doğrulama kodu gönderildi.';
+
+  @override
+  String get deleteAccountConfirm => 'Hesabımı kalıcı olarak sil';
+
+  @override
+  String get deleteAccountSuccess => 'Hesabın silindi.';
+
+  @override
+  String get deleteAccountFailed => 'Hesabın silinemedi. Lütfen tekrar dene.';
 }

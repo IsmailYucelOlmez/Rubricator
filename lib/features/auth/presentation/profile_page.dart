@@ -21,6 +21,7 @@ import '../../profile/presentation/widgets/theme_selector.dart';
 import '../../profile_stats/presentation/widgets/stats_preview_card.dart';
 import '../../user_books/domain/entities/user_book_entity.dart';
 import 'auth_provider.dart';
+import 'delete_account_screen.dart';
 import 'login_page.dart';
 import 'register_page.dart';
 
@@ -104,6 +105,22 @@ class ProfilePage extends ConsumerWidget {
                     const HabitProfileSummary(),
                     const MyNotesEntryCard(),
                     const StatsPreviewCard(),
+                    const SizedBox(height: AppSpacing.lg),
+                    Center(
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const DeleteAccountScreen(),
+                          ),
+                        ),
+                        icon: const Icon(Icons.delete_forever_outlined),
+                        label: Text(l10n.deleteAccount),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
                   ],
                 ],
               ),

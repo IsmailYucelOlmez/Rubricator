@@ -60,6 +60,12 @@ class HabitPendingLogsLocalDataSource {
     await _save(all);
   }
 
+  Future<void> removeForUser(String userId) async {
+    final all = await getAll();
+    all.removeWhere((l) => l.userId == userId);
+    await _save(all);
+  }
+
   Future<void> _save(List<PendingReadingLogModel> logs) async {
     final prefs = await SharedPreferences.getInstance();
     if (logs.isEmpty) {

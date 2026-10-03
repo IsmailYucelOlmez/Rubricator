@@ -108,6 +108,20 @@ Deno.serve({ port: PORT }, async (req) => {
       msg: "Invalid Refresh Token",
     }, 400);
   }
+  // Contact form (supabase/functions/contact): "ratelimit@example.com" → 429,
+  // a message containing "fail" → 502, otherwise ok.
+  if (path === "/functions/v1/contact") {
+    if (body?.email === "ratelimit@example.com") {
+      return json({ error: "rate_limited" }, 429);
+    }
+    if (String(body?.message ?? "").includes("fail")) {
+      return json({ error: "send_failed" }, 502);
+    }
+    if (String(body?.message ?? "").trim().length < 10) {
+      return json({ error: "invalid", fields: { message: "too_short" } }, 400);
+    }
+    return json({ ok: true });
+  }
   if (path === "/auth/v1/signup") {
     if (body?.email === "taken@example.com") {
       return json({ ...USER, identities: [] });

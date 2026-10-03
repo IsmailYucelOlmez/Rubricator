@@ -13,7 +13,7 @@ export const CONTACT_EMAIL = "support@rubricator.site";
  * Version of the privacy policy, recorded with each web sign-up. Must equal the
  * "Last updated" date of the policy (a test checks this).
  */
-export const PRIVACY_POLICY_VERSION = "2026-09-27";
+export const PRIVACY_POLICY_VERSION = "2026-10-03";
 
 export interface PageRef {
   /** Stable id used for cross-language links. */

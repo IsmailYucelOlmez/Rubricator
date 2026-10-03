@@ -150,6 +150,7 @@ Deno.test("only the privacy policy's own third-party links point off-site", asyn
   assertEquals([...hosts].sort(), [
     "play.google.com", // the landing page's "Get the Android app" button
     "policies.google.com",
+    "resend.com", // privacy policy: contact-form email provider
     "sentry.io",
     "supabase.com",
   ]);
@@ -198,7 +199,8 @@ Deno.test("each page: lang, unique title/description, one h1, CSP, no scripts, n
       file,
     );
     // Only pages that need it run code: one module script plus a JSON data block.
-    const interactive = /(^|\/)(virgil|auth\/(confirmed|onay))\/index\.html$/
+    const interactive =
+      /(^|\/)(virgil|contact|iletisim|auth\/(confirmed|onay))\/index\.html$/
       .test(file);
     const scripts = html.match(/<script[^>]*>/gi) ?? [];
     assertEquals(scripts.length, interactive ? 2 : 0, `${file}: script count`);

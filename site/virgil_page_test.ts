@@ -104,6 +104,8 @@ Deno.test("the browser scripts are published, import only each other and avoid u
     "app.js",
     "auth.js",
     "confirmed.js",
+    "contact.js",
+    "fields.js",
     "virgil.js",
   ]);
   for (const f of files) {
@@ -316,4 +318,30 @@ Deno.test("without Supabase settings the confirmed page still renders (no script
     html,
     /Your email address is confirmed\. Continue to Virgil to sign in\./,
   );
+});
+
+// --- the contact form (pages.ts contact + static/js/contact.js) ------------
+
+Deno.test("contact: the form posts to the contact function, the address stays visible", async () => {
+  const dir = await buildTo(SUPABASE);
+  for (const file of ["contact/index.html", "tr/iletisim/index.html"]) {
+    const html = await read(dir, file);
+    assertMatch(html, /<form class="panel" id="form-contact"[^>]* hidden>/);
+    assertMatch(html, /data-supabase-url="https:\/\/proj\.supabase\.co"/);
+    assertMatch(html, /src="[^"]*assets\/js\/contact\.js"/);
+    assertMatch(html, /connect-src https:\/\/proj\.supabase\.co/);
+    // honeypot is in the form but out of the tab order
+    assertMatch(html, /name="website" type="text" tabindex="-1"/);
+    // the email address is always there (no JS / no config / other questions)
+    assertMatch(html, /href="mailto:support@rubricator\.site"/);
+  }
+  const js = await read(dir, "assets/js/contact.js");
+  assertMatch(js, /\/functions\/v1\/contact/);
+});
+
+Deno.test("contact: without Supabase config the page says to email instead", async () => {
+  const dir = await buildTo();
+  const html = await read(dir, "contact/index.html");
+  assert(!html.includes("data-supabase-url"));
+  assertMatch(html, /<div class="note"><p>The form isn't available right now/);
 });

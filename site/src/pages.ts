@@ -4,8 +4,13 @@
  * Only claims the app really supports are made here (see lib/features and the
  * privacy policy). The app is only on Google Play so far.
  */
-import { CONTACT_EMAIL, type Lang, type PageRef } from "./layout.ts";
-import { VIRGIL_SCRIPTS, virgilBody } from "./virgil.ts";
+import {
+  type BuildContext,
+  CONTACT_EMAIL,
+  type Lang,
+  type PageRef,
+} from "./layout.ts";
+import { QUILL_ICON, VIRGIL_SCRIPTS, virgilBody } from "./virgil.ts";
 import { CONFIRMED_SCRIPTS, confirmedBody } from "./confirmed.ts";
 
 // Filled in by build.ts (reads content/privacy-policy.<lang>.html).
@@ -44,19 +49,30 @@ const home = (lang: Lang): string => {
         listCover: "Shore",
       },
       virgilTitle: "Meet Virgil, your reading guide",
+      virgilTagline: "Virgil will guide your reading journey.",
+      // The phone shows Virgil's recommendation screen (sample data, aria-hidden).
+      phone: {
+        query: "a slow mystery in a seaside town",
+        books: [
+          ["The Lighthouse Murder", "M. Aras"],
+          ["Foggy Harbour", "E. Kaya"],
+          ["The Last Ferry", "D. Tan"],
+          ["House on the Shore", "S. Ay"],
+        ],
+      },
       virgilBody:
         "Describe the book you're in the mood for, in your own words, and Virgil suggests what to read next. Try it right here in your browser with your Rubricator account.",
       steps: [
         [
-          "1. Describe it",
+          "Describe it",
           "A mood, a plot, a topic or a book you loved: write it the way you'd tell a friend.",
         ],
         [
-          "2. Get recommendations",
+          "Get recommendations",
           "Virgil searches by meaning, not just keywords, and answers with books that fit.",
         ],
         [
-          "3. Keep reading",
+          "Keep reading",
           "Add what you like to your lists and shelves in the Rubricator mobile app.",
         ],
       ],
@@ -105,19 +121,29 @@ const home = (lang: Lang): string => {
         listCover: "Kıyı",
       },
       virgilTitle: "Okuma rehberin Virgil ile tanış",
+      virgilTagline: "Virgil okuma yolculuğuna rehberlik eder.",
+      phone: {
+        query: "sahil kasabasında yavaş bir polisiye",
+        books: [
+          ["Deniz Feneri Cinayeti", "M. Aras"],
+          ["Sisli Liman", "E. Kaya"],
+          ["Son Vapur", "D. Tan"],
+          ["Kıyıdaki Ev", "S. Ay"],
+        ],
+      },
       virgilBody:
         "Canın hangi kitabı istiyorsa kendi cümlelerinle anlat, Virgil sıradaki okumanı önersin. Rubricator hesabınla doğrudan tarayıcında dene.",
       steps: [
         [
-          "1. Anlat",
+          "Anlat",
           "Bir ruh hali, bir konu, bir olay örgüsü ya da sevdiğin bir kitap: bir arkadaşına anlatır gibi yaz.",
         ],
         [
-          "2. Öneri al",
+          "Öneri al",
           "Virgil yalnızca anahtar kelimelere değil, anlama göre arar ve sana uyan kitaplarla yanıt verir.",
         ],
         [
-          "3. Okumaya devam et",
+          "Okumaya devam et",
           "Beğendiklerini Rubricator mobil uygulamasında listelerine ve raflarına ekle.",
         ],
       ],
@@ -183,18 +209,37 @@ const home = (lang: Lang): string => {
         </div>
       </div>
     </section>
-    <section class="section alt">
+    <section class="section v-showcase">
       <div class="container">
-        <h2>${t.virgilTitle}</h2>
-        <p class="lead">${t.virgilBody}</p>
-        <div class="cards">
+        <div>
+          <h2 class="v-brand"><span class="sr-only">${t.virgilTitle}</span><span class="v-word" aria-hidden="true">Virgil</span> <span class="v-badge" aria-hidden="true">BETA</span></h2>
+          <p class="v-tagline">${t.virgilTagline}</p>
+          <p class="v-lead">${t.virgilBody}</p>
+          <ol class="v-steps">
 ${
     t.steps.map(([h, p]) =>
-      `          <div class="card"><h3>${h}</h3><p>${p}</p></div>`
+      `            <li><div><h3>${h}</h3><p>${p}</p></div></li>`
     ).join("\n")
   }
+          </ol>
+          <a class="btn" href="{{link:virgil}}">${t.tryVirgil}</a>
         </div>
-        <p><a class="btn" href="{{link:virgil}}">${t.tryVirgil}</a></p>
+        <div class="v-phone" aria-hidden="true">
+          <p class="v-phone-brand"><span class="v-word">Virgil</span> <span class="v-badge">BETA</span></p>
+          <div class="v-phone-body">
+            <p class="v-query">${t.phone.query}</p>
+            <ul class="v-grid">
+${
+    t.phone.books.map(([title, author], i) =>
+      `              <li><div class="tcover ${
+        ["tc-ink", "tc-red", "tc-soft", "tc-ink"][i]
+      }">${title}<small>${author}</small></div><span class="v-card-title">${title}</span><span class="v-card-author">${author}</span></li>`
+    ).join("\n")
+  }
+            </ul>
+          </div>
+          <div class="v-bar"><span class="v-fake-input">${t.phone.query}</span><span class="v-round v-submit">${QUILL_ICON}</span></div>
+        </div>
       </div>
     </section>
     <section class="section">
@@ -234,9 +279,6 @@ const about = (lang: Lang): string =>
         <h2>How we treat your data</h2>
         <p>We don't sell personal data. Your reading history and content belong to your account, and you can ask us to delete it at any time. Read the <a href="{{link:privacy}}">privacy policy</a> for the details, including which third-party services we use, and see how to <a href="{{link:deletion}}">delete your account</a>.</p>
 
-        <h2>Who builds it</h2>
-        <p>Rubricator is built and maintained by an independent developer, İsmail Yücel Ölmez. It's in active development, and feedback shapes what comes next.</p>
-
         <div class="note"><p>Questions, ideas or bug reports? Write to ${mail}.</p></div>
       </article>
     </div>`
@@ -257,9 +299,6 @@ const about = (lang: Lang): string =>
         <h2>Verilerine nasıl davranıyoruz?</h2>
         <p>Kişisel verileri satmıyoruz. Okuma geçmişin ve içeriklerin hesabına aittir ve dilediğin zaman silinmesini isteyebilirsin. Kullandığımız üçüncü taraf hizmetler dahil ayrıntılar için <a href="{{link:privacy}}">gizlilik politikasına</a> bak; hesabını nasıl sileceğini <a href="{{link:deletion}}">Hesap silme</a> sayfasında bulabilirsin.</p>
 
-        <h2>Kim geliştiriyor?</h2>
-        <p>Rubricator, bağımsız geliştirici İsmail Yücel Ölmez tarafından geliştirilir ve sürdürülür. Proje aktif olarak geliştiriliyor ve geri bildirimler sıradaki adımları şekillendiriyor.</p>
-
         <div class="note"><p>Sorun, fikir ya da hata bildirimi için ${mail} adresine yazabilirsin.</p></div>
       </article>
     </div>`;
@@ -267,56 +306,147 @@ const about = (lang: Lang): string =>
 // ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------
-const contact = (lang: Lang): string =>
-  lang === "en"
-    ? `    <div class="page container">
-      <article class="prose">
-        <h1>Contact</h1>
-        <p class="lead">The quickest way to reach us is email.</p>
+const CONTACT_STRINGS = {
+  en: {
+    h1: "Contact",
+    lead: "Write to us with the form below, or by email.",
+    formTitle: "Send a message",
+    name: "Name (optional)",
+    email: "Your email",
+    emailHint: "We'll reply to this address.",
+    message: "Message",
+    send: "Send message",
+    privacy:
+      "Your message and email address are emailed to us (through our email provider, Resend) and used only to reply. See the",
+    privacyLink: "privacy policy",
+    noscript: "The form needs JavaScript. You can also email us at",
+    unavailable: "The form isn't available right now. Please email us at",
+    otherTitle: "Other ways to reach us",
+    bugsTitle: "Helpful details for bug reports",
+    // Messages (contact.js)
+    sending: "Sending…",
+    sent: "Thanks! Your message was sent. We'll reply by email.",
+    errNameLong: "Keep the name under 100 characters.",
+    errEmailRequired: "Email is required.",
+    errEmailInvalid: "Enter a valid email address.",
+    errMessageRequired: "Write a message.",
+    errMessageShort: "Write at least 10 characters.",
+    errMessageLong: "Keep it under 5000 characters.",
+    errRateLimit:
+      "You've sent several messages recently. Please try again in an hour.",
+    errNetwork: "Couldn't reach the server. Check your connection and try again.",
+    errServer:
+      "Your message couldn't be sent. Please try again later or email us directly.",
+  },
+  tr: {
+    h1: "İletişim",
+    lead: "Aşağıdaki formla ya da e-postayla bize yazabilirsin.",
+    formTitle: "Mesaj gönder",
+    name: "Adın (isteğe bağlı)",
+    email: "E-posta adresin",
+    emailHint: "Yanıtı bu adrese göndereceğiz.",
+    message: "Mesajın",
+    send: "Mesajı gönder",
+    privacy:
+      "Mesajın ve e-posta adresin bize e-postayla (e-posta sağlayıcımız Resend üzerinden) iletilir ve yalnızca yanıt vermek için kullanılır. Ayrıntılar için",
+    privacyLink: "gizlilik politikası",
+    noscript: "Form için JavaScript gerekiyor. Bize e-postayla da yazabilirsin:",
+    unavailable: "Form şu an kullanılamıyor. Lütfen e-postayla yaz:",
+    otherTitle: "Bize ulaşmanın diğer yolları",
+    bugsTitle: "Hata bildirimi için faydalı bilgiler",
+    sending: "Gönderiliyor…",
+    sent: "Teşekkürler! Mesajın gönderildi. E-postayla yanıt vereceğiz.",
+    errNameLong: "Ad 100 karakteri geçmesin.",
+    errEmailRequired: "E-posta gerekli.",
+    errEmailInvalid: "Geçerli bir e-posta gir.",
+    errMessageRequired: "Bir mesaj yaz.",
+    errMessageShort: "En az 10 karakter yaz.",
+    errMessageLong: "5000 karakterin altında tut.",
+    errRateLimit:
+      "Kısa sürede birkaç mesaj gönderdin. Lütfen bir saat sonra tekrar dene.",
+    errNetwork: "Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+    errServer:
+      "Mesajın gönderilemedi. Lütfen daha sonra tekrar dene ya da doğrudan e-posta gönder.",
+  },
+} as const;
 
-        <div class="contact-box">
-          <dl>
+const escAttr = (v: string) =>
+  v.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+
+/** JSON that is safe inside a <script type="application/json"> block. */
+const jsonIsland = (value: unknown) =>
+  JSON.stringify(value).replaceAll("<", "\\u003c");
+
+const contact = (lang: Lang, ctx: BuildContext): string => {
+  const t = CONTACT_STRINGS[lang];
+  const configured = Boolean(ctx.supabaseUrl && ctx.supabaseAnonKey);
+  const config = configured
+    ? ` data-supabase-url="${escAttr(ctx.supabaseUrl!)}" data-anon-key="${
+      escAttr(ctx.supabaseAnonKey!)
+    }"`
+    : "";
+  const info = lang === "en"
+    ? `<dl>
             <dt>Email</dt>
             <dd>${mail}</dd>
             <dt>Account deletion</dt>
             <dd>See <a href="{{link:deletion}}">how to request it</a>; use the subject <em>Account Deletion Request</em>.</dd>
             <dt>Privacy questions and requests</dt>
             <dd>Write to the same address, or read the <a href="{{link:privacy}}">privacy policy</a>.</dd>
-          </dl>
-        </div>
-
-        <h2>Helpful details for bug reports</h2>
-        <ul>
-          <li>What you were doing and what you expected to happen.</li>
-          <li>Your device model and operating system, and the app version (Profile screen).</li>
-          <li>A screenshot, if it helps. Please don't send passwords.</li>
-        </ul>
-      </article>
-    </div>`
-    : `    <div class="page container">
-      <article class="prose">
-        <h1>İletişim</h1>
-        <p class="lead">Bize ulaşmanın en hızlı yolu e-postadır.</p>
-
-        <div class="contact-box">
-          <dl>
+          </dl>`
+    : `<dl>
             <dt>E-posta</dt>
             <dd>${mail}</dd>
             <dt>Hesap silme</dt>
             <dd><a href="{{link:deletion}}">Nasıl talep edileceğine</a> bak; konu satırına <em>Account Deletion Request</em> yaz.</dd>
             <dt>Gizlilik soruları ve talepleri</dt>
             <dd>Aynı adrese yazabilir ya da <a href="{{link:privacy}}">gizlilik politikasını</a> okuyabilirsin.</dd>
-          </dl>
+          </dl>`;
+  const bugs = lang === "en"
+    ? `<li>What you were doing and what you expected to happen.</li>
+          <li>Your device model and operating system, and the app version (Profile screen).</li>
+          <li>A screenshot, if it helps (send it by email). Please don't send passwords.</li>`
+    : `<li>Ne yapıyordun ve ne olmasını bekliyordun?</li>
+          <li>Cihaz modelin, işletim sistemin ve uygulama sürümün (Profil ekranı).</li>
+          <li>İşe yarayacaksa bir ekran görüntüsü (e-postayla gönder). Lütfen şifre göndermeyin.</li>`;
+  return `    <div class="page container" id="contact" data-lang="${lang}"${config}>
+      <article class="prose">
+        <h1>${t.h1}</h1>
+        <p class="lead">${t.lead}</p>
+
+        <section class="contact-form" aria-labelledby="contact-form-title">
+          <h2 id="contact-form-title">${t.formTitle}</h2>
+          <noscript><div class="note"><p>${t.noscript} ${mail}.</p></div></noscript>
+          <div class="note"${configured ? " hidden" : ""}><p>${t.unavailable} ${mail}.</p></div>
+          <p class="status" id="status" role="status" aria-live="polite" hidden></p>
+          <form class="panel" id="form-contact" method="post" action="#" novalidate hidden>
+            <div class="field"><label for="contact-name">${t.name}</label>
+              <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="100"></div>
+            <div class="field"><label for="contact-email">${t.email}</label>
+              <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" aria-describedby="contact-email-hint" required>
+              <p class="hint" id="contact-email-hint">${t.emailHint}</p></div>
+            <div class="field"><label for="contact-message">${t.message}</label>
+              <textarea id="contact-message" name="message" rows="6" maxlength="5000" required></textarea></div>
+            <div class="field hp" aria-hidden="true"><label for="contact-website">Website</label>
+              <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+            <p class="hint">${t.privacy} <a href="{{link:privacy}}">${t.privacyLink}</a>.</p>
+            <div class="actions"><button class="btn" type="submit">${t.send}</button></div>
+          </form>
+        </section>
+
+        <h2>${t.otherTitle}</h2>
+        <div class="contact-box">
+          ${info}
         </div>
 
-        <h2>Hata bildirimi için faydalı bilgiler</h2>
+        <h2>${t.bugsTitle}</h2>
         <ul>
-          <li>Ne yapıyordun ve ne olmasını bekliyordun?</li>
-          <li>Cihaz modelin, işletim sistemin ve uygulama sürümün (Profil ekranı).</li>
-          <li>İşe yarayacaksa bir ekran görüntüsü. Lütfen şifre göndermeyin.</li>
+          ${bugs}
         </ul>
       </article>
+      <script type="application/json" id="i18n">${jsonIsland(t)}</script>
     </div>`;
+};
 
 // ---------------------------------------------------------------------------
 // Account deletion (Play Console requires a public URL for this)
@@ -326,14 +456,24 @@ const deletion = (lang: Lang): string =>
     ? `    <div class="page container">
       <article class="prose">
         <h1>Rubricator Account Deletion Request</h1>
-        <p>If you use the <strong>Rubricator</strong> mobile app and want to delete your account, you can submit a request by email.</p>
+        <p>If you use the <strong>Rubricator</strong> app and want to delete your account, you can do it yourself in the app, or submit a request by email.</p>
+
+        <h2>Delete it in the app</h2>
+        <ol>
+          <li>Open the <strong>Profile</strong> tab while signed in.</li>
+          <li>Tap <strong>Delete account</strong> at the bottom of the page.</li>
+          <li>Enter the verification code we email to you and confirm.</li>
+        </ol>
+        <p>Your account and all data associated with it are deleted immediately and permanently.</p>
+
+        <h2>Or request it by email</h2>
 
         <div class="note">
           <p><strong>Email:</strong> ${mail}<br>
           <strong>Subject:</strong> "Account Deletion Request"</p>
         </div>
 
-        <h2>How to request deletion</h2>
+        <h3>How to send the request</h3>
         <ol>
           <li>Open your email app.</li>
           <li>Send an email to <strong>${CONTACT_EMAIL}</strong>.</li>
@@ -360,14 +500,24 @@ const deletion = (lang: Lang): string =>
     : `    <div class="page container">
       <article class="prose">
         <h1>Rubricator Hesap Silme Talebi</h1>
-        <p><strong>Rubricator</strong> mobil uygulamasını kullanıyor ve hesabını silmek istiyorsan, talebini e-posta ile iletebilirsin.</p>
+        <p><strong>Rubricator</strong> uygulamasını kullanıyor ve hesabını silmek istiyorsan, bunu uygulamanın içinden kendin yapabilir ya da talebini e-posta ile iletebilirsin.</p>
+
+        <h2>Uygulamadan sil</h2>
+        <ol>
+          <li>Giriş yapmışken <strong>Profil</strong> sekmesini aç.</li>
+          <li>Sayfanın en altındaki <strong>Hesabı sil</strong> düğmesine dokun.</li>
+          <li>E-posta adresine gönderdiğimiz doğrulama kodunu gir ve onayla.</li>
+        </ol>
+        <p>Hesabın ve ona bağlı tüm veriler anında ve kalıcı olarak silinir.</p>
+
+        <h2>Ya da e-posta ile talep et</h2>
 
         <div class="note">
           <p><strong>E-posta:</strong> ${mail}<br>
           <strong>Konu:</strong> "Account Deletion Request"</p>
         </div>
 
-        <h2>Silme talebi nasıl yapılır?</h2>
+        <h3>Talep nasıl gönderilir?</h3>
         <ol>
           <li>E-posta uygulamanı aç.</li>
           <li><strong>${CONTACT_EMAIL}</strong> adresine e-posta gönder.</li>
@@ -473,10 +623,11 @@ export const PAGES: PageRef[] = [
     nav: true,
     title: { en: "Contact | Rubricator", tr: "İletişim | Rubricator" },
     description: {
-      en: "Get in touch with the Rubricator team by email.",
-      tr: "Rubricator ekibiyle e-posta yoluyla iletişime geç.",
+      en: "Get in touch with the Rubricator team: send a message or email us.",
+      tr: "Rubricator ekibiyle iletişime geç: mesaj gönder ya da e-posta yaz.",
     },
     body: contact,
+    scripts: ["assets/js/contact.js"],
   },
   {
     // Existing public URL /privacy-policy.html must keep working (Play Console).

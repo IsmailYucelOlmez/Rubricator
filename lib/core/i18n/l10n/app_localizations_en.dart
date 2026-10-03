@@ -1974,4 +1974,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get virgilFeedbackRateLimited =>
       'You\'ve marked a lot of results. Try again in a while.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountTitle => 'Delete account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This permanently deletes your account and everything in it: your books and reading statuses, reading logs and streaks, notes, quotes, reviews, lists and profile photo. This can\'t be undone.';
+
+  @override
+  String deleteAccountOtpExplain(String email) {
+    return 'To confirm it\'s you, we\'ll send a verification code to $email.';
+  }
+
+  @override
+  String get deleteAccountSendCode => 'Send code';
+
+  @override
+  String get deleteAccountCodeSent => 'Verification code sent.';
+
+  @override
+  String get deleteAccountConfirm => 'Permanently delete my account';
+
+  @override
+  String get deleteAccountSuccess => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountFailed =>
+      'Your account couldn\'t be deleted. Please try again.';
 }

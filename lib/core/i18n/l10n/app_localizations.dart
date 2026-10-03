@@ -3421,6 +3421,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'ve marked a lot of results. Try again in a while.'**
   String get virgilFeedbackRateLimited;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account and everything in it: your books and reading statuses, reading logs and streaks, notes, quotes, reviews, lists and profile photo. This can\'t be undone.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @deleteAccountOtpExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'To confirm it\'s you, we\'ll send a verification code to {email}.'**
+  String deleteAccountOtpExplain(String email);
+
+  /// No description provided for @deleteAccountSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get deleteAccountSendCode;
+
+  /// No description provided for @deleteAccountCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code sent.'**
+  String get deleteAccountCodeSent;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete my account'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account couldn\'t be deleted. Please try again.'**
+  String get deleteAccountFailed;
 }
 
 class _AppLocalizationsDelegate

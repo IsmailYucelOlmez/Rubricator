@@ -29,6 +29,7 @@ Tek kaynak: `site/static/site.css` → `:root` (açık) ve `@media (prefers-colo
 | `--border-strong` | #7E8286 | #787E83 | Form alanı kenarı (input, textarea, select). ≥3:1 |
 | `--soft` | #F0EBD8 | #2A2E31 | Hero görsel zemini, `.note`, `.status`, kod |
 | `--focus` | #1A5FD0 | #7FB0FF | Odak halkası (bilinçli olarak markadan farklı) |
+| `--v-paper` | #FFFFFF | #161A1D | Virgil "kâğıdı" (mobildeki `VirgilColors.paper`): Virgil sayfası ve landing'deki Virgil bölümü zemini |
 | `--scrim` | #161A1D @60% | aynı | Dialog arka planı (`::backdrop`), iki temada da koyu |
 | `--success` | #2A8A4A | #5CC98A | Başarı **göstergesi** (`.status[data-kind=ok]` kenarı). Metin rengi olarak kullanılmaz (açıkta 4.5:1 altında) |
 
@@ -54,7 +55,7 @@ Kurallar:
 ## 3. Tipografi
 - **Outfit** (400/500/600/700, `site/static/fonts/`, self-host): tüm başlık ve gövde metni.
 - **Nouveau** (DT Nouveau): **sadece "Rubricator" logo yazısında** (`.brand-name`) kullanılır. Türkçe karakter içermediği için başka hiçbir metinde kullanılmaz.
-- **Megrim** (`site/static/fonts/Megrim-Regular.woff2`, OFL; kaynak `assets/Virgil/Megrim`): **sadece Virgil sayfasındaki "Virgil" wordmark'ında** (`.v-word`), mobildeki Virgil modülüyle aynı. Başka metinde kullanılmaz.
+- **Megrim** (`site/static/fonts/Megrim-Regular.woff2`, OFL; kaynak `assets/Virgil/Megrim`): **sadece "Virgil" wordmark'ında** (`.v-word`: Virgil sayfası ve landing'deki Virgil bölümü), mobildeki Virgil modülüyle aynı. Başka metinde kullanılmaz.
 - Harici font servisi yok (CSP `font-src 'self'`).
 
 | Rol | Değer |
@@ -66,6 +67,7 @@ Kurallar:
 | `.lead` | clamp(1.1rem, 2vw, 1.3rem), `--muted`, max 46ch |
 | `.eyebrow` | 0.85rem, 600, BÜYÜK HARF, letter-spacing 0.08em, `--primary-text` |
 | `.hint`, `.meta` | 0.92–0.95rem, `--muted` |
+| İletişim formu | `.contact-form`, `.panel`, `.field`, `.field.hp`, `.status` | İletişim sayfası. Ad (isteğe bağlı), e-posta, mesaj; alan altı hatalar (`fields.js`, Virgil ile ortak). JS veya Supabase yoksa form gizli kalır, e-posta adresi gösterilir. `.field.hp` bot tuzağı (ekran dışı, `tabindex=-1`) |
 | Uzun metin | `.prose` max 70ch (`--prose`) |
 
 ## 4. Şekil, boşluk ve derinlik
@@ -99,10 +101,11 @@ Kurallar:
 | Durum mesajı | `.status[data-kind=info\|ok\|error]` | `role=status`, `aria-live=polite`. Tür ikonla da gösterilir: CSS `::before` + `mask` (`--icon-info/ok/error`, `data:` SVG). Markup ve `say()` düz metin kalır. Sol çubuk yok |
 | Form | `.field`, `.field-narrow`, `.field.check`, `.hint`, `.field-error`, input/textarea/select | Görünür label zorunlu. Alan yüksekliği 44px, hover'da `--text` kenar. Doğrulama hatası alanın altında: `aria-invalid` (2px `--primary-text` kenar) + ikonlu `.field-error` (`aria-describedby` ile bağlı, JS `checkFields`). `#status` yalnızca form geneli hatalar için |
 | Sekme | `.tabs`, `.tab[aria-pressed]` | Giriş / Kayıt. Tek kaplı segmented control (`--bg` zemin, pill). Seçili parça `--surface` + `--border-strong` kenar, seçili olmayan `--muted`. Kırmızı sadece gönder butonunda |
-| Panel | `.panel`, `.account-bar` | Virgil giriş/kayıt formları, max 44rem. Arama görünümü panelsiz (`.v-search`) |
-| Virgil başlığı | `.v-head`, `.v-brand`, `.v-word`, `.v-badge`, `.v-tagline`, `.v-lead`, `.v-rule` | `h1` = Megrim "Virgil" + BETA rozeti (mobildeki `VirgilBrandHeader`), slogan, açıklama, altında `--text` renginde ince çizgi |
-| Virgil arama | `.v-bar`, `.v-input`, `.v-round`, `.v-submit`, `.v-genres`, `.v-chips`, `.v-chip`, `.v-intro` | Tek satır giriş (15px köşe, `--text` kenar), yuvarlak tür düğmesi (yalnızca EN, `aria-expanded` → çip paneli), kırmızı yuvarlak gönder (mobildeki tüy kalem ikonu, `aria-label`). Aramadan önce `.v-intro` metni |
-| Kitap sonucu | `.v-query`, `.v-category`, `.v-grid`, `.v-card`, `.v-card-title`, `.v-card-author`, `.v-card.skeleton`, `.book-cover`, `.chip`, `.empty`, `.v-dialog` | Mobildeki gibi: sorgu sonuçların başlığı olur (`h2`, önünde gizli "Öneriler:"), EN'de seçili tür altında. Kapak ızgarası: mobilde 2 sütun, genişte ~150px kapak (en fazla 6 sütun); kartta başlık (2 satır) + yazar. Kart bir `button`: açıklamayı `<dialog>` içinde açar (web'de kitap sayfası yok). Aranırken 6 iskelet kart; hata olursa önceki sonuçlar geri gelir. Sonuç yok: `.empty` |
+| Panel | `.panel` | Virgil giriş/kayıt formları, max 44rem |
+| Virgil ekranı | `.v-screen`, `.v-frame`, `.v-head`, `.v-brand`, `.v-word`, `.v-badge`, `.v-account`, `.v-auth`, `.v-tagline`, `.v-lead`, `.v-app`, `.v-content`, `.v-intro`, `.v-note`, `.v-dock` | Mobildeki öneri ekranının düzeni: `--v-paper` zeminli, ekran yüksekliğinde; üstte marka satırı (`h1` = Megrim "Virgil" + BETA, sağda hesap; telefonda yalnızca "Çıkış yap"), ortada içerik (aramadan önce ortalanmış `.v-intro`, sonra sonuçlar), altta `position: sticky` arama alanı (`.v-dock`). Giriş yapılmamışken slogan + açıklama + giriş paneli |
+| Virgil arama | `.v-bar`, `.v-input`, `.v-round`, `.v-submit`, `.v-genres`, `.v-chips`, `.v-chip` | `.v-dock` içinde. Tek satır giriş (15px köşe, `--text` kenar, `--v-paper` zemin), yuvarlak tür düğmesi (yalnızca EN, `aria-expanded`), kırmızı yuvarlak gönder (tüy kalem, `aria-label`). Tür çipleri çubuğun hemen üstünde, tek satır yatay kaydırmalı. Arama alanının etiketi bilinçli olarak `.sr-only` (mobildeki gibi yalnızca placeholder görünür) |
+| Kitap sonucu | `.v-query`, `.v-category`, `.v-grid`, `.v-card`, `.v-card-title`, `.v-card-author`, `.v-card.skeleton`, `.book-cover`, `.empty`, `.v-dialog` | Mobildeki gibi: sorgu sonuçların başlığı (`h2`, önünde gizli "Öneriler:"), EN'de seçili tür altında. Kapak ızgarası: telefonda 2 sütun, genişte ~150px kapak; kartta yalnızca başlık (2 satır) + yazar. Kart bir `button` → `<dialog>`: kapak, başlık, yazar, açıklama. Kategori gösterilmez (katalog değerleri "Unknown", "Literature" gibi anlamsız olabiliyor). Aranırken 6 iskelet kart; hata olursa önceki sonuçlar geri gelir. Sonuç yok: `.empty` |
+| Landing Virgil bölümü | `.section.v-showcase`, `.v-steps`, `.v-phone`, `.v-phone-brand`, `.v-phone-body`, `.v-fake-input` | `--v-paper` zeminli bölüm: solda Megrim wordmark (`h2`, görünmez başlık metniyle), slogan, açıklama, yuvarlak numaralı 3 adım ve "Virgil'i dene"; sağda telefon çerçevesinde Virgil'in öneri ekranı (örnek veri EN+TR, `aria-hidden`) |
 | Uzun metin | `.prose`, `.table-wrap`, `.meta`, `.contact-box` | Gizlilik, Hakkımızda, İletişim |
 
 ## 8. Ekrana özel kurallar
@@ -112,9 +115,10 @@ Kurallar:
 - **Virgil sayfası durumları:** unavailable (env yok), noscript, giriş, giriş hatası, kayıt, şifre sıfırlama (2 adım), arama boş, sorgu hatası, aranıyor, sonuçlar, sonuç yok, günlük limit, oturum süresi doldu. Her değişiklikte `virgil_states.mjs` ile görüntülenir.
 - **Günlük limit:** Hak bitince (`usage.used >= usage.limit` ya da 429 `daily_limit_reached`) "Öneri al" butonu `aria-disabled="true"` olur (odaklanabilir kalır), gönderim JS'te engellenir. `#usage` (`aria-live="polite"`, butonun `aria-describedby`'ı) `errDailyLimit` metnini gösterir: neden + yarın yenilenir. Mesaj `#status`'ta tekrarlanmaz. `virgil_states.mjs` iki yolu da görüntüler: `limit_error` (429) ve `limit_reached` (sayfa açılırken hak bitmiş).
 - **Durumlar görüntüleri:** `virgil_states.mjs` ayrıca `auth_field_error` (alan altı hatalar), `searching` (iskelet) ve `book_dialog` (ayrıntı penceresi) durumlarını alır. Tür paneli (EN) script'te yok, elle doğrulanır.
-- **Virgil ve mobil:** Web Virgil sayfası mobildeki Virgil modülünün dilini izler (wordmark, çubuk, çip paneli, sorgu = başlık, kapak ızgarası). Bilinçli farklar: çubuk altta değil üstte; kitap sayfası yerine dialog; vurgu rengi sitenin `--primary`'si (mobildeki #EF233C eklenmedi).
+- **Virgil ve mobil:** Web Virgil sayfası mobildeki Virgil modülünün dilini izler (wordmark, çubuk, çip paneli, sorgu = başlık, kapak ızgarası). Düzen mobildeki öneri ekranıyla aynı (çubuk altta, sticky). Bilinçli farklar: hub ekranı yok (sayfa doğrudan öneri ekranıyla açılır); kitap sayfası yerine dialog; vurgu rengi sitenin `--primary`'si (mobildeki #EF233C eklenmedi).
 - **Kitap sonuçları:** Kullanıcı ve katalog verisi sadece `textContent` ile basılır (XSS). Açıklamalar uzun olabilir, uzun metin testi mock'ta var.
 - **Onay sayfası:** Statik durum mesajı `data-kind="ok"` ile gelir. JS hata bulursa `error` yapar.
+- **İletişim formu:** `static/js/contact.js` → edge function `contact` (Resend ile support adresine e-posta, gönderenin adresi yalnızca Reply-To). Sunucu tarafı: izinli origin, alan doğrulaması, bot tuzağı, IP başına saatte 3 mesaj (`contact_allow`, IP'nin tuzlanmış özeti 1 gün tutulur). Gizlilik politikasında Resend listelidir.
 - **Landing:** Hero uygulamanın tamamını anlatır: birincil eylem "Android uygulamasını indir" (`.btn.store` → Google Play, `PLAY_STORE_URL`), ikincil "Virgil'i dene" (`.btn.secondary`). Siteden dışarı giden linkler `build_test.ts` içinde izin listesindedir. Özellikler `.cards` ile gösterilir, her kart kısa başlık ve tek cümleden oluşur.
 - **Hukuki sayfalar:** `.prose` + `.table-wrap`. Gizlilik politikası sürümü `PRIVACY_POLICY_VERSION` ile "Last updated" tarihi eşleşmeli (test kontrol eder).
 
@@ -129,6 +133,10 @@ Kurallar:
 
 - 2026-10-01 — Bileşen iyileştirmesi 1–4 (mockup: `design/mockups/components.html`): kitap sonucu kartı, ikonlu durum mesajı, alan altı form hataları, segmented sekmeler.
 - 2026-10-01 — Hero yeniden tasarlandı (mockup: `design/mockups/hero-virgil.html`, seçenek A revize): logo yerine uygulamanın görünümü, Google Play birincil eylem. Virgil sayfası mobil modüle yaklaştırıldı; liste kartları yerine kapak ızgarası + dialog. Megrim fontu yalnızca Virgil wordmark'ı için eklendi. Vurgu rengi değişmedi.
+
+- 2026-10-03 — Virgil sayfası mobil öneri ekranının düzenine geçirildi (mockup `design/mockups/virgil-layout.html`, V1): marka satırı, ortada içerik, altta sticky arama alanı. Landing'deki Virgil tanıtımı L2: adımlar + telefon çerçevesinde Virgil ekranı. Kitap ayrıntısından kategori kaldırıldı.
+
+- 2026-10-03 — Hakkımızda'dan "Kim geliştiriyor?" bölümü kaldırıldı. İletişim sayfasına Supabase + Resend ile çalışan form eklendi; gizlilik politikası 03.10.2026 sürümüne güncellendi.
 
 **Bilinen sorunlar (öneri; kullanıcı onayı olmadan uygulanmaz)**
 - [Boşluk] site.css'te ölçek dışı rem değerleri var. Bir kurala dokunulduğunda o kuralın değerleri ölçeğe çekilir. Toplu refactor yapılmaz.

@@ -41,6 +41,18 @@ verify_jwt = false
 # (see xdocs/rubricator_api_security.md).
 verify_jwt = false
 
+[functions.contact]
+# Website contact form -> email to support (Resend). Used without an account and
+# the site only has the sb_publishable_* key, so no JWT; the function restricts
+# origins, validates input, has a honeypot and a per-IP rate limit instead.
+verify_jwt = false
+
+[functions.delete-account]
+# Self-service account deletion from the profile page. verify_jwt stays false
+# because the apps use sb_publishable_* keys (not JWTs); the function verifies
+# the session JWT itself and requires an email OTP before deleting.
+verify_jwt = false
+
 [functions.warm-genre-cache]
 # Invoked by pg_cron with service role; no end-user JWT.
 verify_jwt = false

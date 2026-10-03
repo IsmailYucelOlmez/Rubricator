@@ -1965,4 +1965,34 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get virgilFeedbackRateLimited =>
       'Çok fazla işaretleme yaptın. Biraz sonra tekrar dene.';
+
+  @override
+  String get deleteAccount => 'Hesabı sil';
+
+  @override
+  String get deleteAccountTitle => 'Hesabı sil';
+
+  @override
+  String get deleteAccountWarning =>
+      'Bu işlem hesabını ve içindeki her şeyi kalıcı olarak siler: kitapların ve okuma durumların, okuma kayıtların ve serilerin, notların, alıntıların, incelemelerin, listelerin ve profil fotoğrafın. Bu işlem geri alınamaz.';
+
+  @override
+  String deleteAccountOtpExplain(String email) {
+    return 'Bunun sen olduğunu doğrulamak için $email adresine bir doğrulama kodu göndereceğiz.';
+  }
+
+  @override
+  String get deleteAccountSendCode => 'Kod gönder';
+
+  @override
+  String get deleteAccountCodeSent => 'Doğrulama kodu gönderildi.';
+
+  @override
+  String get deleteAccountConfirm => 'Hesabımı kalıcı olarak sil';
+
+  @override
+  String get deleteAccountSuccess => 'Hesabın silindi.';
+
+  @override
+  String get deleteAccountFailed => 'Hesabın silinemedi. Lütfen tekrar dene.';
 }

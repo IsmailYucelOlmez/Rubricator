@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virgil düzen alternatifleri</title>
+<link rel="stylesheet" href="../../site/static/site.css">
+<style>
+/* Mobil Virgil'in "kâğıt" rengi: açıkta beyaz, koyuda uygulama arka planı
+   (VirgilColors.paper). Siteye taşınırsa token olur. */
+:root { --v-paper: var(--surface); }
+@media (prefers-color-scheme: dark) { :root { --v-paper: var(--bg); } }
+
+/* ---------- mockup düzeni ---------- */
+.mock { padding-block: 2.5rem 4rem; }
+.intro { max-width: 46rem; }
+.mock-item { border-top: 1px solid var(--border); padding-block: 2.5rem; }
+.mock-item h2 { margin-top: 0; }
+.mock-why { color: var(--muted); max-width: 48rem; margin: 0 0 1.5rem; padding-left: 1.25rem; }
+.mock-why li { margin-bottom: 0.25rem; }
+.tag { display: inline-block; margin: 0 0 0.75rem; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text); }
+.pair { display: grid; gap: 1.5rem; align-items: start; grid-template-columns: minmax(0, 1fr); }
+.s-site span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (min-width: 72rem) { .pair { grid-template-columns: 1fr 375px; } }
+.pair > *, .land .container > * { min-width: 0; }
+.cap { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.5rem; }
+
+/* Ekran çerçeveleri */
+.screen {
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--v-paper); color: var(--text);
+  border: 1px solid var(--border-strong); border-radius: 16px;
+}
+.screen.desk { height: 620px; }
+.screen.phone { width: 375px; max-width: 100%; height: 760px; border-radius: 36px; }
+.s-site {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); background: var(--bg);
+  font-size: 0.8rem; color: var(--muted);
+}
+.s-site b { font-family: "Nouveau", serif; font-weight: 400; font-size: 1rem; color: var(--text); }
+.s-body { flex: 1; min-height: 0; overflow: auto; }
+.s-pad { padding-inline: 1.5rem; }
+
+/* ---------- Mobil Virgil bileşenleri (web karşılıkları) ---------- */
+.brand-row { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; min-height: 4rem; padding: 0.75rem 1.5rem 0; }
+.brand { display: flex; align-items: flex-end; gap: 0.4rem; }
+.word { font-family: "Megrim", "Outfit", sans-serif; font-size: 2.5rem; line-height: 1; letter-spacing: 0.06em; }
+.badge { margin-bottom: 0.35rem; padding: 0 0.2rem; border: 1px solid currentColor; border-radius: 3px; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.4; }
+.acct { font-size: 0.8rem; color: var(--muted); text-align: right; }
+.acct a { color: var(--primary-text); }
+.tagline { margin: 0.25rem 0 0; font-size: 0.95rem; }
+
+.empty-body { height: 100%; display: grid; place-items: center; padding: 2rem; text-align: center; font-size: 1rem; line-height: 1.45; }
+.empty-body p { margin: 0; max-width: 30rem; }
+
+.bar { flex: none; display: flex; align-items: center; gap: 1rem; min-height: 4rem; padding: 0 1.5rem; }
+.bar.top { padding: 0; min-height: 0; }
+.inp {
+  flex: 1; min-width: 0; height: 2.5rem; display: flex; align-items: center; padding: 0 0.9rem;
+  border: 1px solid var(--text); border-radius: 15px; color: var(--muted); font-size: 0.9rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.inp.filled { color: var(--text); }
+.rnd { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 1px solid var(--text); display: grid; place-items: center; color: var(--text); background: var(--v-paper); }
+.rnd svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.rnd.on { background: var(--text); color: var(--v-paper); }
+.red { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.red svg { width: 1.6rem; height: 1.6rem; stroke-width: 1.2; }
+
+.genres { flex: none; padding: 0.75rem 1.5rem 0; border-top: 1px solid var(--border); }
+.genres-head { display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; }
+.genres-head span:last-child { font-size: 1.1rem; }
+.chips { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 0 0.25rem; }
+.chip-g { flex: none; height: 1.75rem; padding: 0 0.6rem; display: grid; place-items: center; border-radius: 6px; border: 1px solid var(--border-strong); font-size: 0.8rem; font-weight: 300; }
+.chip-g.on { background: var(--text); border-color: var(--text); color: var(--v-paper); }
+
+.q-title { margin: 0.5rem 0 0; font-size: 1.35rem; font-weight: 700; line-height: 1.2; }
+.q-cat { margin: 0.25rem 0 0; font-size: 0.8rem; }
+.grid { list-style: none; margin: 1rem 0 1rem; padding: 0; display: grid; gap: 1.25rem 0.75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.desk .grid { grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }
+.cv { aspect-ratio: 2 / 3; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.5rem; font-size: 0.75rem; font-weight: 600; line-height: 1.15; outline: 1px solid var(--border); outline-offset: -1px; }
+.cv small { font-size: 0.65rem; font-weight: 500; opacity: 0.8; }
+.c1 { background: var(--text); color: var(--bg); } .c2 { background: var(--primary); color: var(--on-primary); } .c3 { background: var(--soft); }
+.c4 { background: var(--soft); display: grid; place-items: center; color: var(--muted); }
+.t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700; line-height: 1.25; }
+.a { display: block; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Hub (mobil VirgilHubPage) */
+.hub { flex: 1; display: grid; grid-template-rows: 1fr 1px 1fr; min-height: 0; }
+.hub-half { display: flex; flex-direction: column; padding: 0.75rem 1.5rem 1rem; color: inherit; text-decoration: none; }
+.hub-half:hover { background: color-mix(in srgb, var(--text) 4%, transparent); }
+.hub-half.top { justify-content: flex-end; }
+.hub-line { background: var(--text); margin-inline: 1.5rem; }
+.hub-hint { margin: 0; font-size: 0.8rem; font-weight: 300; text-align: center; }
+.hub-title { margin: 0.5rem 0 0; font-size: 2rem; font-weight: 500; line-height: 1.15; text-align: center; }
+.hub-half.bottom .hub-title { margin: 0 0 0.5rem; }
+.hub-note { margin: 0.75rem auto 0; font-size: 0.75rem; color: var(--muted); border: 1px solid var(--border-strong); border-radius: 999px; padding: 0.1rem 0.6rem; }
+
+/* Masaüstü iki sütun (V3) */
+.two { flex: 1; min-height: 0; display: grid; grid-template-columns: 16rem 1fr; }
+.two-left { display: flex; flex-direction: column; gap: 1rem; padding: 0 1.5rem 1.5rem; border-right: 1px solid var(--text); }
+.two-right { overflow: auto; padding: 0 1.5rem; }
+
+/* Landing bölümü alternatifleri */
+.land { background: var(--v-paper); border-block: 1px solid var(--border); padding-block: 2.5rem; }
+.land .container { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
+.land-hub { display: grid; border-top: 1px solid var(--text); }
+@media (min-width: 48rem) {
+  .land-hub { grid-template-columns: 1fr 1px 1fr; border-top: 0; }
+  .land-hub .hub-line { margin: 0; }
+}
+.land-hub .hub-half { padding: 2.5rem 1.5rem; min-height: 12rem; justify-content: center; }
+.land-hub .hub-line { height: 1px; }
+@media (min-width: 48rem) { .land-hub .hub-line { height: auto; width: 1px; } }
+.land-2 .container { align-items: center; }
+@media (min-width: 56rem) { .land-2 .container { grid-template-columns: 1fr 340px; } }
+.land-2 .screen.phone { height: 600px; margin-inline: auto; }
+.steps { margin: 1.5rem 0; padding: 0; list-style: none; display: grid; gap: 1rem; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.75rem; counter-increment: s; }
+.steps li::before { content: counter(s); width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--text); display: grid; place-items: center; font-weight: 600; }
+.steps strong { display: block; }
+.steps span { color: var(--muted); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="quill" viewBox="6 6 24 24"><path d="M10.64 23.18c-.27-2.9-.53-5.04.48-6.84.1.75.22 1.64.38 2.47.13.71.29 1.4.46 1.91.08.26.18.5.29.69.2.34.5.46.63.47.43.04.8-.11 1.07-.43.23-.28.35-.66.42-1.04.14-.75.13-1.79.13-2.85-.01-1.09-.01-2.24.13-3.3.14-1.07.41-2 .91-2.66.5-.66 1.53-1.2 2.8-1.66.62-.23 1.27-.43 1.9-.62-.45.61-.86 1.28-1.18 1.92-.3.59-.53 1.19-.6 1.69-.03.24-.03.52.06.77.1.24.28.43.53.53.26.08.44.02.54-.03.3-.14.6-.4.95-.75.48-.46 1.1-1.12 1.7-1.7.6-.6 1.22-1.17 1.75-1.54.27-.18.5-.3.67-.35.17-.06.24-.03.26-.02 1.3.66 3.2 2.3 3.88 2.97.18.17.23.34.21.53-.02.21-.12.47-.33.77-.42.59-1.12 1.14-1.7 1.42-.46.22-1.03.31-1.66.33-.64.01-1.29-.05-1.92-.12-.6-.07-1.22-.14-1.69-.12-.23.02-.49.05-.71.17-.22.11-.39.29-.47.54-.08.38-.09 1.12.61 1.75.51.46 1.34.8 2.67.94-1.31.91-2.57 1.06-3.68 1.03-.35-.01-.69-.04-1.01-.07-.32-.03-.65-.06-.94-.07-.57-.02-1.21.02-1.69.42-.42.36-.33.88-.2 1.2.13.35.39.7.69 1.01.3.31.68.6 1.07.8l.22.1c-.99.9-1.67 1.14-2.29 1.15-.4.01-.83-.08-1.36-.2-.51-.13-1.13-.29-1.85-.4l-.44-.06-1.29 4.8a1 1 0 0 1-1.93-.51z"/></symbol>
+  <symbol id="tune" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+  <symbol id="book" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></symbol>
+</svg>
+
+<main class="mock">
+  <div class="container intro">
+    <p class="eyebrow">Mockup</p>
+    <h1>Virgil: mobil düzene göre alternatifler</h1>
+    <p class="lead">Referans mobil Virgil modülü: <strong>hub</strong> (ortada çizgi; üstte Recommendation, altta About Book) ve <strong>öneri ekranı</strong> (üstte marka satırı, ortada içerik, en altta sabit arama çubuğu, tür paneli çubuğun hemen üstünde). Kâğıt rengi mobildeki gibi açıkta beyaz. Kitap kartlarında yalnızca başlık ve yazar var; kategori ("Unknown", "Literature") kaldırıldı.</p>
+  </div>
+
+  <!-- ===================== LANDING ===================== -->
+  <section class="mock-item">
+    <div class="container">
+      <h2>1. Ana sayfadaki Virgil tanıtımı</h2>
+    </div>
+
+    <div class="container"><span class="tag">L1: Hub kesiti</span>
+      <ul class="mock-why">
+        <li>Mobil hub'ın birebir web hali: wordmark + BETA ve slogan, altında çizgiyle bölünmüş iki alan.</li>
+        <li><strong>Recommendation</strong> Virgil sayfasına gider. <strong>About Book</strong> yalnızca mobilde; Google Play'e götürür ve "Yalnızca mobil uygulamada" etiketi taşır.</li>
+        <li>Masaüstünde iki alan yan yana ve dikey çizgiyle ayrılıyor, mobilde mobil hub gibi üst üste ve yatay çizgiyle.</li>
+      </ul>
+    </div>
+    <div class="land">
+      <div class="container">
+        <div>
+          <div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div>
+          <p class="tagline">Virgil okuma yolculuğuna rehberlik eder.</p>
+        </div>
+        <div class="land-hub">
+          <a class="hub-half" href="#"><p class="hub-hint">Önerilerle bir sonraki favori kitabını bul.</p><p class="hub-title">Recommendation</p></a>
+          <div class="hub-line"></div>
+          <a class="hub-half" href="#"><p class="hub-title" style="margin:0">About Book</p><p class="hub-hint" style="margin-top:.5rem">Bir kitap yükle ve hakkında sorular sor</p><span class="hub-note">Yalnızca mobil uygulamada</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top:2.5rem"><span class="tag">L2: Telefon ekranıyla tanıtım</span>
+      <ul class="mock-why">
+        <li>Solda kısa anlatım ve üç adım (numaralar mobil çubuktaki yuvarlak düğme diliyle), sağda telefon çerçevesinde Virgil'in öneri ekranı.</li>
+        <li>Ziyaretçi Virgil'i açmadan nasıl göründüğünü görür; tek birincil eylem "Virgil'i dene".</li>
+      </ul>
+    </div>
+    <div class="land land-2">
+      <div class="container">
+        <div>
+          <div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div>
+          <p class="tagline">Virgil okuma yolculuğuna rehberlik eder.</p>
+          <ol class="steps">
+            <li><div><strong>Anlat</strong><span>Bir ruh hali, bir konu ya da sevdiğin bir kitap.</span></div></li>
+            <li><div><strong>Öneri al</strong><span>Virgil anlama göre arar ve sana uyan kitapları getirir.</span></div></li>
+            <li><div><strong>Okumaya devam et</strong><span>Beğendiklerini mobil uygulamada listelerine ekle.</span></div></li>
+          </ol>
+          <a class="btn" href="#">Virgil'i dene</a>
+        </div>
+        <div class="screen phone" aria-hidden="true">
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div></div>
+          <div class="s-body s-pad">
+            <p class="q-title">sahil kasabasında polisiye</p>
+            <ul class="grid">
+              <li><div class="cv c1">Deniz Feneri Cinayeti<small>M. Aras</small></div><span class="t">Deniz Feneri Cinayeti</span><span class="a">M. Aras</span></li>
+              <li><div class="cv c2">Sisli Liman<small>E. Kaya</small></div><span class="t">Sisli Liman</span><span class="a">E. Kaya</span></li>
+              <li><div class="cv c3">Son Vapur<small>D. Tan</small></div><span class="t">Son Vapur</span><span class="a">D. Tan</span></li>
+              <li><div class="cv c4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#book"/></svg></div><span class="t">Kıyıdaki Ev</span><span class="a">S. Ay</span></li>
+            </ul>
+          </div>
+          <div class="bar"><div class="inp filled">sahil kasabasında polisiye</div><span class="rnd red"><svg><use href="#quill"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VIRGIL PAGE ===================== -->
+  <section class="mock-item">
+    <div class="container">
+      <h2>2. Virgil sayfasının düzeni</h2>
+      <p class="cap">Her alternatifte solda masaüstü, sağda telefon (375px). Üstteki ince şerit sitenin kendi header'ı.</p>
+    </div>
+
+    <!-- V1 -->
+    <div class="container"><span class="tag">V1: Uygulama ekranı (önerilen)</span>
+      <ul class="mock-why">
+        <li>Sayfa, mobildeki öneri ekranının aynısı: ekran yüksekliğinde; üstte marka satırı (sağda hesap), ortada içerik, <strong>en altta sabit arama çubuğu</strong>.</li>
+        <li>Tür paneli çubuğun hemen üstünde açılır (mobildeki gibi). Sonuçlar ortada kayar; çubuk hep görünür kalır.</li>
+        <li>Masaüstünde içerik ve çubuk ~56rem'lik ortalanmış bir sütunda; ızgara genişledikçe sütun sayısı artar.</li>
+      </ul>
+      <div class="pair">
+        <div class="screen desk">
+          <div class="s-site"><b>Rubricator</b><span>Ana sayfa · Virgil · Hakkımızda · İletişim</span></div>
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div><div class="acct">okur@ornek.com · <a href="#">Çıkış yap</a></div></div>
+          <div class="s-body s-pad">
+            <p class="q-title">A gentle story about growing up</p><p class="q-cat">Fiction</p>
+            <ul class="grid">
+              <li><div class="cv c1">The Little Prince<small>Saint-Exupéry</small></div><span class="t">The Little Prince</span><span class="a">Antoine de Saint-Exupéry</span></li>
+              <li><div class="cv c2">Anne of Green Gables<small>Montgomery</small></div><span class="t">Anne of Green Gables</span><span class="a">L. M. Montgomery</span></li>
+              <li><div class="cv c4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#book"/></svg></div><span class="t">To Kill a Mockingbird</span><span class="a">Harper Lee</span></li>
+              <li><div class="cv c3">Little Women<small>Alcott</small></div><span class="t">Little Women</span><span class="a">Louisa May Alcott</span></li>
+              <li><div class="cv c1">The Secret Garden<small>Burnett</small></div><span class="t">The Secret Garden</span><span class="a">F. H. Burnett</span></li>
+              <li><div class="cv c3">Heidi<small>Spyri</small></div><span class="t">Heidi</span><span class="a">Johanna Spyri</span></li>
+            </ul>
+          </div>
+          <div class="genres"><div class="genres-head"><span>Genre</span><span>✕</span></div><div class="chips"><span class="chip-g">All</span><span class="chip-g on">Fiction</span><span class="chip-g">Nonfiction</span><span class="chip-g">Children's Fiction</span><span class="chip-g">Children's Nonfiction</span></div></div>
+          <div class="bar"><div class="inp filled">A gentle story about growing up</div><span class="rnd on"><svg><use href="#tune"/></svg></span><span class="rnd red"><svg><use href="#quill"/></svg></span></div>
+        </div>
+        <div class="screen phone">
+          <div class="s-site"><b>Rubricator</b><span>☰</span></div>
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div><div class="acct"><a href="#">Çıkış yap</a></div></div>
+          <div class="s-body"><div class="empty-body"><p>Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.</p></div></div>
+          <div class="bar"><div class="inp">Bir şey yaz...</div><span class="rnd red"><svg><use href="#quill"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V2 -->
+    <div class="container" style="margin-top:3rem"><span class="tag">V2: Önce hub, sonra ekran</span>
+      <ul class="mock-why">
+        <li>Mobildeki akışın tamamı: Virgil sayfası hub ile açılır. <strong>Recommendation</strong>'a tıklayınca V1 ekranı gelir (aynı sayfa, <code>#recommendation</code>; geri tuşu hub'a döner).</li>
+        <li><strong>About Book</strong> web'de çalışmadığı için Google Play'e yönlendirir (mobil uygulamanın web'deki mesajıyla aynı).</li>
+        <li>Artı: uygulamayla birebir. Eksi: öneriye ulaşmak için bir tık fazla.</li>
+      </ul>
+      <div class="pair">
+        <div class="screen desk">
+          <div class="s-site"><b>Rubricator</b><span>Ana sayfa · Virgil · Hakkımızda · İletişim</span></div>
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div><div class="acct">okur@ornek.com · <a href="#">Çıkış yap</a></div></div>
+          <p class="tagline s-pad" style="margin-top:.25rem">Virgil okuma yolculuğuna rehberlik eder.</p>
+          <div class="hub">
+            <a class="hub-half top" href="#"><p class="hub-hint">Önerilerle bir sonraki favori kitabını bul.</p><p class="hub-title">Recommendation</p></a>
+            <div class="hub-line"></div>
+            <a class="hub-half bottom" href="#"><p class="hub-title">About Book</p><p class="hub-hint">Bir kitap yükle ve hakkında sorular sor</p><span class="hub-note">Yalnızca mobil uygulamada</span></a>
+          </div>
+        </div>
+        <div class="screen phone">
+          <div class="s-site"><b>Rubricator</b><span>☰</span></div>
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div></div>
+          <p class="tagline s-pad" style="margin-top:.25rem">Virgil okuma yolculuğuna rehberlik eder.</p>
+          <div class="hub">
+            <a class="hub-half top" href="#"><p class="hub-hint">Önerilerle bir sonraki favori kitabını bul.</p><p class="hub-title">Recommendation</p></a>
+            <div class="hub-line"></div>
+            <a class="hub-half bottom" href="#"><p class="hub-title">About Book</p><p class="hub-hint">Bir kitap yükle ve hakkında sorular sor</p><span class="hub-note">Yalnızca mobil uygulamada</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- V3 -->
+    <div class="container" style="margin-top:3rem"><span class="tag">V3: Masaüstünde iki sütun</span>
+      <ul class="mock-why">
+        <li>Masaüstünde ekranı daha iyi kullanır: solda sabit sütun (marka, slogan, hesap, arama çubuğu, tür çipleri, kalan hak), sağda sonuçlar.</li>
+        <li>Mobilde V1 ile aynı (çubuk altta). Mobil dile yakın ama masaüstü düzeni uygulamada karşılığı olmayan bir yorum.</li>
+      </ul>
+      <div class="pair">
+        <div class="screen desk">
+          <div class="s-site"><b>Rubricator</b><span>Ana sayfa · Virgil · Hakkımızda · İletişim</span></div>
+          <div class="two">
+            <div class="two-left">
+              <div class="brand-row" style="padding:.75rem 0 0"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div></div>
+              <p class="tagline" style="margin:0">Virgil okuma yolculuğuna rehberlik eder.</p>
+              <div class="bar top"><div class="inp filled">A gentle story about growing up</div><span class="rnd red"><svg><use href="#quill"/></svg></span></div>
+              <div><div class="genres-head"><span>Genre</span></div><div class="chips" style="flex-wrap:wrap"><span class="chip-g">All</span><span class="chip-g on">Fiction</span><span class="chip-g">Nonfiction</span><span class="chip-g">Children's Fiction</span><span class="chip-g">Children's Nonfiction</span></div></div>
+              <p class="acct" style="text-align:left;margin-top:auto">Bugün 4/5 öneri hakkın kaldı.<br>okur@ornek.com · <a href="#">Çıkış yap</a></p>
+            </div>
+            <div class="two-right">
+              <p class="q-title" style="margin-top:1.5rem">A gentle story about growing up</p><p class="q-cat">Fiction</p>
+              <ul class="grid" style="grid-template-columns:repeat(auto-fill,minmax(6.5rem,1fr))">
+                <li><div class="cv c1">The Little Prince<small>Saint-Exupéry</small></div><span class="t">The Little Prince</span><span class="a">Antoine de Saint-Exupéry</span></li>
+                <li><div class="cv c2">Anne of Green Gables<small>Montgomery</small></div><span class="t">Anne of Green Gables</span><span class="a">L. M. Montgomery</span></li>
+                <li><div class="cv c4"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#book"/></svg></div><span class="t">To Kill a Mockingbird</span><span class="a">Harper Lee</span></li>
+                <li><div class="cv c3">Little Women<small>Alcott</small></div><span class="t">Little Women</span><span class="a">Louisa May Alcott</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="screen phone">
+          <div class="s-site"><b>Rubricator</b><span>☰</span></div>
+          <div class="brand-row"><div class="brand"><span class="word">Virgil</span><span class="badge">BETA</span></div></div>
+          <div class="s-body s-pad">
+            <p class="q-title">A gentle story about growing up</p>
+            <ul class="grid">
+              <li><div class="cv c1">The Little Prince<small>Saint-Exupéry</small></div><span class="t">The Little Prince</span><span class="a">Antoine de Saint-Exupéry</span></li>
+              <li><div class="cv c2">Anne of Green Gables<small>Montgomery</small></div><span class="t">Anne of Green Gables</span><span class="a">L. M. Montgomery</span></li>
+            </ul>
+          </div>
+          <div class="bar"><div class="inp filled">A gentle story about growing up</div><span class="rnd"><svg><use href="#tune"/></svg></span><span class="rnd red"><svg><use href="#quill"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DIALOG ===================== -->
+  <section class="mock-item">
+    <div class="container">
+      <h2>3. Kitap ayrıntısı (tüm alternatiflerde aynı)</h2>
+      <ul class="mock-why">
+        <li>Başlık ve yazar; altındaki kategori satırı ("Unknown", "Literature" gibi katalog değerleri) kaldırıldı.</li>
+      </ul>
+      <div style="max-width:30rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.5rem;display:grid;grid-template-columns:6rem 1fr;gap:1.25rem">
+        <div class="cv c1">The Little Prince<small>Saint-Exupéry</small></div>
+        <div><p style="margin:0;font-size:1.25rem;font-weight:600">The Little Prince</p><p style="margin:.25rem 0 0;color:var(--muted)">Antoine de Saint-Exupéry</p></div>
+        <p style="grid-column:1/-1;margin:0">A pilot stranded in the desert meets a small prince who has travelled from planet to planet. A gentle, funny and sad story about what grown-ups forget.</p>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

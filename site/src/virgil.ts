@@ -219,7 +219,7 @@ const jsonIsland = (value: unknown) =>
 // stroke = currentColor.
 const TUNE_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
-const QUILL_ICON =
+export const QUILL_ICON =
   '<svg viewBox="6 6 24 24" aria-hidden="true"><path d="M10.64 23.18c-.27-2.9-.53-5.04.48-6.84.1.75.22 1.64.38 2.47.13.71.29 1.4.46 1.91.08.26.18.5.29.69.2.34.5.46.63.47.43.04.8-.11 1.07-.43.23-.28.35-.66.42-1.04.14-.75.13-1.79.13-2.85-.01-1.09-.01-2.24.13-3.3.14-1.07.41-2 .91-2.66.5-.66 1.53-1.2 2.8-1.66.62-.23 1.27-.43 1.9-.62-.45.61-.86 1.28-1.18 1.92-.3.59-.53 1.19-.6 1.69-.03.24-.03.52.06.77.1.24.28.43.53.53.26.08.44.02.54-.03.3-.14.6-.4.95-.75.48-.46 1.1-1.12 1.7-1.7.6-.6 1.22-1.17 1.75-1.54.27-.18.5-.3.67-.35.17-.06.24-.03.26-.02 1.3.66 3.2 2.3 3.88 2.97.18.17.23.34.21.53-.02.21-.12.47-.33.77-.42.59-1.12 1.14-1.7 1.42-.46.22-1.03.31-1.66.33-.64.01-1.29-.05-1.92-.12-.6-.07-1.22-.14-1.69-.12-.23.02-.49.05-.71.17-.22.11-.39.29-.47.54-.08.38-.09 1.12.61 1.75.51.46 1.34.8 2.67.94-1.31.91-2.57 1.06-3.68 1.03-.35-.01-.69-.04-1.01-.07-.32-.03-.65-.06-.94-.07-.57-.02-1.21.02-1.69.42-.42.36-.33.88-.2 1.2.13.35.39.7.69 1.01.3.31.68.6 1.07.8l.22.1c-.99.9-1.67 1.14-2.29 1.15-.4.01-.83-.08-1.36-.2-.51-.13-1.13-.29-1.85-.4l-.44-.06-1.29 4.8a1 1 0 0 1-1.93-.51z"/></svg>';
 
 export function virgilBody(lang: Lang, ctx: BuildContext): string {
@@ -258,13 +258,17 @@ ${
           </div>`
     : "";
 
-  return `    <div class="page container virgil" id="virgil" data-lang="${lang}" data-policy-version="${PRIVACY_POLICY_VERSION}"${config}>
+  // Layout follows the app's recommendation screen: brand row on top, the
+  // content in the middle, the search bar docked at the bottom of the screen.
+  return `    <div class="v-screen" id="virgil" data-lang="${lang}" data-policy-version="${PRIVACY_POLICY_VERSION}"${config}>
+     <div class="container v-frame">
       <header class="v-head">
         <h1 class="v-brand"><span class="v-word">Virgil</span> <span class="v-badge">${t.badge}</span></h1>
-        <p class="v-tagline">${t.tagline}</p>
-        <p class="v-lead">${t.lead}</p>
+        <div class="v-account" id="account" hidden>
+          <span class="v-account-email"><span class="sr-only">${t.signedInAs} </span><span id="account-email"></span></span>
+          <button class="link-button" type="button" id="sign-out">${t.signOut}</button>
+        </div>
       </header>
-      <hr class="v-rule">
 
       <noscript><div class="note"><p>${t.noscript}</p></div></noscript>
       <div class="note" id="unavailable"${
@@ -273,7 +277,10 @@ ${
 
       <p class="status" id="status" role="status" aria-live="polite" hidden></p>
 
-      <section class="panel" id="auth-view" hidden>
+      <section class="v-auth" id="auth-view" hidden>
+       <p class="v-tagline">${t.tagline}</p>
+       <p class="v-lead">${t.lead}</p>
+       <div class="panel">
         <div class="tabs" role="group" aria-label="${t.tabSignIn} / ${t.tabSignUp}">
           <button type="button" class="tab" id="tab-signin" aria-pressed="true">${t.tabSignIn}</button>
           <button type="button" class="tab" id="tab-signup" aria-pressed="false">${t.tabSignUp}</button>
@@ -329,35 +336,35 @@ ${
             <button class="link-button" type="button" data-back-to-signin>${t.backToSignIn}</button>
           </div>
         </form>
+       </div>
       </section>
 
-      <section class="v-search" id="search-view" hidden>
-        <div class="account-bar">
-          <span>${t.signedInAs} <strong id="account-email"></strong></span>
-          <button class="link-button" type="button" id="sign-out">${t.signOut}</button>
+      <section class="v-app" id="search-view" hidden>
+        <div class="v-content">
+          <p class="v-intro" id="search-intro">${t.intro}</p>
+          <div id="results-wrap" hidden>
+            <h2 class="v-query" id="results-heading" tabindex="-1"><span class="sr-only">${t.resultsHeading}: </span><span id="results-query"></span></h2>
+            <p class="v-category" id="results-category" hidden></p>
+            <div class="empty" id="no-results" hidden>
+              <p><strong>${t.noResultsTitle}</strong></p>
+              <p class="hint">${t.noResultsHint}</p>
+            </div>
+            <ol class="v-grid" id="results"></ol>
+          </div>
+          <p class="hint v-note">${t.mobileNote}</p>
         </div>
-        <form id="form-search" method="post" action="#" novalidate>
-          <div class="field"><label for="query">${t.queryLabel}</label>
+        <form class="v-dock" id="form-search" method="post" action="#" novalidate>${genrePanel}
+          <div class="field">
+            <label class="sr-only" for="query">${t.queryLabel}</label>
             <div class="v-bar">
               <input class="v-input" id="query" name="query" type="text" enterkeyhint="search" autocomplete="off" maxlength="500" placeholder="${
     esc(t.queryPlaceholder)
   }" required>${genreToggle}
               <button class="v-round v-submit" type="submit" id="search-button" aria-describedby="usage" aria-label="${t.search}">${QUILL_ICON}</button>
             </div>
-          </div>${genrePanel}
-        </form>
-        <p class="hint" id="usage" aria-live="polite" hidden></p>
-        <p class="v-intro" id="search-intro">${t.intro}</p>
-        <div id="results-wrap" hidden>
-          <h2 class="v-query" id="results-heading" tabindex="-1"><span class="sr-only">${t.resultsHeading}: </span><span id="results-query"></span></h2>
-          <p class="v-category" id="results-category" hidden></p>
-          <div class="empty" id="no-results" hidden>
-            <p><strong>${t.noResultsTitle}</strong></p>
-            <p class="hint">${t.noResultsHint}</p>
           </div>
-          <ol class="v-grid" id="results"></ol>
-        </div>
-        <p class="hint">${t.mobileNote}</p>
+          <p class="hint" id="usage" aria-live="polite" hidden></p>
+        </form>
       </section>
 
       <dialog class="v-dialog" id="book-dialog" aria-labelledby="book-dialog-title">
@@ -365,12 +372,12 @@ ${
         <div>
           <h2 id="book-dialog-title"></h2>
           <p class="book-author" id="book-dialog-author"></p>
-          <p class="book-meta" id="book-dialog-meta"><span class="chip" id="book-dialog-category"></span></p>
         </div>
         <p class="v-dialog-desc" id="book-dialog-desc"></p>
         <form method="dialog"><button class="btn secondary" type="submit">${t.close}</button></form>
       </dialog>
 
       <script type="application/json" id="i18n">${jsonIsland(t)}</script>
+     </div>
     </div>`;
 }

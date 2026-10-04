@@ -3475,6 +3475,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account couldn\'t be deleted. Please try again.'**
   String get deleteAccountFailed;
+
+  /// No description provided for @contactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get contactTitle;
+
+  /// No description provided for @contactSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions, suggestions or a problem to report? Write to us and we\'ll reply to {email}.'**
+  String contactSubtitle(String email);
+
+  /// No description provided for @contactMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your message'**
+  String get contactMessageLabel;
+
+  /// No description provided for @contactSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get contactSend;
+
+  /// No description provided for @contactSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your message was sent. Thank you!'**
+  String get contactSent;
+
+  /// No description provided for @contactMessageTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write at least 10 characters.'**
+  String get contactMessageTooShort;
+
+  /// No description provided for @contactMessageTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Your message is too long (max 5000 characters).'**
+  String get contactMessageTooLong;
+
+  /// No description provided for @contactRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve sent several messages recently. Please try again in an hour.'**
+  String get contactRateLimited;
+
+  /// No description provided for @contactFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your message couldn\'t be sent. Please try again.'**
+  String get contactFailed;
 }
 
 class _AppLocalizationsDelegate

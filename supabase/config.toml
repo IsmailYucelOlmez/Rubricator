@@ -45,6 +45,8 @@ verify_jwt = false
 # Website contact form -> email to support (Resend). Used without an account and
 # the site only has the sb_publishable_* key, so no JWT; the function restricts
 # origins, validates input, has a honeypot and a per-IP rate limit instead.
+# The app's profile-page form sends the user's session JWT (no Origin header);
+# the function verifies it and then uses the account email and a per-user limit.
 verify_jwt = false
 
 [functions.delete-account]

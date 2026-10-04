@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A1 bandı: sağ görsel alternatifleri</title>
+<link rel="stylesheet" href="../../site/static/site.css">
+<style>
+/* ---------- mockup düzeni ---------- */
+.mock { padding-block: 2.5rem 4rem; }
+.intro { max-width: 46rem; }
+.tag { display: inline-block; margin: 2.5rem 0 0.75rem; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text); }
+.mock-why { color: var(--muted); max-width: 48rem; margin: 0 0 1.25rem; padding-left: 1.25rem; }
+
+/* ---------- A1 bandı (sol taraf her alternatifte aynı) ---------- */
+.a1 { padding-block: 4rem; background: var(--text); color: var(--bg); }
+.a1 .container { display: grid; gap: 3rem; align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 60rem) { .a1 .container { grid-template-columns: 1fr 24rem; } }
+.a1 .kicker { color: color-mix(in srgb, var(--primary-text) 70%, var(--bg)); }
+.big { font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 1rem; max-width: 18ch; }
+.big em { font-style: normal; color: var(--primary-text); }
+.a1 .sub { font-size: clamp(1.05rem, 2vw, 1.25rem); color: color-mix(in srgb, var(--bg) 75%, transparent); max-width: 44ch; margin: 0 0 1.5rem; }
+.a1-list { list-style: none; margin: 0 0 2rem; padding: 0; display: grid; gap: 1rem; }
+@media (min-width: 40rem) { .a1-list { grid-template-columns: 1fr 1fr; } }
+.a1-list li { display: flex; gap: 0.75rem; }
+.a1-list strong { display: block; }
+.a1-list span { color: color-mix(in srgb, var(--bg) 70%, transparent); font-size: 0.95rem; }
+.dot { flex: none; width: 0.5rem; height: 0.5rem; margin-top: 0.6rem; border-radius: 50%; background: var(--primary); }
+.store-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.a1 .btn.secondary { color: var(--bg); border-color: color-mix(in srgb, var(--bg) 40%, transparent); }
+.btn.store svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- R1: gerçekçi telefon ---------- */
+.device {
+  width: min(100%, 19rem); margin-inline: auto; aspect-ratio: 9 / 19;
+  padding: 0.6rem; border-radius: 2.75rem; background: #0b0d0f;
+  outline: 1px solid color-mix(in srgb, var(--bg) 25%, transparent);
+}
+.screen {
+  height: 100%; border-radius: 2.2rem; overflow: hidden; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text); position: relative;
+}
+.sbar { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1.25rem 0.25rem; font-size: 0.7rem; font-weight: 600; }
+.island { width: 5rem; height: 1.3rem; border-radius: 999px; background: #0b0d0f; }
+.app-head { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; }
+.app-head b { font-family: "Nouveau", serif; font-weight: 400; font-size: 1.15rem; }
+.app-body { flex: 1; overflow: hidden; padding: 0 1rem; display: grid; gap: 0.6rem; align-content: start; }
+.app-sec { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin: 0.25rem 0 0; }
+.now { display: grid; grid-template-columns: 3rem 1fr; gap: 0.6rem; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.6rem; }
+.now .tcover { font-size: 0.5rem; padding: 0.25rem; border-radius: 4px; }
+.now p { margin: 0; font-size: 0.75rem; }
+.now .t { font-weight: 600; font-size: 0.85rem; }
+.bar1 { height: 0.35rem; border-radius: 999px; background: var(--soft); margin-top: 0.35rem; overflow: hidden; }
+.bar1 span { display: block; width: 64%; height: 100%; background: var(--text); }
+.mini-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
+.mini-row .tcover { font-size: 0.45rem; padding: 0.25rem; border-radius: 4px; }
+.streak-card { display: flex; justify-content: space-between; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.6rem; }
+.streak-card b { font-size: 1.2rem; }
+.streak-card small { color: var(--muted); font-size: 0.7rem; }
+.week7 { display: flex; gap: 0.2rem; }
+.week7 i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--soft); }
+.week7 i.on { background: var(--primary); }
+.tabbar { display: grid; grid-template-columns: repeat(5, 1fr); padding: 0.5rem 0.25rem 0.9rem; border-top: 1px solid var(--border); background: var(--surface); }
+.tabbar span { display: grid; justify-items: center; gap: 0.15rem; font-size: 0.55rem; color: var(--muted); }
+.tabbar span.on { color: var(--text); font-weight: 600; }
+.tabbar svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tabbar .vg { font-family: "Megrim", sans-serif; font-size: 0.95rem; line-height: 1.1rem; }
+
+/* ---------- R2: tek bir raf ---------- */
+.shelf-wrap { width: min(100%, 24rem); margin-inline: auto; }
+.shelf { display: flex; align-items: flex-end; gap: 0.2rem; padding: 0 0.75rem; height: 16rem; }
+.spine {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  display: flex; align-items: center; padding: 0.6rem 0; border-radius: 3px 3px 0 0;
+  font-weight: 600; font-size: 0.72rem; white-space: nowrap; overflow: hidden;
+  outline: 1px solid color-mix(in srgb, var(--bg) 18%, transparent); outline-offset: -1px;
+}
+.s-ink { background: var(--bg); color: var(--text); }
+.s-red { background: var(--primary); color: var(--on-primary); }
+.s-soft { background: var(--soft); color: var(--text); }
+.s-mute { background: var(--muted); color: var(--bg); }
+.lean { transform: rotate(171deg); transform-origin: 50% 50%; margin-left: 0.9rem; }
+.plank { height: 0.6rem; border-radius: 3px; background: color-mix(in srgb, var(--bg) 30%, transparent); }
+.shelf-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; font-size: 0.8rem; color: color-mix(in srgb, var(--bg) 65%, transparent); }
+.shelf-labels b { color: var(--bg); }
+
+/* ---------- R3: kapak yelpazesi + rozetler ---------- */
+.fan3 { position: relative; width: min(100%, 24rem); height: 22rem; margin-inline: auto; }
+.fan3 .tcover { position: absolute; width: 37.5%; font-size: 0.85rem; border-radius: 10px; outline-color: color-mix(in srgb, var(--bg) 20%, transparent); }
+.fan3 .c1 { left: 6%; top: 3rem; transform: rotate(-10deg); }
+.fan3 .c2 { left: 31%; top: 1.5rem; transform: rotate(2deg); z-index: 2; }
+.fan3 .c3 { left: 56%; top: 3.5rem; transform: rotate(11deg); }
+.badge3 {
+  position: absolute; z-index: 3; display: flex; gap: 0.5rem; align-items: center;
+  padding: 0.5rem 0.85rem; border-radius: 999px; background: var(--surface); color: var(--text);
+  font-size: 0.85rem; font-weight: 600; outline: 1px solid var(--border);
+}
+.badge3 small { font-weight: 400; color: var(--muted); }
+.badge3 i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--primary); }
+.b-a { left: 0; top: 0.25rem; }
+.b-b { right: 0; top: 13rem; }
+.b-c { left: 2rem; bottom: 0.5rem; max-width: 17rem; border-radius: 16px; font-weight: 400; }
+</style>
+</head>
+<body>
+<template id="left">
+  <div>
+    <p class="kicker">Rubricator uygulaması</p>
+    <p class="big">Okuduğun her kitap, <em>tek bir rafta.</em></p>
+    <p class="sub">Web sitesi bir tadımlık. Rafların, notların, listelerin ve okuma serin uygulamada seni bekliyor.</p>
+    <ul class="a1-list">
+      <li><i class="dot"></i><div><strong>Rafların</strong><span>Okunacak, okunuyor, bitti. Hepsi bir bakışta.</span></div></li>
+      <li><i class="dot"></i><div><strong>Okuma serisi</strong><span>Dakikanı ve sayfanı kaydet, seriyi bozma.</span></div></li>
+      <li><i class="dot"></i><div><strong>Notlar ve alıntılar</strong><span>Altını çizdiğin cümleyi kaybetme.</span></div></li>
+      <li><i class="dot"></i><div><strong>Listeler</strong><span>Oluştur, paylaş, başka okurları takip et.</span></div></li>
+      <li><i class="dot"></i><div><strong>Kitabına sor</strong><span>PDF ya da EPUB yükle, Virgil'e içeriğini sor.</span></div></li>
+      <li><i class="dot"></i><div><strong>Global + Türkçe katalog</strong><span>Eksik bir Türkçe kitabı kendin ekle.</span></div></li>
+    </ul>
+    <div class="store-row">
+      <a class="btn store" href="#"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Google Play'den indir</a>
+      <a class="btn secondary" href="#">Önce Virgil'i dene</a>
+    </div>
+  </div>
+</template>
+
+<main class="mock">
+  <div class="container intro">
+    <p class="eyebrow">Mockup</p>
+    <h1>A1 bandı: sağ görsel</h1>
+    <p class="lead">Sol taraf aynı; sağdaki görsel için üç alternatif. Önceki halinde telefon, koyu bantta düz bir açık kutuydu ve hero'daki kutucukları tekrar ediyordu.</p>
+  </div>
+
+  <div class="container"><span class="tag">R1: Gerçek bir telefon ekranı</span>
+    <ul class="mock-why">
+      <li>Çerçeve, çentik ve durum çubuğuyla gerçek bir telefon; içinde uygulamanın ana sayfası: okuduğun kitap, okunacaklar rafı, okuma serisi.</li>
+      <li>Altta uygulamanın gerçek sekmeleri: Ana Sayfa, Ara, Virgil, Listeler, Profil. Ekran site temasını izler.</li>
+    </ul>
+  </div>
+  <section class="a1"><div class="container" data-left>
+    <div class="device" aria-hidden="true">
+      <div class="screen">
+        <div class="sbar"><span>9:41</span><span class="island"></span><span>●●● ▮</span></div>
+        <div class="app-head"><b>Rubricator</b><span style="font-size:.75rem;color:var(--muted)">Merhaba, Okur</span></div>
+        <div class="app-body">
+          <p class="app-sec">Okuyorum</p>
+          <div class="now"><div class="tcover tc-ink">Sisli Liman</div><div><p class="t">Sisli Liman</p><p style="color:var(--muted)">E. Kaya · s. 142 / 220</p><div class="bar1"><span></span></div></div></div>
+          <p class="app-sec">Okunacaklar</p>
+          <div class="mini-row"><div class="tcover tc-red">Son Vapur</div><div class="tcover tc-soft">Kıyıdaki Ev</div><div class="tcover tc-ink">Deniz Feneri</div><div class="tcover tc-soft">Mavi Ada</div></div>
+          <div class="streak-card"><div><b>12</b> <small>günlük seri</small></div><div class="week7"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+        </div>
+        <div class="tabbar">
+          <span class="on"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></svg>Ana Sayfa</span>
+          <span><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Ara</span>
+          <span><span class="vg">V</span>Virgil</span>
+          <span><svg viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Listeler</span>
+          <span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profil</span>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <div class="container"><span class="tag">R2: Tek bir raf</span>
+    <ul class="mock-why">
+      <li>Başlıktaki "tek bir rafta" sözünün kendisi: tipografik kitap sırtlarından bir raf, bir kitap yaslanmış. Arayüz değil, his.</li>
+      <li>Altında rafın özeti: kaç kitap okundu, şu an hangisi okunuyor. Koyu bantta sırtlar açık/kırmızı/krem tonlarla öne çıkar.</li>
+    </ul>
+  </div>
+  <section class="a1"><div class="container" data-left>
+    <div class="shelf-wrap" aria-hidden="true">
+      <div class="shelf">
+        <span class="spine s-ink" style="height:13rem;width:2.4rem">Odysseia</span>
+        <span class="spine s-soft" style="height:11rem;width:2.1rem">Dönüşüm</span>
+        <span class="spine s-red" style="height:14.5rem;width:2.9rem">Suç ve Ceza</span>
+        <span class="spine s-mute" style="height:10.5rem;width:1.9rem">Beyaz Diş</span>
+        <span class="spine s-ink" style="height:12.5rem;width:2.6rem">Anna Karenina</span>
+        <span class="spine s-soft" style="height:13.5rem;width:2.2rem">Sefiller</span>
+        <span class="spine s-red lean" style="height:11.5rem;width:2.4rem">Sisli Liman</span>
+      </div>
+      <div class="plank"></div>
+      <div class="shelf-labels"><span><b>34</b> kitap bitti</span><span>Okunuyor: <b>Sisli Liman</b></span></div>
+    </div>
+  </div></section>
+
+  <div class="container"><span class="tag">R3: Kapak yelpazesi + rozetler</span>
+    <ul class="mock-why">
+      <li>Elde tutulan kitaplar gibi açılmış üç kapak; üzerlerinde uygulamadan küçük anlar: okuma serisi, sayfa ilerlemesi, kaydedilmiş bir alıntı.</li>
+      <li>Daha canlı ve "reklam görseli" tadında; uygulamanın üç özelliğini tek karede gösterir.</li>
+    </ul>
+  </div>
+  <section class="a1"><div class="container" data-left>
+    <div class="fan3" aria-hidden="true">
+      <div class="tcover tc-soft c1">Son Vapur<small>D. Tan</small></div>
+      <div class="tcover tc-red c2">Sisli Liman<small>E. Kaya</small></div>
+      <div class="tcover tc-soft c3">Kıyıdaki Ev<small>S. Ay</small></div>
+      <div class="badge3 b-a"><i></i>12 günlük seri</div>
+      <div class="badge3 b-b">s. 142 <small>/ 220</small></div>
+      <div class="badge3 b-c">“Deniz, her sabah kasabaya başka bir sır getiriyordu.”</div>
+    </div>
+  </div></section>
+</main>
+<script>
+  // Mockup only: the same left column in every band.
+  const left = document.getElementById("left");
+  for (const c of document.querySelectorAll("[data-left]")) c.prepend(left.content.cloneNode(true));
+</script>
+</body>
+</html>

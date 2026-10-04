@@ -1,5 +1,5 @@
 <h1>Rubricator Privacy Policy</h1>
-<p class="muted"><strong>Last updated:</strong> 03.10.2026</p>
+<p class="muted"><strong>Last updated:</strong> 04.10.2026</p>
 <p class="muted">
   Service: Rubricator mobile app (iOS/Android) and this website<br />
   Developer / Data Controller: İsmail Yücel Ölmez<br />
@@ -186,11 +186,16 @@
     <strong>Website:</strong> The website is a static site served by our hosting
     provider (currently GitHub Pages), which receives standard request data such
     as your IP address, browser information, and the requested address, and
-    keeps its own server logs. The pages load no third-party scripts, fonts,
-    analytics or advertising, and set no cookies. The Virgil page connects only
+    keeps its own server logs. The pages load no scripts, fonts, analytics or
+    advertising from other servers, and set no cookies. The Virgil page connects
     to our Supabase project (sign-in and recommendations) and shows book covers
-    from the catalog sources described above. We do not use Sentry or any other
-    crash reporting on the website.
+    from the catalog sources described above. The pages that run code (Virgil,
+    contact and the email confirmation page) report JavaScript errors to
+    <strong>Sentry</strong>: only when an error actually happens, the error
+    message and stack trace, the page address without its query string or
+    fragment, and browser/OS information are sent. Email addresses in error
+    messages are masked, and no account identifier, form content or browsing
+    history is included. The other pages send no error reports.
   </li>
   <li>
     <strong>Contact form:</strong> If you use the form on the Contact page, the
@@ -356,7 +361,10 @@
     </tr>
     <tr>
       <td>Sentry</td>
-      <td>Device/app technical info, error traces (mobile app only)</td>
+      <td>
+        Device/app or browser technical info, error traces (mobile app and the
+        website's Virgil, contact and confirmation pages)
+      </td>
       <td>Debugging and stability monitoring</td>
     </tr>
     <tr>

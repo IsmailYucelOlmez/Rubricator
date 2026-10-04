@@ -12,6 +12,11 @@
  *                them the page builds but shows "not available".
  *   SITE_DOMAIN  custom domain (e.g. rubricator.site); writes the CNAME file
  *                GitHub Pages needs.
+ *   SENTRY_DSN_WEB  Sentry DSN for the website (a separate project from the
+ *                app). Enables error reporting on the pages that run code
+ *                (static/js/monitoring.js). SENTRY_ENVIRONMENT (default
+ *                "production") and SENTRY_RELEASE (default GITHUB_SHA) are
+ *                optional.
  *   OUT_DIR      output directory (default site/dist).
  */
 import { LANGS, outputPath, type PageRef, renderPage } from "./src/layout.ts";
@@ -51,6 +56,10 @@ export interface BuildOptions {
   supabaseUrl?: string;
   /** Supabase publishable (anon) key (default: SUPABASE_ANON_KEY env). */
   supabaseAnonKey?: string;
+  /** Sentry DSN for the website (default: SENTRY_DSN_WEB env). */
+  sentryDsn?: string;
+  /** Sentry release (default: SENTRY_RELEASE env, else GITHUB_SHA). */
+  sentryRelease?: string;
 }
 
 export async function build(options: BuildOptions = {}) {
@@ -84,6 +93,17 @@ export async function build(options: BuildOptions = {}) {
     );
   }
 
+  const sentryDsn =
+    (options.sentryDsn ?? Deno.env.get("SENTRY_DSN_WEB"))?.trim() || undefined;
+  if (sentryDsn && !/^https:\/\/[^\s@/]+@[^\s/]+\/\d+$/.test(sentryDsn)) {
+    throw new Error("SENTRY_DSN_WEB must look like https://<key>@<host>/<id>");
+  }
+  const sentryRelease = (options.sentryRelease ??
+    Deno.env.get("SENTRY_RELEASE") ?? Deno.env.get("GITHUB_SHA"))?.trim() ||
+    undefined;
+  const sentryEnvironment = Deno.env.get("SENTRY_ENVIRONMENT")?.trim() ||
+    "production";
+
   try {
     await Deno.remove(outDir, { recursive: true });
   } catch { /* first build */ }
@@ -101,6 +121,9 @@ export async function build(options: BuildOptions = {}) {
     siteUrl,
     supabaseUrl,
     supabaseAnonKey,
+    sentry: sentryDsn
+      ? { dsn: sentryDsn, environment: sentryEnvironment, release: sentryRelease }
+      : undefined,
     year: new Date().getFullYear(),
   };
   const written: { page: PageRef; lang: string; file: string }[] = [];
@@ -146,6 +169,16 @@ export async function build(options: BuildOptions = {}) {
         outDir,
         new URL(`static/fonts/${entry.name}`, root),
         `assets/fonts/${entry.name}`,
+      );
+    }
+  }
+  // Vendored third-party code (Sentry SDK + its licence), kept out of js/.
+  for await (const entry of Deno.readDir(new URL("static/vendor/", root))) {
+    if (entry.isFile) {
+      await copy(
+        outDir,
+        new URL(`static/vendor/${entry.name}`, root),
+        `assets/vendor/${entry.name}`,
       );
     }
   }

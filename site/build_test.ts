@@ -16,6 +16,7 @@ async function buildTo(
     outPath: dir,
     supabaseUrl: "",
     supabaseAnonKey: "",
+    sentryDsn: "",
     ...options,
   });
   return dir;
@@ -198,20 +199,27 @@ Deno.test("each page: lang, unique title/description, one h1, CSP, no scripts, n
       /http-equiv="Content-Security-Policy" content="default-src 'none'/,
       file,
     );
-    // Only pages that need it run code: one module script plus a JSON data block.
+    // Every page loads theme.js (light/dark switch, blocking in <head>); only
+    // pages that need it add one module script plus a JSON data block.
     const interactive =
       /(^|\/)(virgil|contact|iletisim|auth\/(confirmed|onay))\/index\.html$/
       .test(file);
     const scripts = html.match(/<script[^>]*>/gi) ?? [];
-    assertEquals(scripts.length, interactive ? 2 : 0, `${file}: script count`);
+    assertEquals(scripts.length, interactive ? 3 : 1, `${file}: script count`);
+    assertMatch(
+      html,
+      /<script src="(\.\.\/)*assets\/js\/theme\.js"><\/script>\n<\/head>/,
+      `${file}: theme.js in <head>`,
+    );
     assert(
       scripts.every((tag) =>
-        /^<script type="(module" src="[^"]+"|application\/json" id="i18n")>$/
+        /^<script (src="[^"]*theme\.js"|type="module" src="[^"]+"|type="application\/json" id="i18n")>$/
           .test(tag)
       ),
       `${file}: unexpected script tag ${scripts.join(" ")}`,
     );
-    assertEquals(/script-src/.test(html), interactive, `${file}: script-src`);
+    assertMatch(html, /script-src 'self'/, `${file}: script-src`);
+    assertEquals(/connect-src/.test(html), interactive, `${file}: connect-src`);
     assert(
       !/<style/i.test(html) && !/\sstyle="/i.test(html),
       `${file}: inline style (blocked by CSP)`,

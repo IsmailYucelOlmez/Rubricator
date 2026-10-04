@@ -15,6 +15,8 @@ async function buildTo(
     supabaseUrl?: string;
     supabaseAnonKey?: string;
     siteUrl?: string;
+    sentryDsn?: string;
+    sentryRelease?: string;
   } = {},
 ) {
   const dir = await Deno.makeTempDir({ prefix: "virgil-test-" });
@@ -24,6 +26,8 @@ async function buildTo(
     siteUrl: "",
     supabaseUrl: "",
     supabaseAnonKey: "",
+    sentryDsn: "",
+    sentryRelease: "",
     ...options,
   });
   return dir;
@@ -106,6 +110,8 @@ Deno.test("the browser scripts are published, import only each other and avoid u
     "confirmed.js",
     "contact.js",
     "fields.js",
+    "monitoring.js",
+    "theme.js",
     "virgil.js",
   ]);
   for (const f of files) {
@@ -344,4 +350,77 @@ Deno.test("contact: without Supabase config the page says to email instead", asy
   const html = await read(dir, "contact/index.html");
   assert(!html.includes("data-supabase-url"));
   assertMatch(html, /<div class="note"><p>The form isn't available right now/);
+});
+
+// --- error reporting (static/js/monitoring.js + vendored Sentry SDK) --------
+
+const DSN = "https://abc123@o42.ingest.de.sentry.io/7";
+
+Deno.test("sentry: only pages with scripts report errors, nothing without a DSN", async () => {
+  const off = await buildTo(SUPABASE);
+  for (const file of ["virgil/index.html", "contact/index.html", "index.html"]) {
+    const html = await read(off, file);
+    assert(!html.includes("monitoring.js"), `${file}: no DSN, no monitoring`);
+    assert(!html.includes("sentry-dsn"), `${file}: no sentry meta`);
+  }
+
+  const dir = await buildTo({ ...SUPABASE, sentryDsn: DSN, sentryRelease: "abc" });
+  for (
+    const file of [
+      "virgil/index.html",
+      "tr/virgil/index.html",
+      "contact/index.html",
+      "auth/confirmed/index.html",
+    ]
+  ) {
+    const html = await read(dir, file);
+    assertMatch(html, /<meta name="sentry-dsn" content="https:\/\/abc123@o42\.ingest\.de\.sentry\.io\/7">/);
+    assertMatch(html, /<meta name="sentry-release" content="abc">/);
+    assertMatch(
+      html,
+      /connect-src https:\/\/proj\.supabase\.co https:\/\/o42\.ingest\.de\.sentry\.io;/,
+      file,
+    );
+    // monitoring runs before the page's own module
+    const first = html.indexOf("monitoring.js");
+    const page = html.search(/assets\/js\/(app|contact|confirmed)\.js/);
+    assert(first > 0 && first < page, `${file}: monitoring.js first`);
+  }
+  for (const file of ["index.html", "about/index.html", "privacy-policy.html"]) {
+    const html = await read(dir, file);
+    assert(
+      !html.includes("monitoring.js") && !html.includes("sentry-dsn") &&
+        !html.includes("ingest.de.sentry.io"),
+      `${file}: plain page has no Sentry`,
+    );
+  }
+  // the SDK is published (lazy import target) with its licence
+  // monitoring.js uses exactly these exports of the bundle
+  const sdk = await read(dir, "assets/vendor/sentry.js");
+  const exported = sdk.match(/export\{([^}]*)\};?\s*(\/\*[^*]*\*\/)?\s*$/)![1];
+  for (
+    const name of [
+      "init",
+      "captureException",
+      "dedupeIntegration",
+      "linkedErrorsIntegration",
+      "httpContextIntegration",
+    ]
+  ) {
+    assert(
+      exported.split(",").some((e) => e.trim().endsWith(` as ${name}`)),
+      `vendor/sentry.js must export ${name}`,
+    );
+  }
+  await Deno.stat(join(dir, "assets/vendor/LICENSE-sentry.txt"));
+});
+
+Deno.test("sentry: a malformed DSN fails the build", async () => {
+  let failed = false;
+  try {
+    await buildTo({ sentryDsn: "not-a-dsn" });
+  } catch {
+    failed = true;
+  }
+  assert(failed);
 });

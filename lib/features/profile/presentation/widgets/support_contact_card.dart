@@ -13,7 +13,8 @@ final supportContactServiceProvider = Provider<SupportContactService>(
 );
 
 /// Profile page "Contact us" form: a message to support, answered by email at
-/// the signed-in account's address.
+/// the signed-in account's address (the server takes it from the session, so
+/// the form doesn't ask for or repeat it).
 class SupportContactCard extends ConsumerStatefulWidget {
   const SupportContactCard({super.key});
 
@@ -43,19 +44,18 @@ class _SupportContactCardState extends ConsumerState<SupportContactCard> {
     return null;
   }
 
-  Future<void> _send(AppLocalizations l10n) async {
+  Future<void> _send(AppLocalizations l10n, String name) async {
     final error = _validate(l10n);
     setState(() => _error = error);
     if (error != null) return;
 
-    final user = ref.read(authStateProvider).valueOrNull;
     final messenger = ScaffoldMessenger.of(context);
     final lang = Localizations.localeOf(context).languageCode;
     setState(() => _sending = true);
     try {
       await ref
           .read(supportContactServiceProvider)
-          .send(message: _message.text, name: userDisplayName(user), lang: lang);
+          .send(message: _message.text, name: name, lang: lang);
       if (!mounted) return;
       _message.clear();
       FocusScope.of(context).unfocus();
@@ -87,8 +87,8 @@ class _SupportContactCardState extends ConsumerState<SupportContactCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final email = ref.watch(authStateProvider).valueOrNull?.email ?? '';
-
+    // Sent along as the sender's name; the address comes from the session.
+    final name = ref.watch(currentUserDisplayNameProvider);
     return Card(
       margin: const EdgeInsets.only(top: AppSpacing.md),
       child: Padding(
@@ -99,7 +99,7 @@ class _SupportContactCardState extends ConsumerState<SupportContactCard> {
             Text(l10n.contactTitle, style: theme.textTheme.titleSmall),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              l10n.contactSubtitle(email),
+              l10n.contactSubtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -117,7 +117,7 @@ class _SupportContactCardState extends ConsumerState<SupportContactCard> {
             Align(
               alignment: AlignmentDirectional.centerEnd,
               child: FilledButton.icon(
-                onPressed: _sending ? null : () => _send(l10n),
+                onPressed: _sending ? null : () => _send(l10n, name),
                 icon: _sending
                     ? const SizedBox(
                         width: 18,

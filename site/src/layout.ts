@@ -316,6 +316,8 @@ export function renderPage(
       <nav class="nav" aria-label="${ui.navLabel}">
         ${navLinks}
       </nav>
+    </div>
+    <div class="header-tools">
       <a class="lang-switch" href="${
     rel(switchTarget)
   }" hreflang="${other}" lang="${other}" aria-label="${ui.switchLabel}" title="${ui.switchTo}">${

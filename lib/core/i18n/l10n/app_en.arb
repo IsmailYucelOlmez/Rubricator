@@ -747,8 +747,7 @@
   ,"deleteAccountSuccess":"Your account has been deleted."
   ,"deleteAccountFailed":"Your account couldn't be deleted. Please try again."
   ,"contactTitle":"Contact us"
-  ,"contactSubtitle":"Questions, suggestions or a problem to report? Write to us and we'll reply to {email}."
-  ,"@contactSubtitle":{"placeholders":{"email":{"type":"String"}}}
+  ,"contactSubtitle":"Questions, suggestions or a problem to report? Write to us and we'll reply by email."
   ,"contactMessageLabel":"Your message"
   ,"contactSend":"Send"
   ,"contactSent":"Your message was sent. Thank you!"

@@ -7,7 +7,10 @@
  *     deno run --allow-read --allow-write --allow-env site/build.ts
  *
  * Sign in with reader@example.com / Secret!1. Recovery code: 12345678. The
- * fifth search of the day is answered with 429 daily_limit_reached.
+ * fifth search of the day is answered with 429 daily_limit_reached. Relevance
+ * marks are kept in memory per (query, language); a refined search (with
+ * `feedback`) leaves the irrelevant ISBNs out and doesn't use up the quota,
+ * like re-running the same query in production.
  */
 const PORT = Number(Deno.env.get("PORT") ?? 8767);
 const USER = {
@@ -16,6 +19,8 @@ const USER = {
   user_metadata: { username: "Reader" },
 };
 const searches = { used: 0 };
+// "<query>|<language>" -> isbn13 -> 1 | -1
+const marks = new Map<string, Map<string, number>>();
 let tokenSeq = 0;
 const issued = new Map<string, string>(); // access token -> refresh token
 
@@ -155,41 +160,61 @@ Deno.serve({ port: PORT }, async (req) => {
       uploads_limit: 3,
     }]);
   }
+  if (path === "/rest/v1/rpc/get_my_semantic_feedback") {
+    const saved = marks.get(`${body?.p_query}|${body?.p_language}`);
+    return json(
+      [...(saved ?? [])].map(([isbn13, vote]) => ({ isbn13, vote })),
+    );
+  }
+  if (path === "/rest/v1/rpc/submit_semantic_feedback") {
+    const key = `${body?.p_query}|${body?.p_language}`;
+    const saved = marks.get(key) ?? new Map<string, number>();
+    saved.delete(body?.p_isbn13);
+    if (body?.p_vote === 1 || body?.p_vote === -1) {
+      saved.set(body.p_isbn13, body.p_vote);
+    }
+    marks.set(key, saved);
+    return new Response(null, { status: 204, headers: cors });
+  }
   if (path === "/functions/v1/rubricatorApi/api/v1/semantic/search") {
     if (typeof body?.query !== "string" || body.query.trim().length < 3) {
       return json({ error: "invalid_query" }, 400);
     }
-    if (searches.used >= 5) {
+    const refined = Boolean(body.feedback);
+    if (!refined && searches.used >= 5) {
       return json(
         { error: "daily_limit_reached", action: "recommendation" },
         429,
       );
     }
-    searches.used++;
+    if (!refined) searches.used++;
+    const hidden = new Set<string>(body.feedback?.irrelevant ?? []);
     await new Promise((r) => setTimeout(r, 600));
     const wantsNone = body.query.includes("nothing");
     return json({
-      results: wantsNone ? [] : books.map((
-        [isbn13, title, author, category, coverImageUrl, description],
-      ) => ({
-        isbn13,
-        title,
-        author,
-        category,
-        coverImageUrl,
-        description,
-        similarity: 0.8,
-        source: "local",
-      })).concat([{
-        isbn13: "",
-        title: "No ISBN",
-        author: "",
-        category: "",
-        coverImageUrl: null,
-        description: "",
-        similarity: 0,
-        source: "local",
-      }]),
+      results: wantsNone
+        ? []
+        : books.filter(([isbn13]) => !hidden.has(String(isbn13))).map((
+          [isbn13, title, author, category, coverImageUrl, description],
+        ) => ({
+          isbn13,
+          title,
+          author,
+          category,
+          coverImageUrl,
+          description,
+          similarity: 0.8,
+          source: "local",
+        })).concat([{
+          isbn13: "",
+          title: "No ISBN",
+          author: "",
+          category: "",
+          coverImageUrl: null,
+          description: "",
+          similarity: 0,
+          source: "local",
+        }]),
     });
   }
   return json({ error: "not_found" }, 404);

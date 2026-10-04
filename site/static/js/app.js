@@ -14,7 +14,9 @@ import {
 } from "./fields.js";
 import {
   createVirgil,
+  isVotableIsbn,
   MAX_QUERY_LENGTH,
+  MAX_REFINEMENT_ISBNS,
   MIN_QUERY_LENGTH,
   VirgilError,
 } from "./virgil.js";
@@ -193,6 +195,8 @@ function main() {
       }
       $("results").replaceChildren();
       $("results-wrap").hidden = true;
+      current = null;
+      votes = new Map();
       $("search-intro").hidden = false;
       $("usage").hidden = true;
     }
@@ -245,8 +249,10 @@ function main() {
   }
 
   // Like the app: a grid of covers with title and author. The description
-  // opens in a dialog (the website has no book page to go to).
-  function resultCard(book) {
+  // opens in a dialog (the website has no book page to go to). Results with an
+  // ISBN get the relevance marks on the cover (siblings of the card button:
+  // buttons can't be nested).
+  function resultCard(book, position) {
     const item = document.createElement("li");
     const card = document.createElement("button");
     card.type = "button";
@@ -260,7 +266,115 @@ function main() {
     card.append(coverBox(book, "book-cover"), title, author);
     card.addEventListener("click", () => openBook(book));
     item.append(card);
+    if (isVotableIsbn(book.isbn13)) {
+      item.dataset.isbn = book.isbn13;
+      const marks = $("vote-template").content.firstElementChild.cloneNode(
+        true,
+      );
+      for (const button of marks.querySelectorAll("[data-vote]")) {
+        button.addEventListener("click", () => {
+          toggleVote(book, position, Number(button.dataset.vote));
+        });
+      }
+      item.append(marks);
+      showVote(item, votes.get(book.isbn13) ?? 0);
+    }
     return item;
+  }
+
+  // ---- relevance marks + refine (same flow as the app) ----------------------
+  /** The search on screen: {query, category, applied} (applied = refinement). */
+  let current = null;
+  /** isbn13 -> 1 | -1, in the order they were cast (most recent last). */
+  let votes = new Map();
+  const voting = new Set();
+
+  function showVote(item, vote) {
+    if (vote) item.dataset.vote = String(vote);
+    else delete item.dataset.vote;
+    for (const button of item.querySelectorAll("[data-vote]")) {
+      button.setAttribute(
+        "aria-pressed",
+        String(Number(button.dataset.vote) === vote),
+      );
+    }
+  }
+
+  function showVotes() {
+    for (const item of $("results").querySelectorAll("li[data-isbn]")) {
+      showVote(item, votes.get(item.dataset.isbn) ?? 0);
+    }
+  }
+
+  /** The latest marks per side, capped like the API. */
+  function pendingRefinement() {
+    const side = (value) =>
+      [...votes].filter(([, v]) => v === value).map(([isbn]) => isbn)
+        .slice(-MAX_REFINEMENT_ISBNS);
+    return { relevant: side(1), irrelevant: side(-1) };
+  }
+
+  function sameRefinement(a, b) {
+    const same = (x, y) =>
+      x.length === y.length && x.every((isbn) => y.includes(isbn));
+    return Boolean(a && b) && same(a.relevant, b.relevant) &&
+      same(a.irrelevant, b.irrelevant);
+  }
+
+  function updateRefineBar() {
+    const bar = $("refine");
+    const hasResults = $("results").querySelector("li[data-isbn]") !== null;
+    if (!current || (!hasResults && !current.applied)) {
+      bar.hidden = true;
+      return;
+    }
+    const pending = pendingRefinement();
+    const empty = pending.relevant.length + pending.irrelevant.length === 0;
+    const upToDate = sameRefinement(pending, current.applied);
+    $("refine-hint").textContent = upToDate
+      ? t.feedbackRefined
+      : t.feedbackHint;
+    $("refine-apply").disabled = empty || upToDate;
+    $("refine-reset").hidden = !current.applied;
+    bar.hidden = false;
+  }
+
+  async function toggleVote(book, position, value) {
+    if (!current || voting.has(book.isbn13)) return;
+    const previous = votes.get(book.isbn13) ?? 0;
+    const next = previous === value ? 0 : value;
+    const set = (vote) => {
+      votes.delete(book.isbn13);
+      if (vote) votes.set(book.isbn13, vote);
+      showVotes();
+      updateRefineBar();
+    };
+    set(next);
+    voting.add(book.isbn13);
+    try {
+      await virgil.vote({
+        query: current.query,
+        language: lang,
+        isbn13: book.isbn13,
+        vote: next,
+        position,
+        similarity: book.similarity,
+        category: current.category,
+      });
+    } catch (error) {
+      set(previous);
+      say(
+        error instanceof VirgilError && error.code === "rate_limited"
+          ? t.errFeedbackRateLimited
+          : t.errFeedback,
+        "error",
+      );
+      if (error instanceof VirgilError && error.code === "unauthorized") {
+        auth.reload();
+      }
+    } finally {
+      voting.delete(book.isbn13);
+    }
   }
 
   function openBook(book) {
@@ -452,7 +566,28 @@ function main() {
       ? t.errQueryLong
       : null;
     if (!checkFields($("form-search"), [[$("query"), queryProblem]])) return;
-    const category = lang === "en" ? genre : "All";
+    runSearch({
+      query,
+      category: lang === "en" ? genre : "All",
+      applied: null,
+    });
+  });
+
+  $("refine-apply").addEventListener("click", () => {
+    if (current) runSearch({ ...current, applied: pendingRefinement() });
+  });
+  $("refine-reset").addEventListener("click", () => {
+    if (current) runSearch({ ...current, applied: null });
+  });
+
+  /**
+   * Runs a search and shows it. A new query starts with the user's saved marks
+   * for it; a refinement (applied) re-runs the same query with the marks.
+   */
+  function runSearch(next) {
+    const { query, category, applied } = next;
+    const newQuery = !current || current.query !== query ||
+      current.category !== category;
     const seq = ++searchSeq;
     const button = $("search-button");
     const list = $("results");
@@ -467,8 +602,24 @@ function main() {
       category: categoryLabel.textContent,
       categoryHidden: categoryLabel.hidden,
       intro: $("search-intro").hidden,
+      current,
+      votes,
     };
     button.disabled = true;
+    $("refine-apply").disabled = true;
+    $("refine-reset").disabled = true;
+    current = next;
+    if (newQuery) {
+      votes = new Map();
+      $("refine").hidden = true;
+      virgil.votes({ query, language: lang }).then((saved) => {
+        if (seq !== searchSeq || current !== next) return;
+        // Marks cast while loading win over the saved ones.
+        votes = new Map([...saved, ...votes]);
+        showVotes();
+        updateRefineBar();
+      });
+    }
     say(t.searching);
     // Like the app: the query becomes the title of the results.
     heading.textContent = query;
@@ -479,37 +630,47 @@ function main() {
     list.setAttribute("aria-busy", "true");
     $("no-results").hidden = true;
     wrap.hidden = false;
-    virgil.search({ query, category, language: lang }).then((books) => {
-      if (seq !== searchSeq) return;
-      say("");
-      list.replaceChildren(...books.map(resultCard));
-      list.removeAttribute("aria-busy");
-      $("no-results").hidden = books.length > 0;
-      $("results-heading").focus();
-      refreshUsage();
-    }).catch((error) => {
-      if (seq !== searchSeq) return;
-      list.replaceChildren(...previous.items);
-      list.removeAttribute("aria-busy");
-      wrap.hidden = previous.hidden;
-      heading.textContent = previous.query;
-      categoryLabel.textContent = previous.category;
-      categoryLabel.hidden = previous.categoryHidden;
-      $("search-intro").hidden = previous.intro;
-      if (error instanceof VirgilError && error.code === "daily_limit_reached") {
+    virgil.search({ query, category, language: lang, feedback: applied })
+      .then((books) => {
+        if (seq !== searchSeq) return;
         say("");
-        setLimitReached(true);
-      } else {
-        say(virgilMessage(error), "error");
-      }
-      if (error instanceof VirgilError && error.code === "unauthorized") {
-        auth.reload();
-      }
-      refreshUsage();
-    }).finally(() => {
-      if (seq === searchSeq) button.disabled = false;
-    });
-  });
+        list.replaceChildren(...books.map(resultCard));
+        updateRefineBar();
+        list.removeAttribute("aria-busy");
+        $("no-results").hidden = books.length > 0;
+        $("results-heading").focus();
+        refreshUsage();
+      }).catch((error) => {
+        if (seq !== searchSeq) return;
+        list.replaceChildren(...previous.items);
+        list.removeAttribute("aria-busy");
+        wrap.hidden = previous.hidden;
+        heading.textContent = previous.query;
+        categoryLabel.textContent = previous.category;
+        categoryLabel.hidden = previous.categoryHidden;
+        $("search-intro").hidden = previous.intro;
+        current = previous.current;
+        votes = previous.votes;
+        showVotes();
+        if (
+          error instanceof VirgilError && error.code === "daily_limit_reached"
+        ) {
+          say("");
+          setLimitReached(true);
+        } else {
+          say(virgilMessage(error), "error");
+        }
+        if (error instanceof VirgilError && error.code === "unauthorized") {
+          auth.reload();
+        }
+        refreshUsage();
+      }).finally(() => {
+        if (seq !== searchSeq) return;
+        button.disabled = false;
+        $("refine-reset").disabled = false;
+        updateRefineBar();
+      });
+  }
 
   // Keep several tabs in sync (sign in / out, refreshed tokens).
   addEventListener("storage", (event) => {

@@ -710,7 +710,7 @@
   ,"deleteAccountSuccess":"Hesabın silindi."
   ,"deleteAccountFailed":"Hesabın silinemedi. Lütfen tekrar dene."
   ,"contactTitle":"Bize yaz"
-  ,"contactSubtitle":"Bir sorun, soru ya da önerin mi var? Bize yaz, {email} adresine yanıt verelim."
+  ,"contactSubtitle":"Bir sorun, soru ya da önerin mi var? Bize yaz, e-postayla yanıt verelim."
   ,"contactMessageLabel":"Mesajın"
   ,"contactSend":"Gönder"
   ,"contactSent":"Mesajın gönderildi. Teşekkürler!"

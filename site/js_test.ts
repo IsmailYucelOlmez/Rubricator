@@ -10,6 +10,7 @@ import {
 import {
   createVirgil,
   httpsUrl,
+  isVotableIsbn,
   normalizeResults,
   VirgilError,
 } from "./static/js/virgil.js";
@@ -393,8 +394,8 @@ Deno.test("search: same request as the mobile app, with the user's token", async
   });
 });
 
-Deno.test("search: results are normalised (https covers, no ISBN-less rows, clipped text)", async () => {
-  const long = "word ".repeat(200);
+Deno.test("search: results are normalised (https covers, no ISBN-less rows, full text)", async () => {
+  const long = "word ".repeat(200) + "\r\n\r\n\r\n  Second   paragraph. ";
   const { virgil } = virgilSetup([json({
     results: [
       {
@@ -414,8 +415,10 @@ Deno.test("search: results are normalised (https covers, no ISBN-less rows, clip
   assertEquals(books.map((b: { isbn13: string }) => b.isbn13), ["1", "2"]);
   assertEquals(books[0].cover, "https://x.test/c.jpg");
   assertEquals(books[0].title, "A");
-  assert(
-    books[0].description.length <= 421 && books[0].description.endsWith("…"),
+  // The dialog shows the whole description, paragraphs kept.
+  assertEquals(
+    books[0].description,
+    "word ".repeat(200).trim() + "\n\nSecond paragraph.",
   );
   assertEquals(books[1].cover, null);
 });
@@ -632,4 +635,89 @@ Deno.test("consumeRedirectFragment: the default (no explicit hash) never throws 
     fetchFn: fakeFetch([]).fn,
   });
   assertEquals(await auth.consumeRedirectFragment(), null);
+});
+
+Deno.test("search: a refinement sends the latest 5 marks per side", async () => {
+  const { virgil, calls } = virgilSetup([json({ results: [] })]);
+  const isbns = (n: number, p: string) =>
+    Array.from({ length: n }, (_, i) => `${p}${i}`);
+  await virgil.search({
+    query: "abc",
+    feedback: { relevant: isbns(7, "r"), irrelevant: ["x"] },
+  });
+  assertEquals((calls[0].body as Record<string, unknown>).feedback, {
+    relevant: ["r2", "r3", "r4", "r5", "r6"],
+    irrelevant: ["x"],
+  });
+});
+
+Deno.test("search: no marks, no feedback field", async () => {
+  const { virgil, calls } = virgilSetup([json({ results: [] })]);
+  await virgil.search({
+    query: "abc",
+    feedback: { relevant: [], irrelevant: [] },
+  });
+  assertEquals(
+    "feedback" in (calls[0].body as Record<string, unknown>),
+    false,
+  );
+});
+
+Deno.test("votes: loads the user's marks for (query, language)", async () => {
+  const { virgil, calls } = virgilSetup([json([
+    { isbn13: "9780156012195", vote: 1 },
+    { isbn13: "9780061120084", vote: -1 },
+    { isbn13: "bad", vote: 3 },
+  ])]);
+  const marks = await virgil.votes({ query: "abc", language: "tr" });
+  assertEquals(
+    calls[0].url,
+    `${URL_}/rest/v1/rpc/get_my_semantic_feedback`,
+  );
+  assertEquals(calls[0].body, { p_query: "abc", p_language: "tr" });
+  assertEquals([...marks], [["9780156012195", 1], ["9780061120084", -1]]);
+});
+
+Deno.test("votes: a failure means no marks, not an error", async () => {
+  const { virgil } = virgilSetup([json({}, 500)]);
+  assertEquals((await virgil.votes({ query: "abc", language: "en" })).size, 0);
+});
+
+Deno.test("vote: same RPC and fields as the app; 429 is rate_limited", async () => {
+  const { virgil, calls } = virgilSetup([
+    new Response(null, { status: 204 }),
+    json({ code: "PT429" }, 429),
+  ]);
+  await virgil.vote({
+    query: "abc",
+    language: "en",
+    isbn13: "9780156012195",
+    vote: -1,
+    position: 2,
+    similarity: 0.8,
+    category: "All",
+  });
+  assertEquals(calls[0].url, `${URL_}/rest/v1/rpc/submit_semantic_feedback`);
+  assertEquals(calls[0].body, {
+    p_query: "abc",
+    p_isbn13: "9780156012195",
+    p_vote: -1,
+    p_language: "en",
+    p_result_position: 2,
+    p_similarity: 0.8,
+    p_mode: "advanced",
+    p_category: null,
+    p_tone: null,
+  });
+  const error = await assertRejects(() =>
+    virgil.vote({ query: "abc", language: "en", isbn13: "1", vote: 1 })
+  );
+  assertEquals((error as VirgilError).code, "rate_limited");
+});
+
+Deno.test("isVotableIsbn: only real ISBN-10/13 values", () => {
+  assert(isVotableIsbn("9780156012195"));
+  assert(isVotableIsbn("080442957x"));
+  assertEquals(isVotableIsbn(""), false);
+  assertEquals(isVotableIsbn("tr-123"), false);
 });

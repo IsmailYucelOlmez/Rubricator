@@ -76,7 +76,7 @@ void main() {
     final service = _FakeService();
     await _pump(tester, service);
 
-    expect(find.textContaining('okur@example.com'), findsOneWidget);
+    expect(find.textContaining('okur@example.com'), findsNothing);
     await tester.enterText(find.byType(TextField), 'Uygulama çok güzel olmuş!');
     await tester.tap(find.text('Gönder'));
     await tester.pump();

@@ -2000,9 +2000,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get contactTitle => 'Bize yaz';
 
   @override
-  String contactSubtitle(String email) {
-    return 'Bir sorun, soru ya da önerin mi var? Bize yaz, $email adresine yanıt verelim.';
-  }
+  String get contactSubtitle =>
+      'Bir sorun, soru ya da önerin mi var? Bize yaz, e-postayla yanıt verelim.';
 
   @override
   String get contactMessageLabel => 'Mesajın';

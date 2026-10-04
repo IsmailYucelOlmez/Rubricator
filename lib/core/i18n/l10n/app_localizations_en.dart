@@ -2010,9 +2010,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactTitle => 'Contact us';
 
   @override
-  String contactSubtitle(String email) {
-    return 'Questions, suggestions or a problem to report? Write to us and we\'ll reply to $email.';
-  }
+  String get contactSubtitle =>
+      'Questions, suggestions or a problem to report? Write to us and we\'ll reply by email.';
 
   @override
   String get contactMessageLabel => 'Your message';

@@ -12,7 +12,14 @@ export const GENRES = [
 export const MIN_QUERY_LENGTH = 3;
 export const MAX_QUERY_LENGTH = 500;
 const SEARCH_TIMEOUT_MS = 35_000;
-const DESCRIPTION_LIMIT = 420;
+/** The API takes at most this many ISBNs per side of a refinement. */
+export const MAX_REFINEMENT_ISBNS = 5;
+const ISBN = /^[0-9]{9,12}[0-9X]$/;
+
+/** Only results with a real ISBN can be marked (same rule as the API/RPC). */
+export function isVotableIsbn(isbn) {
+  return ISBN.test(String(isbn ?? "").trim().toUpperCase());
+}
 
 export class VirgilError extends Error {
   /**
@@ -41,10 +48,18 @@ export function httpsUrl(value) {
   }
 }
 
-function clip(text, limit) {
-  const clean = String(text ?? "").replace(/\s+/g, " ").trim();
-  if (clean.length <= limit) return clean;
-  return clean.slice(0, limit).replace(/\s+\S*$/, "") + "…";
+/**
+ * The whole description, tidied: runs of spaces collapse, paragraph breaks
+ * stay (the dialog shows them with `white-space: pre-line`).
+ */
+function tidy(text) {
+  return String(text ?? "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 /** Keeps the fields the page shows and drops results without an ISBN. */
@@ -56,9 +71,10 @@ export function normalizeResults(payload) {
       isbn13: String(item.isbn13 ?? ""),
       title: String(item.title ?? "").trim(),
       author: String(item.author ?? "").trim(),
-      description: clip(item.description, DESCRIPTION_LIMIT),
+      description: tidy(item.description),
       category: item.category ? String(item.category) : "",
       cover: httpsUrl(item.coverImageUrl),
+      similarity: typeof item.similarity === "number" ? item.similarity : null,
     }))
     .filter((item) => item.isbn13 !== "");
 }
@@ -90,7 +106,9 @@ export function createVirgil(options) {
         signal: controller.signal,
       });
     } catch (error) {
-      throw new VirgilError(error?.name === "AbortError" ? "timeout" : "network");
+      throw new VirgilError(
+        error?.name === "AbortError" ? "timeout" : "network",
+      );
     } finally {
       clearTimeout(timer);
     }
@@ -106,7 +124,9 @@ export function createVirgil(options) {
     if (response.status === 401) throw new VirgilError("unauthorized", 401);
     if (response.status === 429) {
       throw new VirgilError(
-        data?.error === "daily_limit_reached" ? "daily_limit_reached" : "rate_limited",
+        data?.error === "daily_limit_reached"
+          ? "daily_limit_reached"
+          : "rate_limited",
         429,
       );
     }
@@ -115,24 +135,92 @@ export function createVirgil(options) {
   }
 
   return {
-    async search({ query, category = "All", language = "en" }) {
-      const data = await call("/functions/v1/rubricatorApi/api/v1/semantic/search", {
+    /**
+     * `feedback` (optional): ISBNs marked relevant / irrelevant for this query;
+     * the API steers toward / away from them and leaves the irrelevant out.
+     * @param {{query: string, category?: string, language?: string,
+     *   feedback?: {relevant: string[], irrelevant: string[]} | null}} options
+     */
+    async search(
+      { query, category = "All", language = "en", feedback = null },
+    ) {
+      const refined = feedback &&
+        (feedback.relevant.length > 0 || feedback.irrelevant.length > 0);
+      const data = await call(
+        "/functions/v1/rubricatorApi/api/v1/semantic/search",
+        {
+          body: {
+            query: query.trim(),
+            mode: "advanced",
+            category,
+            tone: "All",
+            limit: 16,
+            language,
+            ...(refined
+              ? {
+                feedback: {
+                  relevant: feedback.relevant.slice(-MAX_REFINEMENT_ISBNS),
+                  irrelevant: feedback.irrelevant.slice(-MAX_REFINEMENT_ISBNS),
+                },
+              }
+              : {}),
+          },
+        },
+      );
+      return normalizeResults(data);
+    },
+
+    /**
+     * The user's marks for a query, as a Map isbn13 -> 1 | -1. Votes are
+     * stored per (query, language), like the app. Fails open (empty map).
+     * @param {{query: string, language: string}} key
+     * @returns {Promise<Map<string, number>>}
+     */
+    async votes({ query, language }) {
+      const marks = new Map();
+      try {
+        const rows = await call("/rest/v1/rpc/get_my_semantic_feedback", {
+          body: { p_query: query, p_language: language },
+        });
+        for (const row of Array.isArray(rows) ? rows : []) {
+          const vote = Number(row?.vote);
+          if (typeof row?.isbn13 === "string" && (vote === 1 || vote === -1)) {
+            marks.set(row.isbn13, vote);
+          }
+        }
+      } catch { /* no marks shown; voting still works */ }
+      return marks;
+    },
+
+    /**
+     * Sets (1 / -1) or removes (0) the user's mark on one result.
+     * @param {{query: string, language: string, isbn13: string, vote: number,
+     *   position?: number, similarity?: number | null, category?: string}} mark
+     */
+    async vote(
+      { query, language, isbn13, vote, position, similarity, category },
+    ) {
+      await call("/rest/v1/rpc/submit_semantic_feedback", {
         body: {
-          query: query.trim(),
-          mode: "advanced",
-          category,
-          tone: "All",
-          limit: 16,
-          language,
+          p_query: query,
+          p_isbn13: isbn13,
+          p_vote: vote,
+          p_language: language,
+          p_result_position: position ?? null,
+          p_similarity: similarity ?? null,
+          p_mode: "advanced",
+          p_category: category && category !== "All" ? category : null,
+          p_tone: null,
         },
       });
-      return normalizeResults(data);
     },
 
     /** Today's recommendation quota, or null when it can't be read. */
     async usage() {
       try {
-        const rows = await call("/rest/v1/rpc/get_virgil_usage_today", { body: {} });
+        const rows = await call("/rest/v1/rpc/get_virgil_usage_today", {
+          body: {},
+        });
         const row = Array.isArray(rows) ? rows[0] : rows;
         if (typeof row?.recommendations_count !== "number") return null;
         return {

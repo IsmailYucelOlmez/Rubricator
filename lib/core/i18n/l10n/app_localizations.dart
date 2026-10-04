@@ -3485,8 +3485,8 @@ abstract class AppLocalizations {
   /// No description provided for @contactSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Questions, suggestions or a problem to report? Write to us and we\'ll reply to {email}.'**
-  String contactSubtitle(String email);
+  /// **'Questions, suggestions or a problem to report? Write to us and we\'ll reply by email.'**
+  String get contactSubtitle;
 
   /// No description provided for @contactMessageLabel.
   ///

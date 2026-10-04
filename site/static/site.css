@@ -52,8 +52,6 @@
   --muted: #5b5f63;
   --primary: #ba181b;
   --primary-text: #ba181b;
-  /* Red text on inverted surfaces (the landing app band). */
-  --primary-text-inverse: #ff7a7d;
   --on-primary: #ffffff;
   --border: rgba(22, 26, 29, 0.14);
   --border-strong: #7e8286;
@@ -79,7 +77,6 @@
     --muted: #b4b8bc;
     --primary: #ba181b;
     --primary-text: #ff7a7d;
-    --primary-text-inverse: #ba181b;
     --border: rgba(245, 243, 244, 0.16);
     --border-strong: #787e83;
     --soft: #2a2e31;
@@ -95,7 +92,6 @@
   --muted: #b4b8bc;
   --primary: #ba181b;
   --primary-text: #ff7a7d;
-  --primary-text-inverse: #ba181b;
   --border: rgba(245, 243, 244, 0.16);
   --border-strong: #787e83;
   --soft: #2a2e31;
@@ -183,6 +179,7 @@ a:hover {
 
 /* ---- header ---- */
 .site-header {
+  position: relative;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
@@ -236,22 +233,43 @@ a:hover {
 .nav a[aria-current="page"] {
   border-bottom-color: var(--primary-text);
 }
+/* Language + theme: in the header's right corner, outside the content column
+   (on phones on the logo row). Icons only, no frame; hover tints the circle. */
+.header-tools {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+@media (min-width: 48rem) {
+  .header-tools {
+    top: 0;
+    bottom: 0;
+  }
+  /* Keep the nav clear of the tools while the column reaches that corner. */
+  .site-header .container {
+    padding-right: clamp(
+      1.25rem,
+      calc(8.25rem - (100vw - var(--maxw)) / 2),
+      8.25rem
+    );
+  }
+}
 .lang-switch {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2.75rem;
-  min-height: 2.75rem;
-  padding: 0;
-  border: 1px solid var(--border);
+  height: 2.75rem;
   border-radius: 50%;
   color: var(--text);
   text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 600;
 }
-.lang-switch:hover {
-  border-color: var(--text);
+.lang-switch:hover,
+.theme-toggle:hover {
+  background: var(--soft);
 }
 /* The language switch shows the flag of the other language (label in aria). */
 .lang-switch .flag {
@@ -267,14 +285,11 @@ a:hover {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--text);
   cursor: pointer;
-}
-.theme-toggle:hover {
-  border-color: var(--text);
 }
 .theme-toggle svg {
   width: 1.25rem;
@@ -637,11 +652,12 @@ h3 {
   text-overflow: ellipsis;
 }
 
-/* ---- landing: closing app band (inverted colours) with a shelf ---- */
+/* ---- landing: closing app band with a shelf (follows the theme) ---- */
 .app-band {
   padding-block: clamp(3rem, 7vw, 4.5rem);
-  background: var(--text);
-  color: var(--bg);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
 }
 .app-band .container {
   display: grid;
@@ -655,7 +671,7 @@ h3 {
   }
 }
 .app-band .kicker {
-  color: var(--primary-text-inverse);
+  color: var(--primary-text);
 }
 .app-band h2 {
   max-width: 18ch;
@@ -666,12 +682,12 @@ h3 {
 }
 .app-band h2 em {
   font-style: normal;
-  color: var(--primary-text-inverse);
+  color: var(--primary-text);
 }
 .app-band-lead {
   max-width: 44ch;
   margin: 0 0 2rem;
-  color: color-mix(in srgb, var(--bg) 75%, transparent);
+  color: var(--muted);
   font-size: clamp(1.05rem, 2vw, 1.25rem);
 }
 .app-band-list {
@@ -697,7 +713,7 @@ h3 {
 }
 .app-band-list p {
   margin: 0;
-  color: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--muted);
   font-size: 0.95rem;
 }
 .app-band-icon {
@@ -706,7 +722,7 @@ h3 {
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
-  border: 1px solid color-mix(in srgb, var(--bg) 40%, transparent);
+  border: 1px solid var(--border-strong);
   border-radius: 50%;
 }
 .app-band-icon svg {
@@ -736,7 +752,7 @@ h3 {
   overflow: hidden;
   padding: 0.75rem 0;
   border-radius: 3px 3px 0 0;
-  outline: 1px solid color-mix(in srgb, var(--bg) 18%, transparent);
+  outline: 1px solid var(--border);
   outline-offset: -1px;
   background: var(--bg);
   color: var(--text);
@@ -764,7 +780,7 @@ h3 {
 .spine:nth-child(4) {
   width: 2rem;
   height: 10.5rem;
-  background: var(--muted);
+  background: var(--text);
   color: var(--bg);
 }
 .spine:nth-child(5) {
@@ -787,7 +803,7 @@ h3 {
 .app-shelf-plank {
   height: 0.5rem;
   border-radius: 3px;
-  background: color-mix(in srgb, var(--bg) 30%, transparent);
+  background: var(--border-strong);
 }
 
 /* ---- sections ---- */
@@ -1176,10 +1192,6 @@ h3 {
   flex-direction: column;
   padding-top: 1.5rem;
 }
-.v-note {
-  margin: auto 0 0;
-  padding-block: 1rem;
-}
 /* Docked like the app's bottom bar; the genre chips open right above it. */
 .v-dock {
   position: sticky;
@@ -1518,6 +1530,23 @@ input.v-input[aria-invalid="true"] {
   margin: 0.25rem 0 0;
   font-size: 0.92rem;
 }
+/* Relevance marks: the hint, "Original" and "Refine" under the query. */
+.v-refine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.75rem;
+}
+.v-refine .hint {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+.v-refine-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
 /* Cover grid: 2 columns on phones, ~150px covers (up to 6) on wide screens. */
 .v-grid {
   display: grid;
@@ -1530,6 +1559,66 @@ input.v-input[aria-invalid="true"] {
 @media (min-width: 30rem) {
   .v-grid {
     grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  }
+}
+.v-grid > li {
+  position: relative;
+}
+/* Thumbs up / down over the cover's bottom-right corner (like the app). The
+   layer has the cover's size; only the buttons take clicks. */
+.v-votes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.375rem;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  padding: 0.375rem;
+  pointer-events: none;
+}
+.v-vote {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--v-paper) 92%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.v-vote:hover {
+  border-color: var(--text);
+}
+.v-vote[aria-pressed="true"] {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--v-paper);
+}
+.v-vote svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.v-vote[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+/* What the user called irrelevant is dimmed, so the mark reads at a glance. */
+.v-grid > li[data-vote="-1"] .book-cover {
+  opacity: 0.45;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .v-grid > li .book-cover {
+    transition: opacity 150ms ease-out;
   }
 }
 .v-card {
@@ -1611,8 +1700,12 @@ input.v-input[aria-invalid="true"] {
   mask: var(--icon-book) center / contain no-repeat;
 }
 /* Book details (the website has no book page to open). */
+/* Long descriptions scroll inside the dialog; the page behind stays put. */
 .v-dialog {
   width: min(36rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -1646,6 +1739,9 @@ input.v-input[aria-invalid="true"] {
 .v-dialog form {
   grid-column: 1 / -1;
   margin: 0;
+}
+.v-dialog-desc {
+  white-space: pre-line;
 }
 @media (max-width: 30rem) {
   .v-dialog[open] {
@@ -1686,26 +1782,20 @@ input.v-input[aria-invalid="true"] {
   align-items: center;
   gap: 0.5rem 1.25rem;
 }
-/* Store link: a small outlined pill (not a copy of the official badge). */
+/* Store link: a plain download icon + text (not a copy of the official badge). */
 .site-footer a.footer-store {
-  display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
-  min-height: 2.75rem;
-  padding: 0 1rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
   color: var(--text);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
 }
 .site-footer a.footer-store:hover {
-  border-color: var(--text);
-  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 .footer-store svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1rem;
+  height: 1rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;

@@ -65,8 +65,13 @@ const en = {
   noResultsTitle: "Virgil couldn't find a match.",
   noResultsHint:
     "Try describing a mood, a topic or a book you loved in different words. Setting Genre to “All” can help too.",
-  mobileNote:
-    "Asking questions about your own PDF or EPUB is only available in the mobile app.",
+  // Relevance marks on the result covers (same as the app).
+  voteRelevant: "Relevant",
+  voteIrrelevant: "Not relevant",
+  feedbackHint: "Mark results as relevant or not, then refine.",
+  feedbackRefine: "Refine",
+  feedbackRefined: "Refined with your marks.",
+  feedbackReset: "Original",
   // Messages (used by app.js)
   msgSignedIn: "Welcome back.",
   msgSignUpDone:
@@ -102,6 +107,9 @@ const en = {
   errBusy: "Virgil is busy right now. Please try again in a moment.",
   errTimeout: "That took too long. Please try again.",
   errServer: "Virgil ran into a problem. Please try again later.",
+  errFeedback: "Couldn't save your mark. Try again.",
+  errFeedbackRateLimited:
+    "You've marked a lot of results. Try again in a while.",
 } as const;
 
 export type VirgilStrings = {
@@ -162,8 +170,13 @@ const tr: VirgilStrings = {
   noResultsTitle: "Virgil bir eşleşme bulamadı.",
   noResultsHint:
     "Bir ruh halini, bir konuyu ya da sevdiğin bir kitabı farklı cümlelerle anlatmayı dene.",
-  mobileNote:
-    "Kendi PDF veya EPUB dosyan hakkında soru sorma özelliği yalnızca mobil uygulamada var.",
+  voteRelevant: "Alakalı",
+  voteIrrelevant: "Alakasız",
+  feedbackHint:
+    "Sonuçları alakalı ya da alakasız diye işaretle, sonra iyileştir.",
+  feedbackRefine: "İyileştir",
+  feedbackRefined: "İşaretlerine göre iyileştirildi.",
+  feedbackReset: "İlk sonuçlar",
   msgSignedIn: "Tekrar hoş geldin.",
   msgSignUpDone:
     "Hesabın oluşturuldu. Onaylamak için e-postanı kontrol et, sonra giriş yap.",
@@ -199,6 +212,9 @@ const tr: VirgilStrings = {
   errBusy: "Virgil şu an yoğun. Birazdan tekrar dene.",
   errTimeout: "Bu çok uzun sürdü. Lütfen tekrar dene.",
   errServer: "Virgil bir sorunla karşılaştı. Lütfen daha sonra tekrar dene.",
+  errFeedback: "İşaretin kaydedilemedi. Tekrar dene.",
+  errFeedbackRateLimited:
+    "Çok fazla işaretleme yaptın. Biraz sonra tekrar dene.",
 };
 
 export const VIRGIL_STRINGS: Record<Lang, VirgilStrings> = { en, tr };
@@ -221,6 +237,12 @@ const TUNE_ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
 export const QUILL_ICON =
   '<svg viewBox="6 6 24 24" aria-hidden="true"><path d="M10.64 23.18c-.27-2.9-.53-5.04.48-6.84.1.75.22 1.64.38 2.47.13.71.29 1.4.46 1.91.08.26.18.5.29.69.2.34.5.46.63.47.43.04.8-.11 1.07-.43.23-.28.35-.66.42-1.04.14-.75.13-1.79.13-2.85-.01-1.09-.01-2.24.13-3.3.14-1.07.41-2 .91-2.66.5-.66 1.53-1.2 2.8-1.66.62-.23 1.27-.43 1.9-.62-.45.61-.86 1.28-1.18 1.92-.3.59-.53 1.19-.6 1.69-.03.24-.03.52.06.77.1.24.28.43.53.53.26.08.44.02.54-.03.3-.14.6-.4.95-.75.48-.46 1.1-1.12 1.7-1.7.6-.6 1.22-1.17 1.75-1.54.27-.18.5-.3.67-.35.17-.06.24-.03.26-.02 1.3.66 3.2 2.3 3.88 2.97.18.17.23.34.21.53-.02.21-.12.47-.33.77-.42.59-1.12 1.14-1.7 1.42-.46.22-1.03.31-1.66.33-.64.01-1.29-.05-1.92-.12-.6-.07-1.22-.14-1.69-.12-.23.02-.49.05-.71.17-.22.11-.39.29-.47.54-.08.38-.09 1.12.61 1.75.51.46 1.34.8 2.67.94-1.31.91-2.57 1.06-3.68 1.03-.35-.01-.69-.04-1.01-.07-.32-.03-.65-.06-.94-.07-.57-.02-1.21.02-1.69.42-.42.36-.33.88-.2 1.2.13.35.39.7.69 1.01.3.31.68.6 1.07.8l.22.1c-.99.9-1.67 1.14-2.29 1.15-.4.01-.83-.08-1.36-.2-.51-.13-1.13-.29-1.85-.4l-.44-.06-1.29 4.8a1 1 0 0 1-1.93-.51z"/></svg>';
+
+// Thumbs up / down for the relevance marks (outline; filled when pressed).
+const THUMB_UP_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3zm0 0 4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8.5a2 2 0 0 1-2 1.7H7"/></svg>';
+const THUMB_DOWN_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-3zm0 0-4 8a3 3 0 0 1-3-3v-4H4.5a2 2 0 0 1-2-2.3l1.4-8.5a2 2 0 0 1 2-1.7H17"/></svg>';
 
 export function virgilBody(lang: Lang, ctx: BuildContext): string {
   const t = VIRGIL_STRINGS[lang];
@@ -345,13 +367,25 @@ ${
           <div id="results-wrap" hidden>
             <h2 class="v-query" id="results-heading" tabindex="-1"><span class="sr-only">${t.resultsHeading}: </span><span id="results-query"></span></h2>
             <p class="v-category" id="results-category" hidden></p>
+            <div class="v-refine" id="refine" hidden>
+              <p class="hint" id="refine-hint" aria-live="polite"></p>
+              <div class="v-refine-actions">
+                <button class="link-button" type="button" id="refine-reset" hidden>${t.feedbackReset}</button>
+                <button class="btn secondary" type="button" id="refine-apply" disabled>${t.feedbackRefine}</button>
+              </div>
+            </div>
             <div class="empty" id="no-results" hidden>
               <p><strong>${t.noResultsTitle}</strong></p>
               <p class="hint">${t.noResultsHint}</p>
             </div>
             <ol class="v-grid" id="results"></ol>
+            <template id="vote-template">
+              <div class="v-votes">
+                <button class="v-vote" type="button" data-vote="1" aria-pressed="false" aria-label="${t.voteRelevant}" title="${t.voteRelevant}">${THUMB_UP_ICON}</button>
+                <button class="v-vote" type="button" data-vote="-1" aria-pressed="false" aria-label="${t.voteIrrelevant}" title="${t.voteIrrelevant}">${THUMB_DOWN_ICON}</button>
+              </div>
+            </template>
           </div>
-          <p class="hint v-note">${t.mobileNote}</p>
         </div>
         <form class="v-dock" id="form-search" method="post" action="#" novalidate>${genrePanel}
           <div class="field">

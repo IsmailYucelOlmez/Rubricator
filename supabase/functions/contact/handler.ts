@@ -1,17 +1,20 @@
 /**
  * Request handling for the `contact` edge function: the website's contact form
- * sends a message here and it is emailed to the support address. Kept free of
+ * and the app's profile page send a message here and it is emailed to the
+ * support address. Kept free of
  * I/O so it can be unit-tested with fakes (see handler_test.ts); `index.ts`
  * wires the real Supabase / Resend dependencies.
  *
  * Anyone can call this without an account, so it must not become a spam relay:
- *   1. only POST from an allowed browser origin (no Origin header = rejected:
- *      the apps don't use this endpoint),
+ *   1. only POST from an allowed browser origin; requests without an Origin
+ *      header (the native apps) must carry a signed-in user's session JWT,
  *   2. a small body cap and strict field validation,
  *   3. a honeypot field (bots fill it; we answer "ok" and send nothing),
  *   4. a per-IP rate limit (hashed IP, see migration contact_rate_limit),
  *   5. the email always goes to our own address; the sender's address is only
- *      used as Reply-To, never as a recipient.
+ *      used as Reply-To, never as a recipient,
+ *   6. for a signed-in user the sender address is the account's email (any
+ *      address in the body is ignored) and the limit is per user, not per IP.
  */
 
 import {
@@ -25,11 +28,20 @@ export interface ContactMessage {
   email: string;
   message: string;
   lang: "en" | "tr";
+  /** Set when the message comes from a signed-in user (the app). */
+  userId?: string;
+}
+
+export interface SessionUser {
+  id: string;
+  email: string | null;
 }
 
 export interface Deps {
   env: { get(name: string): string | undefined };
-  /** Records the attempt; false when this IP hash is over its limit. */
+  /** The user behind a session JWT, or null when it is invalid/expired. */
+  getUser?(token: string, apikey: string | null): Promise<SessionUser | null>;
+  /** Records the attempt; false when this (IP or user) hash is over its limit. */
   allow(ipHash: string): Promise<boolean>;
   send(message: ContactMessage): Promise<void>;
   log?(event: string, detail?: Record<string, unknown>): void;
@@ -45,6 +57,13 @@ export const LIMITS = {
 
 // Deliberately simple: one "@", something on both sides, a dot in the domain.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const JWT_SHAPE = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
+function bearerJwt(header: string | null): string | null {
+  const token = header?.match(/^Bearer\s+(\S+)$/i)?.[1];
+  if (!token || token.length > 4096 || !JWT_SHAPE.test(token)) return null;
+  return token;
+}
 
 function json(
   status: number,
@@ -109,7 +128,7 @@ export function createHandler(deps: Deps) {
   const log = deps.log ?? (() => {});
   return async (req: Request): Promise<Response> => {
     const origin = req.headers.get("origin");
-    if (!origin || !isAllowedOrigin(origin, allowedOrigins(deps.env))) {
+    if (origin && !isAllowedOrigin(origin, allowedOrigins(deps.env))) {
       return json(403, { error: "forbidden_origin" }, {});
     }
     const cors = corsHeaders(origin, "POST, OPTIONS");
@@ -118,6 +137,18 @@ export function createHandler(deps: Deps) {
     }
     if (req.method !== "POST") {
       return json(405, { error: "method_not_allowed" }, cors);
+    }
+
+    // The apps send their user's session; the website sends only the
+    // publishable key (not a JWT), so `user` stays null there.
+    const token = bearerJwt(req.headers.get("authorization"));
+    const user = token && deps.getUser
+      ? await deps.getUser(token, req.headers.get("apikey"))
+      : null;
+    if (!origin && !user?.email) {
+      return json(token ? 401 : 403, {
+        error: token ? "unauthorized" : "forbidden_origin",
+      }, cors);
     }
 
     const length = Number(req.headers.get("content-length") ?? "0");
@@ -133,6 +164,9 @@ export function createHandler(deps: Deps) {
     } catch {
       return json(400, { error: "invalid_json" }, cors);
     }
+    if (user?.email && body && typeof body === "object") {
+      body = { ...body, email: user.email };
+    }
     const checked = validate(body);
     if (!checked.ok) {
       return json(400, { error: "invalid", fields: checked.fields }, cors);
@@ -145,7 +179,7 @@ export function createHandler(deps: Deps) {
     }
 
     const ipHash = await hashIp(
-      clientIp(req),
+      user?.email ? `user:${user.id}` : clientIp(req),
       deps.env.get("CONTACT_IP_SALT") ?? "",
     );
     if (!(await deps.allow(ipHash))) {
@@ -154,7 +188,9 @@ export function createHandler(deps: Deps) {
     }
 
     try {
-      await deps.send(checked.value);
+      await deps.send(
+        user?.email ? { ...checked.value, userId: user.id } : checked.value,
+      );
     } catch (error) {
       log("contact_send_failed", { message: String(error) });
       return json(502, { error: "send_failed" }, cors);

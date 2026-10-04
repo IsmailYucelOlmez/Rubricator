@@ -2005,4 +2005,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountFailed =>
       'Your account couldn\'t be deleted. Please try again.';
+
+  @override
+  String get contactTitle => 'Contact us';
+
+  @override
+  String contactSubtitle(String email) {
+    return 'Questions, suggestions or a problem to report? Write to us and we\'ll reply to $email.';
+  }
+
+  @override
+  String get contactMessageLabel => 'Your message';
+
+  @override
+  String get contactSend => 'Send';
+
+  @override
+  String get contactSent => 'Your message was sent. Thank you!';
+
+  @override
+  String get contactMessageTooShort => 'Please write at least 10 characters.';
+
+  @override
+  String get contactMessageTooLong =>
+      'Your message is too long (max 5000 characters).';
+
+  @override
+  String get contactRateLimited =>
+      'You\'ve sent several messages recently. Please try again in an hour.';
+
+  @override
+  String get contactFailed =>
+      'Your message couldn\'t be sent. Please try again.';
 }

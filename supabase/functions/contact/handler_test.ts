@@ -113,3 +113,63 @@ Deno.test("validate trims, defaults lang and caps lengths", () => {
   const long = validate({ ...valid, name: "x".repeat(101) });
   assertEquals(!long.ok && long.fields.name, "too_long");
 });
+
+function appSetup(user: { id: string; email: string | null } | null) {
+  const sent: ContactMessage[] = [];
+  const keys: string[] = [];
+  const handler = createHandler({
+    env,
+    getUser: (token) => Promise.resolve(token === "a.b.c" ? user : null),
+    allow: (key) => {
+      keys.push(key);
+      return Promise.resolve(true);
+    },
+    send: (m) => {
+      sent.push(m);
+      return Promise.resolve();
+    },
+  });
+  return { handler, sent, keys };
+}
+
+function appPost(body: unknown, token: string | null = "a.b.c") {
+  const headers: Record<string, string> = {
+    "content-type": "application/json",
+  };
+  if (token) headers.authorization = `Bearer ${token}`;
+  return new Request("https://x.supabase.co/functions/v1/contact", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+}
+
+Deno.test("the app (no Origin) sends as the signed-in user's account email", async () => {
+  const { handler, sent } = appSetup({ id: "u1", email: "me@example.com" });
+  const res = await handler(
+    appPost({ ...valid, email: "someone-else@example.com" }),
+  );
+  assertEquals(res.status, 200);
+  assertEquals(sent, [{
+    ...valid,
+    lang: "tr",
+    email: "me@example.com",
+    userId: "u1",
+  }]);
+});
+
+Deno.test("app requests are rate-limited per user, not per IP", async () => {
+  const a = appSetup({ id: "u1", email: "me@example.com" });
+  const b = appSetup({ id: "u2", email: "you@example.com" });
+  await a.handler(appPost(valid));
+  await b.handler(appPost(valid));
+  assertEquals(a.keys.length, 1);
+  assertEquals(a.keys[0] === b.keys[0], false);
+});
+
+Deno.test("no Origin and no valid session is refused", async () => {
+  const { handler, sent } = appSetup(null);
+  assertEquals((await handler(appPost(valid))).status, 401);
+  assertEquals((await handler(appPost(valid, null))).status, 403);
+  assertEquals(sent.length, 0);
+});

@@ -8,13 +8,14 @@ import { type ContactMessage, createHandler } from "./handler.ts";
  * See handler.ts for the anti-abuse rules and migration
  * 20261003000000_contact_rate_limit.sql for the per-IP limit.
  *
- * `verify_jwt` is false in config.toml: the form is used without an account
- * and the site only has the `sb_publishable_*` key (not a JWT).
+ * `verify_jwt` is false in config.toml: the website form is used without an
+ * account and the site only has the `sb_publishable_*` key (not a JWT). The
+ * app's form (profile page) sends the user's session JWT, verified here.
  *
  * Secrets: RESEND_API_KEY (required), optional CONTACT_TO (default
  * support@rubricator.site), CONTACT_FROM (default "Rubricator website
  * <noreply@rubricator.site>", the domain must be verified in Resend),
- * CONTACT_IP_SALT and ALLOWED_ORIGINS. SUPABASE_URL and
+ * CONTACT_IP_SALT and ALLOWED_ORIGINS. SUPABASE_URL, SUPABASE_ANON_KEY and
  * SUPABASE_SERVICE_ROLE_KEY are provided by the platform.
  */
 
@@ -35,15 +36,31 @@ function emailText(m: ContactMessage): string {
   return [
     `From: ${m.name || "(no name)"} <${m.email}>`,
     `Language: ${m.lang}`,
+    ...(m.userId ? [`Account: ${m.userId}`] : []),
     "",
     m.message,
     "",
-    "-- Sent from the contact form on rubricator.site",
+    m.userId
+      ? "-- Sent from the profile page in the Rubricator app"
+      : "-- Sent from the contact form on rubricator.site",
   ].join("\n");
 }
 
 const handler = createHandler({
   env: Deno.env,
+
+  async getUser(token, apikey) {
+    // GoTrue needs an API key alongside the token; prefer the platform's anon
+    // key and fall back to the one the caller sent.
+    const key = Deno.env.get("SUPABASE_ANON_KEY")?.trim() || apikey?.trim();
+    if (!key) return null;
+    const client = createClient(requireEnv("SUPABASE_URL"), key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data, error } = await client.auth.getUser(token);
+    if (error || !data.user) return null;
+    return { id: data.user.id, email: data.user.email ?? null };
+  },
 
   async allow(ipHash) {
     const { data, error } = await admin().rpc("contact_allow", {
@@ -65,7 +82,9 @@ const handler = createHandler({
           "Rubricator website <noreply@rubricator.site>",
         to: [Deno.env.get("CONTACT_TO")?.trim() || "support@rubricator.site"],
         reply_to: m.email,
-        subject: `[rubricator.site] ${m.name || m.email}`,
+        subject: `[${m.userId ? "app" : "rubricator.site"}] ${
+          m.name || m.email
+        }`,
         text: emailText(m),
       }),
     });

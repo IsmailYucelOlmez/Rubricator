@@ -1995,4 +1995,35 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deleteAccountFailed => 'Hesabın silinemedi. Lütfen tekrar dene.';
+
+  @override
+  String get contactTitle => 'Bize yaz';
+
+  @override
+  String contactSubtitle(String email) {
+    return 'Bir sorun, soru ya da önerin mi var? Bize yaz, $email adresine yanıt verelim.';
+  }
+
+  @override
+  String get contactMessageLabel => 'Mesajın';
+
+  @override
+  String get contactSend => 'Gönder';
+
+  @override
+  String get contactSent => 'Mesajın gönderildi. Teşekkürler!';
+
+  @override
+  String get contactMessageTooShort => 'Lütfen en az 10 karakter yaz.';
+
+  @override
+  String get contactMessageTooLong =>
+      'Mesajın çok uzun (en fazla 5000 karakter).';
+
+  @override
+  String get contactRateLimited =>
+      'Kısa sürede birkaç mesaj gönderdin. Lütfen bir saat sonra tekrar dene.';
+
+  @override
+  String get contactFailed => 'Mesajın gönderilemedi. Lütfen tekrar dene.';
 }

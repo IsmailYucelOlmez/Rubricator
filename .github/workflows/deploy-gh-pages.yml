@@ -36,7 +36,8 @@ jobs:
 
       - name: Test site generator
         run: |
-          deno lint site
+          # vendor/ holds minified third-party bundles (Sentry), not our code.
+          deno lint --ignore=site/static/vendor site
           deno test --allow-read --allow-write --allow-env site/
 
       - name: Build site

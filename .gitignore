@@ -66,3 +66,8 @@ Claude outputs
 
 **/.claude
 /Claude outputs
+
+# Play Store screenshots (raw captures and rendered mockups)
+store/play-screenshots/raw/
+store/play-screenshots/raw-old/
+store/play-screenshots/out/

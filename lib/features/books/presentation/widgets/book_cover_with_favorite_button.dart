@@ -20,6 +20,7 @@ class BookCoverWithFavoriteButton extends ConsumerStatefulWidget {
     this.title,
     this.author,
     this.categories = const [],
+    this.coverImageUrl,
     this.isFavorite,
   });
 
@@ -29,6 +30,7 @@ class BookCoverWithFavoriteButton extends ConsumerStatefulWidget {
   final String? title;
   final String? author;
   final List<String> categories;
+  final String? coverImageUrl;
   /// When set, skips per-card [userBookProvider] read (home page bulk favorites).
   final bool? isFavorite;
 
@@ -54,6 +56,7 @@ class _BookCoverWithFavoriteButtonState
       title: resolvedTitle,
       author: resolvedAuthor,
       categories: widget.categories,
+      coverImageUrl: widget.coverImageUrl,
     );
   }
 

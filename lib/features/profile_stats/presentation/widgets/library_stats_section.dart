@@ -55,14 +55,28 @@ class LibraryStatsSection extends ConsumerWidget {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final w = constraints.maxWidth;
-                      final cross = w > 520 ? 3 : 2;
-                      return GridView.count(
-                        crossAxisCount: cross,
+                      const spacing = 10.0;
+                      final minTileWidth = _StatTile.minWidthFor(context, tiles);
+                      var cross = w > 520 ? 3 : 2;
+                      // Drop a column when tiles would be too narrow to keep
+                      // the longest label (e.g. "Tamamlandı") on one line.
+                      while (cross > 1 &&
+                          (w - spacing * (cross - 1)) / cross < minTileWidth) {
+                        cross--;
+                      }
+                      final tileHeight =
+                          (w - spacing * (cross > 1 ? cross - 1 : 1)) /
+                              (cross > 1 ? cross : 2) /
+                              2.8;
+                      return GridView(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 2.8,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: cross,
+                          mainAxisSpacing: spacing,
+                          crossAxisSpacing: spacing,
+                          mainAxisExtent: tileHeight,
+                        ),
                         children: tiles
                             .map(
                               (t) => _StatTile(
@@ -104,6 +118,51 @@ class _StatTile extends StatelessWidget {
   final int value;
   final IconData icon;
 
+  static const double _horizontalPadding = AppSpacing.sm;
+  static const double _iconSize = 20;
+  static const double _iconGap = AppSpacing.xs + 2;
+  static const double _valueGap = AppSpacing.xs;
+
+  static TextStyle? _labelStyle(BuildContext context) =>
+      Theme.of(context).textTheme.bodyMedium;
+
+  static TextStyle? _valueStyle(BuildContext context) =>
+      Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          );
+
+  /// Narrowest tile width that fits every label on a single line.
+  static double minWidthFor(
+    BuildContext context,
+    List<({String label, int value, IconData icon})> tiles,
+  ) {
+    final scaler = MediaQuery.textScalerOf(context);
+    double measure(String text, TextStyle? style) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: scaler,
+        maxLines: 1,
+      )..layout();
+      final width = painter.width;
+      painter.dispose();
+      return width;
+    }
+
+    var widest = 0.0;
+    for (final t in tiles) {
+      final needed = measure(t.label, _labelStyle(context)) +
+          measure('${t.value}', _valueStyle(context));
+      if (needed > widest) widest = needed;
+    }
+    return widest +
+        _horizontalPadding * 2 +
+        _iconSize +
+        _iconGap +
+        _valueGap +
+        1;
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -115,29 +174,27 @@ class _StatTile extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm + AppSpacing.xs,
+          horizontal: _horizontalPadding,
           vertical: AppSpacing.sm,
         ),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: iconColor),
-            const SizedBox(width: AppSpacing.sm),
+            Icon(icon, size: _iconSize, color: iconColor),
+            const SizedBox(width: _iconGap),
             Expanded(
               child: Text(
                 label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: _labelStyle(context)?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
+            const SizedBox(width: _valueGap),
             Text(
               '$value',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: _valueStyle(context),
             ),
           ],
         ),

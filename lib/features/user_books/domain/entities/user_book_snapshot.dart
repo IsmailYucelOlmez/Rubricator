@@ -4,9 +4,11 @@ class UserBookSnapshot {
     required this.title,
     required this.author,
     this.categories = const [],
+    this.coverImageUrl,
   });
 
   final String title;
   final String author;
   final List<String> categories;
+  final String? coverImageUrl;
 }

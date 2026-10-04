@@ -37,10 +37,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Önerilerle bir sonraki favori kitabını bul.';
 
   @override
-  String get virgilRecommendationTitle => 'Recommendation';
+  String get virgilRecommendationTitle => 'Kitap Öneri';
 
   @override
-  String get virgilAboutBookTitle => 'About Book';
+  String get virgilAboutBookTitle => 'Kitap Hakkında';
 
   @override
   String get virgilAboutBookHint => 'Bir kitap yükle ve hakkında sorular sor';
@@ -50,36 +50,36 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get virgilAboutBookUnavailableOnWeb =>
-      'Belge ile sohbet web\'de kullanılamıyor. Lütfen mobil uygulamayı kullanın.';
+      'Belge ile sohbet web\'de kullanılamıyor. Mobil uygulamadan devam et.';
 
   @override
   String get virgilRecommendationEmptyBody =>
-      'Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.';
+      'Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.';
 
   @override
-  String get virgilRecommendationInputHint => 'Bir şey yazın...';
+  String get virgilRecommendationInputHint => 'Bir şey yaz...';
 
   @override
-  String get virgilQaInputHint => 'soru sorun';
+  String get virgilQaInputHint => 'Soru sor';
 
   @override
-  String get virgilQaUploadTitle => 'PDF veya Epub yükleyin';
+  String get virgilQaUploadTitle => 'PDF veya EPUB yükle';
 
   @override
-  String get virgilQaSizeLimit => '20 MB Limit';
+  String get virgilQaSizeLimit => 'En fazla 20 MB';
 
   @override
-  String get virgilQaPagesLimit => '500 Sayfa Limit';
+  String get virgilQaPagesLimit => 'En fazla 500 sayfa';
 
   @override
   String get virgilQaPrivacyNotice =>
-      'Yüklediğiniz dosyalar ve sohbetleriniz kaydedilmez.';
+      'Yüklediğin dosyalar ve sohbetlerin kaydedilmez.';
 
   @override
   String get virgilQaProcessingTitle => 'Dosya işleniyor...';
 
   @override
-  String get virgilQaProcessingSubtitle => 'Lütfen bekleyin';
+  String get virgilQaProcessingSubtitle => 'Biraz bekle';
 
   @override
   String virgilQaFileMeta(String filename, String format, int pages) {
@@ -115,15 +115,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get signInForVirgil =>
-      'Virgil önerileri ve kitap soru-cevap için giriş yapın.';
+      'Virgil önerileri ve kitap soru-cevap için giriş yap.';
 
   @override
   String get virgilDailyRecommendationLimit =>
-      'Günde en fazla 5 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.';
+      'Günde en fazla 5 kez kitap önerisi alabilirsin. Yarın tekrar dene.';
 
   @override
   String get virgilDailyUploadLimit =>
-      'Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.';
+      'Günde en fazla 3 kitap yükleyebilirsin. Yarın tekrar dene.';
 
   @override
   String virgilQuestionsRemaining(int count) {
@@ -137,7 +137,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profileZoneTitle => 'Zone';
 
   @override
-  String get readingStatsListsTitle => 'Duruma gore okuma listeleri';
+  String get readingStatsListsTitle => 'Duruma göre okuma listeleri';
 
   @override
   String get homeShowAll => 'Tümünü gör';
@@ -345,7 +345,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get documentChatUploading => 'Yükleniyor…';
 
   @override
-  String get documentChatProcessing => 'Kitabınız işleniyor…';
+  String get documentChatProcessing => 'Kitabın işleniyor…';
 
   @override
   String documentChatEmbedProgress(int done, int total) {
@@ -357,17 +357,17 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get documentChatEmptyHint =>
-      'İçerik hakkında soru sormak için kitap yükleyin.';
+      'İçerik hakkında soru sormak için bir kitap yükle.';
 
   @override
   String get documentChatSessionExpired =>
-      'Oturumunuz sona erdi. Kitabı yeniden yükleyin.';
+      'Oturumun sona erdi. Kitabı yeniden yükle.';
 
   @override
   String get documentChatProcessingFailed => 'Bu kitap işlenemedi.';
 
   @override
-  String get documentChatStillProcessing => 'Hâlâ işleniyor — lütfen bekleyin.';
+  String get documentChatStillProcessing => 'Hâlâ işleniyor, biraz bekle.';
 
   @override
   String documentChatQuestionsRemaining(int count) {
@@ -388,7 +388,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get documentChatAskPlaceholder => 'Bu kitap hakkında sorun…';
+  String get documentChatAskPlaceholder => 'Bu kitap hakkında sor…';
 
   @override
   String documentChatSourcePage(int page) {
@@ -397,7 +397,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get documentChatEphemeralNotice =>
-      'Sohbetler geçicidir; hesabınıza kaydedilmez.';
+      'Sohbetler geçicidir; hesabına kaydedilmez.';
 
   @override
   String get documentChatSupportedFormats =>

@@ -86,6 +86,7 @@ class VerticalBookCard extends ConsumerWidget {
                     title: book.title,
                     author: authorLine,
                     categories: book.subjectKeys,
+                    coverImageUrl: book.coverImageUrl,
                     isFavorite: isFavorite,
                     child: cover,
                   )

@@ -60,6 +60,7 @@ class UserBookEntity {
     this.bookTitle,
     this.bookAuthor,
     this.bookCategories = const [],
+    this.bookCoverUrl,
     this.completedAt,
   });
 
@@ -74,6 +75,7 @@ class UserBookEntity {
   final String? bookTitle;
   final String? bookAuthor;
   final List<String> bookCategories;
+  final String? bookCoverUrl;
   final DateTime? completedAt;
 
   /// Stored title/author on `user_books` — avoids Google Books fetch in lists.
@@ -95,6 +97,7 @@ class UserBookEntity {
     String? bookTitle,
     String? bookAuthor,
     List<String>? bookCategories,
+    String? bookCoverUrl,
     DateTime? completedAt,
   }) {
     return UserBookEntity(
@@ -109,6 +112,7 @@ class UserBookEntity {
       bookTitle: bookTitle ?? this.bookTitle,
       bookAuthor: bookAuthor ?? this.bookAuthor,
       bookCategories: bookCategories ?? this.bookCategories,
+      bookCoverUrl: bookCoverUrl ?? this.bookCoverUrl,
       completedAt: completedAt ?? this.completedAt,
     );
   }
@@ -128,6 +132,7 @@ class UserBookEntity {
       bookTitle: map['book_title'] as String?,
       bookAuthor: map['book_author'] as String?,
       bookCategories: _categoriesFromMap(map),
+      bookCoverUrl: map['book_cover_url'] as String?,
       completedAt: DateTime.tryParse(map['completed_at'] as String? ?? ''),
     );
   }

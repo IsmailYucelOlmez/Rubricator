@@ -8,20 +8,20 @@
   "navLists": "Listeler",
   "virgilTagline": "Virgil okuma yolculuğuna rehberlik eder",
   "virgilRecommendationHint": "Önerilerle bir sonraki favori kitabını bul.",
-  "virgilRecommendationTitle": "Recommendation",
-  "virgilAboutBookTitle": "About Book",
+  "virgilRecommendationTitle": "Kitap Öneri",
+  "virgilAboutBookTitle": "Kitap Hakkında",
   "virgilAboutBookHint": "Bir kitap yükle ve hakkında sorular sor",
   "virgilBetaBadge": "BETA",
-  "virgilAboutBookUnavailableOnWeb": "Belge ile sohbet web'de kullanılamıyor. Lütfen mobil uygulamayı kullanın.",
-  "virgilRecommendationEmptyBody": "Keşfetmeye değer yeni yazarlar, farklı türler ve ilginizi çekebilecek eserler. Virgil, size öneriler sunarak keşfetmenizi kolaylaştırır.",
-  "virgilRecommendationInputHint": "Bir şey yazın...",
-  "virgilQaInputHint": "soru sorun",
-  "virgilQaUploadTitle": "PDF veya Epub yükleyin",
-  "virgilQaSizeLimit": "20 MB Limit",
-  "virgilQaPagesLimit": "500 Sayfa Limit",
-  "virgilQaPrivacyNotice": "Yüklediğiniz dosyalar ve sohbetleriniz kaydedilmez.",
+  "virgilAboutBookUnavailableOnWeb": "Belge ile sohbet web'de kullanılamıyor. Mobil uygulamadan devam et.",
+  "virgilRecommendationEmptyBody": "Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.",
+  "virgilRecommendationInputHint": "Bir şey yaz...",
+  "virgilQaInputHint": "Soru sor",
+  "virgilQaUploadTitle": "PDF veya EPUB yükle",
+  "virgilQaSizeLimit": "En fazla 20 MB",
+  "virgilQaPagesLimit": "En fazla 500 sayfa",
+  "virgilQaPrivacyNotice": "Yüklediğin dosyalar ve sohbetlerin kaydedilmez.",
   "virgilQaProcessingTitle": "Dosya işleniyor...",
-  "virgilQaProcessingSubtitle": "Lütfen bekleyin",
+  "virgilQaProcessingSubtitle": "Biraz bekle",
   "virgilQaFileMeta": "{filename} | {format} | {pages} sayfa",
   "@virgilQaFileMeta": {
     "placeholders": {
@@ -44,9 +44,9 @@
   "virgilGenreNonfiction": "Kurgu dışı",
   "virgilGenreChildrensFiction": "Çocuk kurgusu",
   "virgilGenreChildrensNonfiction": "Çocuk kurgu dışı",
-  "signInForVirgil": "Virgil önerileri ve kitap soru-cevap için giriş yapın.",
-  "virgilDailyRecommendationLimit": "Günde en fazla 5 kez kitap önerisi alabilirsiniz. Yarın tekrar deneyin.",
-  "virgilDailyUploadLimit": "Günde en fazla 3 kitap yükleyebilirsiniz. Yarın tekrar deneyin.",
+  "signInForVirgil": "Virgil önerileri ve kitap soru-cevap için giriş yap.",
+  "virgilDailyRecommendationLimit": "Günde en fazla 5 kez kitap önerisi alabilirsin. Yarın tekrar dene.",
+  "virgilDailyUploadLimit": "Günde en fazla 3 kitap yükleyebilirsin. Yarın tekrar dene.",
   "virgilQuestionsRemaining": "Bu kitap için {count} soru kaldı",
   "@virgilQuestionsRemaining": {
     "placeholders": {
@@ -56,7 +56,7 @@
   "listsFeedHeading": "Listeleri Keşfet",
   "listsFeedHeading": "Listbox",
   "profileZoneTitle": "Zone",
-  "readingStatsListsTitle": "Duruma gore okuma listeleri",
+  "readingStatsListsTitle": "Duruma göre okuma listeleri",
   "homeShowAll": "Tümünü gör",
   "editProfile": "Profili düzenle",
   "pickPhotoFromGallery": "Galeriden fotoğraf seç",
@@ -153,7 +153,7 @@
   "searchTabDocumentChat": "Kitabımla sor",
   "documentChatPickFile": "PDF veya EPUB seç",
   "documentChatUploading": "Yükleniyor…",
-  "documentChatProcessing": "Kitabınız işleniyor…",
+  "documentChatProcessing": "Kitabın işleniyor…",
   "documentChatEmbedProgress": "{done} / {total} gömülüyor",
   "@documentChatEmbedProgress": {
     "placeholders": {
@@ -162,10 +162,10 @@
     }
   },
   "documentChatExtracting": "Metin çıkarılıyor…",
-  "documentChatEmptyHint": "İçerik hakkında soru sormak için kitap yükleyin.",
-  "documentChatSessionExpired": "Oturumunuz sona erdi. Kitabı yeniden yükleyin.",
+  "documentChatEmptyHint": "İçerik hakkında soru sormak için bir kitap yükle.",
+  "documentChatSessionExpired": "Oturumun sona erdi. Kitabı yeniden yükle.",
   "documentChatProcessingFailed": "Bu kitap işlenemedi.",
-  "documentChatStillProcessing": "Hâlâ işleniyor — lütfen bekleyin.",
+  "documentChatStillProcessing": "Hâlâ işleniyor, biraz bekle.",
   "documentChatQuestionsRemaining": "{count} soru kaldı",
   "@documentChatQuestionsRemaining": {
     "placeholders": {
@@ -180,14 +180,14 @@
       "mb": {"type": "int"}
     }
   },
-  "documentChatAskPlaceholder": "Bu kitap hakkında sorun…",
+  "documentChatAskPlaceholder": "Bu kitap hakkında sor…",
   "documentChatSourcePage": "Sayfa {page}",
   "@documentChatSourcePage": {
     "placeholders": {
       "page": {"type": "int"}
     }
   },
-  "documentChatEphemeralNotice": "Sohbetler geçicidir; hesabınıza kaydedilmez.",
+  "documentChatEphemeralNotice": "Sohbetler geçicidir; hesabına kaydedilmez.",
   "documentChatSupportedFormats": "Desteklenen: .pdf, .epub (en fazla 20 MB / ~500 PDF sayfası)",
   "documentChatNewFile": "Yeni dosya",
   "documentChatPages": "sayfa",

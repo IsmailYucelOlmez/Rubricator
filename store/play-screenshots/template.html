@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Play Store screenshot</title>
+<style>
+  @font-face { font-family: Outfit; font-weight: 400; src: url(../../site/static/fonts/Outfit-Regular.woff2) format("woff2"); }
+  @font-face { font-family: Outfit; font-weight: 600; src: url(../../site/static/fonts/Outfit-SemiBold.woff2) format("woff2"); }
+  @font-face { font-family: Outfit; font-weight: 700; src: url(../../site/static/fonts/Outfit-Bold.woff2) format("woff2"); }
+  @font-face { font-family: Nouveau; src: url(../../site/static/fonts/Nouveau-Regular.woff2) format("woff2"); }
+  @font-face { font-family: Megrim; src: url(../../site/static/fonts/Megrim-Regular.woff2) format("woff2"); }
+
+  :root {
+    --bg: #161A1D;
+    --text: #F5F3F4;
+    --muted: #B4B8BC;
+    --accent: #FF7A7D;
+    --primary: #BA181B;
+    --bezel: #0B0D0E;
+    --bezel-edge: #3A3F44;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Outfit, sans-serif;
+    position: relative;
+  }
+  .head {
+    position: absolute; top: 0; left: 0; right: 0; height: 520px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 40px 90px 0;
+  }
+  .brand {
+    font-family: Nouveau, serif; font-size: 44px; letter-spacing: 0.02em;
+    margin-bottom: 36px; color: var(--text);
+  }
+  h1 {
+    font-size: 84px; font-weight: 700; text-wrap: balance; line-height: 1.08; letter-spacing: -0.015em;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  h1 .v { font-family: Megrim, sans-serif; font-weight: 400; color: var(--accent); }
+  p {
+    margin-top: 28px; font-size: 38px; line-height: 1.35; color: var(--muted); max-width: 24ch; text-wrap: balance;
+  }
+  .rule { width: 72px; height: 6px; border-radius: 3px; background: var(--primary); margin-bottom: 34px; }
+  .phone {
+    position: absolute; left: 50%; top: 560px; transform: translateX(-50%);
+    width: 800px; padding: 18px 18px 0;
+    background: var(--bezel);
+    border: 3px solid var(--bezel-edge); border-bottom: 0;
+    border-radius: 76px 76px 0 0;
+  }
+  .phone img {
+    display: block; width: 100%;
+    border-radius: 58px 58px 0 0;
+  }
+</style>
+</head>
+<body>
+  <div class="head" id="head"></div>
+  <div class="phone"><img id="shot" alt=""></div>
+<script>
+  const SLIDES = {
+    1: { img: "01-home.jpg", brand: true,
+         h: "Okuduğun her kitap <em>tek yerde</em>",
+         p: "Okuduklarını takip et, popüler kitapları keşfet." },
+    2: { img: "02-book-detail.jpg",
+         h: "Puanla, yorumla, <em>not al</em>",
+         p: "Benzer kitapları keşfet, alıntılarını sakla." },
+    3: { img: "03-virgil.jpg",
+         h: "<span class='v'>Virgil</span> sana kitap önerir",
+         p: "Yapay zekâ önerileri al, yüklediğin kitaba soru sor." },
+    4: { img: "04-search.jpg",
+         h: "Aradığın kitabı <em>hemen bul</em>",
+         p: "Başlık veya yazara göre ara, eksik kitabı kendin ekle." },
+    5: { img: "05-list.jpg",
+         h: "Listeler oluştur, <em>paylaş</em>",
+         p: "Konu konu kitap listeleri hazırla, yorumları oku." },
+    6: { img: "06-stats.jpg",
+         h: "Okumanı <em>rakamlarla</em> gör",
+         p: "Favori türlerin ve yazarların bir bakışta." },
+    7: { img: "07-habit.jpg",
+         h: "Okuma <em>alışkanlığı</em> kazan",
+         p: "Dakika ve sayfa kaydet, serini ve aktiviteni izle." },
+    8: { img: "08-profile.jpg",
+         h: "Rafların <em>düzenli</em> kalsın",
+         p: "Okunacak, okunuyor, tamamlandı: her kitap yerinde." },
+    9: { img: "09-notes.jpg",
+         h: "Notların <em>hep elinde</em>",
+         p: "Okurken not al, etiketle, saniyeler içinde bul." },
+  };
+  const n = new URLSearchParams(location.search).get("s") || "1";
+  const s = SLIDES[n];
+  document.getElementById("head").innerHTML =
+    (s.brand ? "<div class='brand'>Rubricator</div>" : "<div class='rule'></div>") +
+    `<h1>${s.h}</h1><p>${s.p}</p>`;
+  document.getElementById("shot").src = "raw/" + s.img;
+</script>
+</body>
+</html>

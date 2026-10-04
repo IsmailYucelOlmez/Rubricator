@@ -16,6 +16,7 @@ UserBookSnapshot userBookSnapshotOf(BookEntity book) => UserBookSnapshot(
   title: book.title,
   author: book.author,
   categories: book.subjectKeys,
+  coverImageUrl: book.coverImageUrl,
 );
 
 String readingStatusLabel(ReadingStatus status, AppLocalizations l10n) {

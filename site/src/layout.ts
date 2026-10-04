@@ -13,7 +13,7 @@ export const CONTACT_EMAIL = "support@rubricator.site";
  * Version of the privacy policy, recorded with each web sign-up. Must equal the
  * "Last updated" date of the policy (a test checks this).
  */
-export const PRIVACY_POLICY_VERSION = "2026-10-03";
+export const PRIVACY_POLICY_VERSION = "2026-10-04";
 
 export interface PageRef {
   /** Stable id used for cross-language links. */
@@ -75,9 +75,11 @@ const UI = {
     deletion: "Account deletion",
     switchTo: "Türkçe",
     switchLabel: "Bu sayfayı Türkçe oku",
+    themeLabel: "Dark theme",
     navLabel: "Main",
     footerNav: "Footer",
     rights: "All rights reserved.",
+    getOnPlay: "Get it on Google Play",
     tagline: "Book discovery, reading tracking and AI recommendations.",
   },
   tr: {
@@ -90,9 +92,11 @@ const UI = {
     deletion: "Hesap silme",
     switchTo: "English",
     switchLabel: "Read this page in English",
+    themeLabel: "Koyu tema",
     navLabel: "Ana menü",
     footerNav: "Alt menü",
     rights: "Tüm hakları saklıdır.",
+    getOnPlay: "Google Play'den indir",
     tagline: "Kitap keşfi, okuma takibi ve yapay zekâ önerileri.",
   },
 } as const;
@@ -104,27 +108,59 @@ export interface BuildContext {
   /** Supabase project URL and publishable key for the Virgil page (both public). */
   supabaseUrl?: string;
   supabaseAnonKey?: string;
+  /** Website error reporting; only the pages with scripts load it. */
+  sentry?: { dsn: string; environment: string; release?: string };
   year: number;
 }
+
+/**
+ * Flags for the language switch (the flag of the language the link leads to).
+ * Inline SVG: no image request, and flag colours are fixed by design, so they
+ * are the one place with literal colours outside the CSS tokens.
+ */
+const FLAGS: Record<Lang, string> = {
+  tr:
+    '<svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#E30A17"/><circle cx="10.625" cy="10" r="5" fill="#fff"/><circle cx="11.875" cy="10" r="4" fill="#E30A17"/><path fill="#fff" d="M14.583 10l4.523 1.469-2.795-3.847v4.756l2.795-3.847z"/></svg>',
+  en:
+    '<svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg>',
+};
+
+/** Sun (shown in dark theme) and moon (shown in light); CSS picks one. */
+const THEME_ICONS =
+  '<svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+
+/** The app's store page (Android only so far). */
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.rubricator";
 
 const escapeAttr = (s: string) =>
   s.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 
 /**
- * The CSP is delivered by <meta> because GitHub Pages can't set headers. Plain
- * pages forbid scripts, frames, forms and any off-site resource. Pages with
- * scripts may run only their own files, talk only to the Supabase project and
- * show https images (book covers come from several catalogs).
+ * The CSP is delivered by <meta> because GitHub Pages can't set headers. Every
+ * page may run only the site's own script files (theme.js everywhere); plain
+ * pages forbid frames, forms and any off-site resource. Pages with scripts may
+ * also talk to the Supabase project and show https images (book covers come
+ * from several catalogs).
  */
+/** The Supabase project and, when configured, Sentry's ingest host. */
+function connectSources(ctx: BuildContext): string {
+  const origins = [
+    ...(ctx.supabaseUrl ? [new URL(ctx.supabaseUrl).origin] : []),
+    ...(ctx.sentry ? [new URL(ctx.sentry.dsn).origin] : []),
+  ];
+  return origins.length ? origins.join(" ") : "'none'";
+}
+
 function contentSecurityPolicy(page: PageRef, ctx: BuildContext): string {
   const interactive = (page.scripts?.length ?? 0) > 0;
-  const connect = ctx.supabaseUrl ? new URL(ctx.supabaseUrl).origin : "'none'";
   return [
     "default-src 'none'",
     interactive ? "img-src 'self' data: https:" : "img-src 'self' data:",
     "style-src 'self'",
     "font-src 'self'",
-    ...(interactive ? ["script-src 'self'", `connect-src ${connect}`] : []),
+    "script-src 'self'",
+    ...(interactive ? [`connect-src ${connectSources(ctx)}`] : []),
     "base-uri 'self'",
     "form-action 'none'",
   ].join("; ");
@@ -229,8 +265,24 @@ export function renderPage(
     return [`<a href="${rel(target)}"${marker}>${label}</a>`];
   }).join("\n        ");
 
-  const scriptTags = (page.scripts ?? []).map((src) => `
+  // Error reporting goes first, so it is listening before the page's code runs.
+  const sentry = (page.scripts?.length ?? 0) > 0 ? ctx.sentry : undefined;
+  const scripts = [
+    ...(sentry ? ["assets/js/monitoring.js"] : []),
+    ...(page.scripts ?? []),
+  ];
+  const scriptTags = scripts.map((src) => `
   <script type="module" src="${rel(src)}"></script>`).join("");
+  const sentryMeta = sentry
+    ? `
+  <meta name="sentry-dsn" content="${escapeAttr(sentry.dsn)}">
+  <meta name="sentry-environment" content="${escapeAttr(sentry.environment)}">${
+      sentry.release
+        ? `
+  <meta name="sentry-release" content="${escapeAttr(sentry.release)}">`
+        : ""
+    }`
+    : "";
 
   const html = `<!doctype html>
 <html lang="${lang}">
@@ -243,7 +295,7 @@ export function renderPage(
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>${page.title[lang]}</title>
   <meta name="description" content="${escapeAttr(page.description[lang])}">
-  <meta name="theme-color" content="#ba181b">
+  <meta name="theme-color" content="#ba181b">${sentryMeta}
   ${page.noindex ? '<meta name="robots" content="noindex">' : ""}
   ${canonical}
   ${alternates}
@@ -251,6 +303,7 @@ export function renderPage(
   <link rel="icon" href="${rel("img/favicon.png")}" type="image/png">
   <link rel="apple-touch-icon" href="${rel("img/icon-192.png")}">
   <link rel="stylesheet" href="${rel("assets/site.css")}">
+  <script src="${rel("assets/js/theme.js")}"></script>
 </head>
 <body>
   <a class="skip-link" href="#content">${ui.skip}</a>
@@ -265,7 +318,10 @@ export function renderPage(
       </nav>
       <a class="lang-switch" href="${
     rel(switchTarget)
-  }" hreflang="${other}" lang="${other}" aria-label="${ui.switchLabel}">${ui.switchTo}</a>
+  }" hreflang="${other}" lang="${other}" aria-label="${ui.switchLabel}" title="${ui.switchTo}">${
+    FLAGS[other]
+  }</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="${ui.themeLabel}" title="${ui.themeLabel}" hidden>${THEME_ICONS}</button>
     </div>
   </header>
   <main id="content">
@@ -273,7 +329,10 @@ ${body}
   </main>${scriptTags}
   <footer class="site-footer">
     <div class="container">
-      <span>© ${ctx.year} Rubricator. ${ui.rights}</span>
+      <div class="footer-meta">
+        <span>© ${ctx.year} Rubricator. ${ui.rights}</span>
+        <a class="footer-store" href="${PLAY_STORE_URL}" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>${ui.getOnPlay}</a>
+      </div>
       <nav aria-label="${ui.footerNav}">
         ${footerLinks}
       </nav>

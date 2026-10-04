@@ -14,7 +14,7 @@
 - **Kaçınılacaklar:** Rastgele renkler, inline style, tutarsız boşluk, büyük gölgeler, gradyanlar, dekoratif animasyonlar, ikinci bir vurgu rengi.
 
 ## 2. Renk
-Tek kaynak: `site/static/site.css` → `:root` (açık) ve `@media (prefers-color-scheme: dark)` (koyu). Tema sistem tercihini izler; manuel tema düğmesi yoktur.
+Tek kaynak: `site/static/site.css` → `:root` (açık) ve koyu blok. Tema varsayılan olarak sistem tercihini izler; header'daki güneş/ay düğmesi (`theme.js`) seçimi `localStorage`'a (`rubricator.theme`) yazar ve `<html data-theme>` ile uygular. Koyu token'lar iki blokta durur: `@media (prefers-color-scheme: dark) :root:not([data-theme=light])` ve `:root[data-theme=dark]`; **ikisi aynı tutulmalı**.
 
 | Token | Açık | Koyu | Kullanım |
 |---|---|---|---|
@@ -24,6 +24,7 @@ Tek kaynak: `site/static/site.css` → `:root` (açık) ve `@media (prefers-colo
 | `--muted` | #5B5F63 | #B4B8BC | İkincil metin, yazar, ipucu |
 | `--primary` | #BA181B | #BA181B | Marka kırmızısı. **Dolu buton zemini** |
 | `--primary-text` | #BA181B | #FF7A7D | Kırmızı **metin**, link ve **ince göstergeler** (nav alt çizgisi, hata kenarı) |
+| `--primary-text-inverse` | #FF7A7D | #BA181B | Ters renkli yüzeylerde (`--text` zeminli landing uygulama bandı) kırmızı metin. Kontrast: açıkta #161A1D üzerinde 6.95, koyuda #F5F3F4 üzerinde 5.88 |
 | `--on-primary` | #FFFFFF | #FFFFFF | Kırmızı zemin üstü metin |
 | `--border` | #161A1D @14% | #F5F3F4 @16% | Kenarlıklar, ayraçlar (dekoratif) |
 | `--border-strong` | #7E8286 | #787E83 | Form alanı kenarı (input, textarea, select). ≥3:1 |
@@ -68,6 +69,8 @@ Kurallar:
 | `.eyebrow` | 0.85rem, 600, BÜYÜK HARF, letter-spacing 0.08em, `--primary-text` |
 | `.hint`, `.meta` | 0.92–0.95rem, `--muted` |
 | İletişim formu | `.contact-form`, `.panel`, `.field`, `.field.hp`, `.status` | İletişim sayfası. Ad (isteğe bağlı), e-posta, mesaj; alan altı hatalar (`fields.js`, Virgil ile ortak). JS veya Supabase yoksa form gizli kalır, e-posta adresi gösterilir. `.field.hp` bot tuzağı (ekran dışı, `tabindex=-1`) |
+| Hakkımızda (ürün turu) | `.about`, `.about-hero`, `.kicker`, `.about-title`, `.about-tour`, `.about-stop` (`.flip`), `.about-visual`, `.about-quote`, `.about-spoiler`, `.cover-row`, `.about-trust`, `.about-icon`, `.about-contact` | Güçlü başlık (`h1`, kırmızı vurgu `em`), üç durak (takip, notlar, Virgil; masaüstünde sağ-sol dönüşümlü, `h2` + görsel), "Verilerin senin" kutusu + Google Play, altta iletişim satırı. Görseller tipografik kapak/kutucuk dilinden, örnek veri EN+TR, `aria-hidden` |
+| Landing uygulama bandı | `.app-band`, `.app-band-lead`, `.app-band-list`, `.app-band-icon`, `.app-shelf`, `.app-shelf-books`, `.spine`, `.app-shelf-plank` | Sayfanın son bölümü, ters renkli (`--text` zemin, `--bg` metin; koyu temada açık bant). Başlık `h2` (vurgu `--primary-text-inverse`), açıklama, yuvarlak ikonlu 6 madde (`APP_ICONS`), sağda tipografik kitap sırtlarından bir raf (son kitap yaslanmış, `aria-hidden`). Buton yok |
 | Uzun metin | `.prose` max 70ch (`--prose`) |
 
 ## 4. Şekil, boşluk ve derinlik
@@ -92,7 +95,7 @@ Kurallar:
 ## 7. Bileşen envanteri (`site/static/site.css`)
 | Bileşen | Sınıf | Not |
 |---|---|---|
-| Sayfa kabuğu | `.site-header`, `.brand`, `.nav`, `.lang-switch`, `.site-footer`, `.skip-link` | `site/src/layout.ts` üretir. `.lang-switch` `<nav>` dışındadır: mobilde logo ile aynı satırda, linkler alt satırda |
+| Sayfa kabuğu | `.site-header`, `.brand`, `.nav`, `.lang-switch`, `.flag`, `.theme-toggle`, `.site-footer`, `.skip-link` | `site/src/layout.ts` üretir. Dil düğmesi metin yerine gidilecek dilin bayrağını gösterir (inline SVG, etiket `aria-label` + `title`; bayrak renkleri token dışı tek istisna). Tema düğmesi yuvarlak: açıkta ay, koyuda güneş, `aria-pressed` = koyu tema; JS yoksa gizli. Telefonda logo, bayrak ve tema aynı satırda, menü altta. Footer'da telif satırının yanında `.footer-store` (Google Play, `PLAY_STORE_URL`); resmi rozet değil, indirme ikonlu nötr bir hap (resmi rozet ancak Google'ın kendi görseliyle, değiştirilmeden kullanılabilir) |
 | Kapsayıcı | `.container`, `.page`, `.section`, `.section.alt` | |
 | Hero | `.hero`, `.hero-art`, `.tile`, `.tile-reading`, `.tcover`, `.progress`, `.week`, `.fan`, `.eyebrow`, `.lead` | Landing. Sağda uygulamanın bir görünümü (`aria-hidden`, örnek veri EN+TR): okuduğun kitap + ilerleme, okuma serisi, liste. Logo tekrar edilmez, Virgil'e özel görsel yok |
 | Buton | `.btn`, `.btn.secondary`, `.btn.store` (ikonlu, Google Play), `.link-button`, `.actions` | Pill. Devre dışı (`:disabled` / `aria-disabled`) nötr: `--soft` zemin, `--muted` metin. `.link-button` yatay padding'siz (sol hizayı korur) |
@@ -110,7 +113,7 @@ Kurallar:
 
 ## 8. Ekrana özel kurallar
 - **İki dil:** Her metin `en` ve `tr` karşılığıyla birlikte TS string nesnelerine yazılır (`UI` → layout.ts, `VIRGIL_STRINGS` → virgil.ts, `PAGES` → pages.ts). Türkçe metin ~%20–30 daha uzundur, düzen buna göre test edilir.
-- **JS sadece gerektiği yerde:** Düz sayfalarda script yoktur. Script'li sayfa `PageRef.scripts` ile tanımlanır ve CSP ona göre üretilir.
+- **JS sadece gerektiği yerde:** Her sayfa yalnızca `theme.js`'i yükler (`<head>` içinde, bloklayıcı; kayıtlı tema ilk boyamadan önce uygulanır, yanıp sönme olmaz). Başka script'i olan sayfa `PageRef.scripts` ile tanımlanır; yalnızca onlar Supabase'e bağlanabilir (`connect-src`). Bu sayfalarda `SENTRY_DSN_WEB` verilmişse `monitoring.js` ilk modül olarak yüklenir: yalnızca hata olduğunda `vendor/sentry.js`'i (Sentry 11, yerel paket, `site/tools/sentry_entry.ts` ile derlenir) içe aktarır; kullanıcı, breadcrumbs, sorgu dizesi ve # gönderilmez, e-postalar maskelenir, sayfa başına en fazla 10 rapor.
 - **CSP:** `style-src 'self'` (inline `style=""` ve `<style>` çalışmaz), harici script/font yok. Görsel stil her zaman `site.css` içindeki sınıflarla verilir.
 - **Virgil sayfası durumları:** unavailable (env yok), noscript, giriş, giriş hatası, kayıt, şifre sıfırlama (2 adım), arama boş, sorgu hatası, aranıyor, sonuçlar, sonuç yok, günlük limit, oturum süresi doldu. Her değişiklikte `virgil_states.mjs` ile görüntülenir.
 - **Günlük limit:** Hak bitince (`usage.used >= usage.limit` ya da 429 `daily_limit_reached`) "Öneri al" butonu `aria-disabled="true"` olur (odaklanabilir kalır), gönderim JS'te engellenir. `#usage` (`aria-live="polite"`, butonun `aria-describedby`'ı) `errDailyLimit` metnini gösterir: neden + yarın yenilenir. Mesaj `#status`'ta tekrarlanmaz. `virgil_states.mjs` iki yolu da görüntüler: `limit_error` (429) ve `limit_reached` (sayfa açılırken hak bitmiş).
@@ -137,6 +140,14 @@ Kurallar:
 - 2026-10-03 — Virgil sayfası mobil öneri ekranının düzenine geçirildi (mockup `design/mockups/virgil-layout.html`, V1): marka satırı, ortada içerik, altta sticky arama alanı. Landing'deki Virgil tanıtımı L2: adımlar + telefon çerçevesinde Virgil ekranı. Kitap ayrıntısından kategori kaldırıldı.
 
 - 2026-10-03 — Hakkımızda'dan "Kim geliştiriyor?" bölümü kaldırıldı. İletişim sayfasına Supabase + Resend ile çalışan form eklendi; gizlilik politikası 03.10.2026 sürümüne güncellendi.
+
+- 2026-10-04 — Dil düğmesi bayrağa çevrildi, açık/koyu tema düğmesi eklendi (sistem varsayılan, seçim kalıcı). Uygulama bölümü ve Hakkımızda için mockup: `design/mockups/app-about.html`.
+
+- 2026-10-04 — Hakkımızda B2 (ürün turu) ile yeniden yazıldı; mockup'taki olgu çipleri (Global + Türkçe katalog / Android / Virgil web'de / Reklam yok) bilinçli olarak alınmadı.
+
+- 2026-10-04 — Landing'in son bölümü (eski "Cebindeki telefon için tasarlandı" notu) A1 + R2 bandıyla değiştirildi: güçlü başlık, ikonlu özellik listesi, raf görseli; raf altı özet ve butonlar bilinçli olarak yok.
+
+- 2026-10-04 — Web hata raporlama (Sentry) script'li sayfalara eklendi; gizlilik politikası 04.10.2026 sürümüne güncellendi.
 
 **Bilinen sorunlar (öneri; kullanıcı onayı olmadan uygulanmaz)**
 - [Boşluk] site.css'te ölçek dışı rem değerleri var. Bir kurala dokunulduğunda o kuralın değerleri ölçeğe çekilir. Toplu refactor yapılmaz.

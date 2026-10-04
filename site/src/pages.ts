@@ -9,6 +9,7 @@ import {
   CONTACT_EMAIL,
   type Lang,
   type PageRef,
+  PLAY_STORE_URL,
 } from "./layout.ts";
 import { QUILL_ICON, VIRGIL_SCRIPTS, virgilBody } from "./virgil.ts";
 import { CONFIRMED_SCRIPTS, confirmedBody } from "./confirmed.ts";
@@ -18,8 +19,6 @@ export const privacyFragment: Record<Lang, string> = { en: "", tr: "" };
 
 const mail = `<a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`;
 
-export const PLAY_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.rubricator";
 
 // ---------------------------------------------------------------------------
 // Home (landing)
@@ -95,9 +94,31 @@ const home = (lang: Lang): string => {
           "Build reading lists, share them and follow lists made by other readers.",
         ],
       ],
-      appTitle: "Built for the phone in your pocket",
-      appBody:
-        "The full Rubricator experience, with shelves, reading logs, notes, lists and questions about your own PDF or EPUB, lives in the mobile app. This website introduces the project and lets you try Virgil's recommendations in your browser.",
+      // Closing band: what lives in the app (icons from APP_ICONS).
+      app: {
+        kicker: "The Rubricator app",
+        title: "Every book you read, <em>on one shelf.</em>",
+        lead:
+          "This website is a taste. Your shelves, notes, lists and reading streak are waiting in the app.",
+        items: [
+          ["shelf", "Your shelves", "To-read, reading, finished. All at a glance."],
+          ["clock", "Reading streak", "Log your minutes and pages, keep the streak going."],
+          ["quote", "Notes and quotes", "Never lose the line you underlined."],
+          ["list", "Lists", "Create, share and follow other readers."],
+          ["doc", "Ask your book", "Upload a PDF or EPUB and ask Virgil about it."],
+          ["search", "Global + Turkish catalog", "Add a missing Turkish book yourself."],
+        ],
+        // The shelf illustration (aria-hidden); the last book leans.
+        spines: [
+          "The Odyssey",
+          "Metamorphosis",
+          "Crime and Punishment",
+          "White Fang",
+          "Anna Karenina",
+          "Les Misérables",
+          "Foggy Harbour",
+        ],
+      },
     }
     : {
       eyebrow: "Kitaplar, takip edilir ve keşfedilir",
@@ -166,9 +187,29 @@ const home = (lang: Lang): string => {
           "Okuma listeleri oluştur, paylaş ve diğer okurların listelerini takip et.",
         ],
       ],
-      appTitle: "Cebindeki telefon için tasarlandı",
-      appBody:
-        "Rubricator'ın tam deneyimi (raflar, okuma kayıtları, notlar, listeler ve kendi PDF ya da EPUB dosyan hakkında soru sorma) mobil uygulamada. Bu web sitesi projeyi tanıtır ve Virgil'in önerilerini tarayıcında denemeni sağlar.",
+      app: {
+        kicker: "Rubricator uygulaması",
+        title: "Okuduğun her kitap, <em>tek bir rafta.</em>",
+        lead:
+          "Web sitesi bir tadımlık. Rafların, notların, listelerin ve okuma serin uygulamada seni bekliyor.",
+        items: [
+          ["shelf", "Rafların", "Okunacak, okunuyor, bitti. Hepsi bir bakışta."],
+          ["clock", "Okuma serisi", "Dakikanı ve sayfanı kaydet, seriyi bozma."],
+          ["quote", "Notlar ve alıntılar", "Altını çizdiğin cümleyi kaybetme."],
+          ["list", "Listeler", "Oluştur, paylaş, başka okurları takip et."],
+          ["doc", "Kitabına sor", "PDF ya da EPUB yükle, Virgil'e içeriğini sor."],
+          ["search", "Global + Türkçe katalog", "Eksik bir Türkçe kitabı kendin ekle."],
+        ],
+        spines: [
+          "Odysseia",
+          "Dönüşüm",
+          "Suç ve Ceza",
+          "Beyaz Diş",
+          "Anna Karenina",
+          "Sefiller",
+          "Sisli Liman",
+        ],
+      },
     };
   return `    <section class="hero">
       <div class="container">
@@ -252,56 +293,208 @@ ${
     ).join("\n")
   }
         </div>
-        <div class="note"><p><strong>${t.appTitle}.</strong> ${t.appBody}</p></div>
+      </div>
+    </section>
+    <section class="app-band">
+      <div class="container">
+        <div>
+          <p class="kicker">${t.app.kicker}</p>
+          <h2>${t.app.title}</h2>
+          <p class="app-band-lead">${t.app.lead}</p>
+          <ul class="app-band-list">
+${
+    t.app.items.map(([icon, h, p]) =>
+      `            <li><span class="app-band-icon">${
+        APP_ICONS[icon as keyof typeof APP_ICONS]
+      }</span><div><h3>${h}</h3><p>${p}</p></div></li>`
+    ).join("\n")
+  }
+          </ul>
+        </div>
+        <div class="app-shelf" aria-hidden="true">
+          <div class="app-shelf-books">${
+    t.app.spines.map((title) => `<span class="spine">${title}</span>`).join("")
+  }</div>
+          <div class="app-shelf-plank"></div>
+        </div>
       </div>
     </section>`;
 };
 
+/** Line icons for the app band (stroke = currentColor, sized in CSS). */
+const APP_ICONS = {
+  shelf: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V5h3v15M11 20V8h3v12M16 20l-1.5-12 3-.5L19 20"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+  quote: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17c-2 0-3-1.5-3-3.5S5.5 9 9 7M15 17c-2 0-3-1.5-3-3.5S13.5 9 17 7"/></svg>',
+  list: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 13h6M9 17h4"/></svg>',
+  search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>',
+} as const;
+
 // ---------------------------------------------------------------------------
 // About
 // ---------------------------------------------------------------------------
-const about = (lang: Lang): string =>
-  lang === "en"
-    ? `    <div class="page container">
-      <article class="prose">
-        <h1>About Rubricator</h1>
-        <p class="lead">Rubricator is a reading companion: a place to discover books, keep track of what you read and talk about it.</p>
+const ABOUT_STRINGS = {
+  en: {
+    kicker: "About",
+    h1: "A reading companion that <em>remembers what you read.</em>",
+    lead:
+      "Rubricator keeps the books you discover, read and love in one place, and its reading guide Virgil helps you find the next one.",
+    stops: [
+      {
+        kicker: "Tracking",
+        title: "Your shelves, always up to date.",
+        body:
+          "Put a book on your to-read shelf, log minutes and pages while you read, and move it to finished when you're done. Your reading streak is waiting every day.",
+      },
+      {
+        kicker: "Notes",
+        title: "The line you underlined stays with you.",
+        body:
+          "Save quotes, rate and review. Reviews with spoilers stay hidden for readers who don't want the surprise ruined.",
+      },
+      {
+        kicker: "Virgil",
+        title: "Say what you're in the mood for. Virgil finds the rest.",
+        body:
+          "Describe it in your own words, like “a slow mystery in a seaside town”, and Virgil searches by meaning.",
+        link: "Try it on the web now.",
+      },
+    ],
+    trust:
+      "<strong>Your data is yours.</strong> We don't sell personal data or show ads, and you can delete your account at any time. The details are in the",
+    trustLink: "privacy policy",
+    getApp: "Get the app",
+    contact: "Questions, ideas or bug reports?",
+    contactLink: "Write to us",
+    // Sample data for the illustrations (aria-hidden).
+    art: {
+      reading: "Reading",
+      book: "Foggy Harbour",
+      author: "E. Kaya",
+      pages: "Page 142 of 220",
+      quote: "“Every morning the sea brought the town another secret.”",
+      quoteSource: "Foggy Harbour · p. 87",
+      spoiler: "Contains spoilers · tap to show",
+      query: "a slow mystery in a seaside town",
+      covers: [["The Lighthouse Murder", "M. Aras"], ["The Last Ferry", "D. Tan"], [
+        "House on the Shore",
+        "S. Ay",
+      ]],
+    },
+  },
+  tr: {
+    kicker: "Hakkımızda",
+    h1: "Okuduklarını hatırlayan bir <em>okuma arkadaşı.</em>",
+    lead:
+      "Rubricator; keşfettiğin, okuduğun ve sevdiğin kitapları bir arada tutar. Okuma rehberi Virgil de sıradakini bulmana yardım eder.",
+    stops: [
+      {
+        kicker: "Takip",
+        title: "Rafların hep güncel.",
+        body:
+          "Bir kitabı okunacaklara at, okurken dakikanı ve sayfanı kaydet, bitirince rafına koy. Okuma serin her gün seni bekler.",
+      },
+      {
+        kicker: "Notlar",
+        title: "Altını çizdiğin cümle kaybolmaz.",
+        body:
+          "Alıntılarını kaydet, puan ver, yorum yaz. Sürprizi kaçırmak istemeyenler için spoiler içeren yorumlar gizli kalır.",
+      },
+      {
+        kicker: "Virgil",
+        title: "Ne istediğini anlat, gerisini Virgil bulsun.",
+        body:
+          "“Yavaş ilerleyen bir sahil kasabası polisiyesi” gibi kendi cümlelerinle anlat; Virgil anlamına göre arar.",
+        link: "Web'de hemen dene.",
+      },
+    ],
+    trust:
+      "<strong>Verilerin senin.</strong> Kişisel veri satmayız, reklam göstermeyiz; hesabını istediğin an silebilirsin. Ayrıntılar",
+    trustLink: "gizlilik politikasında",
+    getApp: "Uygulamayı indir",
+    contact: "Soru, fikir ya da hata bildirimi mi?",
+    contactLink: "Bize yaz",
+    art: {
+      reading: "Okuyorum",
+      book: "Sisli Liman",
+      author: "E. Kaya",
+      pages: "Sayfa 142 / 220",
+      quote: "“Deniz, her sabah kasabaya başka bir sır getiriyordu.”",
+      quoteSource: "Sisli Liman · s. 87",
+      spoiler: "Spoiler içerir · göstermek için dokun",
+      query: "sahil kasabasında yavaş bir polisiye",
+      covers: [["Deniz Feneri Cinayeti", "M. Aras"], ["Son Vapur", "D. Tan"], [
+        "Kıyıdaki Ev",
+        "S. Ay",
+      ]],
+    },
+  },
+} as const;
 
-        <h2>What you can do</h2>
-        <ul>
-          <li><strong>Discover books</strong> in a global catalog and in a Turkish catalog, and add a Turkish book that is missing.</li>
-          <li><strong>Track your reading</strong>: to-read, reading and finished shelves, reading logs and streaks.</li>
-          <li><strong>Rate, review and take notes</strong>, including spoiler-safe reviews and saved quotes.</li>
-          <li><strong>Make and share lists</strong> of books, and follow other readers' lists.</li>
-          <li><strong>Ask Virgil</strong>, an AI reading guide: describe what you're in the mood for and get recommendations, in the app or <a href="{{link:virgil}}">right here on the website</a>. In the mobile app you can also ask questions about a PDF or EPUB you upload.</li>
-        </ul>
+const LOCK_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const DOWNLOAD_ICON =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
 
-        <h2>How we treat your data</h2>
-        <p>We don't sell personal data. Your reading history and content belong to your account, and you can ask us to delete it at any time. Read the <a href="{{link:privacy}}">privacy policy</a> for the details, including which third-party services we use, and see how to <a href="{{link:deletion}}">delete your account</a>.</p>
-
-        <div class="note"><p>Questions, ideas or bug reports? Write to ${mail}.</p></div>
-      </article>
-    </div>`
-    : `    <div class="page container">
-      <article class="prose">
-        <h1>Rubricator hakkında</h1>
-        <p class="lead">Rubricator bir okuma arkadaşı: kitap keşfetmek, okuduklarını takip etmek ve onlar hakkında konuşmak için bir yer.</p>
-
-        <h2>Neler yapabilirsin?</h2>
-        <ul>
-          <li>Global ve Türkçe kataloglarda <strong>kitap keşfet</strong>; katalogda olmayan bir Türkçe kitabı kendin ekle.</li>
-          <li><strong>Okumanı takip et</strong>: okunacak, okunuyor ve bitti rafları, okuma kayıtları ve seriler.</li>
-          <li><strong>Puanla, yorumla ve not al</strong>; spoiler içeren yorumları işaretle, alıntıları kaydet.</li>
-          <li><strong>Kitap listeleri oluştur ve paylaş</strong>, diğer okurların listelerini takip et.</li>
-          <li><strong>Virgil'e sor</strong>: yapay zekâ destekli okuma rehberine canının ne istediğini anlat, uygulamada ya da <a href="{{link:virgil}}">doğrudan bu web sitesinde</a> öneri al. Mobil uygulamada yüklediğin bir PDF ya da EPUB hakkında da soru sorabilirsin.</li>
-        </ul>
-
-        <h2>Verilerine nasıl davranıyoruz?</h2>
-        <p>Kişisel verileri satmıyoruz. Okuma geçmişin ve içeriklerin hesabına aittir ve dilediğin zaman silinmesini isteyebilirsin. Kullandığımız üçüncü taraf hizmetler dahil ayrıntılar için <a href="{{link:privacy}}">gizlilik politikasına</a> bak; hesabını nasıl sileceğini <a href="{{link:deletion}}">Hesap silme</a> sayfasında bulabilirsin.</p>
-
-        <div class="note"><p>Sorun, fikir ya da hata bildirimi için ${mail} adresine yazabilirsin.</p></div>
-      </article>
+// A short product tour: three stops (tracking, notes, Virgil), each with an
+// illustration drawn from the site's typographic covers and tiles.
+const about = (lang: Lang): string => {
+  const t = ABOUT_STRINGS[lang];
+  const a = t.art;
+  const visuals = [
+    `<div class="tile tile-reading">
+              <p class="tile-label">${a.reading}</p>
+              <div class="reading">
+                <div class="tcover tc-ink">${a.book}<small>${a.author}</small></div>
+                <div>
+                  <p class="reading-title">${a.book}</p>
+                  <p class="reading-author">${a.author}</p>
+                  <div class="progress"><span></span></div>
+                  <p class="reading-pages">${a.pages}</p>
+                </div>
+              </div>
+            </div>`,
+    `<div class="about-quote"><p>${a.quote}</p><small>${a.quoteSource}</small></div>
+            <div class="about-spoiler"><strong>★★★★☆</strong><span>${a.spoiler}</span></div>`,
+    `<div class="v-bar"><span class="v-fake-input">${a.query}</span><span class="v-round v-submit">${QUILL_ICON}</span></div>
+            <div class="cover-row">${
+      a.covers.map(([title, author], i) =>
+        `<div class="tcover ${
+          ["tc-ink", "tc-red", "tc-soft"][i]
+        }">${title}<small>${author}</small></div>`
+      ).join("")
+    }</div>`,
+  ];
+  const stops = t.stops.map((stop, i) => `
+        <section class="about-stop${i % 2 ? " flip" : ""}">
+          <div>
+            <p class="kicker">${stop.kicker}</p>
+            <h2>${stop.title}</h2>
+            <p>${stop.body}${
+    "link" in stop ? ` <a href="{{link:virgil}}">${stop.link}</a>` : ""
+  }</p>
+          </div>
+          <div class="about-visual" aria-hidden="true">
+            ${visuals[i]}
+          </div>
+        </section>`).join("");
+  return `    <div class="page container about">
+      <header class="about-hero">
+        <p class="kicker">${t.kicker}</p>
+        <h1 class="about-title">${t.h1}</h1>
+        <p class="lead">${t.lead}</p>
+      </header>
+      <div class="about-tour">${stops}
+      </div>
+      <div class="about-trust">
+        <span class="about-icon">${LOCK_ICON}</span>
+        <p>${t.trust} <a href="{{link:privacy}}">${t.trustLink}</a>.</p>
+        <a class="btn store" href="${PLAY_STORE_URL}" rel="noopener">${DOWNLOAD_ICON}${t.getApp}</a>
+      </div>
+      <p class="about-contact">${t.contact} <a href="{{link:contact}}">${t.contactLink}</a>.</p>
     </div>`;
+};
 
 // ---------------------------------------------------------------------------
 // Contact

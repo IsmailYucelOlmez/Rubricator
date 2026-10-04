@@ -1,5 +1,5 @@
 <h1>Rubricator Gizlilik Politikası</h1>
-<p class="muted"><strong>Son güncelleme:</strong> 03.10.2026</p>
+<p class="muted"><strong>Son güncelleme:</strong> 04.10.2026</p>
 <p class="muted">
   Hizmet: Rubricator mobil uygulaması (iOS/Android) ve bu web sitesi<br />
   Geliştirici / Veri Sorumlusu: İsmail Yücel Ölmez<br />
@@ -198,11 +198,16 @@
     <strong>Web sitesi:</strong> Web sitesi, barındırma sağlayıcımız (şu an
     GitHub Pages) tarafından sunulan statik bir sitedir; sağlayıcı IP adresiniz,
     tarayıcı bilgileriniz ve istenen adres gibi standart istek verilerini alır
-    ve kendi sunucu kayıtlarını tutar. Sayfalar üçüncü taraf betik, yazı tipi,
-    analiz veya reklam yüklemez ve çerez kullanmaz. Virgil sayfası yalnızca
+    ve kendi sunucu kayıtlarını tutar. Sayfalar başka sunuculardan betik, yazı
+    tipi, analiz veya reklam yüklemez ve çerez kullanmaz. Virgil sayfası
     Supabase projemize (giriş ve öneriler) bağlanır ve yukarıda açıklanan
-    katalog kaynaklarından kitap kapakları gösterir. Web sitesinde Sentry veya
-    başka bir çökme raporlama aracı kullanmıyoruz.
+    katalog kaynaklarından kitap kapakları gösterir. Kod çalıştıran sayfalar
+    (Virgil, iletişim ve e-posta onay sayfası) JavaScript hatalarını
+    <strong>Sentry</strong>'ye bildirir: yalnızca gerçekten bir hata oluştuğunda
+    hata mesajı ve yığın izi, sorgu dizesi ve # sonrası olmadan sayfa adresi ve
+    tarayıcı/işletim sistemi bilgisi gönderilir. Hata mesajlarındaki e-posta
+    adresleri maskelenir; hesap kimliği, form içeriği veya gezinme geçmişi
+    gönderilmez. Diğer sayfalar hata raporu göndermez.
   </li>
   <li>
     <strong>İletişim formu:</strong> İletişim sayfasındaki formu kullanırsanız
@@ -381,7 +386,8 @@
     <tr>
       <td>Sentry</td>
       <td>
-        Cihaz/uygulama teknik bilgileri, hata izleri (yalnızca mobil uygulama)
+        Cihaz/uygulama veya tarayıcı teknik bilgileri, hata izleri (mobil
+        uygulama ve web sitesinin Virgil, iletişim ve onay sayfaları)
       </td>
       <td>Hata ayıklama ve kararlılık izleme</td>
     </tr>

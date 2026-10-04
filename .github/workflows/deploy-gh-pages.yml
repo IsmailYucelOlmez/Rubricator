@@ -56,6 +56,10 @@ jobs:
           # Without them the page builds as "not available".
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Website error reporting (a separate Sentry project from the app).
+          # Repository variable; empty = no error reporting. The release is
+          # the commit (GITHUB_SHA, set by Actions).
+          SENTRY_DSN_WEB: ${{ vars.SENTRY_DSN_WEB }}
         run: |
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"

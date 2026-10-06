@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://rubricator.site/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/virgil/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/virgil/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/virgil/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/virgil/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/virgil/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/virgil/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/about/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/hakkimizda/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/hakkimizda/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/about/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/hakkimizda/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/contact/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/iletisim/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/iletisim/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/contact/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/iletisim/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/privacy-policy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/privacy-policy.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/gizlilik-politikasi/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/gizlilik-politikasi/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/privacy-policy.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/gizlilik-politikasi/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/account-deletion/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/account-deletion/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/hesap-silme/"/>
+  </url>
+  <url>
+    <loc>https://rubricator.site/tr/hesap-silme/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://rubricator.site/account-deletion/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/hesap-silme/"/>
+  </url>
+</urlset>

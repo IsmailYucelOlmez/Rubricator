@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: https:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src https://lnlqbrzetaofjwxudord.supabase.co https://o4510243096166400.ingest.de.sentry.io; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Virgil: yapay zekâ kitap önerileri | Rubricator</title>
+  <meta name="description" content="Canının çektiği kitabı anlat, Rubricator'ın yapay zekâ okuma rehberi Virgil'den öneri al.">
+  <meta name="theme-color" content="#ba181b">
+  <meta name="sentry-dsn" content="https://9045a6f5e35e182933db7f39d31284ca@o4510243096166400.ingest.de.sentry.io/4512197546868816">
+  <meta name="sentry-environment" content="production">
+  <meta name="sentry-release" content="d8f6df2c3f78ef1ee8a49502a4cd2b1509417a3f">
+  
+  <link rel="canonical" href="https://rubricator.site/tr/virgil/">
+  <link rel="alternate" hreflang="en" href="https://rubricator.site/virgil/">
+  <link rel="alternate" hreflang="tr" href="https://rubricator.site/tr/virgil/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Rubricator">
+  <meta property="og:title" content="Virgil: yapay zekâ kitap önerileri | Rubricator">
+  <meta property="og:description" content="Canının çektiği kitabı anlat, Rubricator'ın yapay zekâ okuma rehberi Virgil'den öneri al.">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:image" content="https://rubricator.site/img/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="../../img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../../img/icon-192.png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script src="../../assets/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#content">İçeriğe geç</a>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../">
+        <img src="../../img/icon-192.png" width="40" height="40" alt="">
+        <span class="brand-name">Rubricator</span>
+      </a>
+      <nav class="nav" aria-label="Ana menü">
+        <a href="../">Ana sayfa</a>
+        <a href="./" aria-current="page">Virgil</a>
+        <a href="../hakkimizda/">Hakkımızda</a>
+        <a href="../iletisim/">İletişim</a>
+      </nav>
+    </div>
+    <div class="header-tools">
+      <a class="lang-switch" href="../../virgil/" hreflang="en" lang="en" aria-label="Read this page in English" title="English"><svg class="flag" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="flag-uk"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#flag-uk)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg></a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Koyu tema" title="Koyu tema" hidden><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+    </div>
+  </header>
+  <main id="content">
+    <div class="v-screen" id="virgil" data-lang="tr" data-policy-version="2026-10-04" data-supabase-url="https://lnlqbrzetaofjwxudord.supabase.co" data-anon-key="sb_publishable_2FM7nuxiubl4H5LTGDuCBw_pBBpa2p2" data-confirm-url="https://rubricator.site/tr/auth/onay/">
+     <div class="container v-frame">
+      <header class="v-head">
+        <h1 class="v-brand"><span class="v-word">Virgil</span> <span class="v-badge">BETA</span></h1>
+        <div class="v-account" id="account" hidden>
+          <span class="v-account-email"><span class="sr-only">Giriş yapan: </span><span id="account-email"></span></span>
+          <button class="link-button" type="button" id="sign-out">Çıkış yap</button>
+        </div>
+      </header>
+
+      <noscript><div class="note"><p>Web'de Virgil için JavaScript gerekiyor. Lütfen etkinleştirip sayfayı yenile.</p></div></noscript>
+      <div class="note" id="unavailable" hidden><p>Virgil şu an web sitesinde kullanılamıyor. Lütfen daha sonra tekrar dene ya da mobil uygulamayı kullan.</p></div>
+
+      <p class="status" id="status" role="status" aria-live="polite" hidden></p>
+
+      <section class="v-auth" id="auth-view" hidden>
+       <p class="v-tagline">Virgil okuma yolculuğuna rehberlik eder.</p>
+       <p class="v-lead">Bir hikâyeyi, bir duyguyu ya da bir konuyu kendi cümlelerinle anlat, kitap önerileri al. Uygulamada kullandığın Rubricator hesabına ihtiyacın var.</p>
+       <div class="panel">
+        <div class="tabs" role="group" aria-label="Giriş yap / Hesap oluştur">
+          <button type="button" class="tab" id="tab-signin" aria-pressed="true">Giriş yap</button>
+          <button type="button" class="tab" id="tab-signup" aria-pressed="false">Hesap oluştur</button>
+        </div>
+
+        <form id="form-signin" method="post" action="#" novalidate>
+          <div class="field"><label for="signin-email">E-posta</label>
+            <input id="signin-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="signin-password">Şifre</label>
+            <input id="signin-password" name="password" type="password" autocomplete="current-password" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Giriş yap</button>
+            <button class="link-button" type="button" id="open-reset">Şifreni mi unuttun?</button>
+          </div>
+        </form>
+
+        <form id="form-signup" method="post" action="#" novalidate hidden>
+          <div class="field"><label for="signup-username">Görünen ad</label>
+            <input id="signup-username" name="username" type="text" autocomplete="nickname" maxlength="40" required></div>
+          <div class="field"><label for="signup-email">E-posta</label>
+            <input id="signup-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="signup-password">Şifre</label>
+            <input id="signup-password" name="password" type="password" autocomplete="new-password" aria-describedby="password-hint" required>
+            <p class="hint" id="password-hint">En az 6 karakter; büyük harf, küçük harf ve noktalama işareti içermeli.</p></div>
+          <div class="field check">
+            <input id="signup-privacy" name="privacy" type="checkbox">
+            <label for="signup-privacy"> <a href="../gizlilik-politikasi/" target="_blank" rel="noopener">Gizlilik politikasını</a> okudum ve kabul ediyorum.</label>
+          </div>
+          <div class="actions"><button class="btn" type="submit">Hesap oluştur</button></div>
+        </form>
+
+        <form id="form-reset-request" method="post" action="#" novalidate hidden>
+          <h2>Şifreni sıfırla</h2>
+          <p>Sana 8 haneli bir kod e-postalayacağız.</p>
+          <div class="field"><label for="reset-email">E-posta</label>
+            <input id="reset-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Kod gönder</button>
+            <button class="link-button" type="button" data-back-to-signin>Girişe dön</button>
+          </div>
+        </form>
+
+        <form id="form-reset" method="post" action="#" novalidate hidden>
+          <h2>Şifreni sıfırla</h2>
+          <div class="field"><label for="reset-code">8 haneli kod</label>
+            <input id="reset-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required></div>
+          <div class="field"><label for="reset-password">Yeni şifre</label>
+            <input id="reset-password" name="password" type="password" autocomplete="new-password" required></div>
+          <div class="field"><label for="reset-confirm">Yeni şifreyi doğrula</label>
+            <input id="reset-confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+          <div class="actions">
+            <button class="btn" type="submit">Yeni şifreyi kaydet</button>
+            <button class="link-button" type="button" data-back-to-signin>Girişe dön</button>
+          </div>
+        </form>
+       </div>
+      </section>
+
+      <section class="v-app" id="search-view" hidden>
+        <div class="v-content">
+          <p class="v-intro" id="search-intro">Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.</p>
+          <div id="results-wrap" hidden>
+            <h2 class="v-query" id="results-heading" tabindex="-1"><span class="sr-only">Öneriler: </span><span id="results-query"></span></h2>
+            <p class="v-category" id="results-category" hidden></p>
+            <div class="v-refine" id="refine" hidden>
+              <p class="hint" id="refine-hint" aria-live="polite"></p>
+              <div class="v-refine-actions">
+                <button class="link-button" type="button" id="refine-reset" hidden>İlk sonuçlar</button>
+                <button class="v-refine-apply" type="button" id="refine-apply" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>İyileştir</button>
+              </div>
+            </div>
+            <div class="empty" id="no-results" hidden>
+              <p><strong>Virgil bir eşleşme bulamadı.</strong></p>
+              <p class="hint">Bir ruh halini, bir konuyu ya da sevdiğin bir kitabı farklı cümlelerle anlatmayı dene.</p>
+            </div>
+            <ol class="v-grid" id="results"></ol>
+            <template id="vote-template">
+              <div class="v-votes">
+                <button class="v-vote" type="button" data-vote="1" aria-pressed="false" aria-label="Alakalı" title="Alakalı"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3zm0 0 4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8.5a2 2 0 0 1-2 1.7H7"/></svg></button>
+                <button class="v-vote" type="button" data-vote="-1" aria-pressed="false" aria-label="Alakasız" title="Alakasız"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-3zm0 0-4 8a3 3 0 0 1-3-3v-4H4.5a2 2 0 0 1-2-2.3l1.4-8.5a2 2 0 0 1 2-1.7H17"/></svg></button>
+              </div>
+            </template>
+          </div>
+        </div>
+        <form class="v-dock" id="form-search" method="post" action="#" novalidate>
+          <div class="field">
+            <label class="sr-only" for="query">Ne arıyorsun?</label>
+            <div class="v-bar">
+              <input class="v-input" id="query" name="query" type="text" enterkeyhint="search" autocomplete="off" maxlength="500" placeholder="ör. küçük bir sahil kasabasında geçen, yavaş ilerleyen bir polisiye" required>
+              <button class="v-round v-submit" type="submit" id="search-button" aria-describedby="usage" aria-label="Öneri al"><svg viewBox="6 6 24 24" aria-hidden="true"><path d="M10.64 23.18c-.27-2.9-.53-5.04.48-6.84.1.75.22 1.64.38 2.47.13.71.29 1.4.46 1.91.08.26.18.5.29.69.2.34.5.46.63.47.43.04.8-.11 1.07-.43.23-.28.35-.66.42-1.04.14-.75.13-1.79.13-2.85-.01-1.09-.01-2.24.13-3.3.14-1.07.41-2 .91-2.66.5-.66 1.53-1.2 2.8-1.66.62-.23 1.27-.43 1.9-.62-.45.61-.86 1.28-1.18 1.92-.3.59-.53 1.19-.6 1.69-.03.24-.03.52.06.77.1.24.28.43.53.53.26.08.44.02.54-.03.3-.14.6-.4.95-.75.48-.46 1.1-1.12 1.7-1.7.6-.6 1.22-1.17 1.75-1.54.27-.18.5-.3.67-.35.17-.06.24-.03.26-.02 1.3.66 3.2 2.3 3.88 2.97.18.17.23.34.21.53-.02.21-.12.47-.33.77-.42.59-1.12 1.14-1.7 1.42-.46.22-1.03.31-1.66.33-.64.01-1.29-.05-1.92-.12-.6-.07-1.22-.14-1.69-.12-.23.02-.49.05-.71.17-.22.11-.39.29-.47.54-.08.38-.09 1.12.61 1.75.51.46 1.34.8 2.67.94-1.31.91-2.57 1.06-3.68 1.03-.35-.01-.69-.04-1.01-.07-.32-.03-.65-.06-.94-.07-.57-.02-1.21.02-1.69.42-.42.36-.33.88-.2 1.2.13.35.39.7.69 1.01.3.31.68.6 1.07.8l.22.1c-.99.9-1.67 1.14-2.29 1.15-.4.01-.83-.08-1.36-.2-.51-.13-1.13-.29-1.85-.4l-.44-.06-1.29 4.8a1 1 0 0 1-1.93-.51z"/></svg></button>
+            </div>
+          </div>
+          <p class="hint" id="usage" aria-live="polite" hidden></p>
+        </form>
+      </section>
+
+      <dialog class="v-dialog" id="book-dialog" aria-labelledby="book-dialog-title">
+        <div class="book-cover" id="book-dialog-cover"></div>
+        <div>
+          <h2 id="book-dialog-title"></h2>
+          <p class="book-author" id="book-dialog-author"></p>
+        </div>
+        <p class="v-dialog-desc" id="book-dialog-desc"></p>
+        <form method="dialog"><button class="btn secondary" type="submit">Kapat</button></form>
+      </dialog>
+
+      <script type="application/json" id="i18n">{"badge":"BETA","tagline":"Virgil okuma yolculuğuna rehberlik eder.","lead":"Bir hikâyeyi, bir duyguyu ya da bir konuyu kendi cümlelerinle anlat, kitap önerileri al. Uygulamada kullandığın Rubricator hesabına ihtiyacın var.","unavailable":"Virgil şu an web sitesinde kullanılamıyor. Lütfen daha sonra tekrar dene ya da mobil uygulamayı kullan.","noscript":"Web'de Virgil için JavaScript gerekiyor. Lütfen etkinleştirip sayfayı yenile.","tabSignIn":"Giriş yap","tabSignUp":"Hesap oluştur","email":"E-posta","password":"Şifre","username":"Görünen ad","passwordHint":"En az 6 karakter; büyük harf, küçük harf ve noktalama işareti içermeli.","privacyPre":"","privacyLink":"Gizlilik politikasını","privacyPost":" okudum ve kabul ediyorum.","signIn":"Giriş yap","signUp":"Hesap oluştur","forgot":"Şifreni mi unuttun?","resetTitle":"Şifreni sıfırla","resetIntro":"Sana 8 haneli bir kod e-postalayacağız.","sendCode":"Kod gönder","code":"8 haneli kod","newPassword":"Yeni şifre","confirmPassword":"Yeni şifreyi doğrula","resetSubmit":"Yeni şifreyi kaydet","backToSignIn":"Girişe dön","signOut":"Çıkış yap","signedInAs":"Giriş yapan:","queryLabel":"Ne arıyorsun?","queryPlaceholder":"ör. küçük bir sahil kasabasında geçen, yavaş ilerleyen bir polisiye","genreLabel":"Tür","genres":{"All":"Tümü","Fiction":"Kurgu","Nonfiction":"Kurgu dışı","Children's Fiction":"Çocuk kurgusu","Children's Nonfiction":"Çocuk kurgu dışı"},"search":"Öneri al","intro":"Keşfetmeye değer yeni yazarlar, farklı türler ve ilgini çekebilecek eserler. Virgil, sana öneriler sunarak keşfetmeni kolaylaştırır.","close":"Kapat","searching":"Virgil düşünüyor…","usage":"Bugün {left}/{limit} öneri hakkın kaldı.","resultsHeading":"Öneriler","noResultsTitle":"Virgil bir eşleşme bulamadı.","noResultsHint":"Bir ruh halini, bir konuyu ya da sevdiğin bir kitabı farklı cümlelerle anlatmayı dene.","voteRelevant":"Alakalı","voteIrrelevant":"Alakasız","feedbackHint":"Sonuçları alakalı ya da alakasız diye işaretle, sonra iyileştir.","feedbackRefine":"İyileştir","feedbackRefined":"İşaretlerine göre iyileştirildi.","feedbackReset":"İlk sonuçlar","msgSignedIn":"Tekrar hoş geldin.","msgSignUpDone":"Hesabın oluşturuldu. Onaylamak için e-postanı kontrol et, sonra giriş yap.","msgCodeSent":"8 haneli kod için e-postanı kontrol et.","msgResetDone":"Şifren güncellendi ve giriş yaptın.","errEmailRequired":"E-posta gerekli.","errEmailInvalid":"Geçerli bir e-posta gir.","errPasswordRequired":"Şifre gerekli.","errPasswordTooShort":"Şifre en az 6 karakter olmalıdır.","errPasswordMissingUppercase":"Şifre en az bir büyük harf içermelidir.","errPasswordMissingLowercase":"Şifre en az bir küçük harf içermelidir.","errPasswordMissingPunctuation":"Şifre en az bir noktalama işareti içermelidir.","errUsernameRequired":"Görünen ad gerekli.","errMismatch":"Şifreler eşleşmiyor.","errAcceptPrivacy":"Hesap oluşturmak için gizlilik politikasını kabul etmelisin.","errOtpIncomplete":"Lütfen 8 haneli kodu eksiksiz gir.","errQueryShort":"En az 3 karakter yaz.","errQueryLong":"500 karakterin altında tut.","errInvalidCredentials":"E-posta veya şifre hatalı.","errEmailNotConfirmed":"Önce e-posta adresini onaylamalısın: gelen kutunu kontrol et.","errUserExists":"Bu e-postayla zaten bir hesap var. Giriş yapmayı dene.","errWeakPassword":"Bu şifre çok zayıf. Daha güçlü bir şifre seç.","errRateLimit":"Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.","errOtp":"Kod hatalı ya da süresi dolmuş. Yeni bir kod iste.","errNetwork":"Sunucuya ulaşılamadı. Bağlantını kontrol edip tekrar dene.","errUnknown":"Bir şeyler ters gitti. Lütfen tekrar dene.","errSessionExpired":"Oturumun sona erdi. Lütfen tekrar giriş yap.","errDailyLimit":"Günde en fazla 5 kez kitap önerisi alabilirsin. Yarın tekrar dene.","errBusy":"Virgil şu an yoğun. Birazdan tekrar dene.","errTimeout":"Bu çok uzun sürdü. Lütfen tekrar dene.","errServer":"Virgil bir sorunla karşılaştı. Lütfen daha sonra tekrar dene.","errFeedback":"İşaretin kaydedilemedi. Tekrar dene.","errFeedbackRateLimited":"Çok fazla işaretleme yaptın. Biraz sonra tekrar dene."}</script>
+     </div>
+    </div>
+  </main>
+  <script type="module" src="../../assets/js/monitoring.js"></script>
+  <script type="module" src="../../assets/js/app.js"></script>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-meta">
+        <span>© 2026 Rubricator. Tüm hakları saklıdır.</span>
+        <a class="footer-store" href="https://play.google.com/store/apps/details?id=com.rubricator" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Google Play'den indir</a>
+      </div>
+      <nav aria-label="Alt menü">
+        <a href="../hakkimizda/">Hakkımızda</a>
+        <a href="../iletisim/">İletişim</a>
+        <a href="../gizlilik-politikasi/">Gizlilik Politikası</a>
+        <a href="../hesap-silme/">Hesap silme</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

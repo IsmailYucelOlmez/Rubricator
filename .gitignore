@@ -71,3 +71,6 @@ Claude outputs
 store/play-screenshots/raw/
 store/play-screenshots/raw-old/
 store/play-screenshots/out/
+
+# Gradle build output (reports etc.)
+android/build/

@@ -147,14 +147,18 @@ RelatedBooksKey relatedBooksKeyFor(BookEntity book) => (
 final relatedBooksProvider = FutureProvider.family<List<Book>, RelatedBooksKey>(
   (ref, arg) async {
     if (arg.workId.startsWith('trbooks:')) {
-      final trbooks = await ref
-          .watch(trbooksRepositoryProvider)
-          .related(
-            excludeId: arg.workId,
-            category: arg.subject,
-            author: arg.author,
-          );
-      if (trbooks.isNotEmpty) return trbooks;
+      try {
+        final trbooks = await ref
+            .watch(trbooksRepositoryProvider)
+            .related(
+              excludeId: arg.workId,
+              category: arg.subject,
+              author: arg.author,
+            );
+        if (trbooks.isNotEmpty) return trbooks;
+      } on Exception {
+        // A trbooks failure falls through to Google Books below.
+      }
     }
     final book = Book(
       id: arg.workId,

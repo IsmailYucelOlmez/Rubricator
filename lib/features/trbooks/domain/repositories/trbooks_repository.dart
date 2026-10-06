@@ -14,8 +14,9 @@ abstract class TrbooksRepository {
   /// Books by an exact (case-insensitive) author name match.
   Future<List<Book>> byAuthor(String authorName, {int limit = 20});
 
-  /// Same-category (or same-author, when no category) books, excluding
-  /// [excludeId], for use as a Google-Books "related books" substitute.
+  /// Same-category books (same-author when there is no category, or the
+  /// category lookup fails or finds nothing), excluding [excludeId], for use
+  /// as a Google-Books "related books" substitute.
   Future<List<Book>> related({
     required String excludeId,
     String? category,

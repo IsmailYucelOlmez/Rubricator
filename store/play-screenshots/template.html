@@ -20,82 +20,99 @@
     --bezel-edge: #3A3F44;
   }
   * { box-sizing: border-box; margin: 0; }
-  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  html, body { overflow: hidden; }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: Outfit, sans-serif;
     position: relative;
   }
-  .head {
+  h1 { font-weight: 700; text-wrap: balance; line-height: 1.08; letter-spacing: -0.015em; }
+  h1 em { font-style: normal; color: var(--accent); }
+  h1 .v { font-family: Megrim, sans-serif; font-weight: 400; color: var(--accent); }
+  p { color: var(--muted); line-height: 1.35; text-wrap: balance; }
+  .brand { font-family: Nouveau, serif; letter-spacing: 0.02em; color: var(--text); }
+  .rule { height: 6px; border-radius: 3px; background: var(--primary); }
+  .phone {
+    position: absolute;
+    background: var(--bezel);
+    border: 3px solid var(--bezel-edge); border-bottom: 0;
+    border-radius: 76px 76px 0 0;
+    padding: 18px 18px 0;
+  }
+  .phone img { display: block; width: 100%; border-radius: 58px 58px 0 0; }
+
+  /* Phone listing: 1080x1920, caption on top, device bleeds off the bottom. */
+  body.phone-layout { width: 1080px; height: 1920px; }
+  .phone-layout .head {
     position: absolute; top: 0; left: 0; right: 0; height: 520px;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center; padding: 40px 90px 0;
   }
-  .brand {
-    font-family: Nouveau, serif; font-size: 44px; letter-spacing: 0.02em;
-    margin-bottom: 36px; color: var(--text);
+  .phone-layout .brand { font-size: 44px; margin-bottom: 36px; }
+  .phone-layout .rule { width: 72px; margin-bottom: 34px; }
+  .phone-layout h1 { font-size: 84px; }
+  .phone-layout p { margin-top: 28px; font-size: 38px; max-width: 24ch; }
+  .phone-layout .phone { left: 50%; top: 560px; transform: translateX(-50%); width: 800px; }
+
+  /* Tablet listing: 2560x1440 landscape, caption left, device right. */
+  body.tablet-layout { width: 2560px; height: 1440px; }
+  .tablet-layout .head {
+    position: absolute; top: 0; bottom: 0; left: 0; width: 1400px;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 0 140px 0 180px;
   }
-  h1 {
-    font-size: 84px; font-weight: 700; text-wrap: balance; line-height: 1.08; letter-spacing: -0.015em;
-  }
-  h1 em { font-style: normal; color: var(--accent); }
-  h1 .v { font-family: Megrim, sans-serif; font-weight: 400; color: var(--accent); }
-  p {
-    margin-top: 28px; font-size: 38px; line-height: 1.35; color: var(--muted); max-width: 24ch; text-wrap: balance;
-  }
-  .rule { width: 72px; height: 6px; border-radius: 3px; background: var(--primary); margin-bottom: 34px; }
-  .phone {
-    position: absolute; left: 50%; top: 560px; transform: translateX(-50%);
-    width: 800px; padding: 18px 18px 0;
-    background: var(--bezel);
-    border: 3px solid var(--bezel-edge); border-bottom: 0;
-    border-radius: 76px 76px 0 0;
-  }
-  .phone img {
-    display: block; width: 100%;
-    border-radius: 58px 58px 0 0;
-  }
+  .tablet-layout .brand { font-size: 60px; margin-bottom: 48px; }
+  .tablet-layout .rule { width: 96px; height: 8px; margin-bottom: 44px; }
+  .tablet-layout h1 { font-size: 124px; }
+  .tablet-layout p { margin-top: 40px; font-size: 54px; max-width: 22ch; }
+  .tablet-layout .phone { left: 1560px; top: 150px; width: 820px; }
 </style>
 </head>
 <body>
   <div class="head" id="head"></div>
   <div class="phone"><img id="shot" alt=""></div>
 <script>
+  // ?s=<slide>&lang=tr|en&device=phone|tablet
   const SLIDES = {
     1: { img: "01-home.jpg", brand: true,
-         h: "Okuduğun her kitap <em>tek yerde</em>",
-         p: "Okuduklarını takip et, popüler kitapları keşfet." },
+         tr: { h: "Okuduğun her kitap <em>tek yerde</em>", p: "Okuduklarını takip et, popüler kitapları keşfet." },
+         en: { h: "Every book you read, <em>in one place</em>", p: "Track your reading and discover popular books." } },
     2: { img: "02-book-detail.jpg",
-         h: "Puanla, yorumla, <em>not al</em>",
-         p: "Benzer kitapları keşfet, alıntılarını sakla." },
+         tr: { h: "Puanla, yorumla, <em>not al</em>", p: "Benzer kitapları keşfet, alıntılarını sakla." },
+         en: { h: "Rate, review, <em>take notes</em>", p: "Discover similar books and save your quotes." } },
     3: { img: "03-virgil.jpg",
-         h: "<span class='v'>Virgil</span> sana kitap önerir",
-         p: "Yapay zekâ önerileri al, yüklediğin kitaba soru sor." },
+         tr: { h: "<span class='v'>Virgil</span> sana kitap önerir", p: "Yapay zekâ önerileri al, yüklediğin kitaba soru sor." },
+         en: { h: "<span class='v'>Virgil</span> finds your next book", p: "Get AI recommendations and ask questions about any book you upload." } },
     4: { img: "04-search.jpg",
-         h: "Aradığın kitabı <em>hemen bul</em>",
-         p: "Başlık veya yazara göre ara, eksik kitabı kendin ekle." },
+         tr: { h: "Aradığın kitabı <em>hemen bul</em>", p: "Başlık veya yazara göre ara, eksik kitabı kendin ekle." },
+         en: { h: "Find any book <em>instantly</em>", p: "Search by title or author, or add a missing book yourself." } },
     5: { img: "05-list.jpg",
-         h: "Listeler oluştur, <em>paylaş</em>",
-         p: "Konu konu kitap listeleri hazırla, yorumları oku." },
+         tr: { h: "Listeler oluştur, <em>paylaş</em>", p: "Konu konu kitap listeleri hazırla, yorumları oku." },
+         en: { h: "Create lists, <em>share them</em>", p: "Curate book lists by topic and see what others think." } },
     6: { img: "06-stats.jpg",
-         h: "Okumanı <em>rakamlarla</em> gör",
-         p: "Favori türlerin ve yazarların bir bakışta." },
+         tr: { h: "Okumanı <em>rakamlarla</em> gör", p: "Puan dağılımın, favorilerin, yorum ve alıntıların." },
+         en: { h: "Your reading <em>in numbers</em>", p: "Your ratings, favorites, reviews and quotes at a glance." } },
     7: { img: "07-habit.jpg",
-         h: "Okuma <em>alışkanlığı</em> kazan",
-         p: "Dakika ve sayfa kaydet, serini ve aktiviteni izle." },
+         tr: { h: "Okuma <em>alışkanlığı</em> kazan", p: "Dakika ve sayfa kaydet, serini ve aktiviteni izle." },
+         en: { h: "Build a <em>reading habit</em>", p: "Log minutes and pages, keep your streak going." } },
     8: { img: "08-profile.jpg",
-         h: "Rafların <em>düzenli</em> kalsın",
-         p: "Okunacak, okunuyor, tamamlandı: her kitap yerinde." },
+         tr: { h: "Rafların <em>düzenli</em> kalsın", p: "Okunacak, okunuyor, tamamlandı: her kitap yerinde." },
+         en: { h: "Keep your shelves <em>organized</em>", p: "To read, reading, finished: every book in its place." } },
     9: { img: "09-notes.jpg",
-         h: "Notların <em>hep elinde</em>",
-         p: "Okurken not al, etiketle, saniyeler içinde bul." },
+         tr: { h: "Notların <em>hep elinde</em>", p: "Okurken not al, etiketle, saniyeler içinde bul." },
+         en: { h: "Your notes, <em>always at hand</em>", p: "Take notes as you read, tag them, find them in seconds." } },
   };
-  const n = new URLSearchParams(location.search).get("s") || "1";
-  const s = SLIDES[n];
+  const q = new URLSearchParams(location.search);
+  const s = SLIDES[q.get("s") || "1"];
+  const lang = q.get("lang") === "en" ? "en" : "tr";
+  const device = q.get("device") === "tablet" ? "tablet" : "phone";
+  document.documentElement.lang = lang;
+  document.body.className = device + "-layout";
+  const t = s[lang];
   document.getElementById("head").innerHTML =
     (s.brand ? "<div class='brand'>Rubricator</div>" : "<div class='rule'></div>") +
-    `<h1>${s.h}</h1><p>${s.p}</p>`;
+    `<h1>${t.h}</h1><p>${t.p}</p>`;
   document.getElementById("shot").src = "raw/" + s.img;
 </script>
 </body>

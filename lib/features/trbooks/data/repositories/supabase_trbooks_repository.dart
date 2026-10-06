@@ -106,25 +106,32 @@ class SupabaseTrbooksRepository implements TrbooksRepository {
         trimmedAuthor.isEmpty) {
       return const <Book>[];
     }
-    final rows = (trimmedCategory != null && trimmedCategory.isNotEmpty)
-        ? await _client
-              .from('trbooks')
-              .select(_trbooksSelectColumns)
-              .eq('category', trimmedCategory)
-              .order('rating', ascending: false)
-              .limit(limit + 1)
-        : await _client
-              .from('trbooks')
-              .select(_trbooksSelectColumns)
-              .eq('author', trimmedAuthor)
-              .order('rating', ascending: false)
-              .limit(limit + 1);
-    return (rows as List<dynamic>)
-        .whereType<Map<String, dynamic>>()
-        .map(mapRowToBook)
-        .where((book) => book.id != excludeId)
-        .take(limit)
-        .toList();
+    Future<List<Book>> fetchBy(String column, String value) async {
+      final rows = await _client
+          .from('trbooks')
+          .select(_trbooksSelectColumns)
+          .eq(column, value)
+          .order('rating', ascending: false)
+          .limit(limit + 1);
+      return (rows as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .map(mapRowToBook)
+          .where((book) => book.id != excludeId)
+          .take(limit)
+          .toList();
+    }
+
+    // A failed or empty category lookup (e.g. a statement timeout on a big
+    // category) still gets the same-author fallback.
+    if (trimmedCategory != null && trimmedCategory.isNotEmpty) {
+      try {
+        final byCategory = await fetchBy('category', trimmedCategory);
+        if (byCategory.isNotEmpty || trimmedAuthor.isEmpty) return byCategory;
+      } on PostgrestException {
+        if (trimmedAuthor.isEmpty) rethrow;
+      }
+    }
+    return fetchBy('author', trimmedAuthor);
   }
 
   @override

@@ -74,6 +74,8 @@ abstract final class GoogleBooksUtils {
   static String buildPlainSearchQuery(String raw) {
     final trimmed = raw.trim();
     if (trimmed.isEmpty) return '';
+    final digits = trimmed.replaceAll(RegExp(r'[-\s]'), '');
+    if (_isbnDigits.hasMatch(digits)) return digits;
     return trimmed.contains(' ') ? '"$trimmed"' : trimmed;
   }
 
@@ -94,6 +96,38 @@ abstract final class GoogleBooksUtils {
     final s = subject.trim().replaceAll('"', ' ');
     if (s.isEmpty) return '';
     return s.contains(' ') ? 'subject:"$s"' : 'subject:$s';
+  }
+
+  /// Subject queries to try in order: the plain `subject:` anchor, then the
+  /// same anchor with the subject as a bare term too — Google Books may answer
+  /// a `q` made only of field operators with zero items.
+  static List<String> buildSubjectSearchQueries(String subject) {
+    final q = buildSubjectSearchQuery(subject);
+    if (q.isEmpty) return const <String>[];
+    final s = subject.trim().replaceAll('"', ' ');
+    return <String>[q, '$s $q'];
+  }
+
+  /// Minimum [textSimilarity] between a result's author and the searched name
+  /// for [filterByAuthor] to keep it.
+  static const double minAuthorSimilarity = 0.5;
+
+  /// Keeps books whose primary author matches one of [names]. Bare-name
+  /// queries also hit books *about* the author, which an author list must drop.
+  static List<BookModel> filterByAuthor(
+    List<BookModel> books,
+    Iterable<String> names,
+  ) {
+    final wanted = names.where((n) => n.trim().isNotEmpty).toList();
+    if (wanted.isEmpty) return books;
+    return books
+        .where(
+          (b) => wanted.any(
+            (n) =>
+                textSimilarity(b.primaryAuthorName, n) >= minAuthorSimilarity,
+          ),
+        )
+        .toList();
   }
 
   /// Removes duplicate editions (ISBN-13 preferred, else title + first author).

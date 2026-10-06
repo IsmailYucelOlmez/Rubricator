@@ -163,6 +163,45 @@ void main() {
       expect(GoogleBooksUtils.buildUnifiedSearchQueries('   '), isEmpty);
       expect(GoogleBooksUtils.buildPlainSearchQuery('   '), '');
     });
+
+    test('ISBN plain fallback query is the bare digits', () {
+      expect(
+        GoogleBooksUtils.buildPlainSearchQuery('978-0-451-52493-5'),
+        '9780451524935',
+      );
+    });
+  });
+
+  group('buildSubjectSearchQueries', () {
+    test('tries the anchor alone, then with the bare term', () {
+      expect(GoogleBooksUtils.buildSubjectSearchQueries('fantasy'), <String>[
+        'subject:fantasy',
+        'fantasy subject:fantasy',
+      ]);
+      expect(
+        GoogleBooksUtils.buildSubjectSearchQueries('Juvenile Fiction'),
+        <String>[
+          'subject:"Juvenile Fiction"',
+          'Juvenile Fiction subject:"Juvenile Fiction"',
+        ],
+      );
+    });
+
+    test('empty subject yields no queries', () {
+      expect(GoogleBooksUtils.buildSubjectSearchQueries('  '), isEmpty);
+    });
+  });
+
+  group('filterByAuthor', () {
+    test("keeps the author's books and drops books about them", () {
+      final books = [
+        _book(workId: '1', title: '1984', author: 'George Orwell'),
+        _book(workId: '2', title: 'George Orwell', author: 'D. J. Taylor'),
+        _book(workId: '3', title: 'Animal Farm', author: 'Orwell, George'),
+      ];
+      final kept = GoogleBooksUtils.filterByAuthor(books, ['George Orwell']);
+      expect(kept.map((b) => b.workId), ['1', '3']);
+    });
   });
 
   group('cache key versioning', () {

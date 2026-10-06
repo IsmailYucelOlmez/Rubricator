@@ -64,6 +64,7 @@ class BookSearchResultTile extends StatelessWidget {
                       title: book.title,
                       author: book.author,
                       categories: book.subjectKeys,
+                      coverImageUrl: book.coverImageUrl,
                       compact: true,
                       child: BookCoverLeading(coverImageUrl: book.coverImageUrl),
                     )

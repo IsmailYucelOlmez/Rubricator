@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/presentation/auth_provider.dart';
@@ -36,6 +38,7 @@ Book _bookFromStoredSnapshot(UserBookEntity userBook) {
     author: userBook.bookAuthor!,
     description: '',
     subjectKeys: userBook.bookCategories,
+    coverImageUrl: userBook.bookCoverUrl,
   );
 }
 
@@ -47,6 +50,7 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
   if (userBooks.isEmpty) return const [];
 
   final resolveBookById = ref.read(resolveBookByIdUseCaseProvider);
+  final userBooksRepository = ref.read(userBooksRepositoryProvider);
   final bookById = <String, Book>{};
 
   for (final userBook in userBooks) {
@@ -70,6 +74,15 @@ Future<List<({Book book, UserBookEntity userBook})>> _hydrateEntries({
       chunk.map((userBook) async {
         try {
           final fetched = await resolveBookById.call(userBook.bookId);
+          final fetchedCover = fetched.coverImageUrl;
+          if (fetchedCover != null && fetchedCover.isNotEmpty) {
+            // Store it so the next load skips this lookup.
+            unawaited(
+              userBooksRepository
+                  .saveCoverUrl(userBook.bookId, fetchedCover)
+                  .catchError((_) {}),
+            );
+          }
           final existing = bookById[userBook.bookId];
           if (existing != null) {
             bookById[userBook.bookId] = existing.copyWith(

@@ -371,7 +371,7 @@ ${
               <p class="hint" id="refine-hint" aria-live="polite"></p>
               <div class="v-refine-actions">
                 <button class="link-button" type="button" id="refine-reset" hidden>${t.feedbackReset}</button>
-                <button class="btn secondary" type="button" id="refine-apply" disabled>${t.feedbackRefine}</button>
+                <button class="v-refine-apply" type="button" id="refine-apply" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>${t.feedbackRefine}</button>
               </div>
             </div>
             <div class="empty" id="no-results" hidden>

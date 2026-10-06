@@ -72,40 +72,47 @@ class HomeRemoteDataSource {
     return relevant.isNotEmpty ? relevant : models;
   }
 
-  String _genreQuery(String genre) {
-    final safeGenre = subjectQueryTerm(genre);
-    if (safeGenre.isEmpty) return '';
-    final subjectQuery = GoogleBooksUtils.buildSubjectSearchQuery(safeGenre);
-    final turkishTerm = turkishGenreQueries[genre];
-    if (lang == 'tr' && turkishTerm != null) {
-      return '$subjectQuery $turkishTerm';
+  /// Queries for [subject] to try in order (see
+  /// [GoogleBooksUtils.buildSubjectSearchQueries]), each with the Turkish
+  /// genre word of [genreKey] appended on the Turkish app.
+  List<String> _genreQueries(String subject, String genreKey) {
+    final turkishTerm = turkishGenreQueries[genreKey];
+    return [
+      for (final q in GoogleBooksUtils.buildSubjectSearchQueries(subject))
+        lang == 'tr' && turkishTerm != null ? '$q $turkishTerm' : q,
+    ];
+  }
+
+  /// Returns the first non-empty result of [queries].
+  Future<List<HomeBookModel>> _fetchFirstNonEmpty(
+    List<String> queries,
+    int maxResults,
+  ) async {
+    for (final q in queries) {
+      final json = await _api.getJsonWithRetry(
+        '/volumes',
+        queryParameters: _listParams(q: q, maxResults: maxResults),
+      );
+      final books = _filterByLanguage(_parseVolumeItems(json));
+      if (books.isNotEmpty) return books;
     }
-    return subjectQuery;
+    return const <HomeBookModel>[];
   }
 
   Future<List<HomeBookModel>> fetchBooksByGenre(
     String genre, {
     int maxResults = 30,
   }) async {
-    final q = _genreQuery(genre);
-    if (q.isEmpty) return const <HomeBookModel>[];
-    final json = await _api.getJsonWithRetry(
-      '/volumes',
-      queryParameters: _listParams(q: q, maxResults: maxResults),
-    );
-    return _filterByLanguage(_parseVolumeItems(json));
+    final safeGenre = subjectQueryTerm(genre);
+    if (safeGenre.isEmpty) return const <HomeBookModel>[];
+    return _fetchFirstNonEmpty(_genreQueries(safeGenre, genre), maxResults);
   }
 
-  Future<List<HomeBookModel>> fetchPopularBooks({int maxResults = 30}) async {
-    final turkishTerm = turkishGenreQueries['popular_fiction'];
-    final q = lang == 'tr' && turkishTerm != null
-        ? 'subject:fiction $turkishTerm'
-        : 'subject:fiction';
-    final json = await _api.getJsonWithRetry(
-      '/volumes',
-      queryParameters: _listParams(q: q, maxResults: maxResults),
+  Future<List<HomeBookModel>> fetchPopularBooks({int maxResults = 30}) {
+    return _fetchFirstNonEmpty(
+      _genreQueries('fiction', 'popular_fiction'),
+      maxResults,
     );
-    return _filterByLanguage(_parseVolumeItems(json));
   }
 
   Future<List<HomeBookModel>> searchBooks(String query) async {

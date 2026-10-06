@@ -366,6 +366,7 @@ class _BookListItem extends StatelessWidget {
               bookId: item.bookId,
               title: item.bookTitle,
               author: item.bookAuthor,
+              coverImageUrl: item.coverImageUrl,
               compact: true,
               child: _Cover(coverImageUrl: item.coverImageUrl),
             ),

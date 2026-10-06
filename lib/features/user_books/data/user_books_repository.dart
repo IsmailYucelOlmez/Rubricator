@@ -29,6 +29,24 @@ class UserBooksRepository {
     return userId;
   }
 
+  /// Only writes a non-empty cover so a snapshot without one never clears
+  /// a previously stored URL.
+  static void _putCover(Map<String, dynamic> row, UserBookSnapshot snapshot) {
+    final cover = snapshot.coverImageUrl?.trim();
+    if (cover != null && cover.isNotEmpty) row['book_cover_url'] = cover;
+  }
+
+  /// Backfills the cover for rows saved before `book_cover_url` existed.
+  Future<void> saveCoverUrl(String bookId, String coverUrl) async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return;
+    await _client
+        .from('user_books')
+        .update({'book_cover_url': coverUrl})
+        .eq('user_id', userId)
+        .eq('book_id', bookId);
+  }
+
   Future<UserBookEntity?> getUserBook(String bookId) async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return null;
@@ -82,6 +100,7 @@ class UserBooksRepository {
       payload['book_title'] = snapshot.title;
       payload['book_author'] = snapshot.author;
       payload['book_categories'] = snapshot.categories;
+      _putCover(payload, snapshot);
     }
 
     if (status == ReadingStatus.completed) {
@@ -124,6 +143,7 @@ class UserBooksRepository {
         payload['book_title'] = snapshot.title;
         payload['book_author'] = snapshot.author;
         payload['book_categories'] = snapshot.categories;
+        _putCover(payload, snapshot);
       }
       await _client.from('user_books').insert(payload);
       return;
@@ -134,6 +154,9 @@ class UserBooksRepository {
       update['book_title'] = snapshot.title;
       update['book_author'] = snapshot.author;
       update['book_categories'] = snapshot.categories;
+    }
+    if (snapshot != null && existing.bookCoverUrl == null) {
+      _putCover(update, snapshot);
     }
     await _client
         .from('user_books')

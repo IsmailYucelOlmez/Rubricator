@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/i18n/l10n/app_localizations.dart';
 import '../../../../core/layout/responsive_scaffold_body.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/async_error_view.dart';
@@ -97,7 +98,7 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
     final y = local.year.toString().padLeft(4, '0');
     final m = local.month.toString().padLeft(2, '0');
     final d = local.day.toString().padLeft(2, '0');
-    return '$y-$m-$d';
+    return '$d.$m.$y';
   }
 
   @override
@@ -177,23 +178,15 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
                                 final note = state.notes[index];
                                 final bookTitle =
                                     titles[note.bookId] ?? note.bookId;
-                                return ListTile(
-                                  title: Text(note.noteTitle),
-                                  subtitle: Text(
-                                    '$bookTitle · ${_formatDate(note.createdAt)}',
-                                  ),
-                                  trailing: IconButton(
-                                    icon: _deletingNoteId == note.id
-                                        ? const AppLoadingIndicator(
-                                            size: 18,
-                                            strokeWidth: 2,
-                                            centered: false,
-                                          )
-                                        : const Icon(Icons.delete_outline),
-                                    onPressed: _deletingNoteId != null
-                                        ? null
-                                        : () => _deleteNote(note.id),
-                                  ),
+                                return _MyNoteCard(
+                                  bookTitle: bookTitle,
+                                  date: _formatDate(note.createdAt),
+                                  noteTitle: note.noteTitle,
+                                  noteContent: note.noteContent,
+                                  isDeleting: _deletingNoteId == note.id,
+                                  onDelete: _deletingNoteId != null
+                                      ? null
+                                      : () => _deleteNote(note.id),
                                   onTap: () =>
                                       _openBook(note.bookId, titles[note.bookId]),
                                 );
@@ -213,6 +206,118 @@ class _MyNotesPageState extends ConsumerState<MyNotesPage> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+class _MyNoteCard extends StatelessWidget {
+  const _MyNoteCard({
+    required this.bookTitle,
+    required this.date,
+    required this.noteTitle,
+    required this.noteContent,
+    required this.isDeleting,
+    required this.onDelete,
+    required this.onTap,
+  });
+
+  final String bookTitle;
+  final String date;
+  final String noteTitle;
+  final String noteContent;
+  final bool isDeleting;
+  final VoidCallback? onDelete;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final bookTitleStyle = theme.textTheme.labelMedium?.copyWith(
+      color: cs.onSurfaceVariant,
+    );
+    final dateStyle = theme.textTheme.labelSmall?.copyWith(
+      fontWeight: FontWeight.w400,
+      color: cs.onSurfaceVariant,
+    );
+
+    return Card(
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        0,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.xs,
+            AppSpacing.md,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      noteTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.delete,
+                    onPressed: onDelete,
+                    icon: isDeleting
+                        ? const AppLoadingIndicator(
+                            size: 18,
+                            strokeWidth: 2,
+                            centered: false,
+                          )
+                        : const Icon(Icons.delete_outline, size: 20),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+              if (noteContent.trim().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.sm),
+                  child: Text(
+                    noteContent,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.42),
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
+              Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        bookTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: bookTitleStyle,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(date, style: dateStyle),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

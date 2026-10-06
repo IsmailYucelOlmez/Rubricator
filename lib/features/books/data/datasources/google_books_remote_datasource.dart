@@ -129,17 +129,19 @@ class GoogleBooksRemoteDataSource {
     }
 
     // Combined title+author input (e.g. "suç ve ceza dostoyevski") can miss
-    // both field-restricted queries; widen with a bare-query fallback.
+    // both field-restricted queries, and Google Books answers field-only
+    // queries with zero items anyway; widen with a bare-query fallback.
     if (merged.length < _thinResultThreshold) {
       final plain = GoogleBooksUtils.buildPlainSearchQuery(query);
       if (plain.isNotEmpty && !queries.contains(plain)) {
-        merged.addAll(
-          await _tryFetchRaw(
-            q: plain,
-            maxResults: safeLimit,
-            startIndex: startIndex,
-          ),
+        final batch = await _tryFetchRaw(
+          q: plain,
+          maxResults: safeLimit,
+          startIndex: startIndex,
         );
+        // Field-only queries come back empty, so this is often the only page.
+        if (batch.length >= safeLimit) anyFullPage = true;
+        merged.addAll(batch);
       }
     }
 
@@ -219,12 +221,20 @@ class GoogleBooksRemoteDataSource {
 
     final maxResults = _clampedLimit(limit);
     final variants = _authorSearchVariants(a);
+    // Google Books answers field-only queries with zero items, so the bare
+    // quoted name goes right after the first `inauthor:` try; its hits are
+    // narrowed to the author's own books by [GoogleBooksUtils.filterByAuthor].
     final queries = <String>[
-      for (final name in variants) ...[
+      'inauthor:"${variants.first}"',
+      '"${variants.first}"',
+      'inauthor:${variants.first}',
+      for (final name in variants.skip(1)) ...[
         'inauthor:"$name"',
         'inauthor:$name',
       ],
     ];
+    List<BookModel> parse(Map<String, dynamic> json) =>
+        GoogleBooksUtils.filterByAuthor(_parseItems(json, query: a), variants);
 
     for (final q in queries) {
       try {
@@ -232,7 +242,7 @@ class GoogleBooksRemoteDataSource {
           '/volumes',
           queryParameters: _listParams(q: q, maxResults: maxResults),
         );
-        final results = _parseItems(json, query: a);
+        final results = parse(json);
         if (results.isNotEmpty) {
           return results;
         }
@@ -254,7 +264,7 @@ class GoogleBooksRemoteDataSource {
               restrictLanguage: false,
             ),
           );
-          final results = _parseItems(json, query: a);
+          final results = parse(json);
           if (results.isNotEmpty) {
             return results;
           }
@@ -299,62 +309,87 @@ class GoogleBooksRemoteDataSource {
 
   Future<List<BookModel>> fetchTrendingWorks({int limit = 20}) async {
     final safeLimit = _clampedLimit(limit);
-    final json = await _api.getJsonWithRetry(
-      '/volumes',
-      queryParameters: _listParams(
-        q: 'subject:fiction',
-        maxResults: safeLimit,
-        orderBy: 'newest',
-      ),
-    );
-    return _parseItems(json);
+    for (final q in GoogleBooksUtils.buildSubjectSearchQueries('fiction')) {
+      final json = await _api.getJsonWithRetry(
+        '/volumes',
+        queryParameters: _listParams(
+          q: q,
+          maxResults: safeLimit,
+          orderBy: 'newest',
+        ),
+      );
+      final results = _parseItems(json);
+      if (results.isNotEmpty) return results;
+    }
+    return <BookModel>[];
+  }
+
+  /// Tries [queries] in order until one yields books. Google Books answers a
+  /// `q` made only of field operators (`subject:…`, `inauthor:…`) with zero
+  /// items, so callers end with a bare-term query;
+  /// [GoogleBooksUtils.postProcess] ranks the looser matches back.
+  Future<List<BookModel>> _fetchRelated({
+    required List<String> queries,
+    required String term,
+    required String excludeVolumeId,
+    required int limit,
+    List<String>? authorNames,
+  }) async {
+    final exclude = excludeVolumeId.trim();
+    for (final q in queries) {
+      if (q.trim().isEmpty) continue;
+      final json = await _api.getJsonWithRetry(
+        '/volumes',
+        queryParameters: _listParams(
+          q: q,
+          maxResults: _clampedLimit(limit + 5),
+        ),
+      );
+      var parsed = _parseItems(json, query: term);
+      if (authorNames != null) {
+        parsed = GoogleBooksUtils.filterByAuthor(parsed, authorNames);
+      }
+      final out = <BookModel>[];
+      for (final m in parsed) {
+        if (m.workId == exclude) continue;
+        out.add(m);
+        if (out.length >= limit) break;
+      }
+      if (out.isNotEmpty) return out;
+    }
+    return <BookModel>[];
   }
 
   Future<List<BookModel>> fetchRelatedBySubject({
     required String subject,
     required String excludeVolumeId,
     int limit = 12,
-  }) async {
-    final q = GoogleBooksUtils.buildSubjectSearchQuery(subject);
-    if (q.isEmpty) return <BookModel>[];
-    final json = await _api.getJsonWithRetry(
-      '/volumes',
-      queryParameters: _listParams(
-        q: q,
-        maxResults: _clampedLimit(limit + 5),
-      ),
+  }) {
+    final queries = GoogleBooksUtils.buildSubjectSearchQueries(subject);
+    if (queries.isEmpty) return Future.value(<BookModel>[]);
+    final term = subject.trim().replaceAll('"', ' ');
+    return _fetchRelated(
+      queries: [...queries, term],
+      term: subject,
+      excludeVolumeId: excludeVolumeId,
+      limit: limit,
     );
-    final exclude = excludeVolumeId.trim();
-    final out = <BookModel>[];
-    for (final m in _parseItems(json, query: subject)) {
-      if (m.workId == exclude) continue;
-      out.add(m);
-      if (out.length >= limit) break;
-    }
-    return out;
   }
 
   Future<List<BookModel>> fetchRelatedByAuthor({
     required String author,
     required String excludeVolumeId,
     int limit = 12,
-  }) async {
+  }) {
     final q = GoogleBooksUtils.buildAuthorSearchQuery(author);
-    if (q.isEmpty) return <BookModel>[];
-    final json = await _api.getJsonWithRetry(
-      '/volumes',
-      queryParameters: _listParams(
-        q: q,
-        maxResults: _clampedLimit(limit + 5),
-      ),
+    if (q.isEmpty) return Future.value(<BookModel>[]);
+    final name = author.trim().replaceAll('"', ' ');
+    return _fetchRelated(
+      queries: [q, '"$name"'],
+      term: author,
+      authorNames: [name],
+      excludeVolumeId: excludeVolumeId,
+      limit: limit,
     );
-    final exclude = excludeVolumeId.trim();
-    final out = <BookModel>[];
-    for (final m in _parseItems(json, query: author)) {
-      if (m.workId == exclude) continue;
-      out.add(m);
-      if (out.length >= limit) break;
-    }
-    return out;
   }
 }

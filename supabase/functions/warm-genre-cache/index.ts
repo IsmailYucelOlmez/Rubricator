@@ -157,16 +157,31 @@ async function fetchGoogleBooks(
   return filterByLanguage(books, lang).slice(0, MAX_RESULTS);
 }
 
-function queryForGenreKey(genreKey: string, lang: string): string {
+/// Queries to try in order: the plain `subject:` anchor, then the same anchor
+/// with the subject as a bare term too — Google Books may answer a `q` made
+/// only of field operators with zero items.
+function queriesForGenreKey(genreKey: string, lang: string): string[] {
   const englishSubject = genreKey === "popular_fiction"
     ? "fiction"
     : subjectQueryTerm(genreKey);
   const subjectQuery = buildSubjectQuery(englishSubject);
+  if (!subjectQuery) return [];
   const turkishTerm = TURKISH_GENRE_QUERIES[genreKey];
-  if (lang === "tr" && turkishTerm) {
-    return `${subjectQuery} ${turkishTerm}`;
+  return [subjectQuery, `${englishSubject} ${subjectQuery}`].map((q) =>
+    lang === "tr" && turkishTerm ? `${q} ${turkishTerm}` : q
+  );
+}
+
+async function fetchGenreBooks(
+  apiKey: string,
+  genreKey: string,
+  lang: string,
+): Promise<CachedBook[]> {
+  for (const q of queriesForGenreKey(genreKey, lang)) {
+    const books = await fetchGoogleBooks(apiKey, q, lang);
+    if (books.length > 0) return books;
   }
-  return subjectQuery;
+  return [];
 }
 
 Deno.serve(async (req: Request) => {
@@ -202,7 +217,7 @@ Deno.serve(async (req: Request) => {
     for (const lang of LANGS) {
       const resultKey = `${genreKey}:${lang}`;
       try {
-        const books = await fetchGoogleBooks(apiKey, queryForGenreKey(genreKey, lang), lang);
+        const books = await fetchGenreBooks(apiKey, genreKey, lang);
         if (books.length === 0) {
           throw new Error(`No books returned for ${genreKey} (${lang})`);
         }
